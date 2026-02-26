@@ -26,36 +26,12 @@ fi
 # Does NOT define log_info/log_error—those come from logging.sh
 # ============================================================================
 
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 UI_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
 
-    # Fallback to walking up from UI_SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        ROOT_DIR="$UI_SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-
-# Load colors first, then logging (colors may load logging, but that's safe)
-source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+# Load common.sh which provides colors and unified logging
+source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 
 # Terminal width fallback
 TERMINAL_WIDTH="${COLUMNS:-80}"

@@ -5,15 +5,13 @@ set -euo pipefail
 # Purpose: Initialize context system by extracting release-related experience from commit history
 # Usage: ./Scripts/context/init-context.sh [--domain DOMAIN] [--limit N]
 
-# Get script directory and load common functions
-# shellcheck disable=SC2155
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 # shellcheck source=./common.sh
 source "$SCRIPT_DIR/common.sh"
 
-# Configuration
-# shellcheck disable=SC2155
-readonly REPO_ROOT=$(get_repo_root)
+REPO_ROOT=$(get_repo_root)
+readonly REPO_ROOT
 readonly CONTEXT_DIR="$REPO_ROOT/.context"
 
 # Default values

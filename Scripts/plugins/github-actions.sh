@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -13,10 +13,21 @@ readonly PLUGIN_NAME="github-actions"
 readonly PLUGIN_VERSION="1.0.0"
 readonly PLUGIN_DESCRIPTION="GitHub Actions CI/CD Integration Plugin"
 
-# Source dependencies
+# Source dependencies (common.sh provides unified logging)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/common.sh"
-source "$SCRIPT_DIR/../lib/logging.sh"
+
+# R031f: Source checksum module for unified checksum computation
+if [[ -f "$SCRIPT_DIR/../lib/checksum.sh" ]]; then
+    # shellcheck source=Scripts/lib/checksum.sh
+    source "$SCRIPT_DIR/../lib/checksum.sh" 2>/dev/null || true
+fi
+
+# R012d: Source time_utils.sh for unified duration formatting
+if [[ -f "$SCRIPT_DIR/../lib/shared/time_utils.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/time_utils.sh
+    source "$SCRIPT_DIR/../lib/shared/time_utils.sh" 2>/dev/null || true
+fi
 
 # Plugin activation check
 is_plugin_active() {
@@ -29,7 +40,7 @@ plugin_init() {
         return $EXIT_SUCCESS
     fi
     
-    log_debug "Initializing GitHub Actions plugin..."
+    log::debug "PLUGIN" "Initializing GitHub Actions plugin..."
     
     # Configure GitHub Actions environment
     configure_github_actions_environment
@@ -43,12 +54,12 @@ plugin_init() {
     # Configure artifact management
     configure_artifact_management
     
-    log_success "GitHub Actions plugin initialized"
+    log::success "PLUGIN" "GitHub Actions plugin initialized"
 }
 
 # Environment configuration
 configure_github_actions_environment() {
-    log_step "Configuring GitHub Actions environment..."
+    log::step "PLUGIN" "Configuring GitHub Actions environment..."
     
     # Override settings for GitHub Actions
     export SKIP_CODE_SIGN=1
@@ -76,12 +87,12 @@ configure_github_actions_environment() {
     export HOMEBREW_NO_AUTO_UPDATE=1
     export HOMEBREW_NO_INSTALL_CLEANUP=1
     
-    log_debug "GitHub Actions environment configured"
+    log::debug "PLUGIN" "GitHub Actions environment configured"
 }
 
 # GitHub Actions optimizations
 setup_github_actions_optimizations() {
-    log_step "Setting up GitHub Actions optimizations..."
+    log::step "PLUGIN" "Setting up GitHub Actions optimizations..."
     
     # Configure paths for GitHub Actions runners
     setup_github_actions_paths
@@ -95,11 +106,11 @@ setup_github_actions_optimizations() {
     # Setup problem matchers
     setup_problem_matchers
     
-    log_success "GitHub Actions optimizations configured"
+    log::success "PLUGIN" "GitHub Actions optimizations configured"
 }
 
 setup_github_actions_paths() {
-    log_debug "Configuring GitHub Actions paths..."
+    log::debug "PLUGIN" "Configuring GitHub Actions paths..."
     
     # Use runner temporary directory for derived data
     export DERIVED_DATA_PATH="$RUNNER_TEMP/DerivedData"
@@ -119,11 +130,11 @@ setup_github_actions_paths() {
     export GITHUB_ARTIFACTS_DIR="$RUNNER_TEMP/artifacts"
     ensure_directory "$GITHUB_ARTIFACTS_DIR"
     
-    log_debug "GitHub Actions paths configured"
+    log::debug "PLUGIN" "GitHub Actions paths configured"
 }
 
 setup_github_actions_caching() {
-    log_debug "Setting up GitHub Actions caching strategy..."
+    log::debug "PLUGIN" "Setting up GitHub Actions caching strategy..."
     
     # Generate cache keys for different components
     local cocoapods_cache_key
@@ -131,13 +142,23 @@ setup_github_actions_caching() {
     local derived_data_cache_key
     
     if [[ -f "Podfile.lock" ]]; then
-        cocoapods_cache_key="cocoapods-$(shasum -a 256 Podfile.lock | cut -d' ' -f1)"
+        # R031f: Use checksum.sh module if available, fallback to shasum
+        if command -v checksum_compute_sha256 &>/dev/null; then
+            cocoapods_cache_key="cocoapods-$(checksum_compute_sha256 Podfile.lock)"
+        else
+            cocoapods_cache_key="cocoapods-$(shasum -a 256 Podfile.lock | cut -d' ' -f1)"
+        fi
     else
         cocoapods_cache_key="cocoapods-no-lock"
     fi
-    
+
     if [[ -f "Gemfile.lock" ]]; then
-        bundle_cache_key="bundle-$(shasum -a 256 Gemfile.lock | cut -d' ' -f1)"
+        # R031f: Use checksum.sh module if available, fallback to shasum
+        if command -v checksum_compute_sha256 &>/dev/null; then
+            bundle_cache_key="bundle-$(checksum_compute_sha256 Gemfile.lock)"
+        else
+            bundle_cache_key="bundle-$(shasum -a 256 Gemfile.lock | cut -d' ' -f1)"
+        fi
     else
         bundle_cache_key="bundle-no-lock"
     fi
@@ -149,11 +170,11 @@ setup_github_actions_caching() {
     echo "::set-output name=bundle-cache-key::$bundle_cache_key"
     echo "::set-output name=derived-data-cache-key::$derived_data_cache_key"
     
-    log_debug "Cache keys generated"
+    log::debug "PLUGIN" "Cache keys generated"
 }
 
 setup_github_actions_parallelization() {
-    log_debug "Setting up parallelization for GitHub Actions..."
+    log::debug "PLUGIN" "Setting up parallelization for GitHub Actions..."
     
     # Configure build parallelization based on runner specs
     local runner_cores
@@ -166,11 +187,11 @@ setup_github_actions_parallelization() {
     export MAX_PARALLEL_JOBS="$max_jobs"
     export CI_PARALLEL_BUILDS=YES
     
-    log_debug "Parallelization configured: $max_jobs parallel jobs"
+    log::debug "PLUGIN" "Parallelization configured: $max_jobs parallel jobs"
 }
 
 setup_problem_matchers() {
-    log_debug "Setting up GitHub Actions problem matchers..."
+    log::debug "PLUGIN" "Setting up GitHub Actions problem matchers..."
     
     # Create Xcode problem matcher
     local xcode_matcher_file="$RUNNER_TEMP/xcode-problem-matcher.json"
@@ -211,12 +232,12 @@ EOF
     # Add the problem matcher
     echo "::add-matcher::$xcode_matcher_file"
     
-    log_debug "Problem matchers configured"
+    log::debug "PLUGIN" "Problem matchers configured"
 }
 
 # Workflow integration
 setup_workflow_integration() {
-    log_step "Setting up GitHub Actions workflow integration..."
+    log::step "PLUGIN" "Setting up GitHub Actions workflow integration..."
     
     # Configure git for GitHub Actions
     configure_git_for_github_actions
@@ -227,39 +248,39 @@ setup_workflow_integration() {
     # Configure job outputs
     configure_job_outputs
     
-    log_success "Workflow integration configured"
+    log::success "PLUGIN" "Workflow integration configured"
 }
 
 configure_git_for_github_actions() {
-    log_debug "Configuring git for GitHub Actions..."
+    log::debug "PLUGIN" "Configuring git for GitHub Actions..."
     
     # Set git user for any commits that might be needed
     if [[ -n "${GITHUB_ACTOR}" ]]; then
         git config --global user.name "${GITHUB_ACTOR}"
         git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-        log_debug "Git user configured: ${GITHUB_ACTOR}"
+        log::debug "PLUGIN" "Git user configured: ${GITHUB_ACTOR}"
     fi
     
     # Configure git settings for CI
     git config --global core.autocrlf false
     git config --global core.fileMode false
     
-    log_debug "Git configuration completed"
+    log::debug "PLUGIN" "Git configuration completed"
 }
 
 setup_step_annotations() {
-    log_debug "Setting up step annotations..."
+    log::debug "PLUGIN" "Setting up step annotations..."
     
     # Create step grouping functions
     export -f github_actions_group github_actions_endgroup
     export -f github_actions_notice github_actions_warning github_actions_error
     export -f github_actions_set_output github_actions_add_mask
     
-    log_debug "Step annotation functions exported"
+    log::debug "PLUGIN" "Step annotation functions exported"
 }
 
 configure_job_outputs() {
-    log_debug "Configuring job outputs..."
+    log::debug "PLUGIN" "Configuring job outputs..."
     
     # Set standard job outputs
     local build_number="${GITHUB_RUN_NUMBER:-unknown}"
@@ -270,12 +291,12 @@ configure_job_outputs() {
     github_actions_set_output "commit-sha" "$commit_sha"
     github_actions_set_output "branch-name" "$branch_name"
     
-    log_debug "Job outputs configured"
+    log::debug "PLUGIN" "Job outputs configured"
 }
 
 # Artifact management
 configure_artifact_management() {
-    log_step "Configuring artifact management..."
+    log::step "PLUGIN" "Configuring artifact management..."
     
     # Setup artifact collection
     setup_artifact_collection
@@ -283,11 +304,11 @@ configure_artifact_management() {
     # Configure artifact retention
     configure_artifact_retention
     
-    log_success "Artifact management configured"
+    log::success "PLUGIN" "Artifact management configured"
 }
 
 setup_artifact_collection() {
-    log_debug "Setting up artifact collection..."
+    log::debug "PLUGIN" "Setting up artifact collection..."
     
     # Create artifact collection functions
     export GITHUB_COLLECT_ARTIFACTS=true
@@ -305,11 +326,11 @@ setup_artifact_collection() {
         ensure_directory "$GITHUB_ARTIFACTS_DIR/$category"
     done
     
-    log_debug "Artifact collection configured"
+    log::debug "PLUGIN" "Artifact collection configured"
 }
 
 configure_artifact_retention() {
-    log_debug "Configuring artifact retention..."
+    log::debug "PLUGIN" "Configuring artifact retention..."
     
     # Set retention based on event type
     local retention_days=7
@@ -336,7 +357,7 @@ configure_artifact_retention() {
     export GITHUB_ARTIFACT_RETENTION_DAYS="$retention_days"
     github_actions_set_output "artifact-retention-days" "$retention_days"
     
-    log_debug "Artifact retention configured: $retention_days days"
+    log::debug "PLUGIN" "Artifact retention configured: $retention_days days"
 }
 
 # GitHub Actions specific functions
@@ -411,7 +432,7 @@ github_actions_add_mask() {
 
 # Build customizations for GitHub Actions
 customize_build_for_github_actions() {
-    log_debug "Customizing build process for GitHub Actions..."
+    log::debug "PLUGIN" "Customizing build process for GitHub Actions..."
     
     # Create GitHub Actions specific xcconfig
     local xcconfig_file="$RUNNER_TEMP/github-actions.xcconfig"
@@ -453,11 +474,11 @@ GCC_WARN_INHIBIT_ALL_WARNINGS = NO
 CLANG_WARN_DOCUMENTATION_COMMENTS = NO
 EOF
     
-    log_debug "Created GitHub Actions Xcode configuration: $xcconfig_file"
+    log::debug "PLUGIN" "Created GitHub Actions Xcode configuration: $xcconfig_file"
 }
 
 setup_build_progress_reporting() {
-    log_debug "Setting up build progress reporting..."
+    log::debug "PLUGIN" "Setting up build progress reporting..."
     
     # Override logging functions to include GitHub Actions annotations
     export BUILD_PROGRESS_REPORTING=true
@@ -467,14 +488,14 @@ setup_build_progress_reporting() {
 }
 
 setup_test_reporting() {
-    log_debug "Setting up test reporting..."
+    log::debug "PLUGIN" "Setting up test reporting..."
     
     # Configure test result collection
     export COLLECT_TEST_RESULTS=true
     export TEST_RESULTS_DIR="$GITHUB_ARTIFACTS_DIR/test-results"
     ensure_directory "$TEST_RESULTS_DIR"
     
-    log_debug "Test reporting configured"
+    log::debug "PLUGIN" "Test reporting configured"
 }
 
 # Progress reporting functions
@@ -489,9 +510,9 @@ report_build_step() {
     local framework="${2:-}"
     
     if [[ -n "$framework" ]]; then
-        log_info "$step ($framework)"
+        log::info "PLUGIN" "$step ($framework)"
     else
-        log_info "$step"
+        log::info "PLUGIN" "$step"
     fi
 }
 
@@ -519,13 +540,13 @@ save_framework_artifact() {
     local framework_name="$2"
     
     if [[ ! -d "$framework_path" ]]; then
-        log_warn "Framework not found for artifact collection: $framework_path"
+        log::warn "PLUGIN" "Framework not found for artifact collection: $framework_path"
         return $EXIT_VALIDATION_ERROR
     fi
     
     local artifact_path="$GITHUB_ARTIFACTS_DIR/frameworks/$framework_name"
     
-    log_step "Saving framework artifact: $framework_name"
+    log::step "PLUGIN" "Saving framework artifact: $framework_name"
     
     # Create compressed archive of the framework
     if tar -czf "$artifact_path.tar.gz" -C "$(dirname "$framework_path")" "$(basename "$framework_path")"; then
@@ -557,17 +578,17 @@ save_log_artifact() {
     if cp "$log_file" "$artifact_path"; then
         local size
         size=$(get_file_size "$artifact_path")
-        log_debug "Log artifact saved: $log_name ($size)"
+        log::debug "PLUGIN" "Log artifact saved: $log_name ($size)"
         return $EXIT_SUCCESS
     else
-        log_warn "Failed to save log artifact: $log_name"
+        log::warn "PLUGIN" "Failed to save log artifact: $log_name"
         return $EXIT_GENERAL_ERROR
     fi
 }
 
 # Performance monitoring
 monitor_github_actions_performance() {
-    log_debug "Starting GitHub Actions performance monitoring..."
+    log::debug "PLUGIN" "Starting GitHub Actions performance monitoring..."
     
     # Start resource monitoring
     start_resource_monitoring
@@ -601,7 +622,7 @@ start_resource_monitoring() {
     
     local monitor_pid=$!
     echo "$monitor_pid" > "$RUNNER_TEMP/resource_monitor.pid"
-    log_debug "Started resource monitoring (PID: $monitor_pid)"
+    log::debug "PLUGIN" "Started resource monitoring (PID: $monitor_pid)"
 }
 
 report_github_actions_completion() {
@@ -649,7 +670,7 @@ plugin_cleanup() {
         return $EXIT_SUCCESS
     fi
     
-    log_debug "Cleaning up GitHub Actions plugin..."
+    log::debug "PLUGIN" "Cleaning up GitHub Actions plugin..."
     
     # Collect all artifacts
     collect_all_artifacts
@@ -667,11 +688,11 @@ plugin_cleanup() {
         fi
     done
     
-    log_debug "GitHub Actions plugin cleanup completed"
+    log::debug "PLUGIN" "GitHub Actions plugin cleanup completed"
 }
 
 collect_all_artifacts() {
-    log_step "Collecting all artifacts..."
+    log::step "PLUGIN" "Collecting all artifacts..."
     
     # Collect framework artifacts
     local frameworks=(
@@ -693,6 +714,7 @@ collect_all_artifacts() {
     )
     
     for log_pattern in "${log_files[@]}"; do
+        # shellcheck disable=SC2086 -- intentional glob expansion: log_pattern is a glob to match log files
         for log_file in $log_pattern; do
             if [[ -f "$log_file" ]]; then
                 save_log_artifact "$log_file"
@@ -703,7 +725,7 @@ collect_all_artifacts() {
     # Set final artifact directory output
     github_actions_set_output "artifacts-dir" "$GITHUB_ARTIFACTS_DIR"
     
-    log_success "Artifact collection completed"
+    log::success "PLUGIN" "Artifact collection completed"
 }
 
 # Plugin command handlers
@@ -734,7 +756,7 @@ handle_plugin_command() {
             github_actions_error "$@"
             ;;
         *)
-            log_warn "Unknown GitHub Actions plugin command: $command"
+            log::warn "PLUGIN" "Unknown GitHub Actions plugin command: $command"
             return $EXIT_GENERAL_ERROR
             ;;
     esac

@@ -1,52 +1,39 @@
 # Codex CLI Directives
 
-> **Version**: 2.0
-> **Last Updated**: 2026-01-20
+> **Version**: 3.0
+> **Last Updated**: 2026-02-22
 > **Applies To**: Codex CLI
 
-## 1. Role Definition
+## Role: Tactical Code Executor
 
-Primary Role: Tactical Code Executor
 Interaction Mode: Single-shot execution
 Best For: Quick fixes, batch operations, test generation
 
-## 2. Core Imports
+## Core Imports
 
 @../constitution.md
-@../AGENTS.md (for shared project context only)
-@../.agents-shared/skills/ (all skills available)
+@../AGENTS.md
 
-## 2.1 Domain-Specific Imports
+## Directory-Triggered Context
 
 When working in Sources/:
-@../Sources/AGENTS-SOURCES.md
+→ load Sources/AGENTS-SOURCES.md (playbook loading guide)
 
 When working in Scripts/:
-@../Scripts/AGENTS-SCRIPTS.md
+→ load Scripts/AGENTS-SCRIPTS.md (playbook loading guide)
 
-## 3. Available Skills
+## On-Demand Context
 
-All skills in .agents-shared/skills/ are available.
-Commonly used:
-- unit-test-generator.skill.md
-- quick-fix.skill.md
-- constitutional-auditor.skill.md
+Use `.context/index.json` to discover playbooks by keyword matching against `tags` and `triggers` fields. Load only what the current task requires.
 
-## 4. Security Policy
+## Skills
+
+All skills in `.agents-shared/skills/` are available.
+
+## Security Policy
 
 See tools.yml for allowed/denied commands.
 
-## 5. Output Format
+## Output Format
 
-### Trivial Tasks
-✓ [one-line summary]
-File: path/to/file.swift:L42
-
-### Standard Tasks
 See .agents-shared/protocols/output-format.protocol.md
-
-## 6. Best Practices
-
-- One-shot execution mindset
-- Clear, specific task descriptions
-- Verify with suggested commands

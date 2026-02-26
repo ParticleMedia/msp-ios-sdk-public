@@ -1,13 +1,23 @@
 ---
 id: ctx-ci-002
-title: GitHub Actions Matrix 构建中 Artifact 名称冲突
-layer: experience
+title: "GitHub Actions Matrix 构建中 Artifact 名称冲突"
 domain: ci
-tags: [github-actions, matrix, artifact, overwrite, v4]
-created: 2026-01-29
-source: manual
+layer: experience
+tags:
+  - github-actions
+  - matrix-build
+  - artifact-conflict
+  - upload-artifact-v4
+triggers:
+  - "matrix build artifact overwrite conflict"
+  - "only last matrix job artifact preserved"
+  - "upload-artifact v4 same name conflict"
+  - "GitHub Actions matrix artifact naming"
+summary: "GitHub Actions v4 matrix builds overwrite same-name artifacts; use unique names with matrix variable"
+version: "1.0"
 status: active
-confidence: high
+created: "2026-01-29"
+updated: "2026-02-22"
 ---
 
 # GitHub Actions Matrix 构建中 Artifact 名称冲突
@@ -110,3 +120,10 @@ strategy:
 - 相关 commit: 9c0a7dbf (fix(ci): use unique artifact names for matrix builds)
 - 相关文件: `.github/workflows/ci-pull-request.yml`
 - GitHub Actions 文档: https://github.com/actions/upload-artifact#breaking-changes
+
+## 关联 Playbooks
+
+| Playbook | 关系 |
+|----------|------|
+| [ctx-ci-001](./ctx-ci-001-artifact-structure-loss.md) | 互补 — Artifact 目录结构保持策略 |
+| [ctx-sources-004](../../sources/tech/ctx-sources-004-script-best-practices.md) | 上游 — config-driven 和 POSIX 脚本规则 |

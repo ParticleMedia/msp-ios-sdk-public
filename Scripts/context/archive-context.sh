@@ -5,15 +5,13 @@ set -euo pipefail
 # Purpose: Archive (soft-delete) a context entry by changing its status
 # Usage: ./Scripts/context/archive-context.sh <context-id>
 
-# Get script directory and load common functions
-# shellcheck disable=SC2155
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 # shellcheck source=./common.sh
 source "$SCRIPT_DIR/common.sh"
 
-# Configuration
-# shellcheck disable=SC2155
-readonly REPO_ROOT=$(get_repo_root)
+REPO_ROOT=$(get_repo_root)
+readonly REPO_ROOT
 readonly CONTEXT_DIR="$REPO_ROOT/.context"
 
 # Usage information
@@ -72,7 +70,6 @@ parse_args() {
     fi
 }
 
-# Find context file by ID
 find_context_file() {
     local context_id="$1"
     local domain
@@ -88,12 +85,10 @@ find_context_file() {
     echo "$context_file"
 }
 
-# Archive context by changing status field
 archive_context() {
     local context_file="$1"
     local context_id="$2"
 
-    # Check current status
     local current_status
     current_status=$(grep "^status:" "$context_file" | sed 's/status: *//')
 
@@ -102,7 +97,6 @@ archive_context() {
         return 0
     fi
 
-    # Show context info before archiving
     local title
     title=$(grep "^title:" "$context_file" | sed 's/title: *//')
 
@@ -120,12 +114,11 @@ archive_context() {
         return 1
     fi
 
-    # Create backup
     cp "$context_file" "${context_file}.backup"
 
     # Change status to archived
-    if sed -i.tmp 's/^status: *active/status: archived/' "$context_file"; then
-        rm "${context_file}.tmp" 2>/dev/null || true
+    # Portable sed in-place: temp file + mv avoids BSD/GNU -i incompatibility
+    if sed 's/^status: *active/status: archived/' "$context_file" > "${context_file}.tmp" && mv "${context_file}.tmp" "$context_file"; then
         echo "✅ Context archived successfully"
         echo "   File: $context_file"
         echo "   Backup: ${context_file}.backup"
@@ -140,7 +133,6 @@ archive_context() {
     fi
 }
 
-# Main entry point
 main() {
     parse_args "$@"
 

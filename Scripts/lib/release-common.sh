@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -18,70 +18,31 @@ fi
 # This file now sources utility modules and provides backward compatibility wrappers
 
 # ============================================================================
-# ROOT_DIR Calculation
+# ROOT_DIR Calculation (using path-helpers.sh)
 # ============================================================================
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
-
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
+# Note: SCRIPT_DIR is NOT set here - this is a library, not an entry script.
+# Entry scripts should set their own SCRIPT_DIR after sourcing this file.
 
 # ============================================================================
 # UI System Loading (UI-First Rule)
 # ============================================================================
-# Load UI system in order: colors.sh → ui.sh → logging.sh
-# This ensures all logging functions are available before utils modules are loaded
-
-# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+# Handle NO_ANSI flag by setting NO_COLOR (logging respects NO_COLOR)
 if [[ "${NO_ANSI:-false}" == "true" ]]; then
     export NO_COLOR=1
 fi
 
-# Source colors.sh
-if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
-    # shellcheck source=Scripts/lib/colors.sh
-    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-fi
-
-# Source ui.sh (depends on colors.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
-    # shellcheck source=Scripts/lib/ui.sh
-    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
-fi
-
-# Source logging.sh (depends on colors.sh and ui.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
-    # shellcheck source=Scripts/lib/logging.sh
-    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 fi
 
 # ============================================================================
-# Fallback Logging Functions (if UI system not available)
+# Fallback Logging Functions (if unified logging system not available)
 # ============================================================================
-# Only define fallbacks if logging functions are not available
-if ! command -v log_info &>/dev/null; then
+# Only define fallbacks if new logging API is not available
+if ! command -v log::info &>/dev/null; then
     # Fallback color definitions
     : "${RED:=\033[0;31m}"
     : "${GREEN:=\033[0;32m}"
@@ -90,7 +51,6 @@ if ! command -v log_info &>/dev/null; then
     : "${PURPLE:=\033[0;35m}"
     : "${NC:=\033[0m}"
     
-    # Fallback logging functions
 log_info() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[INFO] $1"
@@ -149,33 +109,39 @@ log_debug() {
     fi
 }
 
-print_section() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo ""
-            echo "=== $1 ==="
-            echo ""
-        else
-    echo ""
-    echo "═══════════════════════════════════════════════════════════════════"
-    echo "$1"
-    echo "═══════════════════════════════════════════════════════════════════"
-    echo ""
-        fi
-}
-
-print_subsection() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo "--- $1 ---"
-        else
-    echo -e "${BLUE}--- $1 ---${NC}"
-        fi
-    }
-    
     # Alias log_warn to log_warning for compatibility
     log_warn() {
         log_warning "$@"
     }
 fi
+
+# ============================================================================
+# UI Helper Functions (always available, not part of fallback)
+# ============================================================================
+# These functions are used for visual formatting and should always be available
+# regardless of whether the unified logging system is loaded
+
+print_section() {
+    if [[ "${NO_ANSI:-false}" == "true" ]]; then
+        echo ""
+        echo "=== $1 ==="
+        echo ""
+    else
+        echo ""
+        echo "═══════════════════════════════════════════════════════════════════"
+        echo "$1"
+        echo "═══════════════════════════════════════════════════════════════════"
+        echo ""
+    fi
+}
+
+print_subsection() {
+    if [[ "${NO_ANSI:-false}" == "true" ]]; then
+        echo "--- $1 ---"
+    else
+        echo -e "${BLUE:-\033[0;34m}--- $1 ---${NC:-\033[0m}"
+    fi
+}
 
 # ============================================================================
 # Source Utility Modules
@@ -188,37 +154,26 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/git.sh" ]]; then
     # shellcheck source=Scripts/release/utils/git.sh
     source "$ROOT_DIR/Scripts/release/utils/git.sh" 2>/dev/null || true
 fi
-
-# Source version utilities
 if [[ -f "$ROOT_DIR/Scripts/release/utils/version.sh" ]]; then
     # shellcheck source=Scripts/release/utils/version.sh
     source "$ROOT_DIR/Scripts/release/utils/version.sh" 2>/dev/null || true
 fi
-
-# Source retry utilities
 if [[ -f "$ROOT_DIR/Scripts/release/utils/retry.sh" ]]; then
     # shellcheck source=Scripts/release/utils/retry.sh
     source "$ROOT_DIR/Scripts/release/utils/retry.sh" 2>/dev/null || true
 fi
-
-# Source state utilities
 if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
     # shellcheck source=Scripts/release/utils/state.sh
     source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
 fi
-
-# Source podspec utilities
 if [[ -f "$ROOT_DIR/Scripts/release/utils/podspec.sh" ]]; then
     # shellcheck source=Scripts/release/utils/podspec.sh
     source "$ROOT_DIR/Scripts/release/utils/podspec.sh" 2>/dev/null || true
 fi
-
-# Source GitHub utilities
 if [[ -f "$ROOT_DIR/Scripts/release/utils/github.sh" ]]; then
     # shellcheck source=Scripts/release/utils/github.sh
     source "$ROOT_DIR/Scripts/release/utils/github.sh" 2>/dev/null || true
 fi
-
 # ============================================================================
 # Release Mode Helpers (Phase B)
 # ============================================================================
@@ -242,8 +197,8 @@ is_production_mode() {
         if command -v should_real_publish &>/dev/null; then
             if ! should_real_publish; then
                 local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-                log_error "[BLOCKED] Real publish not allowed on branch: $branch"
-                log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+                log::error "RELEASE" "[BLOCKED] Real publish not allowed on branch: $branch"
+                log::error "RELEASE" "[BLOCKED] Check Scripts/config/release.yaml for branch policy"
                 return 1
             fi
         fi
@@ -291,7 +246,6 @@ POD_RELEASE_ORDER=(
     "MSPiOSCore"            # No dependencies
 )
 
-# All pods to be released
 ALL_PODS=("MSPSharedLibraries" "PrebidAdapter" "NovaAdapter" "MSPFacebookAdapter" "MSPGoogleAdapter" "AmazonAdapter" "MSPCore")
 
 # Dependency mapping (using functions instead of associative arrays for bash 3.x compatibility)
@@ -310,13 +264,11 @@ get_pod_dependencies_internal() {
     esac
 }
 
-# Function to get pod dependencies
 get_pod_dependencies() {
     local pod="$1"
     get_pod_dependencies_internal "$pod"
 }
 
-# Function to check if pod is valid
 is_valid_pod() {
     local pod="$1"
     for allowed_pod in "${ALLOWED_PODS[@]}"; do
@@ -327,28 +279,25 @@ is_valid_pod() {
     return 1
 }
 
-# Function to get release order for a specific pod
 get_release_order_for_pod() {
     local target_pod="$1"
     local order=()
-    
-    # Add dependencies first
+
     local deps=$(get_pod_dependencies "$target_pod")
     if [[ -n "$deps" ]]; then
+        # shellcheck disable=SC2086 -- intentional word-splitting: deps is a space-delimited name list
         for dep in $deps; do
             if [[ " ${POD_RELEASE_ORDER[@]} " =~ " $dep " ]]; then
                 order+=("$dep")
             fi
         done
     fi
-    
-    # Add the target pod
+
     order+=("$target_pod")
     
     echo "${order[@]}"
 }
 
-# Function to validate release order
 validate_release_order() {
     local pods=("$@")
     local errors=()
@@ -356,8 +305,8 @@ validate_release_order() {
     for pod in "${pods[@]}"; do
         local deps=$(get_pod_dependencies "$pod")
         if [[ -n "$deps" ]]; then
-            for dep in $deps; do
-                # Check if dependency comes before the pod in the release order
+            # shellcheck disable=SC2086 -- intentional word-splitting: deps is a space-delimited name list
+        for dep in $deps; do
                 local pod_index=-1
                 local dep_index=-1
                 
@@ -378,9 +327,9 @@ validate_release_order() {
     done
     
     if [[ ${#errors[@]} -gt 0 ]]; then
-        log_error "Release order validation failed:"
+        log::error "RELEASE" "Release order validation failed:"
         for error in "${errors[@]}"; do
-            log_error "  - $error"
+            log::error "RELEASE" "  - $error"
         done
         return 1
     fi
@@ -391,14 +340,14 @@ validate_release_order() {
 # ============================================================================
 # Project Utilities
 # ============================================================================
-# Function to get project root
+# Note: This file lives at Scripts/lib/release-common.sh, so /../.. goes to project root
 get_project_root() {
-    cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd
+    cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd
 }
 
-# Function to ensure project root
+# Prefers ROOT_DIR (set by path-helpers.sh) for reliability
 ensure_project_root() {
-    local project_root=$(get_project_root)
+    local project_root="${ROOT_DIR:-$(get_project_root)}"
     if [[ "$(pwd)" != "$project_root" ]]; then
         cd "$project_root"
     fi
@@ -407,20 +356,17 @@ ensure_project_root() {
 # ============================================================================
 # Release Notes Generation Functions
 # ============================================================================
-# Generate release notes from git commits
 generate_release_notes_from_git() {
     local version="$1"
     local previous_version="${2:-}"
     local release_type="${3:-Release}"
-    
-    log_step "Generating release notes from git commits"
-    
-    # Get the previous tag if not provided
+
+    log::step "RELEASE" "Generating release notes from git commits"
+
     if [[ -z "$previous_version" ]]; then
         previous_version=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
     fi
-    
-    # Generate release notes
+
     local release_notes=""
     
     if [[ -n "$previous_version" ]]; then
@@ -444,13 +390,12 @@ generate_release_notes_from_git() {
     echo "$release_notes"
 }
 
-# Generate release notes from template
 generate_release_notes_from_template() {
     local version="$1"
     local release_type="${2:-Release}"
     local template_file="${3:-}"
-    
-    log_step "Generating release notes from template"
+
+    log::step "RELEASE" "Generating release notes from template"
     
     if [[ -n "$template_file" && -f "$template_file" ]]; then
         # Use custom template
@@ -475,21 +420,18 @@ generate_release_notes_from_template() {
     fi
 }
 
-# Generate simple release notes from bullet points
 generate_simple_release_notes() {
     local version="$1"
     local release_type="${2:-Release}"
     local bullet_points="$3"
-    
-    log_step "Generating simple release notes"
+
+    log::step "RELEASE" "Generating simple release notes"
     
     local release_notes="## Release ${version}\n\n"
     release_notes+="### What's New\n"
     
-    # Process bullet points - each line becomes a bullet point
     while IFS= read -r line; do
         if [[ -n "$line" ]]; then
-            # Remove leading dashes or bullets if present
             line=$(echo "$line" | sed 's/^[-•]\s*//')
             release_notes+="- ${line}\n"
         fi
@@ -503,12 +445,11 @@ generate_simple_release_notes() {
     echo "$release_notes"
 }
 
-# Prompt user for release notes
 prompt_for_release_notes() {
     local version="$1"
     local release_type="${2:-Release}"
-    
-    log_step "Prompting for release notes"
+
+    log::step "RELEASE" "Prompting for release notes"
     
     echo ""
     echo "═══════════════════════════════════════════════════════════════════"
@@ -549,7 +490,6 @@ prompt_for_release_notes() {
     echo "$release_notes"
 }
 
-# Get release notes from various sources
 get_release_notes() {
     local version="$1"
     local release_type="${2:-Release}"
@@ -568,17 +508,15 @@ get_release_notes() {
             prompt_for_release_notes "$version" "$release_type"
             ;;
         "simple")
-            # Use custom release notes as bullet points
             local custom_notes="${6:-}"
             if [[ -n "$custom_notes" ]]; then
                 generate_simple_release_notes "$version" "$release_type" "$custom_notes"
             else
-                log_warning "No custom notes provided for simple source"
+                log::warn "RELEASE" "No custom notes provided for simple source"
                 generate_release_notes_from_template "$version" "$release_type" "$template_file"
             fi
             ;;
         "auto")
-            # Try git first, then fall back to template
             local git_notes=$(generate_release_notes_from_git "$version" "$previous_version" "$release_type")
             if [[ -n "$git_notes" && "$git_notes" != *"No changes detected"* ]]; then
                 echo "$git_notes"
@@ -587,7 +525,7 @@ get_release_notes() {
             fi
             ;;
         *)
-            log_warning "Unknown release notes source: $source"
+            log::warn "RELEASE" "Unknown release notes source: $source"
             generate_release_notes_from_template "$version" "$release_type" "$template_file"
             ;;
     esac
@@ -600,14 +538,13 @@ get_release_notes() {
 # This source statement provides backward compatibility.
 # See: Scripts/notify/slack.sh for the implementation.
 
-# Source the Slack notification module
 if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
     # shellcheck source=Scripts/notify/slack.sh
     source "$ROOT_DIR/Scripts/notify/slack.sh"
 else
     # Fallback: Define stub functions if module not found
-    log_warning "notify/slack.sh not found - Slack notifications will be disabled"
-    send_slack_notification() { log_warning "Slack notifications disabled (module not found)"; }
+    log::warn "RELEASE" "notify/slack.sh not found - Slack notifications will be disabled"
+    send_slack_notification() { log::warn "RELEASE" "Slack notifications disabled (module not found)"; }
     notify_release_success() { :; }
     notify_release_failure() { :; }
     notify_release_warning() { :; }
@@ -615,7 +552,7 @@ else
     notify_pod_release() { :; }
     notify_release_summary() { :; }
     notify_release_success_with_summary() { :; }
-    test_slack_notification() { log_error "Slack notifications disabled (module not found)"; return 1; }
+    test_slack_notification() { log::error "RELEASE" "Slack notifications disabled (module not found)"; return 1; }
 fi
 
 # Backward compatibility: Re-export environment functions
@@ -645,22 +582,11 @@ update_podspec_to_zip_format() {
 # ============================================================================
 # Export Functions
 # ============================================================================
-# Export logging functions
 export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection log_warn 2>/dev/null || true
-
-# Export pod configuration functions
 export -f get_pod_dependencies is_valid_pod get_release_order_for_pod validate_release_order
-
-# Export project utilities
 export -f get_project_root ensure_project_root
-
-# Export release notes functions
 export -f generate_release_notes_from_git generate_release_notes_from_template generate_simple_release_notes prompt_for_release_notes get_release_notes
-
-# Export environment functions (backward compatibility wrappers)
 export -f get_environment get_environment_info
-
-# Export legacy podspec functions (backward compatibility)
 export -f update_podspec_dependency_version update_podspec_to_zip_format
 export -f is_preflight_tier is_release_tier 2>/dev/null || true
 

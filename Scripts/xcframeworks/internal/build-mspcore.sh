@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -11,11 +11,9 @@ msp_enforce_main_repo_or_exit
 # This script is optimized for CI/CD environments and integrates with the
 # existing modular script system.
 
-# Source library modules (with error handling)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Source essential library functions
 if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/colors.sh"
 fi
@@ -23,22 +21,23 @@ if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/ui.sh"
 fi
 
-# Script metadata
+# R012e: Source time_utils.sh for unified duration formatting
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/time_utils.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/time_utils.sh
+    source "$ROOT_DIR/Scripts/lib/shared/time_utils.sh" 2>/dev/null || true
+fi
+
 readonly SCRIPT_VERSION="2.0.0"
 readonly SCRIPT_NAME="MSPCore Build Script"
 
-# Exit codes
 readonly EXIT_SUCCESS=0
 readonly EXIT_GENERAL_ERROR=1
 readonly EXIT_VALIDATION_ERROR=3
 readonly EXIT_BUILD_ERROR=4
 
-# Enhanced logging functions (use UI system if available, fallback to simple)
 if command -v log_info &>/dev/null; then
-    # UI system available, use it
     :
 else
-    # Fallback logging functions
     log_info() {
         if [[ -n "${BLUE:-}" ]]; then
             echo -e "${BLUE}ℹ️  $1${NC}"
@@ -94,7 +93,6 @@ print_section() {
     echo ""
 }
 
-# Utility functions
 get_project_root() {
     cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd
 }
@@ -106,7 +104,6 @@ ensure_project_root() {
     fi
 }
 
-# Timing functions
 start_timer() {
     TIMER_START=$(date +%s)
 }
@@ -115,23 +112,26 @@ end_timer() {
     if [[ -n "${TIMER_START}" ]]; then
         local end_time=$(date +%s)
         local duration=$((end_time - TIMER_START))
-        echo $duration
+        echo "$duration"
     else
         echo 0
     fi
 }
 
-format_duration() {
-    local duration=$1
-    local minutes=$((duration / 60))
-    local seconds=$((duration % 60))
-    
-    if [[ $minutes -gt 0 ]]; then
-        echo "${minutes}m ${seconds}s"
-    else
-        echo "${seconds}s"
-    fi
-}
+# R012e: Use time_utils.sh format_duration if available, fallback to inline
+if ! command -v time_format_duration &>/dev/null; then
+    format_duration() {
+        local duration=$1
+        local minutes=$((duration / 60))
+        local seconds=$((duration % 60))
+
+        if [[ $minutes -gt 0 ]]; then
+            echo "${minutes}m ${seconds}s"
+        else
+            echo "${seconds}s"
+        fi
+    }
+fi
 
 print_build_summary() {
     local status="$1"
@@ -142,18 +142,18 @@ print_build_summary() {
     
     case "$status" in
         "success")
-            log_success "Build completed successfully!"
+            log::success "XCFW" "Build completed successfully!"
             ;;
         "failed")
-            log_error "Build failed!"
+            log::error "XCFW" "Build failed!"
             ;;
         *)
-            log_info "Build status: $status"
+            log::info "XCFW" "Build status: $status"
             ;;
     esac
     
     if [[ -n "$duration" ]]; then
-        log_info "⏱️ Build duration: $(format_duration "$duration")"
+        log::info "XCFW" "⏱️ Build duration: $(format_duration "$duration")"
     fi
     
     if [[ -n "$details" ]]; then
@@ -161,52 +161,46 @@ print_build_summary() {
     fi
 }
 
-# MSPCore specific configuration
 MSPCORE_NAME="MSPCore"
 MSPCORE_PODSPEC="MSPCore.podspec"
 MSPCORE_SCHEME="MSPCore"
 MSPCORE_SOURCE_DIR="MSPCore/MSPCore"
 MSPCORE_DEPENDENCIES=("MSPSharedLibraries" "PrebidAdapter" "SwiftProtobuf" "MSPSnapKit")
 
-# Validation functions
 validate_environment() {
-    log_step "Validating build environment..."
+    log::step "XCFW" "Validating build environment..."
     
-    # Check if we're in the project root
     if [[ ! -f "$MSPCORE_PODSPEC" ]]; then
-        log_error "MSPCore.podspec not found. Please run from project root."
+        log::error "XCFW" "MSPCore.podspec not found. Please run from project root."
         return $EXIT_VALIDATION_ERROR
     fi
     
-    # Check if workspace exists
     if [[ ! -d "msp-ios-sdk.xcworkspace" ]]; then
-        log_error "iOS workspace not found. Please run from project root."
+        log::error "XCFW" "iOS workspace not found. Please run from project root."
         return $EXIT_VALIDATION_ERROR
     fi
     
-    # Check MSPCore source directory
     if [[ ! -d "$MSPCORE_SOURCE_DIR" ]]; then
-        log_error "MSPCore source directory not found: $MSPCORE_SOURCE_DIR"
+        log::error "XCFW" "MSPCore source directory not found: $MSPCORE_SOURCE_DIR"
         return $EXIT_VALIDATION_ERROR
     fi
     
-    # Check required tools
     if ! command -v xcodebuild >/dev/null 2>&1; then
-        log_error "Xcode command line tools not found"
+        log::error "XCFW" "Xcode command line tools not found"
         return $EXIT_VALIDATION_ERROR
     fi
     
     if ! command -v pod >/dev/null 2>&1; then
-        log_error "CocoaPods not found"
+        log::error "XCFW" "CocoaPods not found"
         return $EXIT_VALIDATION_ERROR
     fi
     
-    log_success "Environment validation passed"
+    log::success "XCFW" "Environment validation passed"
     return $EXIT_SUCCESS
 }
 
 validate_dependencies() {
-    log_step "Validating MSPCore dependencies..."
+    log::step "XCFW" "Validating MSPCore dependencies..."
     
     local missing_deps=()
     
@@ -217,126 +211,118 @@ validate_dependencies() {
     done
     
     if [[ ${#missing_deps[@]} -gt 0 ]]; then
-        log_error "Missing dependencies: ${missing_deps[*]}"
-        log_info "Please ensure all dependencies are available before building MSPCore"
+        log::error "XCFW" "Missing dependencies: ${missing_deps[*]}"
+        log::info "XCFW" "Please ensure all dependencies are available before building MSPCore"
         return $EXIT_VALIDATION_ERROR
     fi
     
-    log_success "All dependencies validated"
+    log::success "XCFW" "All dependencies validated"
     return $EXIT_SUCCESS
 }
 
-# Build functions
 build_dependencies() {
-    log_step "Building MSPCore dependencies..."
+    log::step "XCFW" "Building MSPCore dependencies..."
     
-    # Build MSPiOSCore if needed
     if [[ ! -d "MSPSharedLibraries/MSPiOSCore.xcframework" ]]; then
-        log_info "Building MSPiOSCore dependency..."
+        log::info "XCFW" "Building MSPiOSCore dependency..."
         if [[ -f "Scripts/buildiOSCoreXCFramework.sh" ]]; then
             if ! SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" ./Scripts/buildiOSCoreXCFramework.sh; then
-                log_error "Failed to build MSPiOSCore"
+                log::error "XCFW" "Failed to build MSPiOSCore"
                 return $EXIT_BUILD_ERROR
             fi
         else
-            log_warn "MSPiOSCore build script not found, using unified build script"
+            log::warn "XCFW" "MSPiOSCore build script not found, using unified build script"
             if ! SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" ./Scripts/build.sh --framework MSPiOSCore; then
-                log_error "Failed to build MSPiOSCore"
+                log::error "XCFW" "Failed to build MSPiOSCore"
                 return $EXIT_BUILD_ERROR
             fi
         fi
     else
-        log_info "MSPiOSCore already built"
+        log::info "XCFW" "MSPiOSCore already built"
     fi
     
-    # Build NovaCore if needed
     if [[ ! -d "NovaAdapter/NovaCore.xcframework" ]]; then
-        log_info "Building NovaCore dependency..."
+        log::info "XCFW" "Building NovaCore dependency..."
         if [[ -f "Scripts/buildNovaXCFramework.sh" ]]; then
             if ! SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" ./Scripts/buildNovaXCFramework.sh; then
-                log_error "Failed to build NovaCore"
+                log::error "XCFW" "Failed to build NovaCore"
                 return $EXIT_BUILD_ERROR
             fi
         else
-            log_warn "NovaCore build script not found, using unified build script"
+            log::warn "XCFW" "NovaCore build script not found, using unified build script"
             if ! SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" ./Scripts/build.sh --framework NovaCore; then
-                log_error "Failed to build NovaCore"
+                log::error "XCFW" "Failed to build NovaCore"
                 return $EXIT_BUILD_ERROR
             fi
         fi
     else
-        log_info "NovaCore already built"
+        log::info "XCFW" "NovaCore already built"
     fi
     
-    log_success "Dependencies built successfully"
+    log::success "XCFW" "Dependencies built successfully"
     return $EXIT_SUCCESS
 }
 
 validate_podspec() {
-    log_step "Validating MSPCore podspec..."
+    log::step "XCFW" "Validating MSPCore podspec..."
     
     if [[ ! -f "$MSPCORE_PODSPEC" ]]; then
-        log_error "MSPCore.podspec not found"
+        log::error "XCFW" "MSPCore.podspec not found"
         return $EXIT_VALIDATION_ERROR
     fi
     
-    # Validate podspec
     if bundle exec pod spec lint "$MSPCORE_PODSPEC" --allow-warnings; then
-        log_success "MSPCore podspec validation passed"
+        log::success "XCFW" "MSPCore podspec validation passed"
         return $EXIT_SUCCESS
     else
-        log_error "MSPCore podspec validation failed"
+        log::error "XCFW" "MSPCore podspec validation failed"
         return $EXIT_VALIDATION_ERROR
     fi
 }
 
 build_mspcore() {
-    log_step "Building MSPCore framework..."
+    log::step "XCFW" "Building MSPCore framework..."
     
     # MSPCore is a source-only framework, so we mainly validate the build
     # by ensuring the project compiles correctly
     
-    # Clean build if requested
     if [[ "${CLEAN_BUILD:-false}" == "true" ]]; then
-        log_info "Cleaning build artifacts..."
+        log::info "XCFW" "Cleaning build artifacts..."
         if ! xcodebuild clean -workspace msp-ios-sdk.xcworkspace -scheme "$MSPCORE_SCHEME" -quiet; then
-            log_error "Failed to clean MSPCore"
+            log::error "XCFW" "Failed to clean MSPCore"
             return $EXIT_BUILD_ERROR
         fi
     fi
     
-    # Build the framework
-    log_info "Building MSPCore scheme..."
+    log::info "XCFW" "Building MSPCore scheme..."
     if ! xcodebuild build -workspace msp-ios-sdk.xcworkspace -scheme "$MSPCORE_SCHEME" -configuration Release -derivedDataPath DerivedData -quiet; then
-        log_error "Failed to build MSPCore"
+        log::error "XCFW" "Failed to build MSPCore"
         return $EXIT_BUILD_ERROR
     fi
     
-    log_success "MSPCore build completed"
+    log::success "XCFW" "MSPCore build completed"
     return $EXIT_SUCCESS
 }
 
 test_mspcore() {
-    log_step "Testing MSPCore..."
+    log::step "XCFW" "Testing MSPCore..."
     
-    # Run tests if test scheme exists
     if xcodebuild -list -workspace msp-ios-sdk.xcworkspace | grep -q "MSPCoreTests"; then
-        log_info "Running MSPCore tests..."
+        log::info "XCFW" "Running MSPCore tests..."
         if ! xcodebuild test -workspace msp-ios-sdk.xcworkspace -scheme "$MSPCORE_SCHEME" -destination 'platform=iOS Simulator,name=iPhone 15 Pro' -derivedDataPath DerivedData -quiet; then
-            log_error "MSPCore tests failed"
+            log::error "XCFW" "MSPCore tests failed"
             return $EXIT_BUILD_ERROR
         fi
-        log_success "MSPCore tests passed"
+        log::success "XCFW" "MSPCore tests passed"
     else
-        log_info "No test scheme found for MSPCore, skipping tests"
+        log::info "XCFW" "No test scheme found for MSPCore, skipping tests"
     fi
     
     return $EXIT_SUCCESS
 }
 
-# Cleanup functions
 clean_build_artifacts() {
-    log_step "Cleaning build artifacts..."
+    log::step "XCFW" "Cleaning build artifacts..."
     
     local artifacts=(
         "DerivedData"
@@ -347,15 +333,14 @@ clean_build_artifacts() {
     for artifact in "${artifacts[@]}"; do
         if [[ -e "$artifact" ]]; then
             rm -rf "$artifact"
-            log_info "Removed: $artifact"
+            log::info "XCFW" "Removed: $artifact"
         fi
     done
     
-    log_success "Build artifacts cleaned"
+    log::success "XCFW" "Build artifacts cleaned"
     return $EXIT_SUCCESS
 }
 
-# Show help
 show_help() {
     cat << EOF
 $SCRIPT_NAME v$SCRIPT_VERSION
@@ -405,9 +390,7 @@ MSPCore Build System:
 EOF
 }
 
-# Main execution
 main() {
-    # Parse arguments
     local clean_mode=false
     local skip_deps=false
     local skip_validation=false
@@ -450,12 +433,12 @@ main() {
                 shift
                 ;;
             -*)
-                log_error "Unknown option: $1"
+                log::error "XCFW" "Unknown option: $1"
                 show_help
                 exit $EXIT_GENERAL_ERROR
                 ;;
             *)
-                log_error "Unexpected argument: $1"
+                log::error "XCFW" "Unexpected argument: $1"
                 show_help
                 exit $EXIT_GENERAL_ERROR
                 ;;
@@ -463,71 +446,60 @@ main() {
     done
     
     print_section "MSPCore Build System"
-    log_info "Version: $SCRIPT_VERSION"
-    log_info "Framework: $MSPCORE_NAME"
-    log_info "Podspec: $MSPCORE_PODSPEC"
+    log::info "XCFW" "Version: $SCRIPT_VERSION"
+    log::info "XCFW" "Framework: $MSPCORE_NAME"
+    log::info "XCFW" "Podspec: $MSPCORE_PODSPEC"
     
-    # Start timing
     start_timer
-    
-    # Validate environment
+
     if ! validate_environment; then
         exit $EXIT_VALIDATION_ERROR
     fi
     
-    # Clean if requested
     if [[ "$clean_mode" == "true" ]]; then
         clean_build_artifacts
     fi
     
-    # Validate dependencies if not skipped
     if [[ "$skip_deps" != "true" ]]; then
         if ! validate_dependencies; then
             exit $EXIT_VALIDATION_ERROR
         fi
     fi
     
-    # Build dependencies if not skipped
     if [[ "$skip_deps" != "true" ]]; then
         if ! build_dependencies; then
-            log_error "Failed to build dependencies"
+            log::error "XCFW" "Failed to build dependencies"
             exit $EXIT_BUILD_ERROR
         fi
     fi
     
-    # Validate podspec if not skipped
     if [[ "$skip_validation" != "true" ]]; then
         if ! validate_podspec; then
-            log_error "Podspec validation failed"
+            log::error "XCFW" "Podspec validation failed"
             exit $EXIT_VALIDATION_ERROR
         fi
     fi
     
-    # Build MSPCore
     if ! build_mspcore; then
-        log_error "Failed to build MSPCore"
+        log::error "XCFW" "Failed to build MSPCore"
         exit $EXIT_BUILD_ERROR
     fi
     
-    # Run tests if not skipped
     if [[ "$skip_tests" != "true" ]]; then
         if ! test_mspcore; then
-            log_error "Tests failed"
+            log::error "XCFW" "Tests failed"
             exit $EXIT_BUILD_ERROR
         fi
     fi
     
-    # Calculate build duration
     local duration=$(end_timer)
-    
-    # Report success
+
     print_build_summary "success" "$duration" "MSPCore build completed successfully!"
-    log_info "Framework: $MSPCORE_NAME"
-    log_info "Podspec: $MSPCORE_PODSPEC"
-    log_info "Source Directory: $MSPCORE_SOURCE_DIR"
+    log::info "XCFW" "Framework: $MSPCORE_NAME"
+    log::info "XCFW" "Podspec: $MSPCORE_PODSPEC"
+    log::info "XCFW" "Source Directory: $MSPCORE_SOURCE_DIR"
     
     exit $EXIT_SUCCESS
 }
 
-# Execute main function
 main "$@"

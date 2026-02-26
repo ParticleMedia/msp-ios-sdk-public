@@ -4,7 +4,11 @@ title: {问题简短标题}
 layer: {business|experience|tech}
 domain: {release|ci|integration|compatibility|sources|architecture|testing}
 tags: [{tag1}, {tag2}, ...]
+triggers: [{trigger1}, {trigger2}, ...]
+summary: "{120字以内的一行描述}"
+version: "1.0"
 created: {YYYY-MM-DD}
+updated: {YYYY-MM-DD}
 source: {commit:{hash}|manual|conversation:{id}}
 status: active
 confidence: {high|medium|low}

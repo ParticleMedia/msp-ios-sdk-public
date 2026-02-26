@@ -54,10 +54,15 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 ## How to Use a Skill
 
 ### Claude Code
-```markdown
-# Reference in CLAUDE.md or other skills
-@../.agents-shared/skills/unit-test-generator.skill.md
+Claude Code uses native progressive loading from `.claude/skills/`. Skills are automatically discovered — only metadata (name, description) is loaded at startup; full content loads on demand.
+
 ```
+# Skills auto-discovered from .claude/skills/
+# No manual @import needed
+```
+
+> **Note**: `.agents-shared/skills/` remains the shared source for Codex and Cursor.
+> Claude Code's `.claude/skills/` is a copy with identical content.
 
 ### Codex
 Codex auto-loads condensed skill references from `.codex/instructions.md` on startup. For detailed procedures, read the full skill file:

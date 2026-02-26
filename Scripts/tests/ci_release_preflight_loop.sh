@@ -140,7 +140,7 @@ run_ci_pipeline() {
     
     # 1) Check state JSON
     if [[ ! -f "$SANDBOX_DIR/.msp-release-state.json" ]]; then
-        log_error "[VALIDATE] State JSON not generated"
+        log::error "TEST" "[VALIDATE] State JSON not generated"
         validate_exit=100
     else
         log_loop "[VALIDATE] ✓ State JSON exists"
@@ -149,7 +149,7 @@ run_ci_pipeline() {
     # 2) Check release.md
     RELEASE_MD_PATH="$SANDBOX_DIR/Releases/release-$TEST_VERSION.md"
     if [[ ! -f "$RELEASE_MD_PATH" ]]; then
-        log_error "[VALIDATE] Release.md not generated (expected: $RELEASE_MD_PATH)"
+        log::error "TEST" "[VALIDATE] Release.md not generated (expected: $RELEASE_MD_PATH)"
         validate_exit=100
     else
         log_loop "[VALIDATE] ✓ Release.md exists: $RELEASE_MD_PATH"
@@ -166,7 +166,7 @@ run_ci_pipeline() {
         if git ls-remote --heads origin "$RELEASE_BRANCH" >/dev/null 2>&1; then
             log_loop "[VALIDATE] ✓ Release branch pushed: $RELEASE_BRANCH"
         else
-            log_error "[VALIDATE] Release branch not pushed: $RELEASE_BRANCH"
+            log::error "TEST" "[VALIDATE] Release branch not pushed: $RELEASE_BRANCH"
             validate_exit=100
         fi
     else
@@ -180,7 +180,7 @@ run_ci_pipeline() {
         if [[ -n "$PUSHED_TAGS" ]]; then
             log_loop "[VALIDATE] ✓ Tag pushed: $TEST_VERSION"
         else
-            log_error "[VALIDATE] Tag not pushed: $TEST_VERSION"
+            log::error "TEST" "[VALIDATE] Tag not pushed: $TEST_VERSION"
             validate_exit=100
         fi
     else
@@ -244,7 +244,7 @@ while true; do
     # Clone repository
     log_loop "Cloning repository..."
     if ! git clone "$GIT_REMOTE_URL" . --quiet 2>>"$ERROR_LOG"; then
-        log_error "Failed to clone repository for version $TEST_VERSION"
+        log::error "TEST" "Failed to clone repository for version $TEST_VERSION"
         continue
     fi
     
@@ -285,16 +285,16 @@ while true; do
     CI_ENTRYPOINT="$SANDBOX_DIR/Scripts/release/msp-release-ci.sh"
     
     if [[ ! -f "$CI_ENTRYPOINT" ]]; then
-        log_error "CI entrypoint not found for version $TEST_VERSION"
+        log::error "TEST" "CI entrypoint not found for version $TEST_VERSION"
         continue
     fi
     
     # Execute enhanced CI pipeline wrapper
     if ! run_ci_pipeline; then
         CI_EXIT_CODE=$?
-        log_error "CI pipeline failed for version $TEST_VERSION"
-        log_error "  Exit code: $CI_EXIT_CODE"
-        log_error "  Full log: $SANDBOX_DIR/ci.log"
+        log::error "TEST" "CI pipeline failed for version $TEST_VERSION"
+        log::error "TEST" "  Exit code: $CI_EXIT_CODE"
+        log::error "TEST" "  Full log: $SANDBOX_DIR/ci.log"
         # Copy CI log to error log
         if [[ -f "$SANDBOX_DIR/ci.log" ]]; then
             echo "=== CI Log for $TEST_VERSION ===" >> "$ERROR_LOG"

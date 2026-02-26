@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -13,6 +13,25 @@ fi
 
 # Common utility functions and variables for MSP iOS SDK build system
 # This module provides shared functionality used across all build scripts
+
+# Source unified logging (with guard against multiple sourcing)
+# shellcheck source=Scripts/release/utils/logger.sh
+if [[ -f "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/release/utils/logger.sh" ]]; then
+    source "$(git rev-parse --show-toplevel)/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
+# R041f: Source config loader extension for build settings
+# shellcheck source=Scripts/lib/config_loader_ext.sh
+if [[ -f "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/config_loader_ext.sh" ]]; then
+    source "$(git rev-parse --show-toplevel)/Scripts/lib/config_loader_ext.sh" 2>/dev/null || true
+    load_build_config 2>/dev/null || true
+fi
+
+# R012c: Source time_utils.sh for unified time functions
+# shellcheck source=Scripts/lib/shared/time_utils.sh
+if [[ -f "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/shared/time_utils.sh" ]]; then
+    source "$(git rev-parse --show-toplevel)/Scripts/lib/shared/time_utils.sh" 2>/dev/null || true
+fi
 
 # Script metadata
 [[ -z "${SCRIPT_VERSION:-}" ]] && readonly SCRIPT_VERSION="2.0.0"
@@ -31,7 +50,8 @@ fi
 # Default configuration
 [[ -z "${DEFAULT_SKIP_CODE_SIGN:-}" ]] && readonly DEFAULT_SKIP_CODE_SIGN=0
 [[ -z "${DEFAULT_CONFIGURATION:-}" ]] && readonly DEFAULT_CONFIGURATION="Release"
-[[ -z "${DEFAULT_IOS_DEPLOYMENT_TARGET:-}" ]] && readonly DEFAULT_IOS_DEPLOYMENT_TARGET="15.0"
+# R041f: Use configurable deployment target from build-config.yaml
+[[ -z "${DEFAULT_IOS_DEPLOYMENT_TARGET:-}" ]] && readonly DEFAULT_IOS_DEPLOYMENT_TARGET="${BUILD_IOS_DEPLOYMENT_TARGET:-15.0}"
 
 # Environment detection
 detect_environment() {
@@ -46,7 +66,6 @@ detect_environment() {
     fi
 }
 
-# Global environment variable
 [[ -z "${BUILD_ENVIRONMENT:-}" ]] && readonly BUILD_ENVIRONMENT=$(detect_environment)
 
 # Timing functions
@@ -58,7 +77,7 @@ end_timer() {
     if [[ -n "${TIMER_START}" ]]; then
         local end_time=$(date +%s)
         local duration=$((end_time - TIMER_START))
-        echo $duration
+        echo "$duration"
     else
         echo 0
     fi
@@ -91,7 +110,7 @@ ensure_project_root() {
     local project_root=$(get_project_root)
     if [[ "$(pwd)" != "$project_root" ]]; then
         cd "$project_root" || {
-            log_error "Failed to change to project root: $project_root"
+            log::error "COMMON" "Failed to change to project root: $project_root"
             exit $EXIT_GENERAL_ERROR
         }
     fi
@@ -157,7 +176,7 @@ ensure_directory() {
     local dir="$1"
     if [[ ! -d "$dir" ]]; then
         mkdir -p "$dir" || {
-            log_error "Failed to create directory: $dir"
+            log::error "COMMON" "Failed to create directory: $dir"
             return $EXIT_GENERAL_ERROR
         }
     fi
@@ -168,7 +187,7 @@ safe_remove() {
     local path="$1"
     if [[ -e "$path" ]]; then
         rm -rf "$path" || {
-            log_error "Failed to remove: $path"
+            log::error "COMMON" "Failed to remove: $path"
             return $EXIT_GENERAL_ERROR
         }
     fi
@@ -261,9 +280,9 @@ get_supported_architectures() {
 
 # Error handling utilities
 setup_error_handling() {
-    set -e  # Exit immediately if a command exits with a non-zero status
-    set -o pipefail  # Exit if any command in a pipeline fails
-    set -u  # Exit when using undefined variables
+    set -e
+    set -o pipefail
+    set -u
 }
 
 handle_script_error() {
@@ -271,8 +290,8 @@ handle_script_error() {
     local line_number=$1
     local command="$2"
     
-    log_error "Script failed at line $line_number with exit code $exit_code"
-    log_error "Failed command: $command"
+    log::error "COMMON" "Script failed at line $line_number with exit code $exit_code"
+    log::error "COMMON" "Failed command: $command"
     
     # Cleanup on error
     cleanup_on_error
@@ -285,29 +304,21 @@ setup_error_trap() {
 }
 
 cleanup_on_error() {
-    # Override this function in scripts that need custom cleanup
-    log_debug "Performing default error cleanup..."
+    # Override this function in scripts that need custom cleanup on error
+    log::debug "COMMON" "Performing default error cleanup..."
 }
 
 # Initialization
 init_common() {
-    # Set up error handling
     setup_error_handling
     setup_error_trap
-    
-    # Ensure we're in the right place
     ensure_project_root
-    
-    # Set default environment variables
     set_env_default "SKIP_CODE_SIGN" "$DEFAULT_SKIP_CODE_SIGN"
     set_env_default "CONFIGURATION" "$DEFAULT_CONFIGURATION"
     set_env_default "IPHONEOS_DEPLOYMENT_TARGET" "$DEFAULT_IOS_DEPLOYMENT_TARGET"
-    
-    # Start global timer
     start_timer
 }
 
-# Export functions for use in other scripts
 export -f detect_environment
 export -f start_timer end_timer format_duration
 export -f get_script_dir get_project_root ensure_project_root

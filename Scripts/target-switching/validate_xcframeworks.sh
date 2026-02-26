@@ -19,12 +19,17 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/common.sh"
+
+# R027b: Source shared XCFramework validation module
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/xcframework_validate.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/xcframework_validate.sh
+    source "$ROOT_DIR/Scripts/lib/shared/xcframework_validate.sh" 2>/dev/null || true
+fi
 
 ensure_repo_root
 
@@ -45,13 +50,13 @@ validate_xcframework() {
     
     # Check directory exists
     if [[ ! -d "$ROOT_DIR/$xcf_path" ]]; then
-        log_error "❌ MISSING: $xcf_path"
+        log::error "TARGET" "❌ MISSING: $xcf_path"
         return 1
     fi
     
     # Check Info.plist exists
     if [[ ! -f "$ROOT_DIR/$xcf_path/Info.plist" ]]; then
-        log_error "❌ INVALID (no Info.plist): $xcf_path"
+        log::error "TARGET" "❌ INVALID (no Info.plist): $xcf_path"
         return 1
     fi
     
@@ -64,11 +69,11 @@ validate_xcframework() {
     done
     
     if [[ $slice_count -eq 0 ]]; then
-        log_error "❌ INVALID (no iOS slices): $xcf_path"
+        log::error "TARGET" "❌ INVALID (no iOS slices): $xcf_path"
         return 1
     fi
     
-    log_success "✓ $xcf_name"
+    log::success "TARGET" "✓ $xcf_name"
     return 0
 }
 
@@ -78,7 +83,7 @@ validate_adapter_source() {
     
     # Check directory exists
     if [[ ! -d "$ROOT_DIR/$adapter_path" ]]; then
-        log_error "❌ MISSING: $adapter_path"
+        log::error "TARGET" "❌ MISSING: $adapter_path"
         return 1
     fi
     
@@ -87,11 +92,11 @@ validate_adapter_source() {
     swift_count=$(find "$ROOT_DIR/$adapter_path" -name "*.swift" -type f 2>/dev/null | wc -l | tr -d ' ')
     
     if [[ $swift_count -eq 0 ]]; then
-        log_error "❌ INVALID (no Swift files): $adapter_path"
+        log::error "TARGET" "❌ INVALID (no Swift files): $adapter_path"
         return 1
     fi
     
-    log_success "✓ $adapter_name ($swift_count Swift files)"
+    log::success "TARGET" "✓ $adapter_name ($swift_count Swift files)"
     return 0
 }
 
@@ -141,7 +146,7 @@ validate_dependency_versions() {
     local errors=0
     
     log_section "Dependency Version Verification"
-    log_info "Comparing CocoaPods and SPM dependency versions..."
+    log::info "TARGET" "Comparing CocoaPods and SPM dependency versions..."
     
     # SwiftProtobuf version check
     local pods_swiftprotobuf spm_swiftprotobuf
@@ -150,14 +155,14 @@ validate_dependency_versions() {
     
     if [[ "$pods_swiftprotobuf" != "unknown" ]] && [[ "$spm_swiftprotobuf" != "not-resolved" ]] && [[ "$spm_swiftprotobuf" != "unknown" ]]; then
         if [[ "$pods_swiftprotobuf" == "$spm_swiftprotobuf" ]]; then
-            log_success "✓ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (match)"
+            log::success "TARGET" "✓ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (match)"
         else
-            log_error "❌ SwiftProtobuf version mismatch: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf"
-            log_error "   Update Package.swift to use exact: \"$pods_swiftprotobuf\""
+            log::error "TARGET" "❌ SwiftProtobuf version mismatch: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf"
+            log::error "TARGET" "   Update Package.swift to use exact: \"$pods_swiftprotobuf\""
             ((errors++)) || true
         fi
     else
-        log_warn "⚠ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (unable to verify)"
+        log::warn "TARGET" "⚠ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (unable to verify)"
     fi
     
     # Lottie version check
@@ -167,14 +172,14 @@ validate_dependency_versions() {
     
     if [[ "$pods_lottie" != "unknown" ]] && [[ "$spm_lottie" != "not-resolved" ]] && [[ "$spm_lottie" != "unknown" ]]; then
         if [[ "$pods_lottie" == "$spm_lottie" ]]; then
-            log_success "✓ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (match)"
+            log::success "TARGET" "✓ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (match)"
         else
-            log_error "❌ Lottie version mismatch: Pods=$pods_lottie, SPM=$spm_lottie"
-            log_error "   Update Package.swift to use exact: \"$pods_lottie\""
+            log::error "TARGET" "❌ Lottie version mismatch: Pods=$pods_lottie, SPM=$spm_lottie"
+            log::error "TARGET" "   Update Package.swift to use exact: \"$pods_lottie\""
             ((errors++)) || true
         fi
     else
-        log_warn "⚠ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (unable to verify)"
+        log::warn "TARGET" "⚠ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (unable to verify)"
     fi
     
     return $errors
@@ -186,7 +191,7 @@ validate_dependency_versions() {
 
 main() {
     log_title "XCFramework Validation"
-    log_info "Repository: $ROOT_DIR"
+    log::info "TARGET" "Repository: $ROOT_DIR"
     
     local total_errors=0
     
@@ -226,7 +231,7 @@ main() {
     done
     
     if [[ $adapter_warnings -gt 0 ]]; then
-        log_warn "$adapter_warnings adapter source(s) have issues (non-blocking)"
+        log::warn "TARGET" "$adapter_warnings adapter source(s) have issues (non-blocking)"
     fi
     
     # Validate Dependency Versions (SwiftProtobuf, Lottie)
@@ -239,26 +244,26 @@ main() {
     log_section "Validation Summary"
     
     if [[ $total_errors -eq 0 ]]; then
-        log_success "All required XCFrameworks validated successfully!"
+        log::success "TARGET" "All required XCFrameworks validated successfully!"
         echo ""
-        log_info "Core XCFrameworks:       ${#CORE_XCFRAMEWORKS[@]} ✓"
-        log_info "ThirdParty XCFrameworks: ${#THIRDPARTY_XCFRAMEWORKS[@]} ✓"
-        log_info "Embedded XCFrameworks:   ${#EMBEDDED_XCFRAMEWORKS[@]} ✓"
-        log_info "Adapter Sources:         ${#ADAPTER_SOURCES[@]} (warnings: $adapter_warnings)"
+        log::info "TARGET" "Core XCFrameworks:       ${#CORE_XCFRAMEWORKS[@]} ✓"
+        log::info "TARGET" "ThirdParty XCFrameworks: ${#THIRDPARTY_XCFRAMEWORKS[@]} ✓"
+        log::info "TARGET" "Embedded XCFrameworks:   ${#EMBEDDED_XCFRAMEWORKS[@]} ✓"
+        log::info "TARGET" "Adapter Sources:         ${#ADAPTER_SOURCES[@]} (warnings: $adapter_warnings)"
         echo ""
-        log_info "NOTE: Adapter issues are non-fatal. Adapters are SOURCE-ONLY."
+        log::info "TARGET" "NOTE: Adapter issues are non-fatal. Adapters are SOURCE-ONLY."
         exit 0
     else
-        log_error "Validation failed with $total_errors error(s)"
+        log::error "TARGET" "Validation failed with $total_errors error(s)"
         echo ""
-        log_info "REQUIRED XCFrameworks (must exist):"
-        log_info "  - MSPCore, MSPiOSCore, MSPSharedLibraries, MSPOMSDK, NovaCore"
-        log_info ""
-        log_info "To fix missing XCFrameworks:"
-        log_info "  1. Run: ./Scripts/xcframeworks/build-core.sh"
-        log_info "  2. Ensure Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework exists"
-        log_info ""
-        log_info "NOTE: Adapter XCFrameworks are NOT required (adapters are source-only)."
+        log::info "TARGET" "REQUIRED XCFrameworks (must exist):"
+        log::info "TARGET" "  - MSPCore, MSPiOSCore, MSPSharedLibraries, MSPOMSDK, NovaCore"
+        log::info "TARGET" ""
+        log::info "TARGET" "To fix missing XCFrameworks:"
+        log::info "TARGET" "  1. Run: ./Scripts/xcframeworks/build-core.sh"
+        log::info "TARGET" "  2. Ensure Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework exists"
+        log::info "TARGET" ""
+        log::info "TARGET" "NOTE: Adapter XCFrameworks are NOT required (adapters are source-only)."
         exit 1
     fi
 }

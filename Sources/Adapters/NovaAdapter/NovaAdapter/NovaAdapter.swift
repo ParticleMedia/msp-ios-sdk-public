@@ -1,5 +1,4 @@
 import Foundation
-@_implementationOnly import MSPSnapKit
 import MSPiOSCore
 import NovaCore
 import PrebidMobile
@@ -175,9 +174,13 @@ public class NovaAdapter: AdNetworkAdapter {
             if let mediaContainer = nativeAdContainer.getMedia() {
                 mediaContainer.subviews.forEach { $0.removeFromSuperview() }
                 mediaContainer.addSubview(novaNativeAdView.mediaView)
-                novaNativeAdView.mediaView.snp.makeConstraints { make in
-                    make.directionalEdges.equalToSuperview()
-                }
+                novaNativeAdView.mediaView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    novaNativeAdView.mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
+                    novaNativeAdView.mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
+                    novaNativeAdView.mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
+                    novaNativeAdView.mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor),
+                ])
             }
 
             if let iconView = nativeAdContainer.getIcon(),
@@ -187,18 +190,25 @@ public class NovaAdapter: AdNetworkAdapter {
             }
 
             novaNativeAdView.addSubview(nativeAdContainer)
-            nativeAdContainer.snp.makeConstraints { make in
-                make.directionalEdges.equalToSuperview()
-                make.size.equalToSuperview()
-            }
+            nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                nativeAdContainer.topAnchor.constraint(equalTo: novaNativeAdView.topAnchor),
+                nativeAdContainer.leadingAnchor.constraint(equalTo: novaNativeAdView.leadingAnchor),
+                nativeAdContainer.trailingAnchor.constraint(equalTo: novaNativeAdView.trailingAnchor),
+                nativeAdContainer.bottomAnchor.constraint(equalTo: novaNativeAdView.bottomAnchor),
+            ])
         }
 
         nativeAdView.addSubview(novaNativeAdView)
-        novaNativeAdView.snp.makeConstraints { make in
-            make.directionalEdges.equalToSuperview()
-            make.width.lessThanOrEqualToSuperview()
-            make.height.lessThanOrEqualToSuperview()
-        }
+        novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            novaNativeAdView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            novaNativeAdView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            novaNativeAdView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            novaNativeAdView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+            novaNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
+            novaNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
+        ])
     }
 
     func parseNovaAdString(adString: String, adType: String, adUnitId: String, eCPMInDollar: Decimal) {

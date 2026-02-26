@@ -15,7 +15,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -24,29 +23,29 @@ source "$SCRIPT_DIR/common.sh"
 # shellcheck source=Scripts/lib/demoapp_config.sh
 source "$ROOT_DIR/Scripts/lib/demoapp_config.sh"
 
+# Ensure logger functions are available in subprocess
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
+# R029b: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
 ensure_repo_root
 
-INFO_PLIST_TEMPLATE="$ROOT_DIR/Examples/MSPDemoApp/Info.plist.template"
-INFO_PLIST_OUTPUT="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist"
-
-generate_info_plist() {
-    log_step "Generating Info.plist from template"
-
-    if [[ -f "$INFO_PLIST_TEMPLATE" ]]; then
-        cp "$INFO_PLIST_TEMPLATE" "$INFO_PLIST_OUTPUT"
-        log_success "Info.plist generated"
-    else
-        log_warn "Info.plist.template not found - skipping"
-    fi
-}
 
 TARGET_MODE="${1:-}"
 if [[ -z "$TARGET_MODE" ]]; then
     # Auto-detect mode
     TARGET_MODE=$(detect_current_mode)
     if [[ "$TARGET_MODE" == "mixed" ]]; then
-        log_error "Cannot auto-detect mode (mixed environment detected)"
-        log_info "Please specify: $0 [spm|pods]"
+        log::error "TARGET" "Cannot auto-detect mode (mixed environment detected)"
+        log::info "TARGET" "Please specify: $0 [spm|pods]"
         exit 1
     fi
 fi
@@ -58,20 +57,18 @@ fi
 EFFECTIVE_MODE="$TARGET_MODE"
 if [[ "$TARGET_MODE" == "pods-dev" ]] || [[ "$TARGET_MODE" == "pods-release" ]]; then
     EFFECTIVE_MODE="pods"
-    log_info "Mode '$TARGET_MODE' uses Pods workspace generation (MSP_RELEASE controls source vs binary)"
+    log::info "TARGET" "Mode '$TARGET_MODE' uses Pods workspace generation (MSP_RELEASE controls source vs binary)"
 elif [[ "$TARGET_MODE" == "spm-release" ]]; then
     EFFECTIVE_MODE="spm"
-    log_info "Mode '$TARGET_MODE' uses SPM workspace generation"
+    log::info "TARGET" "Mode '$TARGET_MODE' uses SPM workspace generation"
 fi
 
 if [[ "$EFFECTIVE_MODE" != "spm" ]] && [[ "$EFFECTIVE_MODE" != "pods" ]]; then
-    log_error "Invalid mode. Must be 'spm', 'pods', 'pods-dev', 'pods-release', or 'spm-release'"
+    log::error "TARGET" "Invalid mode. Must be 'spm', 'pods', 'pods-dev', 'pods-release', or 'spm-release'"
     exit 1
 fi
 
 log_title "Generating YAML Specs: $TARGET_MODE mode (effective: $EFFECTIVE_MODE)"
-
-generate_info_plist
 
 # Find all Package.swift files (sorted for determinism)
 # NOTE: In Pods mode, Package.swift is renamed to Package.swift.disabled, so this may be empty
@@ -139,14 +136,14 @@ package_exists() {
 
 # Generate project.yml from template
 log_section "Generating project.yml"
-log_step "Generating project.yml"
+log::step "TARGET" "Generating project.yml"
 mkdir -p "$(dirname "$PROJECT_SPEC")"
 
 PROJECT_TEMPLATE="$ROOT_DIR/Examples/MSPDemoApp/project.yml.template"
 TEMP_PROJECT_SPEC="${PROJECT_SPEC}.tmp"
 
 if [[ ! -f "$PROJECT_TEMPLATE" ]]; then
-    log_error "project.yml.template not found at: $PROJECT_TEMPLATE"
+    log::error "TARGET" "project.yml.template not found at: $PROJECT_TEMPLATE"
     exit 1
 fi
 
@@ -348,8 +345,8 @@ YAML
 
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
   MSPCoreTests:
-    type: bundle.unit-test
-    platform: iOS
+    templates:
+      - TestTarget
     sources:
       - path: ../../Tests/MSPCoreTests
         excludes:
@@ -366,19 +363,14 @@ YAML
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
     settings:
       base:
-        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
-        SWIFT_VERSION: "5.0"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
         PODS_ROOT: "$(SRCROOT)/../../Pods"
         PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
-    dependencies:
-      - target: MSPDemoApp
 YAML
 
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
   MSPiOSCoreTests:
-    type: bundle.unit-test
-    platform: iOS
+    templates:
+      - TestTarget
     sources:
       - path: ../../Tests/MSPiOSCoreTests
         excludes:
@@ -395,19 +387,14 @@ YAML
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
     settings:
       base:
-        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
-        SWIFT_VERSION: "5.0"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
         PODS_ROOT: "$(SRCROOT)/../../Pods"
         PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
-    dependencies:
-      - target: MSPDemoApp
 YAML
 
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
   NovaCoreTests:
-    type: bundle.unit-test
-    platform: iOS
+    templates:
+      - TestTarget
     sources:
       - path: ../../Tests/NovaCoreTests
         excludes:
@@ -424,19 +411,14 @@ YAML
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
     settings:
       base:
-        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
-        SWIFT_VERSION: "5.0"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
         PODS_ROOT: "$(SRCROOT)/../../Pods"
         PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
-    dependencies:
-      - target: MSPDemoApp
 YAML
 
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
   AdapterTests:
-    type: bundle.unit-test
-    platform: iOS
+    templates:
+      - TestTarget
     sources:
       - path: ../../Tests/AdapterTests
         excludes:
@@ -453,13 +435,8 @@ YAML
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
     settings:
       base:
-        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
-        SWIFT_VERSION: "5.0"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
         PODS_ROOT: "$(SRCROOT)/../../Pods"
         PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
-    dependencies:
-      - target: MSPDemoApp
 YAML
 else
     cat <<'YAML' > "$MODE_TARGETS_FILE"
@@ -504,7 +481,7 @@ if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
       config: Debug
     archive:
       config: Release
-  AllTests:
+  MSPTests:
     build:
       targets:
         MSPDemoApp: all
@@ -562,15 +539,15 @@ rm -f "$PACKAGES_BLOCK_FILE" "$PODS_SETTINGS_FILE" "$MODE_TARGETS_FILE" "$MODE_S
 # Compare with existing file and only write if different
 if [[ -f "$PROJECT_SPEC" ]] && cmp -s "$PROJECT_SPEC" "$TEMP_PROJECT_SPEC"; then
     rm -f "$TEMP_PROJECT_SPEC"
-    log_success "project.yml unchanged (already up-to-date)"
+    log::success "TARGET" "project.yml unchanged (already up-to-date)"
 else
     mv "$TEMP_PROJECT_SPEC" "$PROJECT_SPEC"
-    log_success "project.yml generated"
+    log::success "TARGET" "project.yml generated"
 fi
 
 # Generate workspace.yml from template
 log_section "Generating workspace.yml"
-log_step "Generating workspace.yml"
+log::step "TARGET" "Generating workspace.yml"
 
 # ============================================================================
 # Generate workspace.yml from template (Template Architecture)
@@ -582,8 +559,8 @@ WORKSPACE_TEMPLATE="$ROOT_DIR/workspace.yml.template"
 TEMP_WORKSPACE_SPEC="${WORKSPACE_SPEC}.tmp"
 
 if [[ ! -f "$WORKSPACE_TEMPLATE" ]]; then
-    log_error "workspace.yml.template not found! Cannot generate workspace.yml"
-    log_info "This is a developer-maintained file that must exist in the repository."
+    log::error "TARGET" "workspace.yml.template not found! Cannot generate workspace.yml"
+    log::info "TARGET" "This is a developer-maintained file that must exist in the repository."
     exit 1
 fi
 
@@ -628,24 +605,24 @@ YAML
 # Compare with existing file and only write if different
 if [[ -f "$WORKSPACE_SPEC" ]] && cmp -s "$WORKSPACE_SPEC" "$TEMP_WORKSPACE_SPEC"; then
     rm -f "$TEMP_WORKSPACE_SPEC"
-    log_success "workspace.yml unchanged (already up-to-date)"
+    log::success "TARGET" "workspace.yml unchanged (already up-to-date)"
 else
     mv "$TEMP_WORKSPACE_SPEC" "$WORKSPACE_SPEC"
-    log_success "workspace.yml generated"
+    log::success "TARGET" "workspace.yml generated"
 fi
 
-log_info "[generate_workspace] workspace.yml generation complete"
+log::info "TARGET" "[generate_workspace] workspace.yml generation complete"
 
-log_info "[xcodegen] Generating .xcworkspace via XcodeGen..."
+log::info "TARGET" "[xcodegen] Generating .xcworkspace via XcodeGen..."
 
 # Ensure workspace.yml exists
 if [[ ! -f "workspace.yml" ]]; then
-    log_error "[xcodegen] workspace.yml not found — cannot generate workspace"
+    log::error "TARGET" "[xcodegen] workspace.yml not found — cannot generate workspace"
     exit 1
 fi
 
 # Step 1: Generate all project.yml files referenced in workspace.yml
-log_step "Generating project files from project.yml specs"
+log::step "TARGET" "Generating project files from project.yml specs"
 
 # CRITICAL: Unset CocoaPods environment variables before running XcodeGen
 # If these are set (e.g., from previous builds or tests), XcodeGen will expand
@@ -666,30 +643,45 @@ done < <(grep -E "^[[:space:]]*path:" "$WORKSPACE_SPEC" || true)
 # Generate each project.yml file
 # Note: Some projects may fail if Pods aren't installed yet - that's OK, they'll be generated after pod install
 FAILED_PROJECTS=()
-# Initialize PROJECTS array
+# R029b: Use xcodegen.sh module if available for all project generation
 for project_yml in "${PROJECT_YML_FILES[@]}"; do
-    log_info "[xcodegen] Generating project from $project_yml"
-    if ! xcodegen generate --spec "$project_yml" 2>&1; then
-        log_warn "[xcodegen] Failed to generate project from $project_yml (may need pod install first)"
-        FAILED_PROJECTS+=("$project_yml")
+    log::info "TARGET" "[xcodegen] Generating project from $project_yml"
+    working_dir="$(dirname "$ROOT_DIR/$project_yml")"
+    if command -v xcodegen_generate &>/dev/null; then
+        if ! xcodegen_generate "$ROOT_DIR/$project_yml" "$working_dir" 2>&1; then
+            log::warn "TARGET" "[xcodegen] Failed to generate project from $project_yml (may need pod install first)"
+            FAILED_PROJECTS+=("$project_yml")
+        fi
+    else
+        if ! xcodegen generate --spec "$project_yml" 2>&1; then
+            log::warn "TARGET" "[xcodegen] Failed to generate project from $project_yml (may need pod install first)"
+            FAILED_PROJECTS+=("$project_yml")
+        fi
     fi
 done
 
 # Step 2: Generate MSPDemoApp project.yml (if in Pods mode)
 if [[ "$EFFECTIVE_MODE" == "pods" ]] && [[ -f "$PROJECT_SPEC" ]]; then
-    log_info "[xcodegen] Generating MSPDemoApp project"
-    if ! xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
-        log_warn "[xcodegen] Failed to generate MSPDemoApp project (may need pod install first)"
-        FAILED_PROJECTS+=("$PROJECT_SPEC")
+    log::info "TARGET" "[xcodegen] Generating MSPDemoApp project"
+    if command -v xcodegen_generate &>/dev/null; then
+        if ! xcodegen_generate "$PROJECT_SPEC" "$(dirname "$PROJECT_SPEC")" 2>&1; then
+            log::warn "TARGET" "[xcodegen] Failed to generate MSPDemoApp project (may need pod install first)"
+            FAILED_PROJECTS+=("$PROJECT_SPEC")
+        fi
+    else
+        if ! xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
+            log::warn "TARGET" "[xcodegen] Failed to generate MSPDemoApp project (may need pod install first)"
+            FAILED_PROJECTS+=("$PROJECT_SPEC")
+        fi
     fi
 fi
 
 if [[ ${#FAILED_PROJECTS[@]} -gt 0 ]]; then
-    log_warn "[xcodegen] ${#FAILED_PROJECTS[@]} project(s) failed to generate (will be generated after pod install)"
+    log::warn "TARGET" "[xcodegen] ${#FAILED_PROJECTS[@]} project(s) failed to generate (will be generated after pod install)"
 fi
 
 # Step 3: Create the .xcworkspace file manually from workspace.yml
-log_step "Creating .xcworkspace file"
+log::step "TARGET" "Creating .xcworkspace file"
 WORKSPACE_PATH="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
 WORKSPACE_DATA="$WORKSPACE_PATH/contents.xcworkspacedata"
 mkdir -p "$WORKSPACE_PATH"
@@ -735,7 +727,7 @@ XML
     echo "</Workspace>"
 } > "$WORKSPACE_DATA"
 
-log_success "[xcodegen] Successfully generated .xcworkspace"
+log::success "TARGET" "[xcodegen] Successfully generated .xcworkspace"
 
 log_title "YAML Generation Complete"
-log_success "YAML specs generated for $TARGET_MODE mode"
+log::success "TARGET" "YAML specs generated for $TARGET_MODE mode"

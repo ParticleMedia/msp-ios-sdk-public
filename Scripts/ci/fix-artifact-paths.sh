@@ -1,25 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Fix artifact paths after downloading from GitHub Actions
 # GitHub Actions may extract XCFrameworks, so we need to reconstruct them
 
-set -e
+set -euo pipefail
 
 # Use canonical path per README: Build/ReleaseArtifacts/XCFrameworks/
 XCFRAMEWORKS_DIR="Build/ReleaseArtifacts/XCFrameworks"
 
-# Ensure directory exists
 mkdir -p "$XCFRAMEWORKS_DIR"
 
 echo "🔍 Checking for XCFrameworks in $XCFRAMEWORKS_DIR..."
 echo "Current working directory: $(pwd)"
 echo "Full path to XCFrameworks dir: $(cd "$XCFRAMEWORKS_DIR" && pwd)"
 
-# Show directory structure before fixing
 echo ""
 echo "📂 Directory structure before fixing:"
 find "$XCFRAMEWORKS_DIR" -type d -maxdepth 3 2>/dev/null | head -20 || echo "  (empty or error)"
 
-# First, try to find existing .xcframework directories
 xcframeworks_found=()
 while IFS= read -r -d '' xcf; do
   xcframeworks_found+=("$xcf")
@@ -129,7 +126,7 @@ if [ ${#xcframeworks_found[@]} -eq 0 ]; then
         fi
       done
       
-      if [ $moved_count -eq 0 ]; then
+      if [ "$moved_count" -eq 0 ]; then
         echo "  ⚠️  No platform directories found for $framework_name, removing empty XCFramework..."
         rm -rf "$xcframework_path"
         continue

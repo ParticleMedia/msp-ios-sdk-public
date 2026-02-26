@@ -159,6 +159,7 @@ end
 # NovaCore module tests
 target 'NovaCoreTests' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
+  pod 'NovaCore', :path => 'NovaCore.podspec'
   testing_pods
 end
 

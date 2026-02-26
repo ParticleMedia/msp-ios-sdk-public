@@ -50,13 +50,10 @@
 ```bash
 ./Scripts/msp-release.sh --profile=production run 1.0.0
 ./Scripts/msp-release.sh --profile=local-dev run 1.0.0
-./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods --pod-wait-choice 1
+./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods
 ```
 
-`--pod-wait-choice` can preselect CocoaPods availability handling when CDN sync is delayed:
-- `1`: continue waiting (recommended)
-- `2`: proceed anyway
-- `3`: exit
+CocoaPods CDN availability is checked automatically. If a pod is not yet synced, the system waits up to 60 minutes before failing.
 
 ## DRY_RUN Semantics
 
@@ -82,7 +79,7 @@ Execute a full release:
 ```bash
 ./Scripts/msp-release.sh run <version>
 ./Scripts/msp-release.sh --profile=production run 1.0.0
-./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods --pod-wait-choice 1
+./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods
 ```
 
 ### resume
@@ -93,7 +90,29 @@ Resume an interrupted release from the last successful step:
 ./Scripts/msp-release.sh resume
 ```
 
-State is persisted to `.msp-release-state.json`.
+State is persisted to `.msp-release-state.json`. Resume intelligently retries failed operations:
+- ✅ **Trunk verification** - Re-verifies if `trunk_verified=false`
+- ✅ **GitHub Release creation** - Re-creates if `github_release_created=false`
+- ✅ **Idempotent** - Skips already-successful operations
+
+### create-github-releases
+
+Create or verify GitHub Releases for all binary distribution pods (补偿命令):
+
+```bash
+./Scripts/msp-release.sh create-github-releases <version>
+```
+
+Use this when:
+- GitHub Releases were not created during normal release flow
+- Some pods are missing GitHub Release assets
+- You need to verify all binary pods have proper releases
+
+This command:
+1. Checks state file for each pod's `github_release_created` status
+2. Skips pods that already have releases
+3. Creates missing GitHub Releases with zip uploads
+4. Updates state file with results
 
 ### fix-public-tag
 
@@ -108,6 +127,64 @@ This command:
 2. Verifies tag exists on origin
 3. Force-pushes tag to public remote
 4. Verifies SHA match across all remotes
+
+## GitHub Release Workflow
+
+### Automatic Creation
+
+During normal release flow, GitHub Releases are created automatically for each binary distribution pod:
+
+```
+1. Build XCFramework
+2. Create ZIP archive
+3. create_github_release_for_pod()
+   ├─ Create/verify GitHub Release
+   ├─ Upload ZIP to release assets
+   ├─ Wait for CDN propagation (60-120s based on file size)
+   ├─ Verify ZIP is accessible via CDN
+   └─ ✨ Update state: github_release_created=true
+4. Unified verification (after all pods published)
+   └─ verify_all_github_releases() checks all binary pods
+```
+
+### Binary Distribution Pods
+
+These pods require GitHub Releases (use HTTP distribution in podspec):
+
+- MSPiOSCore
+- MSPSharedLibraries
+- MSPGoogleAdsTypes
+- MSPPrebidAdapter
+- MSPFacebookAdapter
+- MSPNovaAdapter
+- MSPAmazonAdapter
+- MSPGoogleAdapter
+- MSPMolocoAdapter
+- MSPLiftoffAdapter
+- MSPCore
+
+### Troubleshooting
+
+**Scenario 1: GitHub Release creation failed during release**
+
+If some pods published but GitHub Releases weren't created:
+
+```bash
+# Check state file
+cat .msp-release-state.json | jq '.pods[] | select(.github_release_created == false)'
+
+# Retry creation
+./Scripts/msp-release.sh create-github-releases 1.0.4-rc.10
+```
+
+**Scenario 2: Resume after GitHub Release failure**
+
+```bash
+# Resume will automatically retry failed GitHub Release creation
+./Scripts/msp-release.sh resume
+```
+
+The system checks `github_release_created` status and retries if `false`.
 
 ## Safety Invariants
 
@@ -125,30 +202,76 @@ After tagging, the system verifies:
 
 ### Pod Order
 
-Pods are published in dependency order:
-1. MSPSharedLibraries (no dependencies)
-2. MSPOMSDK
-3. MSPCore
-4. MSPiOSCore
-5. NovaCore
-6. MSPGoogleAdsTypes
-7. Adapters (alphabetical)
+Pods are published in dependency order (11 pods, all binary distribution):
+
+```
+Step 0: MSPiOSCore                (foundation, no dependencies)
+Step 1: MSPSharedLibraries        (parallel)
+        MSPGoogleAdsTypes         (parallel)
+Step 2: Adapters (all parallel):
+        MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter,
+        MSPNovaAdapter, MSPAmazonAdapter, MSPMolocoAdapter, MSPLiftoffAdapter
+Step 3: MSPCore                   (depends on all above)
+```
 
 ## State Management
 
 Release state is persisted to `.msp-release-state.json`:
 
+### State Schema (v3)
+
 ```json
 {
-  "version": "1.0.0",
-  "step": "publish_pods",
-  "completed_steps": ["preflight", "build", "tag"],
-  "pods_published": ["MSPSharedLibraries", "MSPCore"],
-  "started_at": "2024-01-01T00:00:00Z"
+  "schema_version": 3,
+  "version": "1.0.4-rc.10",
+  "release_mode": "full",
+  "base_branch": "main",
+  "release_branch": "release/1.0.4-rc.10",
+  "resume_count": 0,
+  "git": {
+    "tag_created": true,
+    "tag_name": "1.0.4-rc.10",
+    "release_branch_pushed": true,
+    "github_release_created": true
+  },
+  "pods": {
+    "MSPCore": {
+      "status": "published",
+      "trunk_verified": true,
+      "trunk_verified_at": "2026-02-16T09:13:50Z",
+      "github_release_created": true,
+      "github_release_url": "https://github.com/ParticleMedia/msp-ios-sdk-public/releases/tag/1.0.4-rc.10",
+      "github_release_verified_at": "2026-02-16T09:15:00Z"
+    }
+  },
+  "timestamps": {
+    "started_at": "2026-02-16T09:00:00Z",
+    "updated_at": "2026-02-16T09:15:00Z"
+  }
 }
 ```
 
+### Per-Pod State Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | string | `published`, `failed`, `pending`, `inconsistent` |
+| `trunk_verified` | boolean | CocoaPods Trunk verification status |
+| `trunk_verified_at` | ISO8601 | Verification timestamp |
+| `github_release_created` | boolean | ✨ **v3** GitHub Release creation status |
+| `github_release_url` | string | ✨ **v3** Release URL |
+| `github_release_verified_at` | ISO8601 | ✨ **v3** Verification timestamp |
+
+### Resume Behavior
+
+When resuming, the system checks each pod's state and:
+1. **If `trunk_verified=false`** → Re-verify trunk availability
+2. **If `github_release_created=false`** → Re-create GitHub Release
+3. **If `status=failed`** → Retry publication
+4. **If already successful** → Skip (idempotent)
+
 This enables:
-- Resume after failure
-- Idempotent re-runs
-- Progress tracking
+- ✅ Resume after failure
+- ✅ Idempotent re-runs
+- ✅ Per-pod progress tracking
+- ✅ Intelligent retry logic

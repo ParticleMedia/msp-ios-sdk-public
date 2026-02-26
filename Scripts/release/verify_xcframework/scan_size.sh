@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
 
 # ============================================================================
@@ -27,22 +26,20 @@ scan_size() {
     local report_path="${3:-}"
     
     if [[ -z "$xcframework_path" ]] || [[ ! -d "$xcframework_path" ]]; then
-        vr_log_error "[XCF] Invalid XCFramework path: $xcframework_path"
+        vr_log::error "VERIFY" "[XCF] Invalid XCFramework path: $xcframework_path"
         return 1
     fi
     
     if [[ -z "$module_name" ]]; then
-        vr_log_error "[XCF] Module name required"
+        vr_log::error "VERIFY" "[XCF] Module name required"
         return 1
     fi
     
-    vr_log_info "[XCF] Scanning size for $module_name..."
+    vr_log::info "VERIFY" "[XCF] Scanning size for $module_name..."
     
-    # Calculate total bundle size
     local total_size_kb
     total_size_kb="$(du -sk "$xcframework_path" 2>/dev/null | awk '{print $1}' || echo "0")"
     
-    # Find binary and calculate binary size
     local binary_size_kb=0
     local binary_path=""
     local slices=("ios-arm64" "ios-arm64_x86_64-simulator" "ios-arm64-simulator" "ios-x86_64-simulator")
@@ -58,7 +55,6 @@ scan_size() {
         fi
     done
     
-    # Calculate Swift interface size
     local swiftinterface_size_kb=0
     for slice in "${slices[@]}"; do
         local slice_path="$xcframework_path/$slice"
@@ -72,7 +68,6 @@ scan_size() {
         fi
     done
     
-    # Generate JSON report
     if [[ -n "$report_path" ]]; then
         if command -v python3 >/dev/null 2>&1; then
             python3 <<EOF
@@ -88,7 +83,7 @@ report = {
 with open("$report_path", "w") as f:
     json.dump(report, f, indent=2)
 EOF
-            vr_log_info "[XCF] Size report generated: $report_path"
+            vr_log::info "VERIFY" "[XCF] Size report generated: $report_path"
         else
             # Fallback: simple JSON without python
             cat > "$report_path" <<EOF
@@ -98,7 +93,7 @@ EOF
   "total_bundle_kb": $total_size_kb
 }
 EOF
-            vr_log_info "[XCF] Size report generated (fallback): $report_path"
+            vr_log::info "VERIFY" "[XCF] Size report generated (fallback): $report_path"
         fi
     fi
     
@@ -113,14 +108,14 @@ EOF
             size_increase_pct=$(( (total_size_kb * 100) / prev_size - 100 ))
             
             if [[ $size_increase_pct -gt 30 ]]; then
-                vr_log_warn "[XCF] Size increased by +${size_increase_pct}% (threshold: +30%)"
+                vr_log::warn "VERIFY" "[XCF] Size increased by +${size_increase_pct}% (threshold: +30%)"
                 echo "1"  # Return warning count
                 return 0
             fi
         fi
     fi
     
-    vr_log_info "[XCF] Size scan completed: binary=${binary_size_kb}KB, total=${total_size_kb}KB"
+    vr_log::info "VERIFY" "[XCF] Size scan completed: binary=${binary_size_kb}KB, total=${total_size_kb}KB"
     
     echo "0"  # Return warning count
     return 0

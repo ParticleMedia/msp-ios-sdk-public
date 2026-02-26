@@ -7,22 +7,22 @@ import Quick
 class DebugRadioCellViewModelSpec: QuickSpec {
     override class func spec() {
         describe("DebugRadioCellViewModel") {
-            var sut: DebugRadioCellViewModel!
-            var option: MockDebugOption!
-            var cancellables: Set<AnyCancellable>!
+            @TestState var sut: DebugRadioCellViewModel!
+            @TestState var option: FakeDebugOption!
+            @TestState var cancellables: Set<AnyCancellable>!
 
             beforeEach {
-                option = MockDebugOption(id: "option-id", displayTitle: "Option Title")
+                option = FakeDebugOption(id: "option-id", displayTitle: "Option Title")
                 sut = DebugRadioCellViewModel(debugOption: option)
                 cancellables = []
             }
 
-            it("\[DRC001] exposes the option id and title") {
+            it("[DRC001] should expose the option id and title") {
                 expect(sut.id).to(equal(option.id))
                 expect(sut.title).to(equal(option.displayTitle))
             }
 
-            it("\[DRC002] updates selection state and publishes changes") {
+            it("[DRC002] should update selection state and publish changes") {
                 var received: [Bool] = []
                 sut.isSelectedPublisher
                     .sink { value in

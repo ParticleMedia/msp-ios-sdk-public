@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
 msp_enforce_main_repo_or_exit
 # --- End MSP Worktree Safety Guard (Patch L, shared) ---
-set -eo pipefail
+set -euo pipefail
 
 # ============================================================================
 # extract_from_pods.sh
@@ -28,19 +28,33 @@ PODS_DIR="$ROOT_DIR/Pods"
 DEST_DIR="$ROOT_DIR/ThirdParty"
 
 # ============================================================================
-# Logging Functions
+# Logging Functions (use unified system if available)
 # ============================================================================
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Source unified color/logging system
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
+fi
 
-log()     { echo -e "${BLUE}[extract_from_pods]${NC} $*"; }
-log_ok()  { echo -e "${GREEN}[extract_from_pods] ✔${NC} $*"; }
-log_warn(){ echo -e "${YELLOW}[extract_from_pods] ⚠${NC} $*" >&2; }
-log_err() { echo -e "${RED}[extract_from_pods] ✖${NC} $*" >&2; }
+# Use log::* API if available, otherwise fallback to local functions
+if command -v log::info &>/dev/null; then
+    log()     { log::info "EXTRACT" "$*"; }
+    log_ok()  { log::success "EXTRACT" "$*"; }
+    log_warn(){ log::warn "EXTRACT" "$*"; }
+    log_err() { log::error "EXTRACT" "$*"; }
+else
+    # Fallback colors and functions
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
+    log()     { echo -e "${BLUE}[extract_from_pods]${NC} $*"; }
+    log_ok()  { echo -e "${GREEN}[extract_from_pods] ✔${NC} $*"; }
+    log_warn(){ echo -e "${YELLOW}[extract_from_pods] ⚠${NC} $*" >&2; }
+    log_err() { echo -e "${RED}[extract_from_pods] ✖${NC} $*" >&2; }
+fi
 
 # ============================================================================
 # SDK Configuration
@@ -200,8 +214,8 @@ process_sdk() {
   
   # Check if pod exists
   if [[ ! -d "$pod_dir" ]]; then
-    log_warn "Pod directory not found: $pod_dir"
-    log_warn "Run 'pod install' first, or check SDK_CONFIGS configuration."
+    log::warn "SPM" "Pod directory not found: $pod_dir"
+    log::warn "SPM" "Run 'pod install' first, or check SDK_CONFIGS configuration."
     return 1
   fi
   
@@ -262,7 +276,7 @@ process_sdk() {
     fi
     
     if [[ ! -f "$binary_path" ]]; then
-      log_warn "No binary found in $fw_path"
+      log::warn "SPM" "No binary found in $fw_path"
       continue
     fi
     
@@ -321,7 +335,7 @@ process_mintegral_modules() {
   log "━━━ Processing Mintegral Multi-Module SDK"
   
   if [[ ! -d "$mintegral_pod_dir" ]]; then
-    log_warn "Mintegral Pod directory not found: $mintegral_pod_dir"
+    log::warn "SPM" "Mintegral Pod directory not found: $mintegral_pod_dir"
     return 1
   fi
   
@@ -435,9 +449,9 @@ main() {
   
   if [[ ${#failed_sdks[@]} -gt 0 ]]; then
     log ""
-    log_warn "Failed SDKs:"
+    log::warn "SPM" "Failed SDKs:"
     for sdk in "${failed_sdks[@]}"; do
-      log_warn "  - $sdk"
+      log::warn "SPM" "  - $sdk"
     done
   fi
   
@@ -447,7 +461,7 @@ main() {
     if [[ -f "$xc/Info.plist" ]]; then
       log_ok "$xc"
     else
-      log_warn "$xc (missing Info.plist)"
+      log::warn "SPM" "$xc (missing Info.plist)"
     fi
   done
   

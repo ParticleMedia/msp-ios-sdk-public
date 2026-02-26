@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -79,6 +79,7 @@ PYEOF
             test_list="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); emails=data.get('success_list', {}).get('test', []); print(' '.join(emails))" 2>/dev/null || echo "")"
             if [[ -n "$test_list" ]]; then
                 local idx=0
+                # shellcheck disable=SC2086 -- intentional word-splitting: test_list is a space-delimited email list
                 for email in $test_list; do
                     EMAIL_SUCCESS_LIST_TEST[$idx]="$email"
                     idx=$((idx + 1))
@@ -90,6 +91,7 @@ PYEOF
             prod_list="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); emails=data.get('success_list', {}).get('prod', []); print(' '.join(emails))" 2>/dev/null || echo "")"
             if [[ -n "$prod_list" ]]; then
                 local idx=0
+                # shellcheck disable=SC2086 -- intentional word-splitting: prod_list is a space-delimited email list
                 for email in $prod_list; do
                     EMAIL_SUCCESS_LIST_PROD[$idx]="$email"
                     idx=$((idx + 1))

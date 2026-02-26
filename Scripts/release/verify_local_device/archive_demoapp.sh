@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
 
 # ============================================================================
@@ -25,13 +24,12 @@ archive_demoapp() {
     local sandbox="$1"
     
     if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
+        vr_log::error "DEVICE" "Sandbox path required"
         return 1
     fi
     
-    # Check if xcodebuild exists
     if ! command -v xcodebuild >/dev/null 2>&1; then
-        vr_log_warn "[DEVICE] xcodebuild command not found, skipping archive"
+        vr_log::warn "DEVICE" "[DEVICE] xcodebuild command not found, skipping archive"
         return 0
     fi
     
@@ -41,34 +39,30 @@ archive_demoapp() {
     local workspace="$demoapp_dir/MSPDemoApp.xcworkspace"
     local project="$demoapp_dir/MSPDemoApp.xcodeproj"
     
-    # Determine build target
     local build_target=""
     if [[ -d "$workspace" ]] || [[ -L "$workspace" ]]; then
         build_target="-workspace MSPDemoApp.xcworkspace"
     elif [[ -d "$project" ]]; then
         build_target="-project MSPDemoApp.xcodeproj"
     else
-        vr_log_error "[DEVICE] Neither workspace nor project found"
+        vr_log::error "DEVICE" "[DEVICE] Neither workspace nor project found"
         return 1
     fi
     
-    # Create temporary log file for xcodebuild output
     local build_log
     build_log="$(mktemp)" || {
-        vr_log_error "[DEVICE] Failed to create temporary log file"
+        vr_log::error "DEVICE" "[DEVICE] Failed to create temporary log file"
         return 1
     }
     
-    # Change to DemoApp directory and run xcodebuild archive
     pushd "$demoapp_dir" >/dev/null || {
-        vr_log_error "[DEVICE] Failed to change to DemoApp directory"
+        vr_log::error "DEVICE" "[DEVICE] Failed to change to DemoApp directory"
         rm -f "$build_log"
         return 1
     }
     
-    vr_log_info "[DEVICE] Archiving DemoApp via xcodebuild..."
+    vr_log::info "DEVICE" "[DEVICE] Archiving DemoApp via xcodebuild..."
     
-    # Archive command
     local archive_path="$demoapp_dir/DemoApp.xcarchive"
     if xcodebuild \
         $build_target \
@@ -80,14 +74,13 @@ archive_demoapp() {
         clean archive \
         >"$build_log" 2>&1; then
         
-        # Verify archive exists
         if [[ -d "$archive_path" ]]; then
-            vr_log_info "[DEVICE] Archive succeeded: $archive_path"
+            vr_log::info "DEVICE" "[DEVICE] Archive succeeded: $archive_path"
             rm -f "$build_log"
             popd >/dev/null
             return 0
         else
-            vr_log_error "[DEVICE] Archive directory not found after build"
+            vr_log::error "DEVICE" "[DEVICE] Archive directory not found after build"
             echo "---------- XCODEBUILD OUTPUT (last 80 lines) ----------"
             tail -n 80 "$build_log" || cat "$build_log"
             echo "------------------------------------------------------"
@@ -96,7 +89,7 @@ archive_demoapp() {
             return 1
         fi
     else
-        vr_log_error "[DEVICE] Archive failed"
+        vr_log::error "DEVICE" "[DEVICE] Archive failed"
         echo "---------- XCODEBUILD OUTPUT (last 80 lines) ----------"
         tail -n 80 "$build_log" || cat "$build_log"
         echo "------------------------------------------------------"

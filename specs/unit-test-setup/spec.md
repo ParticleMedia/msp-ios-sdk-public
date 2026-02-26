@@ -17,7 +17,7 @@ As a developer, I want to run unit tests locally against the SDK modules so that
 
 **Acceptance Scenarios**:
 
-1. **Given** the test infrastructure is set up and dependencies are installed, **When** a developer runs `xcodebuild test -scheme AllTests`, **Then** all configured test targets execute and report pass/fail results
+1. **Given** the test infrastructure is set up and dependencies are installed, **When** a developer runs `xcodebuild test -scheme MSPTests`, **Then** all configured test targets execute and report pass/fail results
 2. **Given** a test file exists with Quick/Nimble syntax, **When** the test suite runs, **Then** the BDD-style tests (describe/it/expect) execute correctly
 3. **Given** Quick 7.x and Nimble 13.x pods are configured, **When** `pod install` completes, **Then** the testing frameworks are available for import in test files
 

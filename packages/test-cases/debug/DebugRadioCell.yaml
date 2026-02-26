@@ -1,0 +1,35 @@
+module: DebugRadioCell
+prefix: DRC
+description: "Test cases for DebugRadioCellViewModel"
+bundle: MSPCoreTests
+created: '2026-02-22'
+updated: '2026-02-23'
+cases:
+- id: DRC001
+  type: unit
+  description: "Exposes the option id and title"
+  priority: high
+  tags: [unit, initialization]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugRadioCellViewModelSpec.swift
+  status: implemented
+  class: DebugRadioCellViewModel
+  method: init(debugOption:)
+  doubles:
+    option:
+      type: fake
+      class: FakeDebugOption
+      reason: "Value-type providing option data for initialization"
+- id: DRC002
+  type: unit
+  description: "Updates selection state and publishes changes"
+  priority: high
+  tags: [unit, selection, combine]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugRadioCellViewModelSpec.swift
+  status: implemented
+  class: DebugRadioCellViewModel
+  method: setSelected(_:)
+  doubles:
+    option:
+      type: fake
+      class: FakeDebugOption
+      reason: "Value-type providing option data for initialization"

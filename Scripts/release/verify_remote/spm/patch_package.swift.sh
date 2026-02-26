@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../common/utils.sh"
 
 # ============================================================================
@@ -27,7 +26,7 @@ patch_package_swift() {
     local version="$3"
     
     if [[ -z "$sandbox" ]] || [[ -z "$remote_url" ]] || [[ -z "$version" ]]; then
-        vr_log_error "Sandbox path, remote URL, and remote version required"
+        vr_log::error "SPM" "Sandbox path, remote URL, and remote version required"
         return 1
     fi
     
@@ -36,7 +35,7 @@ patch_package_swift() {
     local product_name="${REMOTE_PRODUCT_NAME:-}"
     
     if [[ -z "$package_name" ]] || [[ -z "$product_name" ]]; then
-        vr_log_error "REMOTE_PACKAGE_NAME and REMOTE_PRODUCT_NAME must be set (run parse_remote_package.sh first)"
+        vr_log::error "SPM" "REMOTE_PACKAGE_NAME and REMOTE_PRODUCT_NAME must be set (run parse_remote_package.sh first)"
         return 1
     fi
     
@@ -64,11 +63,11 @@ let package = Package(
 )
 EOF
     
-    vr_log_info "[SPM] Generated Package.swift:"
-    vr_log_info "  URL:           $remote_url"
-    vr_log_info "  Version:       $version"
-    vr_log_info "  Package name:  $package_name"
-    vr_log_info "  Product name:  $product_name"
+    vr_log::info "SPM" "[SPM] Generated Package.swift:"
+    vr_log::info "SPM" "  URL:           $remote_url"
+    vr_log::info "SPM" "  Version:       $version"
+    vr_log::info "SPM" "  Package name:  $package_name"
+    vr_log::info "SPM" "  Product name:  $product_name"
     
     return 0
 }

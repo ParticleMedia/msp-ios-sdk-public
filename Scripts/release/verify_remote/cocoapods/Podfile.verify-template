@@ -1,0 +1,16 @@
+# ============================================================================
+# Podfile Template for CocoaPods Remote Verification Sandbox
+# ============================================================================
+# Verifies pods are resolvable from CocoaPods trunk (consumer perspective).
+#
+# Placeholders (substituted by patch_podfile.sh):
+#   {{POD_NAME}}    - Pod to verify (default: MSPCore)
+#   {{POD_VERSION}} - Version to verify
+# ============================================================================
+
+platform :ios, '15.0'
+use_frameworks!
+
+target 'MSPDemoApp' do
+  pod '{{POD_NAME}}', '{{POD_VERSION}}'
+end

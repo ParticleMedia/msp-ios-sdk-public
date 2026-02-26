@@ -1,0 +1,46 @@
+module: MSPVersion
+prefix: MVS
+description: "getMSPVersion() reads SDKVersion from Config.plist via MSPCoreResources bundle"
+bundle: MSPCoreTests
+created: "2026-02-26"
+updated: "2026-02-26"
+cases:
+  - id: MVS001
+    type: unit
+    description: "getMSPVersion returns non-empty string when Config.plist exists"
+    priority: critical
+    tags: [unit, smoke, version]
+    file: Tests/MSPCoreTests/Specs/MSPVersionSpec.swift
+    status: implemented
+    class: MSP
+    method: "getMSPVersion()"
+
+  - id: MVS002
+    type: unit
+    description: "getMSPVersion returns valid version format with dot separator"
+    priority: high
+    tags: [unit, version]
+    file: Tests/MSPCoreTests/Specs/MSPVersionSpec.swift
+    status: implemented
+    class: MSP
+    method: "getMSPVersion()"
+
+  - id: MVS003
+    type: unit
+    description: "getMSPVersion returns consistent results across multiple calls"
+    priority: medium
+    tags: [unit, version]
+    file: Tests/MSPCoreTests/Specs/MSPVersionSpec.swift
+    status: implemented
+    class: MSP
+    method: "getMSPVersion()"
+
+  - id: MVS004
+    type: unit
+    description: "getMSPVersion returns non-empty when Config.plist is reachable via bundle"
+    priority: high
+    tags: [unit, version, resource-bundle]
+    file: Tests/MSPCoreTests/Specs/MSPVersionSpec.swift
+    status: implemented
+    class: MSP
+    method: "getMSPVersion()"

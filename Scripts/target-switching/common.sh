@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
+# Only enforce when inside a git repository (safe for temp dirs)
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
+if git rev-parse --git-dir >/dev/null 2>&1; then
+    . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+fi
 # --- End MSP Worktree Safety Guard (Patch L, shared) ---
 # ============================================================================
 # Common Functions for Target Switching
@@ -14,7 +17,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -25,7 +27,6 @@ source "$ROOT_DIR/Scripts/lib/colors.sh"
 # shellcheck source=Scripts/lib/ui.sh
 source "$ROOT_DIR/Scripts/lib/ui.sh"
 
-# Initialize paths
 init_paths
 
 # ============================================================================
@@ -119,7 +120,7 @@ check_package_swift_state() {
     
     # Template must ALWAYS exist (developer-maintained)
     if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
-        log_warn "Package.swift.template is missing! This is a developer-maintained file."
+        log::warn "TARGET" "Package.swift.template is missing! This is a developer-maintained file."
         return 1
     fi
     
@@ -145,27 +146,27 @@ check_package_swift_state() {
 # Ensure Package.swift is in correct state for Pods mode (Template Architecture)
 # In Pods mode: Delete Package.swift (template remains untouched)
 ensure_package_swift_disabled() {
-    log_step "Ensuring Package.swift is removed for Pods mode"
+    log::step "TARGET" "Ensuring Package.swift is removed for Pods mode"
     
     # Verify template exists (developer-maintained)
     if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
-        log_error "Package.swift.template is missing! Cannot proceed."
-        log_info "This is a developer-maintained file that must exist in the repository."
+        log::error "TARGET" "Package.swift.template is missing! Cannot proceed."
+        log::info "TARGET" "This is a developer-maintained file that must exist in the repository."
         return 1
     fi
     
     # Clean up legacy .disabled file if it exists
     if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_info "Removing legacy Package.swift.disabled"
+        log::info "TARGET" "Removing legacy Package.swift.disabled"
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
     # Delete runtime Package.swift (generated from template in SPM mode)
     if [[ -f "$PACKAGE_SWIFT" ]]; then
         rm -f "$PACKAGE_SWIFT"
-        log_success "Package.swift removed (template preserved at Package.swift.template)"
+        log::success "TARGET" "Package.swift removed (template preserved at Package.swift.template)"
     else
-        log_info "Package.swift already removed"
+        log::info "TARGET" "Package.swift already removed"
     fi
 }
 
@@ -175,32 +176,32 @@ ensure_package_swift_disabled() {
 ensure_package_swift_enabled() {
     local mode="${1:-spm}"  # Default to 'spm', can be 'spm-release' for core-only generation
     
-    log_step "Ensuring Package.swift is generated from template for SPM mode"
+    log::step "TARGET" "Ensuring Package.swift is generated from template for SPM mode"
     
     # Verify template exists (developer-maintained)
     if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
-        log_error "Package.swift.template is missing! Cannot proceed."
-        log_info "This is a developer-maintained file that must exist in the repository."
+        log::error "TARGET" "Package.swift.template is missing! Cannot proceed."
+        log::info "TARGET" "This is a developer-maintained file that must exist in the repository."
         return 1
     fi
     
     # Clean up legacy .disabled file if it exists
     if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_info "Removing legacy Package.swift.disabled"
+        log::info "TARGET" "Removing legacy Package.swift.disabled"
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
     # For spm-release mode: Generate core-only Package.swift
     if [[ "$mode" == "spm-release" ]]; then
-        log_info "Generating core-only Package.swift for spm-release (excluding missing third-party SDKs)"
+        log::info "TARGET" "Generating core-only Package.swift for spm-release (excluding missing third-party SDKs)"
         generate_core_only_package_swift
-        log_success "Package.swift generated (core-only mode)"
+        log::success "TARGET" "Package.swift generated (core-only mode)"
         return 0
     fi
     
     # For regular spm mode: Copy template to runtime Package.swift
     cp "$PACKAGE_SWIFT_TEMPLATE" "$PACKAGE_SWIFT"
-    log_success "Package.swift generated from Package.swift.template"
+    log::success "TARGET" "Package.swift generated from Package.swift.template"
     return 0
 }
 
@@ -214,11 +215,11 @@ generate_core_only_package_swift() {
     # Use Ruby script for robust filtering (consistent with podspec manipulation)
     if [[ -f "$ruby_script" ]] && command -v ruby >/dev/null 2>&1; then
         if ! ruby "$ruby_script" "$PACKAGE_SWIFT_TEMPLATE" "$temp_package"; then
-            log_error "Failed to generate core-only Package.swift"
+            log::error "TARGET" "Failed to generate core-only Package.swift"
             return 1
         fi
     else
-        log_error "Ruby script not found or ruby not available: $ruby_script"
+        log::error "TARGET" "Ruby script not found or ruby not available: $ruby_script"
         return 1
     fi
     
@@ -233,13 +234,13 @@ auto_fix_package_swift_state() {
     case "$target_mode" in
         pods|pods-dev|pods-release)
             if [[ -f "$PACKAGE_SWIFT" ]]; then
-                log_warn "⚠️ Pods mode detected but Package.swift exists. Auto-removing..."
+                log::warn "TARGET" "⚠️ Pods mode detected but Package.swift exists. Auto-removing..."
                 ensure_package_swift_disabled
             fi
             ;;
         spm|spm-release)
             if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-                log_warn "⚠️ SPM mode detected but Package.swift is missing. Auto-generating..."
+                log::warn "TARGET" "⚠️ SPM mode detected but Package.swift is missing. Auto-generating..."
                 ensure_package_swift_enabled
             fi
             ;;
@@ -253,10 +254,10 @@ auto_fix_package_swift_state() {
 # All switching-generated files should be in .gitignore.
 
 verify_git_cleanliness() {
-    log_step "Verifying git status is clean after switching"
+    log::step "TARGET" "Verifying git status is clean after switching"
 
     if [[ "${MSP_ALLOW_DIRTY:-0}" == "1" ]]; then
-        log_warn "Skipping git cleanliness check (MSP_ALLOW_DIRTY=1)"
+        log::warn "TARGET" "Skipping git cleanliness check (MSP_ALLOW_DIRTY=1)"
         return 0
     fi
     
@@ -264,7 +265,7 @@ verify_git_cleanliness() {
     dirty_files=$(git status --porcelain 2>/dev/null || echo "")
     
     if [[ -z "$dirty_files" ]]; then
-        log_success "Git status is clean - switching did not modify tracked files"
+        log::success "TARGET" "Git status is clean - switching did not modify tracked files"
         return 0
     fi
     
@@ -282,7 +283,7 @@ verify_git_cleanliness() {
         # (These are expected but may not be ignored yet)
         case "$filepath" in
             Package.swift|workspace.yml|Examples/*/project.yml|.generated/*|msp-ios-sdk.xcworkspace)
-                log_warn "File should be in .gitignore: $filepath"
+                log::warn "TARGET" "File should be in .gitignore: $filepath"
                 ;;
             *)
                 unexpected_files+="$line"$'\n'
@@ -291,15 +292,15 @@ verify_git_cleanliness() {
     done <<< "$dirty_files"
     
     if [[ -n "$unexpected_files" ]]; then
-        log_error "Unexpected files modified by switching:"
+        log::error "TARGET" "Unexpected files modified by switching:"
         echo "$unexpected_files" | while IFS= read -r line; do
-            [[ -n "$line" ]] && log_error "  $line"
+            [[ -n "$line" ]] && log::error "TARGET" "  $line"
         done
-        log_error "Switching should NEVER modify tracked files!"
+        log::error "TARGET" "Switching should NEVER modify tracked files!"
         return 1
     fi
     
-    log_success "Git status check passed (only switching-generated files present)"
+    log::success "TARGET" "Git status check passed (only switching-generated files present)"
     return 0
 }
 
@@ -310,7 +311,7 @@ verify_git_cleanliness() {
 # These are kept for backward compatibility during migration
 
 log_warning() {
-    log_warn "$1"
+    log::warn "TARGET" "$1"
 }
 
 # ============================================================================
@@ -319,7 +320,7 @@ log_warning() {
 
 ensure_repo_root() {
     if [[ ! -f "$ROOT_DIR/.git/config" ]] && [[ ! -f "$ROOT_DIR/Podfile" ]]; then
-        log_error "Not in MSP iOS SDK repository. Aborting."
+        log::error "TARGET" "Not in MSP iOS SDK repository. Aborting."
         exit 1
     fi
 }
@@ -361,23 +362,23 @@ safe_remove_workspace() {
     
     # Verify path is within repo root (safety check)
     if [[ "$workspace_path" != "$ROOT_DIR"* ]]; then
-        log_error "Refusing to remove workspace outside repo root: $workspace_path"
+        log::error "TARGET" "Refusing to remove workspace outside repo root: $workspace_path"
         return 1
     fi
     
     # Verify it's actually a workspace (has contents.xcworkspacedata)
     if [[ ! -f "$workspace_path/contents.xcworkspacedata" ]]; then
-        log_warning "Path does not appear to be a workspace: $workspace_path"
+        log::warn "TARGET" "Path does not appear to be a workspace: $workspace_path"
         return 1
     fi
     
     # Double-check we're not inside an .xcodeproj bundle
     if [[ "$workspace_path" == *".xcodeproj/"* ]]; then
-        log_error "Refusing to delete workspace inside .xcodeproj: $workspace_path"
+        log::error "TARGET" "Refusing to delete workspace inside .xcodeproj: $workspace_path"
         return 1
     fi
     
-    log_info "Removing workspace: $(basename "$workspace_path")"
+    log::info "TARGET" "Removing workspace: $(basename "$workspace_path")"
     
     # Try standard rm -rf first
     if rm -rf "$workspace_path" 2>/dev/null; then
@@ -388,7 +389,7 @@ safe_remove_workspace() {
     fi
     
     # Fallback: Use find -delete
-    log_warn "Standard removal failed, trying find -delete method"
+    log::warn "TARGET" "Standard removal failed, trying find -delete method"
     if find "$workspace_path" -delete 2>/dev/null; then
         if [[ ! -d "$workspace_path" ]]; then
             return 0
@@ -396,7 +397,7 @@ safe_remove_workspace() {
     fi
     
     # Last resort: Retry with force
-    log_warn "Attempting forced removal with retry"
+    log::warn "TARGET" "Attempting forced removal with retry"
     local retry_count=0
     local max_retries=3
     while [[ $retry_count -lt $max_retries ]] && [[ -d "$workspace_path" ]]; do
@@ -407,7 +408,7 @@ safe_remove_workspace() {
     
     # Final check
     if [[ -d "$workspace_path" ]]; then
-        log_error "Failed to remove workspace after $max_retries attempts: $workspace_path"
+        log::error "TARGET" "Failed to remove workspace after $max_retries attempts: $workspace_path"
         return 1
     fi
     
@@ -442,8 +443,8 @@ safe_remove_directory() {
     # Check if the directory path matches any protected XCFramework
     for protected in "${protected_paths[@]}"; do
         if [[ "$dir_path" == *"$protected"* ]] || [[ "$dir_path" == "$ROOT_DIR/$protected" ]]; then
-            log_error "Refusing to delete protected XCFramework: $protected"
-            log_error "Path: $dir_path"
+            log::error "TARGET" "Refusing to delete protected XCFramework: $protected"
+            log::error "TARGET" "Path: $dir_path"
             return 1
         fi
     done
@@ -452,7 +453,7 @@ safe_remove_directory() {
     if [[ "$dir_path" == "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks" ]] || \
        [[ "$dir_path" == "$ROOT_DIR/ThirdParty/PrebidMobile" ]] || \
        [[ "$dir_path" == "$ROOT_DIR/Sources/Core/MSPOMSDK" ]]; then
-        log_error "Refusing to delete directory containing protected XCFrameworks: $dir_path"
+        log::error "TARGET" "Refusing to delete directory containing protected XCFrameworks: $dir_path"
         return 1
     fi
     
@@ -462,11 +463,11 @@ safe_remove_directory() {
     
     # Verify path is within repo root (safety check)
     if [[ "$dir_path" != "$ROOT_DIR"* ]]; then
-        log_error "Refusing to remove directory outside repo root: $dir_path"
+        log::error "TARGET" "Refusing to remove directory outside repo root: $dir_path"
         return 1
     fi
     
-    log_info "Removing $description: $(basename "$dir_path")"
+    log::info "TARGET" "Removing $description: $(basename "$dir_path")"
     
     # Try standard rm -rf first
     if rm -rf "$dir_path" 2>/dev/null; then
@@ -477,7 +478,7 @@ safe_remove_directory() {
     fi
     
     # Fallback: Use find -delete for stubborn directories
-    log_warn "Standard removal failed, trying find -delete method"
+    log::warn "TARGET" "Standard removal failed, trying find -delete method"
     if find "$dir_path" -delete 2>/dev/null; then
         if [[ ! -d "$dir_path" ]]; then
             return 0
@@ -485,7 +486,7 @@ safe_remove_directory() {
     fi
     
     # Last resort: Try with force and wait
-    log_warn "Attempting forced removal with retry"
+    log::warn "TARGET" "Attempting forced removal with retry"
     local retry_count=0
     local max_retries=3
     while [[ $retry_count -lt $max_retries ]] && [[ -d "$dir_path" ]]; do
@@ -496,8 +497,8 @@ safe_remove_directory() {
     
     # Final check
     if [[ -d "$dir_path" ]]; then
-        log_error "Failed to remove $description after $max_retries attempts: $dir_path"
-        log_info "Directory may be locked or in use. Try closing Xcode and retrying."
+        log::error "TARGET" "Failed to remove $description after $max_retries attempts: $dir_path"
+        log::info "TARGET" "Directory may be locked or in use. Try closing Xcode and retrying."
         return 1
     fi
     
@@ -548,10 +549,10 @@ check_xcframeworks_exist() {
     for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
-            log_warning "Core XCFramework missing: $xcf"
+            log::warn "TARGET" "Core XCFramework missing: $xcf"
             ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
-            log_warning "Core XCFramework invalid (missing Info.plist): $xcf"
+            log::warn "TARGET" "Core XCFramework invalid (missing Info.plist): $xcf"
             ((missing++)) || true
         fi
     done
@@ -560,10 +561,10 @@ check_xcframeworks_exist() {
     for xcf in "${THIRDPARTY_XCFRAMEWORKS[@]}"; do
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
-            log_warning "ThirdParty XCFramework missing: $xcf"
+            log::warn "TARGET" "ThirdParty XCFramework missing: $xcf"
             ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
-            log_warning "ThirdParty XCFramework invalid (missing Info.plist): $xcf"
+            log::warn "TARGET" "ThirdParty XCFramework invalid (missing Info.plist): $xcf"
             ((missing++)) || true
         fi
     done
@@ -579,10 +580,10 @@ check_required_xcframeworks() {
     for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
-            log_warning "Required XCFramework missing: $xcf"
+            log::warn "TARGET" "Required XCFramework missing: $xcf"
             ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
-            log_warning "Required XCFramework invalid (missing Info.plist): $xcf"
+            log::warn "TARGET" "Required XCFramework invalid (missing Info.plist): $xcf"
             ((missing++)) || true
         fi
     done
@@ -591,10 +592,10 @@ check_required_xcframeworks() {
     for xcf in "${THIRDPARTY_XCFRAMEWORKS[@]}"; do
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
-            log_warning "Required ThirdParty XCFramework missing: $xcf"
+            log::warn "TARGET" "Required ThirdParty XCFramework missing: $xcf"
             ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
-            log_warning "Required ThirdParty XCFramework invalid (missing Info.plist): $xcf"
+            log::warn "TARGET" "Required ThirdParty XCFramework invalid (missing Info.plist): $xcf"
             ((missing++)) || true
         fi
     done
@@ -603,10 +604,10 @@ check_required_xcframeworks() {
     for xcf in "${EMBEDDED_XCFRAMEWORKS[@]}"; do
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
-            log_warning "Required embedded XCFramework missing: $xcf"
+            log::warn "TARGET" "Required embedded XCFramework missing: $xcf"
             ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
-            log_warning "Required embedded XCFramework invalid (missing Info.plist): $xcf"
+            log::warn "TARGET" "Required embedded XCFramework invalid (missing Info.plist): $xcf"
             ((missing++)) || true
         fi
     done
@@ -621,7 +622,7 @@ check_adapter_sources() {
     for adapter in "${ADAPTER_SOURCES[@]}"; do
         local adapter_path="$ROOT_DIR/$adapter"
         if [[ ! -d "$adapter_path" ]]; then
-            log_warning "Adapter source missing: $adapter"
+            log::warn "TARGET" "Adapter source missing: $adapter"
             ((missing++)) || true
         fi
     done
@@ -639,25 +640,25 @@ validate_environment() {
     
     # Validate YAML files exist
     if [[ ! -f "$PROJECT_SPEC" ]]; then
-        log_error "project.yml missing: $PROJECT_SPEC"
+        log::error "TARGET" "project.yml missing: $PROJECT_SPEC"
         ((errors++)) || true
     fi
     
     if [[ ! -f "$WORKSPACE_SPEC" ]]; then
-        log_error "workspace.yml missing: $WORKSPACE_SPEC"
+        log::error "TARGET" "workspace.yml missing: $WORKSPACE_SPEC"
         ((errors++)) || true
     fi
     
     # Validate Package.swift state (Template Architecture)
     # Template must ALWAYS exist (developer-maintained)
     if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
-        log_error "Package.swift.template missing (developer-maintained file)"
+        log::error "TARGET" "Package.swift.template missing (developer-maintained file)"
         ((errors++)) || true
     fi
     
     # Clean up legacy .disabled file if it exists
     if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_warn "Legacy Package.swift.disabled found - removing"
+        log::warn "TARGET" "Legacy Package.swift.disabled found - removing"
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
@@ -666,42 +667,42 @@ validate_environment() {
         spm|spm-release)
             # SPM mode: Package.swift must exist (copied from template)
             if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-                log_error "Package.swift missing (required for SPM mode)"
+                log::error "TARGET" "Package.swift missing (required for SPM mode)"
                 ((errors++)) || true
             fi
             
             if [[ -d "$PODS_DIR" ]]; then
-                log_error "Pods/ directory exists (should be removed for SPM)"
+                log::error "TARGET" "Pods/ directory exists (should be removed for SPM)"
                 ((errors++)) || true
             fi
             
             # Check project.yml has SPM target, not Pods target
             if grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml contains MSPDemoApp target (should be MSPDemoApp-SPM for SPM mode)"
+                log::error "TARGET" "project.yml contains MSPDemoApp target (should be MSPDemoApp-SPM for SPM mode)"
                 ((errors++)) || true
             fi
             
             if ! grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml missing MSPDemoApp-SPM target (required for SPM mode)"
+                log::error "TARGET" "project.yml missing MSPDemoApp-SPM target (required for SPM mode)"
                 ((errors++)) || true
             fi
             
             # Check for Pods xcconfig references
             if grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml contains Pods xcconfig references (should not in SPM mode)"
+                log::error "TARGET" "project.yml contains Pods xcconfig references (should not in SPM mode)"
                 ((errors++)) || true
             fi
             
             # Check workspace.yml doesn't include Pods project
             if grep -q "Pods/Pods.xcodeproj" "$WORKSPACE_SPEC" 2>/dev/null; then
-                log_error "workspace.yml contains Pods project (should not in SPM mode)"
+                log::error "TARGET" "workspace.yml contains Pods project (should not in SPM mode)"
                 ((errors++)) || true
             fi
             
             # Verify required XCFrameworks exist
             if ! check_required_xcframeworks >/dev/null 2>&1; then
                 xcf_missing=$?
-                log_error "$xcf_missing required XCFramework(s) missing for SPM mode"
+                log::error "TARGET" "$xcf_missing required XCFramework(s) missing for SPM mode"
                 ((errors++)) || true
             fi
             ;;
@@ -709,29 +710,29 @@ validate_environment() {
         pods|pods-dev|pods-release)
             # Pods mode: Package.swift must NOT exist (deleted, template preserved)
             if [[ -f "$PACKAGE_SWIFT" ]]; then
-                log_error "Package.swift exists (should be removed in Pods mode)"
+                log::error "TARGET" "Package.swift exists (should be removed in Pods mode)"
                 ((errors++)) || true
             fi
             
             if [[ ! -d "$PODS_DIR" ]]; then
-                log_error "Pods/ directory missing (required for CocoaPods)"
+                log::error "TARGET" "Pods/ directory missing (required for CocoaPods)"
                 ((errors++)) || true
             fi
             
             # Check project.yml has Pods target, not SPM target
             if ! grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml missing MSPDemoApp target (required for Pods mode)"
+                log::error "TARGET" "project.yml missing MSPDemoApp target (required for Pods mode)"
                 ((errors++)) || true
             fi
             
             if grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml contains MSPDemoApp-SPM target (should be MSPDemoApp for Pods mode)"
+                log::error "TARGET" "project.yml contains MSPDemoApp-SPM target (should be MSPDemoApp for Pods mode)"
                 ((errors++)) || true
             fi
             
             # Check for Pods xcconfig references
             if ! grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml missing Pods xcconfig references (required for Pods mode)"
+                log::error "TARGET" "project.yml missing Pods xcconfig references (required for Pods mode)"
                 ((errors++)) || true
             fi
             
@@ -740,7 +741,7 @@ validate_environment() {
                 if ! grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
                     # Check if there are any package entries (not just empty)
                     if grep -A 1 "^packages:" "$PROJECT_SPEC" 2>/dev/null | grep -qE "^  [A-Za-z]"; then
-                        log_error "project.yml contains SwiftPM packages (should be empty in Pods mode)"
+                        log::error "TARGET" "project.yml contains SwiftPM packages (should be empty in Pods mode)"
                         ((errors++)) || true
                     fi
                 fi

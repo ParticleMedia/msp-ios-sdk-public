@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -17,10 +17,9 @@ readonly PLUGIN_NAME="local"
 readonly PLUGIN_VERSION="1.0.0"
 readonly PLUGIN_DESCRIPTION="Local Development Environment Plugin"
 
-# Source dependencies
+# Source dependencies (common.sh provides unified logging)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/common.sh"
-source "$SCRIPT_DIR/../lib/logging.sh"
 
 # Plugin activation check
 is_plugin_active() {
@@ -33,7 +32,7 @@ plugin_init() {
         return $EXIT_SUCCESS
     fi
     
-    log_debug "Initializing local development plugin..."
+    log::debug "PLUGIN" "Initializing local development plugin..."
     
     # Configure local development settings
     configure_local_environment
@@ -44,12 +43,12 @@ plugin_init() {
     # Setup development helpers
     setup_development_helpers
     
-    log_success "Local development plugin initialized"
+    log::success "PLUGIN" "Local development plugin initialized"
 }
 
 # Environment configuration
 configure_local_environment() {
-    log_step "Configuring local development environment..."
+    log::step "PLUGIN" "Configuring local development environment..."
     
     # Override settings for local development
     export SKIP_CODE_SIGN=1
@@ -70,12 +69,12 @@ configure_local_environment() {
     export COCOAPODS_DISABLE_STATS=1
     export HOMEBREW_NO_AUTO_UPDATE=1
     
-    log_debug "Local environment variables configured"
+    log::debug "PLUGIN" "Local environment variables configured"
 }
 
 # Local optimizations
 setup_local_optimizations() {
-    log_step "Setting up local build optimizations..."
+    log::step "PLUGIN" "Setting up local build optimizations..."
     
     # Use local derived data for faster incremental builds
     export DERIVED_DATA_PATH="${HOME}/Library/Developer/Xcode/DerivedData/MSP-iOS-SDK"
@@ -87,11 +86,11 @@ setup_local_optimizations() {
     # Configure git settings for development
     configure_git_settings
     
-    log_success "Local optimizations configured"
+    log::success "PLUGIN" "Local optimizations configured"
 }
 
 setup_local_caching() {
-    log_debug "Setting up local caching..."
+    log::debug "PLUGIN" "Setting up local caching..."
     
     # CocoaPods cache
     local pods_cache_dir="${HOME}/.msp_pods_cache"
@@ -106,32 +105,32 @@ setup_local_caching() {
     # Xcode cache optimizations
     export CLANG_MODULE_CACHE_PATH="${HOME}/Library/Caches/org.llvm.clang/ModuleCache"
     
-    log_debug "Local caching configured"
+    log::debug "PLUGIN" "Local caching configured"
 }
 
 configure_git_settings() {
-    log_debug "Configuring git settings for development..."
+    log::debug "PLUGIN" "Configuring git settings for development..."
     
     # Check if git is configured
     if ! git config user.name >/dev/null 2>&1; then
-        log_info "Git user.name not configured. Consider setting it with: git config --global user.name \"Your Name\""
+        log::info "PLUGIN" "Git user.name not configured. Consider setting it with: git config --global user.name \"Your Name\""
     fi
     
     if ! git config user.email >/dev/null 2>&1; then
-        log_info "Git user.email not configured. Consider setting it with: git config --global user.email \"your.email@example.com\""
+        log::info "PLUGIN" "Git user.email not configured. Consider setting it with: git config --global user.email \"your.email@example.com\""
     fi
     
     # Setup git hooks directory if it doesn't exist
     local hooks_dir=".git/hooks"
     if [[ -d ".git" ]] && [[ ! -d "$hooks_dir" ]]; then
         ensure_directory "$hooks_dir"
-        log_debug "Created git hooks directory"
+        log::debug "PLUGIN" "Created git hooks directory"
     fi
 }
 
 # Development helpers
 setup_development_helpers() {
-    log_step "Setting up development helpers..."
+    log::step "PLUGIN" "Setting up development helpers..."
     
     # Create helpful aliases
     setup_build_aliases
@@ -142,11 +141,11 @@ setup_development_helpers() {
     # Create development shortcuts
     create_development_shortcuts
     
-    log_success "Development helpers configured"
+    log::success "PLUGIN" "Development helpers configured"
 }
 
 setup_build_aliases() {
-    log_debug "Setting up build aliases..."
+    log::debug "PLUGIN" "Setting up build aliases..."
     
     # Create temporary alias file
     local alias_file="/tmp/msp_build_aliases.sh"
@@ -186,12 +185,12 @@ if command -v bundle >/dev/null 2>&1; then
 fi
 EOF
     
-    log_info "Build aliases created at $alias_file"
-    log_info "Source with: source $alias_file"
+    log::info "PLUGIN" "Build aliases created at $alias_file"
+    log::info "PLUGIN" "Source with: source $alias_file"
 }
 
 setup_ide_integration() {
-    log_debug "Setting up IDE integration..."
+    log::debug "PLUGIN" "Setting up IDE integration..."
     
     # Create VS Code settings for better development experience
     if command -v code >/dev/null 2>&1; then
@@ -230,7 +229,7 @@ setup_vscode_integration() {
     }
 }
 EOF
-        log_debug "Created VS Code settings"
+        log::debug "PLUGIN" "Created VS Code settings"
     fi
     
     # Create VS Code tasks if they don't exist
@@ -293,18 +292,18 @@ EOF
     ]
 }
 EOF
-        log_debug "Created VS Code tasks"
+        log::debug "PLUGIN" "Created VS Code tasks"
     fi
 }
 
 setup_xcode_integration() {
-    log_debug "Setting up Xcode integration..."
+    log::debug "PLUGIN" "Setting up Xcode integration..."
     
     # Create shared Xcode schemes if they don't exist
     local shared_schemes_dir="msp-ios-sdk.xcworkspace/xcshareddata/xcschemes"
     if [[ -d "msp-ios-sdk.xcworkspace" ]]; then
         ensure_directory "$shared_schemes_dir"
-        log_debug "Ensured Xcode shared schemes directory exists"
+        log::debug "PLUGIN" "Ensured Xcode shared schemes directory exists"
     fi
     
     # Set Xcode preferences for better development experience
@@ -312,7 +311,7 @@ setup_xcode_integration() {
 }
 
 configure_xcode_preferences() {
-    log_debug "Configuring Xcode preferences..."
+    log::debug "PLUGIN" "Configuring Xcode preferences..."
     
     # Create a temporary script to set Xcode preferences
     local xcode_prefs_script="/tmp/configure_xcode.sh"
@@ -336,12 +335,12 @@ echo "Xcode preferences configured for MSP iOS SDK development"
 EOF
     
     chmod +x "$xcode_prefs_script"
-    log_info "Xcode configuration script created at $xcode_prefs_script"
-    log_info "Run to apply: $xcode_prefs_script"
+    log::info "PLUGIN" "Xcode configuration script created at $xcode_prefs_script"
+    log::info "PLUGIN" "Run to apply: $xcode_prefs_script"
 }
 
 create_development_shortcuts() {
-    log_debug "Creating development shortcuts..."
+    log::debug "PLUGIN" "Creating development shortcuts..."
     
     # Create a development menu script
     local dev_menu_script="dev_menu.sh"
@@ -404,6 +403,7 @@ EOF2
         if bundle exec pod install --podfile=Podfile.temp --no-repo-update; then
             echo "Pod install succeeded with GitHub source backup"
             mv Podfile.temp Podfile
+            rm -f Podfile.backup
         else
             echo "Pod install failed even with GitHub source backup"
             mv Podfile.backup Podfile
@@ -416,12 +416,12 @@ esac
 EOF
     
     chmod +x "$dev_menu_script"
-    log_info "Development menu created: ./$dev_menu_script"
+    log::info "PLUGIN" "Development menu created: ./$dev_menu_script"
 }
 
 # Build customizations for local development
 customize_build_for_local() {
-    log_debug "Customizing build process for local development..."
+    log::debug "PLUGIN" "Customizing build process for local development..."
     
     # Enable additional debugging output
     export XCODE_XCCONFIG_FILE="Scripts/config/local.xcconfig"
@@ -473,12 +473,12 @@ CLANG_WARN_STRICT_PROTOTYPES = YES
 GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR
 GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE
 EOF
-        log_debug "Created local Xcode configuration: $xcconfig_file"
+        log::debug "PLUGIN" "Created local Xcode configuration: $xcconfig_file"
     fi
 }
 
 setup_build_notifications() {
-    log_debug "Setting up build notifications..."
+    log::debug "PLUGIN" "Setting up build notifications..."
     
     # Create notification helper script
     local notify_script="/tmp/msp_notify.sh"
@@ -518,7 +518,7 @@ EOF
 # Performance monitoring for local development
 monitor_local_performance() {
     if [[ "$BUILD_VERBOSE" == "YES" ]]; then
-        log_debug "Starting local performance monitoring..."
+        log::debug "PLUGIN" "Starting local performance monitoring..."
         
         # Monitor build times
         export BUILD_START_TIME=$(date +%s)
@@ -534,13 +534,13 @@ report_local_build_completion() {
         local formatted_duration
         formatted_duration=$(format_duration $build_duration)
         
-        log_info "Local build completed in $formatted_duration"
+        log::info "PLUGIN" "Local build completed in $formatted_duration"
         
         # Show system resource usage
         if command -v top >/dev/null 2>&1; then
             local memory_pressure
             memory_pressure=$(top -l 1 -s 0 | grep "PhysMem" | cut -d: -f2 | xargs)
-            log_debug "Memory usage: $memory_pressure"
+            log::debug "PLUGIN" "Memory usage: $memory_pressure"
         fi
     fi
 }
@@ -551,7 +551,7 @@ plugin_cleanup() {
         return $EXIT_SUCCESS
     fi
     
-    log_debug "Cleaning up local development plugin..."
+    log::debug "PLUGIN" "Cleaning up local development plugin..."
     
     # Remove temporary files
     local temp_files=(
@@ -571,7 +571,7 @@ plugin_cleanup() {
         "$BUILD_NOTIFICATION_SCRIPT" "build-success" 2>/dev/null || true
     fi
     
-    log_debug "Local development plugin cleanup completed"
+    log::debug "PLUGIN" "Local development plugin cleanup completed"
 }
 
 # Plugin command handlers
@@ -593,7 +593,7 @@ handle_plugin_command() {
             monitor_local_performance
             ;;
         *)
-            log_warn "Unknown local plugin command: $command"
+            log::warn "PLUGIN" "Unknown local plugin command: $command"
             return $EXIT_GENERAL_ERROR
             ;;
     esac

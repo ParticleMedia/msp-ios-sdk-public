@@ -9,10 +9,10 @@ import UIKit
 class DebugAdLoadViewModelSpec: QuickSpec {
     override class func spec() {
         describe("DebugAdLoadViewModel") {
-            var sectionsRepository: MockDebugSectionsRepository!
-            var placementsRepository: MockPlacementsRepository!
-            var loadAdRepository: MockLoadAdRepository!
-            var cancellables: Set<AnyCancellable>!
+            @TestState var sectionsRepository: MockDebugSectionsRepository!
+            @TestState var placementsRepository: MockPlacementsRepository!
+            @TestState var loadAdRepository: MockLoadAdRepository!
+            @TestState var cancellables: Set<AnyCancellable>!
 
             beforeEach {
                 sectionsRepository = MockDebugSectionsRepository()
@@ -22,7 +22,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
             }
 
             context("initialization") {
-                it("[DAL006] creates sections from repository data") {
+                it("[DAL006] should create sections from repository data") {
                     let placements = [TestConstants.Placements.placement1]
                     let sections = TestDataFactory.createMinimalSections()
                     placementsRepository.placementsToReturn = placements
@@ -41,7 +41,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(sut.sections.first?.numberOfCells).to(equal(sections.first?.options.count))
                 }
 
-                it("[DAL007] sets default selection for sections without showCondition") {
+                it("[DAL007] should set default selection for sections without showCondition") {
                     let sections = TestDataFactory.createMinimalSections()
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
@@ -55,7 +55,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(sut.sections.first?.selectedIndex()).to(equal(0))
                 }
 
-                it("[DAL008] handles empty placements and sections") {
+                it("[DAL008] should handle empty placements and sections") {
                     placementsRepository.placementsToReturn = []
                     sectionsRepository.sectionsToReturn = []
 
@@ -70,8 +70,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
             }
 
-            context("visibility rules") {
-                it("[DAL009] shows Nova sections when Nova + Interstitial are selected") {
+            context("when checking visibility rules") {
+                it("[DAL009] should show Nova sections when Nova + Interstitial are selected") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -103,7 +103,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(layoutVisible).to(beTrue())
                 }
 
-                it("[DAL010] hides Nova sections when conditions are not met") {
+                it("[DAL010] should hide Nova sections when conditions are not met") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -143,8 +143,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
             }
 
-            context("test parameter generation") {
-                it("[DAL011] includes basic parameters for selected options") {
+            context("when generating test parameters") {
+                it("[DAL011] should include basic parameters for selected options") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -168,7 +168,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(params["ad_network"] as? String).to(equal("msp_google"))
                 }
 
-                it("[DAL012] includes Nova-specific parameters when selected") {
+                it("[DAL012] should include Nova-specific parameters when selected") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -202,8 +202,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
             }
 
-            context("ad callbacks") {
-                it("[DAL013] emits ad presentation signal on successful load") {
+            context("when loading ads") {
+                it("[DAL013] should emit ad presentation signal on successful load") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -231,7 +231,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
 
                     loadAdRepository.mockAd = BannerAd(
                         adView: UIView(),
-                        adNetworkAdapter: MockAdNetworkAdapter()
+                        adNetworkAdapter: DummyAdNetworkAdapter()
                     )
                     loadAdRepository.shouldSucceed = true
 
@@ -240,7 +240,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(receivedSignal).toEventuallyNot(beNil())
                 }
 
-                it("[DAL014] emits toast signal on load error") {
+                it("[DAL014] should emit toast signal on load error") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -274,7 +274,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(lastMessage).toEventually(equal(TestConstants.Messages.errorMessage))
                 }
 
-                it("[DAL015] does not clear the ad reference on dismissal") {
+                it("[DAL015] should not clear the ad reference on dismissal") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -287,7 +287,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                         loadAdRepository: loadAdRepository
                     )
 
-                    let interstitialAd = InterstitialAd(adNetworkAdapter: MockAdNetworkAdapter())
+                    let interstitialAd = InterstitialAd(adNetworkAdapter: DummyAdNetworkAdapter())
                     loadAdRepository.mockAd = interstitialAd
                     loadAdRepository.shouldSucceed = true
 
@@ -337,35 +337,3 @@ private func decodeTestParams(from params: [String: String]) -> [String: Any] {
     return dict
 }
 
-private class MockAdNetworkAdapter: AdNetworkAdapter {
-    func loadAdCreative(
-        bidResponse: Any,
-        auctionBidListener: AuctionBidListener,
-        adListener: AdListener,
-        context: Any,
-        adRequest: AdRequest,
-        bidderPlacementId: String,
-        bidderFormat: AdFormat?,
-        params: [String: String]?
-    ) {}
-
-    func initialize(
-        initParams: InitializationParameters,
-        adapterInitListener: AdapterInitListener,
-        context: Any?
-    ) {}
-
-    func destroyAd() {}
-
-    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {}
-
-    func setAdMetricReporter(adMetricReporter: AdMetricReporter) {}
-
-    func getAdNetwork() -> AdNetwork { .unknown }
-
-    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {}
-
-    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {}
-
-    func getSDKVersion() -> String { "0.0.0" }
-}

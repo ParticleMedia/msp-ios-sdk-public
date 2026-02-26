@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -15,7 +15,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=Scripts/release/verify_remote/common/utils.sh
 source "$SCRIPT_DIR/../verify_remote/common/utils.sh"
@@ -47,7 +46,7 @@ LOCAL_VERIFY_MODE=""
 run_local_verification() {
     # Check if local verification is enabled
     if [[ "$LOCAL_VERIFY_ENABLED" != "1" ]]; then
-        vr_log_info "[LOCAL] Local verification disabled (MSP_LOCAL_VERIFY_ENABLED != 1)"
+        vr_log::info "LOCAL" "[LOCAL] Local verification disabled (MSP_LOCAL_VERIFY_ENABLED != 1)"
         return 0
     fi
     
@@ -58,74 +57,74 @@ run_local_verification() {
     elif [[ "$LOCAL_USE_SPM" == "1" ]]; then
         mode="spm"
     else
-        vr_log_warn "[LOCAL] Both Pods and SPM are disabled, skipping local verification"
+        vr_log::warn "LOCAL" "[LOCAL] Both Pods and SPM are disabled, skipping local verification"
         return 0
     fi
     
-    vr_log_info "[LOCAL] Starting local verification (mode: $mode)..."
+    vr_log::info "LOCAL" "[LOCAL] Starting local verification (mode: $mode)..."
     LOCAL_VERIFY_MODE="$mode"
 
     # Create sandbox
-    vr_log_info "[DEBUG] Entering sandbox creation"
+    vr_log::info "LOCAL" "[DEBUG] Entering sandbox creation"
     local SANDBOX_DIR
     SANDBOX_DIR="$(vr_create_sandbox "local")" || {
-        vr_log_error "[LOCAL] Failed to create sandbox"
+        vr_log::error "LOCAL" "[LOCAL] Failed to create sandbox"
         return 0  # Soft-fail
     }
-    vr_log_info "[DEBUG] Sandbox created: $SANDBOX_DIR"
-    vr_log_info "[DEBUG] Listing sandbox after creation: $(ls -la "$SANDBOX_DIR" 2>/dev/null | head -10 || echo '(empty or error)')"
+    vr_log::info "LOCAL" "[DEBUG] Sandbox created: $SANDBOX_DIR"
+    vr_log::info "LOCAL" "[DEBUG] Listing sandbox after creation: $(ls -la "$SANDBOX_DIR" 2>/dev/null | head -10 || echo '(empty or error)')"
     
     # Set up trap to clean up sandbox on exit (unless MSP_KEEP_SANDBOX is set)
     local cleanup_sandbox_path="$SANDBOX_DIR"
     if [[ "${MSP_KEEP_SANDBOX:-0}" == "1" ]]; then
-        vr_log_info "[PATCH H] Sandbox retention enabled — sandbox will be preserved: $SANDBOX_DIR"
+        vr_log::info "LOCAL" "[PATCH H] Sandbox retention enabled — sandbox will be preserved: $SANDBOX_DIR"
     else
         trap "vr_cleanup_sandbox '$cleanup_sandbox_path'" EXIT
     fi
     
     # Step 1: Prepare DemoApp
-    vr_log_info "[DEBUG] Entering prepare_demoapp"
-    vr_log_info "[DEBUG] Listing sandbox before prepare_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -20 || echo '(empty)')"
+    vr_log::info "LOCAL" "[DEBUG] Entering prepare_demoapp"
+    vr_log::info "LOCAL" "[DEBUG] Listing sandbox before prepare_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -20 || echo '(empty)')"
     if ! "$SCRIPT_DIR/prepare_demoapp.sh" "$SANDBOX_DIR"; then
-        vr_log_error "[LOCAL] Failed to prepare DemoApp"
-        vr_log_info "[DEBUG] Listing sandbox after prepare_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -20 || echo '(empty)')"
+        vr_log::error "LOCAL" "[LOCAL] Failed to prepare DemoApp"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox after prepare_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -20 || echo '(empty)')"
         return 0  # Soft-fail
     fi
-    vr_log_info "[DEBUG] Exiting prepare_demoapp (success)"
-    vr_log_info "[DEBUG] Listing sandbox after prepare_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
+    vr_log::info "LOCAL" "[DEBUG] Exiting prepare_demoapp (success)"
+    vr_log::info "LOCAL" "[DEBUG] Listing sandbox after prepare_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
     
     # Step 2: Inject SDK dependencies
-    vr_log_info "[DEBUG] Entering inject_sdk_${mode}"
+    vr_log::info "LOCAL" "[DEBUG] Entering inject_sdk_${mode}"
     if [[ "$mode" == "pods" ]]; then
-        vr_log_info "[DEBUG] Listing sandbox before inject_sdk_pods: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox before inject_sdk_pods: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
         if ! "$SCRIPT_DIR/inject_sdk_pods.sh" "$SANDBOX_DIR"; then
-            vr_log_error "[LOCAL] Failed to inject Pods dependencies"
-            vr_log_info "[DEBUG] Listing sandbox after inject_sdk_pods FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
+            vr_log::error "LOCAL" "[LOCAL] Failed to inject Pods dependencies"
+            vr_log::info "LOCAL" "[DEBUG] Listing sandbox after inject_sdk_pods FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
             return 0  # Soft-fail
         fi
-        vr_log_info "[DEBUG] Exiting inject_sdk_pods (success)"
-        vr_log_info "[DEBUG] Listing sandbox after inject_sdk_pods: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
+        vr_log::info "LOCAL" "[DEBUG] Exiting inject_sdk_pods (success)"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox after inject_sdk_pods: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
     else
-        vr_log_info "[DEBUG] Listing sandbox before inject_sdk_spm: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox before inject_sdk_spm: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
         if ! "$SCRIPT_DIR/inject_sdk_spm.sh" "$SANDBOX_DIR"; then
-            vr_log_error "[LOCAL] Failed to inject SPM dependencies"
-            vr_log_info "[DEBUG] Listing sandbox after inject_sdk_spm FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
+            vr_log::error "LOCAL" "[LOCAL] Failed to inject SPM dependencies"
+            vr_log::info "LOCAL" "[DEBUG] Listing sandbox after inject_sdk_spm FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
             return 0  # Soft-fail
         fi
-        vr_log_info "[DEBUG] Exiting inject_sdk_spm (success)"
-        vr_log_info "[DEBUG] Listing sandbox after inject_sdk_spm: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
+        vr_log::info "LOCAL" "[DEBUG] Exiting inject_sdk_spm (success)"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox after inject_sdk_spm: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
     fi
     
     # Step 3: Build DemoApp
-    vr_log_info "[DEBUG] Entering build_demoapp"
-    vr_log_info "[DEBUG] Listing sandbox before build_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
+    vr_log::info "LOCAL" "[DEBUG] Entering build_demoapp"
+    vr_log::info "LOCAL" "[DEBUG] Listing sandbox before build_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
     if ! "$SCRIPT_DIR/build_demoapp.sh" "$SANDBOX_DIR" "$mode"; then
-        vr_log_error "[LOCAL] Build failed"
-        vr_log_info "[DEBUG] Listing sandbox after build_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
+        vr_log::error "LOCAL" "[LOCAL] Build failed"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox after build_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
         return 0  # Soft-fail
     else
-        vr_log_info "[LOCAL] Local verification succeeded"
-        vr_log_info "[DEBUG] Listing sandbox after build_demoapp SUCCESS: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -50 || echo '(empty)')"
+        vr_log::info "LOCAL" "[LOCAL] Local verification succeeded"
+        vr_log::info "LOCAL" "[DEBUG] Listing sandbox after build_demoapp SUCCESS: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -50 || echo '(empty)')"
     fi
 
     # Export results for orchestrator
@@ -150,6 +149,6 @@ fi
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export RUBYOPT="-EUTF-8:UTF-8"
-vr_log_info "[UTF8] UTF-8 environment applied for pod install"
+vr_log::info "LOCAL" "[UTF8] UTF-8 environment applied for pod install"
 # ---------------------------------------------------------------------
 

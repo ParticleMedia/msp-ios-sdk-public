@@ -36,7 +36,7 @@
 - [X] T008 [P] Add MSPiOSCoreTests target to Examples/MSPDemoApp/project.yml
 - [X] T009 [P] Add NovaCoreTests target to Examples/MSPDemoApp/project.yml
 - [X] T010 [P] Add AdapterTests target to Examples/MSPDemoApp/project.yml
-- [X] T011 Add AllTests scheme to Examples/MSPDemoApp/project.yml
+- [X] T011 Add MSPTests scheme to Examples/MSPDemoApp/project.yml
 - [X] T012 Run pod install to install test dependencies
 - [X] T013 Run xcodegen generate to create test targets in Xcode project
 
@@ -75,9 +75,9 @@
 
 ## Phase 3: User Story 1 - Developer Runs Unit Tests Locally (Priority: P1) 🎯 MVP
 
-**Goal**: Enable developers to run unit tests locally with Quick/Nimble using `xcodebuild test -scheme AllTests`
+**Goal**: Enable developers to run unit tests locally with Quick/Nimble using `xcodebuild test -scheme MSPTests`
 
-**Independent Test**: Run `xcodebuild test -workspace msp-ios-sdk.xcworkspace -scheme AllTests -destination 'platform=iOS Simulator,name=iPhone 15'` and verify tests execute and report results
+**Independent Test**: Run `xcodebuild test -workspace msp-ios-sdk.xcworkspace -scheme MSPTests -destination 'platform=iOS Simulator,name=iPhone 15'` and verify tests execute and report results
 
 ### Implementation for User Story 1
 
@@ -87,7 +87,7 @@
 - [X] T035 [P] [US1] Create placeholder spec file Tests/NovaCoreTests/Specs/PlaceholderSpec.swift
 - [X] T036 [P] [US1] Create placeholder spec file Tests/AdapterTests/Specs/PlaceholderSpec.swift
 - [X] T037 [US1] Create local test runner script Scripts/tests/run-unit-tests.sh with set -euo pipefail
-- [ ] T038 [US1] Verify tests run with xcodebuild test -scheme AllTests and report pass/fail
+- [ ] T038 [US1] Verify tests run with xcodebuild test -scheme MSPTests and report pass/fail
 
 **Checkpoint**: `./Scripts/tests/run-unit-tests.sh` executes all test targets and reports results
 

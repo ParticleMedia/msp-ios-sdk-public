@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -9,9 +9,18 @@ msp_enforce_main_repo_or_exit
 # ============================================================================
 # Purpose: Validate an XCFramework structure and contents
 # Usage:   ./Scripts/xcframeworks/validate_xcframework.sh <XCFrameworkPath> <ModuleName>
+# R027a: Now sources shared xcframework_validate.sh module
 # ============================================================================
 
 set -euo pipefail
+
+# R027a: Source shared validation module
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/xcframework_validate.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/xcframework_validate.sh
+    source "$ROOT_DIR/Scripts/lib/shared/xcframework_validate.sh" 2>/dev/null || true
+fi
 
 XCFRAMEWORK_PATH="$1"
 MODULE_NAME="$2"

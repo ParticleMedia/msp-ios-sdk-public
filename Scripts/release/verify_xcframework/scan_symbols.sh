@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
 
 # ============================================================================
@@ -26,27 +25,24 @@ scan_symbols() {
     local module_name="$2"
     
     if [[ -z "$xcframework_path" ]] || [[ ! -d "$xcframework_path" ]]; then
-        vr_log_error "[XCF] Invalid XCFramework path: $xcframework_path"
+        vr_log::error "VERIFY" "[XCF] Invalid XCFramework path: $xcframework_path"
         return 1
     fi
     
     if [[ -z "$module_name" ]]; then
-        vr_log_error "[XCF] Module name required"
+        vr_log::error "VERIFY" "[XCF] Module name required"
         return 1
     fi
     
-    vr_log_info "[XCF] Scanning symbol table for $module_name..."
+    vr_log::info "VERIFY" "[XCF] Scanning symbol table for $module_name..."
     echo "[TRACE][XCF] ---> Entering symbol scan for $module_name"
 
-    local nm_bin
-    nm_bin="$(vr_find_devtool nm)"
-    if [[ -z "$nm_bin" ]]; then
-        vr_log_warn "[XCF] nm not found, skipping symbol scan"
+    if ! command -v nm >/dev/null 2>&1; then
+        vr_log::warn "VERIFY" "[XCF] nm not found, skipping symbol scan"
         echo "[TRACE][XCF] <--- Symbol scan skipped (nm not found)"
         return 0
     fi
 
-    # Collect all framework binaries from all slices.
     local -a binaries=()
     while IFS= read -r -d '' framework_dir; do
         local framework_name
@@ -57,36 +53,51 @@ scan_symbols() {
         fi
     done < <(find "$xcframework_path" -type d -name "*.framework" -print0 2>/dev/null)
 
-    if [[ ${#binaries[@]} -eq 0 ]]; then
-        vr_log_warn "[XCF] Binary not found, skipping symbol scan"
+    if [[ -z "$binary_path" ]] || [[ ! -f "$binary_path" ]]; then
+        vr_log::warn "VERIFY" "[XCF] Binary not found, skipping symbol scan"
         echo "[TRACE][XCF] <--- Symbol scan skipped (binary not found)"
         return 0
     fi
 
-    local scan_errors=0
-    local scanned_count=0
-    local binary_path
-    for binary_path in "${binaries[@]}"; do
-        echo "[TRACE][XCF]      Running nm on binary: $binary_path"
-        local symbols=""
-        if ! symbols="$(vr_run_with_timeout 20 "$nm_bin" -gU "$binary_path" 2>/dev/null || true)"; then
-            vr_log_error "[XCF] nm command failed for binary: $binary_path"
-            scan_errors=$((scan_errors + 1))
-            continue
-        fi
-
-        scanned_count=$((scanned_count + 1))
-        if [[ -z "$symbols" ]]; then
-            vr_log_warn "[XCF] Could not extract symbols: $binary_path"
-        fi
-    done
-
-    if [[ $scan_errors -gt 0 ]]; then
-        vr_log_error "[XCF] Symbol scan tool errors: $scan_errors"
+    echo "[TRACE][XCF]      Running nm on binary: $binary_path"
+    local symbols
+    if ! symbols="$(timeout 20s nm -gU "$binary_path" 2>/dev/null || echo "")"; then
+        vr_log::error "VERIFY" "[XCF] nm command timed out or failed for $module_name"
+        echo "[TRACE][XCF] <--- Symbol scan TIMEOUT on nm"
+        return 1
+    fi
+    echo "[TRACE][XCF]      nm completed successfully"
+    
+    if [[ -z "$symbols" ]]; then
+        vr_log::warn "VERIFY" "[XCF] Could not extract symbols"
+        return 0
+    fi
+    
+    local forbidden_patterns=(
+        "_OBJC_CLASS_\$_"
+        "__Z"
+        "__T"
+        "\.debug_"
+        "__internal_"
+    )
+    
+    local violations=0
+    while IFS= read -r line; do
+        for pattern in "${forbidden_patterns[@]}"; do
+            if echo "$line" | grep -qE "$pattern"; then
+                vr_log::error "VERIFY" "[XCF] Forbidden symbol detected: $line"
+                violations=$((violations + 1))
+            fi
+        done
+    done <<< "$symbols"
+    
+    if [[ $violations -gt 0 ]]; then
+        vr_log::error "VERIFY" "[XCF] Found $violations forbidden symbol violations"
+        echo "[TRACE][XCF] <--- Symbol scan FAILED ($violations violations)"
         return 1
     fi
 
-    vr_log_info "[XCF] Symbol scan passed (scanned $scanned_count binaries)"
+    vr_log::info "VERIFY" "[XCF] Symbol scan passed (no forbidden symbols)"
     echo "[TRACE][XCF] <--- Symbol scan completed successfully"
 
     return 0

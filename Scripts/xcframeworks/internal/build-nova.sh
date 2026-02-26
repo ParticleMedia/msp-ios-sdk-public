@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -9,14 +9,12 @@ msp_enforce_main_repo_or_exit
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Source shared color library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
-# Ensure we're in repo root
 cd "$ROOT_DIR" || exit 1
 
-# Source colors with fallback
+
 if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/colors.sh"
 else
@@ -28,7 +26,12 @@ else
     color_error() { echo "✗ $1" >&2; }
 fi
 
-# Usage function
+# R029f: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
 show_usage() {
     color_highlight "═══════════════════════════════════════════════════════════════"
     color_highlight "NovaCore XCFramework Build Script - Usage Instructions"
@@ -56,16 +59,13 @@ show_usage() {
     echo ""
 }
 
-# Check for help flag
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
     show_usage
     exit 0
 fi
 
-# Default code signing behavior (enabled by default)
 SKIP_CODE_SIGN=${SKIP_CODE_SIGN:-0}
 
-# CI environment detection
 CI=${CI:-false}
 if [ "$CI" = "true" ]; then
     color_warning "🔧 CI environment detected - enabling optimizations"
@@ -79,10 +79,8 @@ fi
 # 3. Production frameworks should never use Debug configuration
 # 4. If Release builds fail, the issue should be fixed rather than worked around
 
-# Enable strict error handling
-set -euo pipefail  # Exit on error, undefined vars, and pipe failures
+set -euo pipefail
 
-# Error handling function
 handle_error() {
     local exit_code=$?
     local line_number=$1
@@ -97,10 +95,8 @@ handle_error() {
     exit $exit_code
 }
 
-# Set up error trap
 trap 'handle_error $LINENO' ERR
 
-# Function to print section headers
 print_section() {
     echo ""
     color_highlight "═══════════════════════════════════════════════════════════════"
@@ -109,27 +105,22 @@ print_section() {
     echo ""
 }
 
-# Function to print step information
 print_step() {
     color_info "🔧 $1"
 }
 
-# Function to print success message
 print_success() {
     color_success "✅ $1"
 }
 
-# Function to print warning message
 print_warning() {
     color_warning "⚠️  $1"
 }
 
-# Function to print info message
 print_info() {
     color_info "ℹ️  $1"
 }
 
-# Function to check if command exists
 check_command() {
     if ! command -v $1 &> /dev/null; then
         color_error "❌ ERROR: $1 command not found"
@@ -137,7 +128,6 @@ check_command() {
     fi
 }
 
-# Function to check if path exists
 check_path() {
     if [[ ! -e "$1" ]]; then
         color_error "❌ ERROR: $1 not found"
@@ -145,7 +135,7 @@ check_path() {
     fi
 }
 
-# Function to build xcodebuild archive with optional code signing
+# Builds an xcodebuild archive with optional code signing
 build_archive() {
     local scheme=$1
     local destination=$2
@@ -224,7 +214,7 @@ build_archive() {
         local attempt=1
         local max_attempts=3
         
-        while [ $attempt -le $max_attempts ]; do
+        while [ "$attempt" -le "$max_attempts" ]; do
             color_info "🔍 Build attempt $attempt/$max_attempts..."
             
             if eval $build_command; then
@@ -232,7 +222,7 @@ build_archive() {
                 return 0
             fi
             
-            if [ $attempt -lt $max_attempts ]; then
+            if [ "$attempt" -lt "$max_attempts" ]; then
                 color_warning "⚠️  Build attempt $attempt failed, retrying in 5 seconds..."
                 sleep 5
             fi
@@ -254,10 +244,8 @@ build_archive() {
     fi
 }
 
-# Main build process
 print_section "Starting NovaCore XCFramework Build"
 
-# Ensure we're in the project root directory (already cd'd above)
 print_step "Checking project root directory..."
 if [[ ! -f ".git/config" ]] && [[ ! -d "MSPDemoApp" ]]; then
     color_error "❌ ERROR: Not in project root directory"
@@ -267,16 +255,13 @@ if [[ ! -f ".git/config" ]] && [[ ! -d "MSPDemoApp" ]]; then
 fi
 print_success "Project root directory verified: $ROOT_DIR"
 
-# Check required commands
 print_step "Checking required commands..."
 check_command "xcodebuild"
 # pod command is optional - only needed if Podfile exists and Pods not installed
 print_success "All required commands are available"
 
-# Check required files and generate NovaCore project from XcodeGen
 print_step "Checking required project files and generating NovaCore project..."
 
-# Check if XcodeGen is available
 if ! command -v xcodegen &> /dev/null; then
     color_error "❌ ERROR: xcodegen command not found"
     color_error "Please install XcodeGen: brew install xcodegen"
@@ -301,18 +286,28 @@ fi
 print_step "Generating NovaCore.xcodeproj from project.yml..."
 # Run xcodegen from the project directory to ensure relative paths resolve correctly
 PROJECT_DIR=$(dirname "$NOVA_PROJECT_SPEC")
-if (cd "$PROJECT_DIR" && xcodegen generate --spec "$(basename "$NOVA_PROJECT_SPEC")"); then
+# R029f: Use xcodegen.sh module if available, fallback to direct call
+nova_xcodegen_success=false
+if command -v xcodegen_generate &>/dev/null; then
+    if xcodegen_generate "$NOVA_PROJECT_SPEC" "$PROJECT_DIR"; then
+        nova_xcodegen_success=true
+    fi
+else
+    if (cd "$PROJECT_DIR" && xcodegen generate --spec "$(basename "$NOVA_PROJECT_SPEC")"); then
+        nova_xcodegen_success=true
+    fi
+fi
+
+if [[ "$nova_xcodegen_success" == "true" ]]; then
     print_success "NovaCore.xcodeproj generated successfully from project.yml"
 else
     color_error "❌ ERROR: Failed to generate NovaCore.xcodeproj from project.yml"
     exit 1
 fi
 
-# Verify generated project exists
 NOVA_WORKSPACE=""
 NOVA_PROJECT=""
 
-# Determine project location based on project.yml location
 if [[ "$NOVA_PROJECT_SPEC" == *"Sources/Core/NovaCore"* ]]; then
     EXPECTED_PROJECT="$ROOT_DIR/Sources/Core/NovaCore/NovaCore.xcodeproj"
 else
@@ -356,7 +351,6 @@ else
     exit 1
 fi
 
-# Clean previous build artifacts
 print_step "Cleaning previous build artifacts..."
 rm -rf "$PWD/Build/Temp/NovaCore/xcframework"
 mkdir -p "$PWD/Build/Temp/NovaCore/xcframework"
@@ -556,7 +550,6 @@ else
     exit 1
 fi
 
-# Verify iOS archive
 check_path "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework"
 print_success "iOS device framework verified"
 
@@ -570,11 +563,9 @@ else
     exit 1
 fi
 
-# Verify simulator archive
 check_path "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework"
 print_success "iOS simulator framework verified"
 
-# Create XCFramework
 print_section "Creating NovaCore.xcframework"
 print_step "Combining device and simulator frameworks into XCFramework..."
 if xcodebuild -create-xcframework \
@@ -587,11 +578,9 @@ else
     exit 1
 fi
 
-# Verify XCFramework
 check_path "$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework"
 print_success "NovaCore.xcframework verified"
 
-# Check XCFramework contents
 print_step "Verifying XCFramework contents..."
 if [ -f "$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework/Info.plist" ]; then
     color_info "📋 XCFramework Info.plist contents:"
@@ -602,7 +591,6 @@ else
     exit 1
 fi
 
-# Copy to NovaAdapter
 print_section "Deploying NovaCore.xcframework to NovaAdapter"
 SOURCE_XCFRAMEWORK="$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework"
 DESTINATION_DIR="$PWD/NovaAdapter"
@@ -627,17 +615,14 @@ else
     exit 1
 fi
 
-# Verify final deployment
 check_path "$DESTINATION_DIR/NovaCore.xcframework"
 print_success "Final deployment verified"
 
-# Build summary
 print_section "Build Summary"
     color_success "🎉 NovaCore.xcframework build completed successfully!"
     color_info "📁 Output location: $DESTINATION_DIR/NovaCore.xcframework"
     color_info "📅 Completed at: $(date)"
 
-# Show framework size
 if command -v du &> /dev/null; then
     framework_size=$(du -sh "$DESTINATION_DIR/NovaCore.xcframework" 2>/dev/null | cut -f1)
     color_info "📦 Framework size: $framework_size"

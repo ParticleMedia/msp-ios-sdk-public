@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -27,15 +27,15 @@ TEST_RELEASE_TYPE="CocoaPods"
 
 # Test logging functions (use UI system)
 test_log() {
-    log_step "🧪 $1"
+    log::step "CI" "🧪 $1"
 }
 
 test_success() {
-    log_success "$1"
+    log::success "CI" "$1"
 }
 
 test_failure() {
-    log_error "$1"
+    log::error "CI" "$1"
 }
 
 # Test 1: Generate release notes from git

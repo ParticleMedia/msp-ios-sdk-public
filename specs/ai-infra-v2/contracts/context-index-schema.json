@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MSP iOS SDK Context Index",
+  "description": "Machine-readable catalog of all context entries for AI agent progressive loading",
+  "type": "object",
+  "required": ["version", "generated_at", "generator", "entry_count", "domains", "entries"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version (semver)",
+      "pattern": "^\\d+\\.\\d+$",
+      "examples": ["2.0"]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last generation"
+    },
+    "generator": {
+      "type": "string",
+      "description": "Path to the script that generated this index",
+      "examples": ["Scripts/tools/generate-context-index.py"]
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of entries in the index"
+    },
+    "domains": {
+      "type": "object",
+      "description": "Summary counts per domain",
+      "propertyNames": {
+        "enum": ["release", "ci", "integration", "compatibility", "testing", "sources", "architecture"]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["count", "layers"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["business", "experience", "tech"]
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/context_entry"
+      }
+    }
+  },
+  "$defs": {
+    "context_entry": {
+      "type": "object",
+      "required": ["id", "path", "title", "domain", "layer", "tags", "triggers", "summary", "status", "updated"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique context entry ID",
+          "pattern": "^ctx-[a-z]+-\\d{3}(-[a-z0-9-]+)?$",
+          "examples": ["ctx-testing-001", "ctx-sources-001-swift-best-practices"]
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path from project root to the entry file",
+          "pattern": "^\\.context/.+\\.md$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable title",
+          "maxLength": 120
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["release", "ci", "integration", "compatibility", "testing", "sources", "architecture"]
+        },
+        "layer": {
+          "type": "string",
+          "enum": ["business", "experience", "tech"]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Natural language phrases that trigger loading this entry"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "One-line description for index display"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "archived", "draft"]
+        },
+        "updated": {
+          "type": "string",
+          "format": "date",
+          "description": "Last modification date"
+        }
+      }
+    }
+  }
+}

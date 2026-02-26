@@ -1,47 +1,45 @@
 # Cursor IDE Directives
 
-> **Version**: 2.0
-> **Last Updated**: 2026-01-20
+> **Version**: 3.0
+> **Last Updated**: 2026-02-22
 > **Applies To**: Cursor IDE
 
-## 1. Role Definition
+## Role: Interactive Development Partner
 
-Primary Role: Interactive Development Partner
 Interaction Mode: IDE-integrated, real-time feedback
 Best For: Interactive refactoring, code exploration, iterative development
 
-## 2. Core Imports
+## Core Imports
 
 @../constitution.md
-@../AGENTS.md (for shared project context only)
-@../.agents-shared/skills/ (all skills available)
+@../AGENTS.md
 
-## 2.1 Domain-Specific Imports
+## Directory-Triggered Context
 
 When working in Sources/:
-@../Sources/AGENTS-SOURCES.md
+→ load Sources/AGENTS-SOURCES.md (playbook loading guide)
 
 When working in Scripts/:
-@../Scripts/AGENTS-SCRIPTS.md
+→ load Scripts/AGENTS-SCRIPTS.md (playbook loading guide)
 
-## 3. Cursor-Specific Features
+## On-Demand Context
 
-### Chat Mode (Cmd+L)
-Best for: Analysis, explanation, planning
-Usage: @codebase, @file:path, @folder:path
+Use `.context/index.json` to discover playbooks by keyword matching against `tags` and `triggers` fields. Load only what the current task requires.
 
-### Inline Edit (Cmd+K)
-Best for: Quick, localized changes
+## Cursor-Specific Features
 
-### Composer Mode
-Best for: Multi-file changes
+| Mode | Shortcut | Best For |
+|------|----------|----------|
+| Chat | Cmd+L | Analysis, explanation, planning |
+| Inline Edit | Cmd+K | Quick, localized changes |
+| Composer | — | Multi-file changes |
 
-## 4. Available Skills
+## Skills
 
-All skills in .agents-shared/skills/ are available.
+All skills in `.agents-shared/skills/` are available.
 
-## 5. Best Practices
+## Best Practices
 
 - Match existing code style
-- Use meaningful variable names
+- Use `.context/index.json` for on-demand knowledge discovery
 - Follow Quick/Nimble BDD style for tests

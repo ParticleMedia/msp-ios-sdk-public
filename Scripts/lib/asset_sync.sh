@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -19,9 +19,10 @@ fi
 
 set -euo pipefail
 
-# Script configuration
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly PROJECT_ROOT
 # Try new structure first (Sources/Core/), fallback to old structure
 if [[ -d "$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore" ]]; then
     readonly NOVACORE_DIR="$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore"
@@ -38,21 +39,17 @@ readonly ASSETS_SOURCE="$NOVACORE_DIR/NBAssets.xcassets"
 readonly BUNDLE_TARGET="$NOVACORE_DIR/NBResourceBundle.bundle"
 readonly TEMP_DIR="/tmp/nova_asset_sync_$$"
 
-# Source UI system
-readonly ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-# shellcheck source=Scripts/lib/paths.sh
-source "$ROOT_DIR/Scripts/lib/paths.sh" 2>/dev/null || true
-# shellcheck source=Scripts/lib/colors.sh
-source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-# shellcheck source=Scripts/lib/ui.sh
-source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly ROOT_DIR
+# shellcheck source=Scripts/lib/common.sh
+source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 
-# Color output functions (use UI system if available, fallback to simple functions)
-if command -v log_info &>/dev/null; then
-    print_info() { log_info "[INFO] $1"; }
-    print_success() { log_success "[SUCCESS] $1"; }
-    print_warning() { log_warn "[WARNING] $1"; }
-    print_error() { log_error "[ERROR] $1"; }
+# Color output functions (use unified logging if available, fallback to simple functions)
+if command -v log::info &>/dev/null; then
+    print_info() { log::info "SYNC" "$1"; }
+    print_success() { log::success "SYNC" "$1"; }
+    print_warning() { log::warn "SYNC" "$1"; }
+    print_error() { log::error "SYNC" "$1"; }
 else
     print_info() { echo "[INFO] $1"; }
     print_success() { echo "[SUCCESS] $1"; }
@@ -60,7 +57,6 @@ else
     print_error() { echo "[ERROR] $1" >&2; }
 fi
 
-# Cleanup function
 cleanup() {
     if [[ -d "$TEMP_DIR" ]]; then
         rm -rf "$TEMP_DIR"
@@ -68,7 +64,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Validate required tools
 check_dependencies() {
     local missing_tools=()
     
@@ -87,7 +82,6 @@ check_dependencies() {
     fi
 }
 
-# Validate input directories
 validate_paths() {
     if [[ ! -d "$ASSETS_SOURCE" ]]; then
         print_error "Assets source directory not found: $ASSETS_SOURCE"
@@ -103,7 +97,6 @@ validate_paths() {
     print_info "Bundle target: $BUNDLE_TARGET"
 }
 
-# Extract asset names from .xcassets
 extract_asset_names() {
     local asset_names=()
     
@@ -116,7 +109,6 @@ extract_asset_names() {
     printf '%s\n' "${asset_names[@]}" | sort
 }
 
-# Create temporary bundle structure
 create_temp_bundle() {
     mkdir -p "$TEMP_DIR/NBResourceBundle.bundle"
     
@@ -132,7 +124,6 @@ create_temp_bundle() {
     print_info "Created temporary bundle structure"
 }
 
-# Compile assets using actool
 compile_assets() {
     local output_dir="$TEMP_DIR/NBResourceBundle.bundle"
     
@@ -173,7 +164,6 @@ compile_assets() {
     fi
 }
 
-# Verify compiled assets
 verify_compiled_assets() {
     local output_dir="$TEMP_DIR/NBResourceBundle.bundle"
     local assets_car="$output_dir/Assets.car"
@@ -235,7 +225,6 @@ copy_resource_tree() {
     fi
 }
 
-# Update target bundle
 update_target_bundle() {
     local temp_bundle="$TEMP_DIR/NBResourceBundle.bundle"
     
@@ -248,7 +237,6 @@ update_target_bundle() {
     print_success "Target bundle updated successfully"
 }
 
-# Generate asset report
 generate_asset_report() {
     local report_file="$TEMP_DIR/asset_sync_report.txt"
     
@@ -291,15 +279,13 @@ generate_asset_report() {
     print_info "Asset report generated: $report_file"
 }
 
-# Main execution
 main() {
     print_info "Starting asset synchronization..."
     print_info "Project root: $PROJECT_ROOT"
     
     # Change to project root for relative path consistency
     cd "$PROJECT_ROOT"
-    
-    # Run validation and sync steps
+
     check_dependencies
     validate_paths
     create_temp_bundle
@@ -313,5 +299,4 @@ main() {
     print_info "Assets from NBAssets.xcassets have been synchronized to NBResourceBundle.bundle"
 }
 
-# Run main function
 main

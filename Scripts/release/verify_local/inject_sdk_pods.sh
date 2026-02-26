@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -7,22 +7,19 @@ msp_enforce_main_repo_or_exit
 # ============================================================================
 # Inject SDK CocoaPods Dependencies
 # ============================================================================
-# Purpose: Generate Podfile with released SDK modules
+# Purpose: Generate Podfile with released SDK modules (config-driven)
 #
 # Usage:   ./inject_sdk_pods.sh <sandbox_path>
-#          (reads from .msp-release-state.json)
+#
+# Configuration priority (highest to lowest):
+#   1. Environment variables: MSP_VERIFY_LOCAL_VERSION, MSP_VERIFY_LOCAL_MODULES
+#   2. State file: .msp-release-state.json (created by release pipeline)
+#   3. Defaults: MSPCore only
 # ============================================================================
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
-
-# Ensure ROOT_DIR is detected
-vr_detect_root_dir || {
-    vr_log_error "Failed to detect ROOT_DIR"
-    return 1
-}
 
 # ============================================================================
 # Functions
@@ -30,82 +27,70 @@ vr_detect_root_dir || {
 
 inject_sdk_pods() {
     local sandbox="$1"
-    
+
     if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
+        vr_log::error "LOCAL" "Sandbox path required"
         return 1
     fi
-    
+
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local template="$script_dir/Podfile.local-verify-template"
+
+    if [[ ! -f "$template" ]]; then
+        vr_log::error "LOCAL" "Podfile template not found: $template"
+        return 1
+    fi
+
     local demoapp_dir="$sandbox/DemoApp"
     local podfile_path="$demoapp_dir/Podfile"
-    local state_file="$ROOT_DIR/.msp-release-state.json"
-    
-    # Read released modules from state file
-    if [[ ! -f "$state_file" ]]; then
-        vr_log_warn "[LOCAL] State file not found, skipping Pods injection"
-        return 0
-    fi
-    
-    # Extract version from state file (use release version)
-    local version=""
-    if command -v jq >/dev/null 2>&1; then
-        version="$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")"
-    fi
-    
+
+    # --- Resolve version ---
+    local version="${MSP_VERIFY_LOCAL_VERSION:-}"
+
     if [[ -z "$version" ]]; then
-        vr_log_warn "[LOCAL] Version not found in state file, skipping Pods injection"
-        return 0
-    fi
-    
-    # Extract CocoaPods modules from state file
-    local pods_modules=()
-    if command -v jq >/dev/null 2>&1; then
-        # Try to read from modules or steps
-        local modules_json
-        modules_json="$(jq -r '.modules // {}' "$state_file" 2>/dev/null || echo "{}")"
-        
-        # For now, use common module names (can be enhanced to read from state)
-        # Default modules if state doesn't have detailed info
-        pods_modules=("MSPCore")
-        
-        # Try to extract from steps if available
-        if jq -e '.steps.cocoapods // empty' "$state_file" >/dev/null 2>&1; then
-            # If we have CocoaPods step info, we could extract modules
-            # For simplicity, use default list
-            pods_modules=("MSPCore")
+        # Fallback: read from release state file
+        vr_detect_root_dir 2>/dev/null || true
+        local state_file="${ROOT_DIR:-.}/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+            version="$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")"
         fi
     fi
-    
-    # If no modules found, use default
-    if [[ ${#pods_modules[@]} -eq 0 ]]; then
-        pods_modules=("MSPCore")
-    fi
-    
-    # Generate Podfile
-    cat > "$podfile_path" <<EOF
-platform :ios, '13.0'
-use_frameworks!
 
-target 'MSPDemoApp' do
-EOF
-    
-    # Add each module
+    if [[ -z "$version" ]]; then
+        vr_log::warn "LOCAL" "[LOCAL] No version found (set MSP_VERIFY_LOCAL_VERSION or create state file)"
+        return 0
+    fi
+
+    # --- Resolve modules ---
+    local modules_str="${MSP_VERIFY_LOCAL_MODULES:-MSPCore}"
+    # Convert space-separated string to array
+    local pods_modules=()
+    read -ra pods_modules <<< "$modules_str"
+
+    # --- Build pod entries ---
+    local pod_entries=""
     local module_list=""
     for module in "${pods_modules[@]}"; do
-        echo "  pod '$module', '$version'" >> "$podfile_path"
-        if [[ -z "$module_list" ]]; then
-            module_list="$module($version)"
-        else
-            module_list="$module_list, $module($version)"
-        fi
+        pod_entries="${pod_entries}  pod '${module}', '${version}'
+"
+        module_list="${module_list:+${module_list}, }${module}(${version})"
     done
-    
-    cat >> "$podfile_path" <<EOF
-end
-EOF
-    
-    vr_log_info "[LOCAL] Injected SDK pods: $module_list"
-    
+
+    # --- Generate Podfile from template ---
+    # Process line-by-line because {{POD_ENTRIES}} expands to multiple lines
+    # (BSD sed on macOS cannot handle newlines in substitution patterns)
+    while IFS= read -r line; do
+        if [[ "$line" == *"{{POD_ENTRIES}}"* ]]; then
+            printf '%s' "$pod_entries"
+        else
+            line="${line//\{\{PLATFORM_VERSION\}\}/15.0}"
+            printf '%s\n' "$line"
+        fi
+    done < "$template" > "$podfile_path"
+
+    vr_log::info "LOCAL" "[LOCAL] Injected SDK pods: $module_list"
+
     return 0
 }
 

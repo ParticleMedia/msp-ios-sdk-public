@@ -66,7 +66,32 @@
     "context_references": {
       "constitution": "@../constitution.md",
       "agents_shared": "@../.agents-shared/",
-      "task_tiers": "@../.agents-shared/protocols/task-tier.protocol.md"
+      "task_tiers": "@../.agents-shared/protocols/task-tier.protocol.md",
+      "context_index": "@../.context/index.json"
+    },
+
+    "directory_context": {
+      "Sources/**/*.swift": {
+        "loading_guide": "Sources/AGENTS-SOURCES.md",
+        "playbooks": ["ctx-sources-001", "ctx-sources-002", "ctx-sources-003", "ctx-sources-005", "ctx-testing-001", "ctx-testing-002"]
+      },
+      "Scripts/**/*.sh": {
+        "loading_guide": "Scripts/AGENTS-SCRIPTS.md",
+        "playbooks": ["ctx-sources-004"]
+      },
+      "Scripts/**/*.py": {
+        "loading_guide": "Scripts/AGENTS-SCRIPTS.md",
+        "playbooks": ["ctx-sources-004"]
+      },
+      "Tests/**/*.swift": {
+        "loading_guide": "Sources/AGENTS-SOURCES.md",
+        "playbooks": ["ctx-testing-001", "ctx-testing-002", "ctx-testing-003"]
+      }
+    },
+
+    "on_demand_context": {
+      "description": "Use .context/index.json to discover playbooks by keyword matching against tags and triggers fields",
+      "index_path": ".context/index.json"
     }
   }
 }

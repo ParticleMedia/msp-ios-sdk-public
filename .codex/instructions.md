@@ -5,6 +5,14 @@
 
 ---
 
+## On-Demand Context Discovery
+
+Use `.context/index.json` to discover playbooks by keyword matching against `tags` and `triggers` fields. Load only what the current task requires.
+
+**Directory-triggered loading guides:**
+- Sources/ work → `Sources/AGENTS-SOURCES.md` (lists playbook IDs for Swift/UIKit/MVVM)
+- Scripts/ work → `Scripts/AGENTS-SCRIPTS.md` (lists playbook IDs for scripting)
+
 ## Shared Skills Available to Codex
 
 Codex has access to all skills in `.agents-shared/skills/`. Below are condensed quick-reference guides.

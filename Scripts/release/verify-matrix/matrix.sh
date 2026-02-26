@@ -6,24 +6,9 @@ msp_enforce_main_repo_or_exit
 # --- End MSP Worktree Safety Guard (Patch L, shared) ---
 set -euo pipefail
 
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# ========================================
-# Unified ROOT_DIR resolution (final)
-# ========================================
-# The root dir is always the directory that contains
-# the parent Scripts/ folder where msp-release.sh lives.
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # Find Scripts/ directory by going up until we find it, then go up one more level
-    ROOT_DIR="$SCRIPT_DIR"
-    while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-        ROOT_DIR="$(dirname "$ROOT_DIR")"
-    done
-    # If we found Scripts/, go up one more level to get repo root
-    if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-        ROOT_DIR="$(dirname "$ROOT_DIR")"
-    fi
-fi
-export ROOT_DIR
 
 CASES_DIR="$SCRIPT_DIR/cases"
 
@@ -35,13 +20,12 @@ SUMMARY_JSON="$OUTPUT_ROOT/summary.json"
 
 mkdir -p "$OUTPUT_ROOT"
 
-source "$ROOT_DIR/Scripts/lib/colors.sh"
-source "$ROOT_DIR/Scripts/lib/ui.sh"
-source "$ROOT_DIR/Scripts/lib/logging.sh"
+# Source common.sh which provides unified logging via logger.sh
+source "$ROOT_DIR/Scripts/lib/common.sh"
 
-# Skip verification if globally disabled
-if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
-    log_warn "Verification disabled (MSP_DISABLE_POST_VERIFICATION=1) — skipping verify-matrix"
+# Verification only runs in full mode
+if [[ "${MSP_RELEASE_MODE:-simple}" != "full" ]]; then
+    log::info "MATRIX" "Skipping verify-matrix (simple mode — use --full for verification)"
     exit 0
 fi
 
@@ -56,7 +40,7 @@ if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
     local status
     status="$(msp_state_get_step_status "verify_matrix" 2>/dev/null || echo "unknown")"
     if [[ "$status" == "success" || "$status" == "skipped" ]]; then
-        log_info "Resuming: skipping verify_matrix (status already ${status})"
+        log::info "MATRIX" "Resuming: skipping verify_matrix (status already ${status})"
         exit 0
     fi
 fi
@@ -64,7 +48,7 @@ fi
 msp_state_mark_step_running "verify_matrix"
 
 log_section "MSP Release Verification Matrix"
-log_info "Executing all test cases from: $CASES_DIR"
+log::info "MATRIX" "Executing all test cases from: $CASES_DIR"
 
 declare -A RESULTS
 declare -A EXIT_CODES
@@ -81,12 +65,12 @@ for case_file in "$CASES_DIR"/*.sh; do
     if bash "$case_file" >"$log_file" 2>&1; then
         exit_code=0
         RESULTS["$case_name"]="success"
-        log_success "Case $case_name: PASSED"
+        log::success "MATRIX" "Case $case_name: PASSED"
     else
         exit_code=$?
         RESULTS["$case_name"]="failed"
         EXIT_CODES["$case_name"]=$exit_code
-        log_error "Case $case_name: FAILED (exit code: $exit_code)"
+        log::error "MATRIX" "Case $case_name: FAILED (exit code: $exit_code)"
     fi
 done
 
@@ -115,8 +99,8 @@ cat >> "$SUMMARY_JSON" <<EOF
 }
 EOF
 
-log_info "Summary written to: $SUMMARY_JSON"
-log_info "All case logs available in: $OUTPUT_ROOT"
+log::info "MATRIX" "Summary written to: $SUMMARY_JSON"
+log::info "MATRIX" "All case logs available in: $OUTPUT_ROOT"
 
 # Check if any strict-mode case failed
 matrix_failed=0
@@ -128,11 +112,11 @@ for case_name in "${!RESULTS[@]}"; do
 done
 
 if [[ $matrix_failed -eq 1 ]]; then
-    log_error "Verification matrix completed with failures"
+    log::error "MATRIX" "Verification matrix completed with failures"
     msp_state_mark_step_failed "verify_matrix" "verification matrix completed with failures" "1"
     exit 1
 fi
 
-log_success "Verification matrix completed successfully"
+log::success "MATRIX" "Verification matrix completed successfully"
 msp_state_mark_step_success "verify_matrix"
 exit 0

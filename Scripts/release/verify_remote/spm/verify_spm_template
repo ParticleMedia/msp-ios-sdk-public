@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================================
 # SPM Remote Verification Template
 # ============================================================================
@@ -22,7 +22,7 @@ main() {
     local version="${1:-}"
     
     if [[ -z "$version" ]]; then
-        log_error "Version argument required"
+        log::error "SPM" "Version argument required"
         exit 1
     fi
     

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -13,24 +13,43 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/../target-switching/common.sh"
 
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
+# R029f: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
+# R025b: Source shared XCFramework build module
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/xcframework_build.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/xcframework_build.sh
+    source "$ROOT_DIR/Scripts/lib/shared/xcframework_build.sh" 2>/dev/null || true
+fi
+
 ensure_repo_root
 
 MODULE_NAME="${1:-}"
 if [[ -z "$MODULE_NAME" ]]; then
-    log_error "Module name required"
-    log_info "Usage: $0 <ModuleName>"
+    log::error "XCFW" "Module name required"
+    log::info "XCFW" "Usage: $0 <ModuleName>"
     exit 1
 fi
 
 # Task 2: Generate project.yml from template before build
-log_step "Ensuring project.yml exists (generating from template if needed)"
+log::step "XCFW" "Ensuring project.yml exists (generating from template if needed)"
 if [[ -x "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" ]]; then
     "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" >/dev/null 2>&1 || true
 fi
@@ -53,33 +72,40 @@ elif [[ -f "$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml" ]]; then
 elif [[ -f "$ROOT_DIR/$MODULE_NAME/project.yml" ]]; then
     PROJECT_YML="$ROOT_DIR/$MODULE_NAME/project.yml"
 else
-    log_error "project.yml not found for $MODULE_NAME"
+    log::error "XCFW" "project.yml not found for $MODULE_NAME"
     exit 1
 fi
 
 if [[ ! -f "$PROJECT_YML" ]]; then
-    log_error "project.yml not found: $PROJECT_YML"
+    log::error "XCFW" "project.yml not found: $PROJECT_YML"
     exit 1
 fi
 
 log_title "Building XCFramework: $MODULE_NAME"
 
-# Create output directories
 ARCHIVES_DIR="$ROOT_DIR/Build/ReleaseArtifacts/Archives"
 XCFRAMEWORKS_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR"
 
-# Generate Xcode project from project.yml
-# Run xcodegen from the project directory to ensure relative paths resolve correctly
-log_step "Generating Xcode project from project.yml"
+log::step "XCFW" "Generating Xcode project from project.yml"
 PROJECT_DIR=$(dirname "$PROJECT_YML")
-if ! (cd "$PROJECT_DIR" && xcodegen generate --spec "$(basename "$PROJECT_YML")"); then
-    log_error "Failed to generate Xcode project for $MODULE_NAME"
+# R029f: Use xcodegen.sh module if available, fallback to direct call
+xcodegen_build_success=false
+if command -v xcodegen_generate &>/dev/null; then
+    if xcodegen_generate "$PROJECT_YML" "$PROJECT_DIR"; then
+        xcodegen_build_success=true
+    fi
+else
+    if (cd "$PROJECT_DIR" && xcodegen generate --spec "$(basename "$PROJECT_YML")"); then
+        xcodegen_build_success=true
+    fi
+fi
+
+if [[ "$xcodegen_build_success" != "true" ]]; then
+    log::error "XCFW" "Failed to generate Xcode project for $MODULE_NAME"
     exit 1
 fi
 
-# Verify project was generated
-# Determine project location based on module location
 if [[ -f "$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml" ]]; then
     XCODEPROJ="$ROOT_DIR/Sources/Core/$MODULE_NAME/$MODULE_NAME.xcodeproj"
 elif [[ -f "$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml" ]]; then
@@ -92,7 +118,7 @@ else
     XCODEPROJ="$ROOT_DIR/$MODULE_NAME/$MODULE_NAME.xcodeproj"
 fi
 if [[ ! -d "$XCODEPROJ" ]]; then
-    log_error "Xcode project not generated: $XCODEPROJ"
+    log::error "XCFW" "Xcode project not generated: $XCODEPROJ"
     exit 1
 fi
 
@@ -101,19 +127,17 @@ SHARED_DERIVED_DATA="$ROOT_DIR/DerivedData/build-shared"
 if [[ -d "$SHARED_DERIVED_DATA" ]] && [[ -d "$SHARED_DERIVED_DATA/Build/Products/Release-iphoneos" ]]; then
     # Use shared DerivedData so pre-built Pods are available during archive
     DERIVED_DATA="$SHARED_DERIVED_DATA"
-    log_info "Using shared DerivedData (Pods pre-built): $DERIVED_DATA"
+    log::info "XCFW" "Using shared DerivedData (Pods pre-built): $DERIVED_DATA"
 else
     # Use module-specific DerivedData if Pods weren't pre-built
     DERIVED_DATA="$ROOT_DIR/.generated/DerivedData/build-$MODULE_NAME"
-    log_info "Using module-specific DerivedData: $DERIVED_DATA"
+    log::info "XCFW" "Using module-specific DerivedData: $DERIVED_DATA"
 fi
 mkdir -p "$DERIVED_DATA"
 
-# Archive paths
 IOS_ARCHIVE="$ARCHIVES_DIR/$MODULE_NAME-iOS.xcarchive"
 SIMULATOR_ARCHIVE="$ARCHIVES_DIR/$MODULE_NAME-Simulator.xcarchive"
 
-# Clean previous archives
 rm -rf "$IOS_ARCHIVE" "$SIMULATOR_ARCHIVE"
 
 # Use workspace if available and scheme exists, otherwise use project
@@ -128,14 +152,9 @@ fi
 #   1. CocoaPods creates duplicate schemes in Pods.xcodeproj that conflict with our targets
 #   2. The Pods scheme has different build settings (staticlib, different install paths)
 #   3. We need our XcodeGen-generated project with correct framework settings
-# Always use project mode for XCFramework builds
+# Always use project mode — CocoaPods creates duplicate schemes in Pods.xcodeproj
+# that conflict with our XcodeGen-generated adapter schemes
 SCHEME_IN_WORKSPACE=false
-# Disabled: Pods project conflicts with adapter schemes
-# if [[ -d "$WORKSPACE" ]]; then
-#     if xcodebuild -workspace "$WORKSPACE" -list 2>/dev/null | grep -qE "^\s*$SCHEME_NAME\s*$"; then
-#         SCHEME_IN_WORKSPACE=true
-#     fi
-# fi
 
 # For Core modules, use PROJECT mode (not workspace) to avoid Pods scheme conflicts
 # but still inject -I paths for pre-built Pod modules (especially Kingfisher from MSPKingfisher)
@@ -146,7 +165,7 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
     BUILD_PATH="$XCODEPROJ"
     
     if [[ ! -d "$XCODEPROJ" ]]; then
-        log_error "Project not found: $XCODEPROJ"
+        log::error "XCFW" "Project not found: $XCODEPROJ"
         exit 1
     fi
     
@@ -178,32 +197,31 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
     
     # Store BOTH paths separately - will be used for respective archives
     # DO NOT combine them - that causes module redefinition errors
-    log_info "Found Pod modules (iOS): $POD_IOS_MODULES"
-    log_info "Found Pod modules (Simulator): $POD_SIM_MODULES"
+    log::info "XCFW" "Found Pod modules (iOS): $POD_IOS_MODULES"
+    log::info "XCFW" "Found Pod modules (Simulator): $POD_SIM_MODULES"
     
     # Add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (if needed)
     # Third-party XCFrameworks are built by build-thirdparty.sh and linked to Build/ReleaseArtifacts/XCFrameworks/
     THIRDPARTY_XCFRAMEWORKS_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
     
-    log_info "Core module $MODULE_NAME: Using PROJECT mode (avoids Pods scheme conflicts)"
-    log_info "  iOS Swift include paths: $POD_IOS_MODULES"
-    log_info "  Simulator Swift include paths: $POD_SIM_MODULES"
+    log::info "XCFW" "Core module $MODULE_NAME: Using PROJECT mode (avoids Pods scheme conflicts)"
+    log::info "XCFW" "  iOS Swift include paths: $POD_IOS_MODULES"
+    log::info "XCFW" "  Simulator Swift include paths: $POD_SIM_MODULES"
 elif [[ "$SCHEME_IN_WORKSPACE" == "true" ]]; then
     BUILD_ARG="-workspace"
     BUILD_PATH="$WORKSPACE"
-    log_info "Using workspace for Pods dependencies: $WORKSPACE"
+    log::info "XCFW" "Using workspace for Pods dependencies: $WORKSPACE"
     POD_SWIFT_INCLUDE_PATHS=""
     POD_FRAMEWORK_SEARCH_PATHS=""
 else
     BUILD_ARG="-project"
     BUILD_PATH="$XCODEPROJ"
-    log_warn "Scheme not in workspace, using project directly (Pods dependencies may not be available)"
+    log::warn "XCFW" "Scheme not in workspace, using project directly (Pods dependencies may not be available)"
     POD_SWIFT_INCLUDE_PATHS=""
     POD_FRAMEWORK_SEARCH_PATHS=""
 fi
 
-# Build iOS device archive
-log_step "Building iOS device archive"
+log::step "XCFW" "Building iOS device archive"
 # Add verification skip flags for Pods targets (applies to all targets in workspace)
 # These settings are overridden by project.yml for MSP modules, so they only affect Pods
 EXTRA_SWIFT_FLAGS=""
@@ -242,9 +260,9 @@ if [[ -n "${POD_IOS_MODULES:-}" ]]; then
         IOS_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         IOS_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$IOS_HEADER_PATHS")
-        log_info "iOS archive: Added Swift include paths:$IOS_I_FLAGS"
+        log::info "XCFW" "iOS archive: Added Swift include paths:$IOS_I_FLAGS"
         if [[ -n "$IOS_MODULEMAP_FLAGS" ]]; then
-            log_info "iOS archive: Added modulemap flags:$IOS_MODULEMAP_FLAGS"
+            log::info "XCFW" "iOS archive: Added modulemap flags:$IOS_MODULEMAP_FLAGS"
         fi
     fi
 fi
@@ -255,7 +273,7 @@ fi
 # For normal app builds, this env var is NOT set, so the script runs normally
 if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSDK)$ ]]; then
     export MSP_SKIP_CP_XCFRAMEWORKS=1
-    log_info "Setting MSP_SKIP_CP_XCFRAMEWORKS=1 to skip [CP] Copy XCFrameworks during Core XCFramework build"
+    log::info "XCFW" "Setting MSP_SKIP_CP_XCFRAMEWORKS=1 to skip [CP] Copy XCFrameworks during Core XCFramework build"
 fi
 
 xcodebuild archive \
@@ -269,12 +287,11 @@ xcodebuild archive \
     -allowProvisioningUpdates
 
 if [[ ! -d "$IOS_ARCHIVE" ]]; then
-    log_error "iOS archive not created: $IOS_ARCHIVE"
+    log::error "XCFW" "iOS archive not created: $IOS_ARCHIVE"
     exit 1
 fi
 
-# Build iOS Simulator archive
-log_step "Building iOS Simulator archive"
+log::step "XCFW" "Building iOS Simulator archive"
 # CRITICAL: Use SEPARATE BUILD_SETTINGS for Simulator with ONLY Simulator Pod paths
 # This prevents module redefinition errors caused by seeing both iOS and Simulator modules
 SIM_BUILD_SETTINGS=(
@@ -304,9 +321,9 @@ if [[ -n "${POD_SIM_MODULES:-}" ]]; then
         SIM_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         SIM_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$SIM_HEADER_PATHS")
-        log_info "Simulator archive: Added Swift include paths:$SIM_I_FLAGS"
+        log::info "XCFW" "Simulator archive: Added Swift include paths:$SIM_I_FLAGS"
         if [[ -n "$SIM_MODULEMAP_FLAGS" ]]; then
-            log_info "Simulator archive: Added modulemap flags:$SIM_MODULEMAP_FLAGS"
+            log::info "XCFW" "Simulator archive: Added modulemap flags:$SIM_MODULEMAP_FLAGS"
         fi
     fi
 fi
@@ -324,45 +341,38 @@ xcodebuild archive \
     -allowProvisioningUpdates
 
 if [[ ! -d "$SIMULATOR_ARCHIVE" ]]; then
-    log_error "Simulator archive not created: $SIMULATOR_ARCHIVE"
+    log::error "XCFW" "Simulator archive not created: $SIMULATOR_ARCHIVE"
     exit 1
 fi
 
-# Extract PRODUCT_NAME from project.yml (fallback to MODULE_NAME if not found)
-# First try global settings
 PRODUCT_NAME=$(grep -E "^\s+PRODUCT_NAME:" "$PROJECT_YML" | head -1 | sed -E 's/.*PRODUCT_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' | xargs || echo "")
-# If not found, try target-specific settings
 if [[ -z "$PRODUCT_NAME" ]]; then
     PRODUCT_NAME=$(grep -A 30 "targets:" "$PROJECT_YML" | grep -E "^\s+PRODUCT_NAME:" | head -1 | sed -E 's/.*PRODUCT_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' | xargs || echo "")
 fi
-# Fallback to MODULE_NAME if still not found
 PRODUCT_NAME="${PRODUCT_NAME:-$MODULE_NAME}"
-log_info "Using PRODUCT_NAME: $PRODUCT_NAME (module: $MODULE_NAME)"
+log::info "XCFW" "Using PRODUCT_NAME: $PRODUCT_NAME (module: $MODULE_NAME)"
 
 # Embed third-party XCFrameworks into archives before creating XCFramework
 # This ensures all dependencies are available when the XCFramework is used
-log_step "Embedding third-party XCFrameworks into archives"
+log::step "XCFW" "Embedding third-party XCFrameworks into archives"
 
-# Function to embed a third-party XCFramework into a framework archive
 embed_thirdparty_xcframework() {
     local archive_path="$1"
     local thirdparty_xcf="$2"
     local framework_path="$archive_path/Products/Library/Frameworks/$PRODUCT_NAME.framework"
     
     if [[ ! -d "$thirdparty_xcf" ]]; then
-        log_warn "Third-party XCFramework not found, skipping: $thirdparty_xcf"
+        log::warn "XCFW" "Third-party XCFramework not found, skipping: $thirdparty_xcf"
         return 0
     fi
     
-    # Create Frameworks directory inside the framework if it doesn't exist
     mkdir -p "$framework_path/Frameworks"
-    
-    # Copy the XCFramework into the framework's Frameworks directory
+
     local xcf_name=$(basename "$thirdparty_xcf")
     if cp -R "$thirdparty_xcf" "$framework_path/Frameworks/$xcf_name"; then
-        log_info "  Embedded: $xcf_name"
+        log::info "XCFW" "  Embedded: $xcf_name"
     else
-        log_warn "  Failed to embed: $xcf_name"
+        log::warn "XCFW" "  Failed to embed: $xcf_name"
     fi
 }
 
@@ -398,7 +408,6 @@ case "$MODULE_NAME" in
         ;;
 esac
 
-# Embed third-party XCFrameworks into both archives
 if [[ ${#THIRDPARTY_XCFS[@]} -gt 0 ]]; then
     for thirdparty_xcf in "${THIRDPARTY_XCFS[@]}"; do
         if [[ -d "$thirdparty_xcf" ]]; then
@@ -407,26 +416,21 @@ if [[ ${#THIRDPARTY_XCFS[@]} -gt 0 ]]; then
         fi
     done
 else
-    log_info "  No third-party XCFrameworks to embed for $MODULE_NAME"
+    log::info "XCFW" "  No third-party XCFrameworks to embed for $MODULE_NAME"
 fi
 
-# Create XCFramework
-log_step "Creating XCFramework"
-# Use PRODUCT_NAME for XCFramework output name (matches framework name)
+log::step "XCFW" "Creating XCFramework"
 XCFRAMEWORK_OUTPUT="$XCFRAMEWORKS_DIR/$PRODUCT_NAME.xcframework"
 rm -rf "$XCFRAMEWORK_OUTPUT"
 
-# Find framework in archive (may be in Products/Library/Frameworks or InstallationBuildProductsLocation)
 IOS_FRAMEWORK=""
 SIM_FRAMEWORK=""
 
-# Try standard location first
 if [[ -d "$IOS_ARCHIVE/Products/Library/Frameworks/$PRODUCT_NAME.framework" ]]; then
     IOS_FRAMEWORK="$IOS_ARCHIVE/Products/Library/Frameworks/$PRODUCT_NAME.framework"
 elif [[ -d "$IOS_ARCHIVE/InstallationBuildProductsLocation/Library/Frameworks/$PRODUCT_NAME.framework" ]]; then
     IOS_FRAMEWORK="$IOS_ARCHIVE/InstallationBuildProductsLocation/Library/Frameworks/$PRODUCT_NAME.framework"
 else
-    # Search in archive
     IOS_FRAMEWORK=$(find "$IOS_ARCHIVE" -name "$PRODUCT_NAME.framework" -type d | head -1)
 fi
 
@@ -435,22 +439,21 @@ if [[ -d "$SIMULATOR_ARCHIVE/Products/Library/Frameworks/$PRODUCT_NAME.framework
 elif [[ -d "$SIMULATOR_ARCHIVE/InstallationBuildProductsLocation/Library/Frameworks/$PRODUCT_NAME.framework" ]]; then
     SIM_FRAMEWORK="$SIMULATOR_ARCHIVE/InstallationBuildProductsLocation/Library/Frameworks/$PRODUCT_NAME.framework"
 else
-    # Search in archive
     SIM_FRAMEWORK=$(find "$SIMULATOR_ARCHIVE" -name "$PRODUCT_NAME.framework" -type d | head -1)
 fi
 
 if [[ -z "$IOS_FRAMEWORK" ]] || [[ ! -d "$IOS_FRAMEWORK" ]]; then
-    log_error "iOS framework not found in archive: $IOS_ARCHIVE"
+    log::error "XCFW" "iOS framework not found in archive: $IOS_ARCHIVE"
     exit 1
 fi
 
 if [[ -z "$SIM_FRAMEWORK" ]] || [[ ! -d "$SIM_FRAMEWORK" ]]; then
-    log_error "Simulator framework not found in archive: $SIMULATOR_ARCHIVE"
+    log::error "XCFW" "Simulator framework not found in archive: $SIMULATOR_ARCHIVE"
     exit 1
 fi
 
-log_info "Using iOS framework: $IOS_FRAMEWORK"
-log_info "Using Simulator framework: $SIM_FRAMEWORK"
+log::info "XCFW" "Using iOS framework: $IOS_FRAMEWORK"
+log::info "XCFW" "Using Simulator framework: $SIM_FRAMEWORK"
 
 xcodebuild -create-xcframework \
     -framework "$IOS_FRAMEWORK" \
@@ -458,51 +461,42 @@ xcodebuild -create-xcframework \
     -output "$XCFRAMEWORK_OUTPUT"
 
 if [[ ! -d "$XCFRAMEWORK_OUTPUT" ]]; then
-    log_error "XCFramework not created: $XCFRAMEWORK_OUTPUT"
+    log::error "XCFW" "XCFramework not created: $XCFRAMEWORK_OUTPUT"
     exit 1
 fi
 
-# Verify XCFramework structure
-log_step "Verifying XCFramework structure"
+log::step "XCFW" "Verifying XCFramework structure"
 if [[ ! -d "$XCFRAMEWORK_OUTPUT/ios-arm64" ]] && [[ ! -d "$XCFRAMEWORK_OUTPUT/ios-arm64_x86_64-simulator" ]]; then
-    log_error "XCFramework missing required slices"
+    log::error "XCFW" "XCFramework missing required slices"
     exit 1
 fi
 
-# Verify Swift module exists
-# Extract PRODUCT_MODULE_NAME from project.yml (fallback to PRODUCT_NAME)
 PRODUCT_MODULE_NAME=$(grep -E "^\s*PRODUCT_MODULE_NAME:" "$PROJECT_YML" | head -1 | sed -E 's/.*PRODUCT_MODULE_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' || echo "$PRODUCT_NAME")
 if [[ -z "$PRODUCT_MODULE_NAME" ]] || [[ "$PRODUCT_MODULE_NAME" == "$MODULE_NAME" ]]; then
-    # Try to get from target settings
     PRODUCT_MODULE_NAME=$(grep -A 20 "targets:" "$PROJECT_YML" | grep -E "^\s*PRODUCT_MODULE_NAME:" | head -1 | sed -E 's/.*PRODUCT_MODULE_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' || echo "$PRODUCT_NAME")
 fi
-# Fallback to PRODUCT_NAME if still not found
 PRODUCT_MODULE_NAME="${PRODUCT_MODULE_NAME:-$PRODUCT_NAME}"
 
 SWIFT_MODULE="$XCFRAMEWORK_OUTPUT/ios-arm64/$PRODUCT_NAME.framework/Modules/$PRODUCT_MODULE_NAME.swiftmodule"
 if [[ ! -d "$SWIFT_MODULE" ]] && [[ ! -f "$SWIFT_MODULE/arm64.swiftmodule" ]]; then
-    log_warn "Swift module directory not found (may be normal for some modules)"
+    log::warn "XCFW" "Swift module directory not found (may be normal for some modules)"
 fi
 
-log_success "XCFramework created: $XCFRAMEWORK_OUTPUT"
+log::success "XCFW" "XCFramework created: $XCFRAMEWORK_OUTPUT"
 
 # Remove precompiled .swiftmodule binary files to avoid "module was built in directory X but now resides in directory Y" errors
 # Keep only .swiftinterface files for interface-based module resolution
-log_step "Removing precompiled .swiftmodule binary files"
+log::step "XCFW" "Removing precompiled .swiftmodule binary files"
 find "$XCFRAMEWORK_OUTPUT" -type f -name "*.swiftmodule" ! -name "*.swiftinterface" ! -name "*.swiftdoc" ! -name "*.abi.json" -delete 2>/dev/null || true
-log_info "  Removed binary .swiftmodule files (keeping .swiftinterface only)"
+log::info "XCFW" "  Removed binary .swiftmodule files (keeping .swiftinterface only)"
 
-# Fix module.modulemap to include link directives for embedded third-party frameworks
-log_step "Fixing module.modulemap with link directives"
-# Use ROOT_DIR to find fix_modulemap.sh (same directory as build_module.sh)
+log::step "XCFW" "Fixing module.modulemap with link directives"
 FIX_MODULEMAP_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/fix_modulemap.sh"
 if [[ -f "$FIX_MODULEMAP_SCRIPT" ]]; then
-    # Build list of third-party framework names from THIRDPARTY_XCFS
     THIRDPARTY_NAMES=()
     if [[ ${#THIRDPARTY_XCFS[@]} -gt 0 ]]; then
         for thirdparty_xcf in "${THIRDPARTY_XCFS[@]}"; do
             if [[ -d "$thirdparty_xcf" ]]; then
-                # Extract framework name from path (e.g., "SwiftProtobuf" from ".../SwiftProtobuf.xcframework")
                 FRAMEWORK_NAME=$(basename "$thirdparty_xcf" .xcframework)
                 THIRDPARTY_NAMES+=("$FRAMEWORK_NAME")
             fi
@@ -510,56 +504,52 @@ if [[ -f "$FIX_MODULEMAP_SCRIPT" ]]; then
     fi
     
     if [[ ${#THIRDPARTY_NAMES[@]} -gt 0 ]]; then
-        log_info "  Adding link directives for: ${THIRDPARTY_NAMES[*]}"
+        log::info "XCFW" "  Adding link directives for: ${THIRDPARTY_NAMES[*]}"
         if bash "$FIX_MODULEMAP_SCRIPT" "$XCFRAMEWORK_OUTPUT" "$PRODUCT_NAME" "${THIRDPARTY_NAMES[@]}"; then
-            log_success "  Module map fixed with link directives"
+            log::success "XCFW" "  Module map fixed with link directives"
         else
-            log_warn "  Failed to fix module map (non-fatal)"
+            log::warn "XCFW" "  Failed to fix module map (non-fatal)"
         fi
     else
-        log_info "  No third-party frameworks to link"
+        log::info "XCFW" "  No third-party frameworks to link"
     fi
 else
-    log_warn "fix_modulemap.sh not found, skipping module map fix"
+    log::warn "XCFW" "fix_modulemap.sh not found, skipping module map fix"
 fi
 
 # Special handling for NovaCore: Copy to NovaAdapter/ folder (legacy compatibility)
 # This ensures compatibility with scripts that expect NovaCore.xcframework in NovaAdapter/
 if [[ "$MODULE_NAME" == "NovaCore" ]]; then
-    log_step "Deploying NovaCore.xcframework to NovaAdapter (legacy compatibility)"
+    log::step "XCFW" "Deploying NovaCore.xcframework to NovaAdapter (legacy compatibility)"
     NOVA_ADAPTER_DEST="$ROOT_DIR/NovaAdapter/NovaCore.xcframework"
     TEMP_DEST="$ROOT_DIR/NovaAdapter/NovaCore.xcframework.tmp"
     
-    # Backup existing if present
     if [[ -d "$NOVA_ADAPTER_DEST" ]]; then
         mv "$NOVA_ADAPTER_DEST" "${NOVA_ADAPTER_DEST}.backup" 2>/dev/null || true
     fi
     
-    # Atomic copy: copy to temp, then move
     if cp -R "$XCFRAMEWORK_OUTPUT" "$TEMP_DEST"; then
         mv "$TEMP_DEST" "$NOVA_ADAPTER_DEST"
         rm -rf "${NOVA_ADAPTER_DEST}.backup" 2>/dev/null || true
-        log_success "NovaCore.xcframework deployed to NovaAdapter/"
+        log::success "XCFW" "NovaCore.xcframework deployed to NovaAdapter/"
     else
-        log_warn "Failed to copy NovaCore.xcframework to NovaAdapter (continuing anyway)"
-        # Restore backup if copy failed
+        log::warn "XCFW" "Failed to copy NovaCore.xcframework to NovaAdapter (continuing anyway)"
         mv "${NOVA_ADAPTER_DEST}.backup" "$NOVA_ADAPTER_DEST" 2>/dev/null || true
     fi
 fi
 
 # Task 2: Cleanup generated project.yml files after build
 # Ensure workspace remains clean - project.yml should only exist during build
-log_step "Cleaning up generated project.yml files"
+log::step "XCFW" "Cleaning up generated project.yml files"
 if [[ -f "$PROJECT_YML" ]]; then
     rm -f "$PROJECT_YML"
-    log_info "  Removed: $PROJECT_YML"
+    log::info "XCFW" "  Removed: $PROJECT_YML"
 fi
 
-# Also clean up project.yml in the same directory if it exists
 PROJECT_DIR=$(dirname "$PROJECT_YML")
 if [[ -f "$PROJECT_DIR/project.yml" ]]; then
     rm -f "$PROJECT_DIR/project.yml"
-    log_info "  Removed: $PROJECT_DIR/project.yml"
+    log::info "XCFW" "  Removed: $PROJECT_DIR/project.yml"
 fi
 
 # Explicit success exit to ensure correct exit code under set -e

@@ -15,14 +15,18 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/lib/paths.sh
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 
-# Initialize paths
+# R025c: Source shared XCFramework build module
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/xcframework_build.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/xcframework_build.sh
+    source "$ROOT_DIR/Scripts/lib/shared/xcframework_build.sh" 2>/dev/null || true
+fi
+
 init_paths
 
 PODS_PROJECT="${PODS_PROJECT:-$ROOT_DIR/Pods/Pods.xcodeproj}"
@@ -33,7 +37,6 @@ SDK_NAME=""
 SOURCE_XCFRAMEWORK=""
 PODS_DIR=""
 
-# Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     --scheme)
@@ -73,7 +76,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Validate required parameters
 if [[ -z "$OUTPUT_WRAPPER" ]]; then
   echo "ERROR: --output is required" >&2
   exit 1
@@ -84,7 +86,6 @@ if [[ -z "$SDK_NAME" ]]; then
   exit 1
 fi
 
-# Set defaults
 if [[ -z "$PODS_DIR" ]]; then
   PODS_DIR="$ROOT_DIR/Pods/$SDK_NAME"
 fi
@@ -99,7 +100,6 @@ FINAL_XCFRAMEWORK_PATH="$FINAL_DIR/$SDK_NAME.xcframework"
 
 echo "== $SDK_NAME XCFramework Builder =="
 
-# Validate mode and parameters
 if [[ "$MODE" == "build" ]]; then
   if [[ -z "$SCHEME" ]]; then
     echo "ERROR: --scheme is required for build mode" >&2
@@ -136,7 +136,6 @@ else
   exit 1
 fi
 
-# Clean previous artifacts
 rm -rf "$XCFRAMEWORK_PATH"
 mkdir -p "$OUTPUT_DIR"
 
@@ -155,8 +154,6 @@ if [[ "$MODE" == "copy" ]]; then
   exit 0
 fi
 
-# Build mode: Build from CocoaPods source
-# Create temp dir name (lowercase SDK name for directory)
 TMP_DIR_NAME=$(echo "$SDK_NAME" | tr '[:upper:]' '[:lower:]')
 TMP_DIR="$ROOT_DIR/.build-${TMP_DIR_NAME}-tmp"
 BUILD_DIR="$TMP_DIR/build"
@@ -198,15 +195,12 @@ build_arch() {
   fi
 }
 
-# Build device and simulator
 build_arch iphoneos
 build_arch iphonesimulator
 
-# Locate built artifacts
 IOS_LIB="$(find "$BUILD_DIR" -path "*Release-iphoneos*${SDK_NAME}*" \( -name "*.a" -o -name "*.framework" -type d \) -maxdepth 5 | head -n1)"
 SIM_LIB="$(find "$BUILD_DIR" -path "*Release-iphonesimulator*${SDK_NAME}*" \( -name "*.a" -o -name "*.framework" -type d \) -maxdepth 5 | head -n1)"
 
-# Check if frameworks were built directly
 IOS_FRAMEWORK="$(find "$BUILD_DIR" -path "*Release-iphoneos*${SDK_NAME}.framework" -maxdepth 5 -type d | head -n1)"
 SIM_FRAMEWORK="$(find "$BUILD_DIR" -path "*Release-iphonesimulator*${SDK_NAME}.framework" -maxdepth 5 -type d | head -n1)"
 
@@ -219,7 +213,6 @@ elif [[ -n "$IOS_LIB" && -n "$SIM_LIB" ]]; then
   # Need to create frameworks from libraries
   echo "-- Creating frameworks from libraries"
   
-  # Helper function to create a framework from a library
   create_framework() {
     local sdk="$1"
     local lib_path="$2"
@@ -229,20 +222,15 @@ elif [[ -n "$IOS_LIB" && -n "$SIM_LIB" ]]; then
     mkdir -p "$framework_dir/Headers"
     mkdir -p "$framework_dir/Modules"
     
-    # Check if lib_path is a framework or static library
     if [[ -d "$lib_path" && "$lib_path" == *.framework ]]; then
-      # It's already a framework, copy it
       cp -R "$lib_path"/* "$framework_dir/"
     else
-      # It's a static library, create framework structure
       cp "$lib_path" "$framework_dir/$SDK_NAME"
       
-      # Copy headers from Pods
       if [[ -d "$PODS_DIR" ]]; then
         find "$PODS_DIR" -name "*.h" -exec cp {} "$framework_dir/Headers/" \;
       fi
       
-      # Create Info.plist
       BUNDLE_ID=$(echo "$SDK_NAME" | tr '[:upper:]' '[:lower:]')
       cat > "$framework_dir/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -271,13 +259,11 @@ elif [[ -n "$IOS_LIB" && -n "$SIM_LIB" ]]; then
 </plist>
 PLIST
       
-      # Find umbrella header
       UMBRELLA_HEADER=$(find "$framework_dir/Headers" -name "*.h" -type f | head -n1 | xargs basename)
       if [[ -z "$UMBRELLA_HEADER" ]]; then
         UMBRELLA_HEADER="${SDK_NAME}.h"
       fi
       
-      # Create module.modulemap
       cat > "$framework_dir/Modules/module.modulemap" <<MODULEMAP
 framework module $SDK_NAME {
   umbrella header "${UMBRELLA_HEADER}"
@@ -287,12 +273,10 @@ framework module $SDK_NAME {
 }
 MODULEMAP
       
-      # Create umbrella header if it doesn't exist
       if [[ ! -f "$framework_dir/Headers/${UMBRELLA_HEADER}" ]]; then
         cat > "$framework_dir/Headers/${UMBRELLA_HEADER}" <<UMBRELLA
 #import <Foundation/Foundation.h>
 UMBRELLA
-        # Add all headers
         find "$framework_dir/Headers" -name "*.h" ! -name "${UMBRELLA_HEADER}" -type f | while read header; do
           echo "#import \"$(basename "$header")\"" >> "$framework_dir/Headers/${UMBRELLA_HEADER}"
         done
@@ -325,7 +309,6 @@ mkdir -p "$FINAL_DIR"
 rm -rf "$FINAL_XCFRAMEWORK_PATH"
 cp -R "$XCFRAMEWORK_PATH" "$FINAL_XCFRAMEWORK_PATH"
 
-# Clean up temporary build artifacts
 echo "-- Cleaning up temporary files"
 rm -rf "$TMP_DIR"
 
