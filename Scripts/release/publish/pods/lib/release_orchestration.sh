@@ -1181,6 +1181,10 @@ release_msp_core() {
         fi
     fi
 
+    # Update MSPCore version in Config.plist BEFORE creating the zip,
+    # so the packaged Config.plist contains the correct SDKVersion.
+    update_config_plist_version "$VERSION"
+
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     if is_binary_distribution "MSPCore"; then
         log::info "PODS" "Verifying zip file exists for binary distribution pod..."
@@ -1220,18 +1224,6 @@ release_msp_core() {
 
     # Update dependencies
     update_adapter_podspec_dependencies "MSPCore" "$VERSION"
-
-    # Keep SDK version SSOT in sync for MSPCore release flow
-    if ! set_sdk_version_in_config "$VERSION"; then
-        log::warn "PODS" "Failed to update SDK version SSOT file before MSPCore Config.plist update"
-    fi
-    local sync_version="$VERSION"
-    if read_sdk_version_from_config >/dev/null 2>&1; then
-        sync_version="$(read_sdk_version_from_config)"
-    fi
-
-    # Update MSPCore version in Config.plist
-    update_config_plist_version "$sync_version"
 
     # Create GitHub release (with resume support)
     local github_release_status="unknown"
