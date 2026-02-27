@@ -501,7 +501,9 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
 
         eventModel.ext = Com_Newsbreak_Monetization_Common_RequestContextExt()
-        eventModel.bidRequest.id = requestId ?? ""
+
+        let requestIdFromAd = ad?.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] as? String
+        eventModel.bidRequest.id = requestIdFromAd ?? requestId ?? ""
         eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
         eventModel.ext.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
 

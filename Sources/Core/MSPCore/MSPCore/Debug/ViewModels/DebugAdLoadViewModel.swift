@@ -296,6 +296,7 @@ class DebugAdLoadViewModel: AdListener {
         let requestId = loadInfo["request_id"] as? String
         let statusString = loadSuccess ? "succeeded" : "failed"
         print("notifyLoss: ad load \(statusString), requestId = \(requestId ?? "no valid requestId")")
-        MSP.shared.notifyLoss(winnerBidderName: "demo_app_test", winnerPrice: 0.1, ad: ad, requestId: requestId)
+        MSP.shared.notifyLoss(
+            winnerBidderName: "demo_app_test", winnerPrice: 0.1, ad: ad, requestId: ad != nil ? nil : requestId)
     }
 }
