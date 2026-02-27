@@ -398,7 +398,7 @@ for module in "${CORE_MODULES[@]}"; do
             # MSPPrebidAdapter: Build using XcodeGen standalone project
             # This links against MSPiOSCore.xcframework (built earlier), ensuring ABI compatibility
             if build_msp_prebid_adapter_xcframework; then
-                ((SUCCESS_COUNT++))
+                ((++SUCCESS_COUNT))
                 log::success "XCFW" "$module: BUILD SUCCEEDED (xcodegen mode)"
             else
                 ((FAIL_COUNT++)) || true
@@ -411,7 +411,7 @@ for module in "${CORE_MODULES[@]}"; do
         MSPCore)
             # MSPCore needs explicit modulemap injection for MSPPrebidAdapter and SwiftProtobuf
             if build_mspcore_with_modulemaps; then
-                ((SUCCESS_COUNT++))
+                ((++SUCCESS_COUNT))
                 log::success "XCFW" "$module: BUILD SUCCEEDED (xcodegen + modulemap mode)"
             else
                 ((FAIL_COUNT++)) || true
@@ -424,7 +424,7 @@ for module in "${CORE_MODULES[@]}"; do
         *)
             # Other modules: Build via XcodeGen project + build_module.sh
             if "$BUILD_MODULE_SCRIPT" "$module"; then
-                ((SUCCESS_COUNT++))
+                ((++SUCCESS_COUNT))
                 log::success "XCFW" "$module: BUILD SUCCEEDED (xcodegen mode)"
             else
                 ((FAIL_COUNT++)) || true

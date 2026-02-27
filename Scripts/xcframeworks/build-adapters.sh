@@ -140,7 +140,7 @@ for pod_name in "${ADAPTER_MODULES[@]}"; do
 
     # build_module.sh expects directory name, not pod name
     if "$BUILD_MODULE_SCRIPT" "$module_dir"; then
-        ((SUCCESS_COUNT++))
+        ((++SUCCESS_COUNT))
         log::success "XCFW" "$pod_name: BUILD SUCCEEDED"
     else
         ((FAIL_COUNT++)) || true
