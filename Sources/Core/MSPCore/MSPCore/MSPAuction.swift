@@ -123,7 +123,6 @@ public class MSPAuction: Auction {
             !requestId.isEmpty
         {
             loadInfo["request_id"] = requestId
-            ad.adInfo.removeValue(forKey: MSPConstants.AD_INFO_BID_REQUEST_ID)
         }
 
         return loadInfo
