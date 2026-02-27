@@ -37,12 +37,12 @@ test_log() {
 
 test_success() {
     log::success "CI" "$1"
-    ((TESTS_PASSED++))
+    ((++TESTS_PASSED))
 }
 
 test_failure() {
     log::error "CI" "$1"
-    ((TESTS_FAILED++))
+    ((++TESTS_FAILED))
 }
 
 test_warning() {
