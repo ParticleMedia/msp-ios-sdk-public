@@ -2,6 +2,13 @@ import Foundation
 import QuartzCore
 
 class NovaAdVideoMetricReporter {
+    private enum WatchTimeLoopDetection {
+        /// Max absolute window (seconds) for tail-to-head wrap detection.
+        static let maxWrapWindowSeconds: Double = 0.8
+        /// Relative window for short videos (10% of duration).
+        static let wrapWindowRatio: Double = 0.1
+    }
+
     private static func msInt(_ value: Double) -> Int? {
         guard value.isFinite, !value.isNaN else { return nil }
         let ms = value * 1000
@@ -42,6 +49,7 @@ class NovaAdVideoMetricReporter {
         var cumulativeMediaTime: Double = 0
         var lastPositionTime: Double?
         var lastMediaSampleTime: Double?
+        var lastLoopCount: Int = 0
     }
 
     private static var allVideoLogRecords: [String: LogRecord] = [:]
@@ -206,13 +214,15 @@ class NovaAdVideoMetricReporter {
         encryptedAdToken: String,
         positionTime: Double,
         videoLength: Double,
-        isPlaying: Bool
+        isPlaying: Bool,
+        loopCount: Int
     ) {
         guard let record = allVideoLogRecords[encryptedAdToken] else {
             return
         }
         if !isPlaying {
             record.lastPositionTime = positionTime
+            record.lastLoopCount = loopCount
             return
         }
         let now = CACurrentMediaTime()
@@ -226,7 +236,22 @@ class NovaAdVideoMetricReporter {
             if positionTime >= lastPositionTime {
                 mediaDelta = positionTime - lastPositionTime
             } else if videoLength > 0 {
-                mediaDelta = max(0, videoLength - lastPositionTime) + positionTime
+                let loopCountAdvanced = loopCount > record.lastLoopCount
+                // Fallback for loop-count timing drift: only treat wrap-around as loop when
+                // sample jumps from near tail to near head.
+                let wrapThreshold = min(
+                    WatchTimeLoopDetection.maxWrapWindowSeconds,
+                    videoLength * WatchTimeLoopDetection.wrapWindowRatio
+                )
+                let wrappedFromTailToHead =
+                    videoLength > wrapThreshold * 2 &&
+                    lastPositionTime >= (videoLength - wrapThreshold) &&
+                    positionTime <= wrapThreshold
+                if loopCountAdvanced || wrappedFromTailToHead {
+                    mediaDelta = max(0, videoLength - lastPositionTime) + positionTime
+                } else {
+                    mediaDelta = 0
+                }
             } else {
                 mediaDelta = 0
             }
@@ -238,6 +263,7 @@ class NovaAdVideoMetricReporter {
             record.cumulativeMediaTime += mediaDelta
         }
         record.lastPositionTime = positionTime
+        record.lastLoopCount = loopCount
     }
 
     static func clear(encryptedAdToken: String) {
