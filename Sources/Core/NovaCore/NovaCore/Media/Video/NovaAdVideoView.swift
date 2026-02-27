@@ -783,7 +783,8 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             encryptedAdToken: encryptedAdToken,
             positionTime: videoCurrentTimeInterval,
             videoLength: videoLength,
-            isPlaying: videoPlayer.isVideoPlaying()
+            isPlaying: videoPlayer.isVideoPlaying(),
+            loopCount: loopCount
         )
 
         // Log Start
