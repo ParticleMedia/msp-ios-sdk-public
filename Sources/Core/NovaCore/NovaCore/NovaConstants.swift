@@ -12,5 +12,5 @@ public class NovaConstants {
 
     public var NovaEventHostUrl = "https://dsp.newsbreak.com"
     
-    public var version = "0.0.0"
+    public var version = "3.4.1"
 }
