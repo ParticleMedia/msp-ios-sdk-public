@@ -102,7 +102,18 @@ import MSPiOSCore
     }
 
     public func getSDKVersion() -> String {
-        ""
+        let sdkBundle = Bundle(for: DTBAds.self)
+        if let version = sdkBundle.infoDictionary?["CFBundleShortVersionString"] as? String,
+            !version.isEmpty
+        {
+            return version
+        }
+        if let version = sdkBundle.infoDictionary?["CFBundleVersion"] as? String,
+            !version.isEmpty
+        {
+            return version
+        }
+        return ""
     }
 
     public func sendClickAdEvent(ad: MSPAd) {

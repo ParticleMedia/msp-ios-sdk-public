@@ -893,52 +893,26 @@ release_adapters() {
     fi
 
     # ========================================================================
-    # Step 0.9: Update adapter SDK versions BEFORE release
+    # Step 0.9: Sync SDK version SSOT and NovaCore Config.plist BEFORE release
     # ========================================================================
     if [[ "$DRY_RUN" != "true" ]]; then
-        log_section "Step 0.9: Updating adapter SDK versions"
-        log::info "PODS" "Updating getSDKVersion() in adapters to $VERSION..."
+        log_section "Step 0.9: Syncing SDK versions"
+        log::info "PODS" "Updating SDK version SSOT to $VERSION..."
+        if ! set_sdk_version_in_config "$VERSION"; then
+            log::warn "PODS" "Failed to update SDK version SSOT file (non-fatal)"
+        fi
 
-        if ! load_adapter_sdk_version_config; then
-            log::warn "PODS" "Failed to load adapter SDK version config, skipping version update"
+        local sync_version="$VERSION"
+        if read_sdk_version_from_config >/dev/null 2>&1; then
+            sync_version="$(read_sdk_version_from_config)"
+        fi
+
+        # Update NovaCore SDKVersion in Config.plist to match SSOT version
+        log::info "PODS" "[NovaCore] Updating Config.plist SDKVersion to $sync_version..."
+        if update_novacore_config_plist_version "$sync_version"; then
+            log::success "PODS" "[NovaCore] Config.plist SDKVersion updated"
         else
-            local version_update_failed=0
-            for adapter in "${adapters[@]}"; do
-                if adapter_sdk_version_should_skip "$adapter"; then
-                    log::info "PODS" "[$adapter] Skipping version update (config skip list)"
-                    continue
-                fi
-
-                log::info "PODS" "[$adapter] Updating SDK version to $VERSION..."
-                if update_adapter_sdk_version "$adapter" "$VERSION"; then
-                    log::success "PODS" "[$adapter] SDK version updated"
-                else
-                    log::warn "PODS" "[$adapter] Failed to update SDK version (non-fatal)"
-                    version_update_failed=1
-                fi
-            done
-
-            if [[ $version_update_failed -eq 0 ]]; then
-                log::success "PODS" "All adapter SDK versions updated to $VERSION"
-            else
-                log::warn "PODS" "Some adapters failed to update SDK version (will continue with release)"
-            fi
-
-            # Update NovaCore NovaConstants.version (property) to match release version
-            local novacore_dir="${ROOT_DIR}/Sources/Core/NovaCore/NovaCore"
-            local tool="${ADAPTER_SDK_VERSION_TOOL:-}"
-            if [[ -d "$novacore_dir" ]] && [[ -n "$tool" ]]; then
-                tool="${tool/#\~/$HOME}"
-                if [[ "$tool" != /* ]]; then
-                    tool="$ROOT_DIR/$tool"
-                fi
-                log::info "PODS" "[NovaCore] Updating NovaConstants.version to $VERSION..."
-                if "$tool" --path "$novacore_dir" --function version --version "$VERSION" --pattern property; then
-                    log::success "PODS" "[NovaCore] NovaConstants.version updated"
-                else
-                    log::warn "PODS" "[NovaCore] Failed to update NovaConstants.version (non-fatal)"
-                fi
-            fi
+            log::warn "PODS" "[NovaCore] Failed to update Config.plist SDKVersion (non-fatal)"
         fi
     fi
 
@@ -1131,24 +1105,6 @@ release_adapters() {
 
     log::success "PODS" "All adapters released successfully ($success_count/$success_count)"
 
-    # Post-all: commit adapter SDK version updates once all adapters succeed
-    log_section "Post-Release: Updating adapter SDK versions"
-    if ! commit_adapter_version_updates "$VERSION" "${adapters[@]}"; then
-        log::error "PODS" "Adapter SDK version update failed!"
-        log::error "PODS" "Pods are published but getSDKVersion() was not updated."
-        log::error "PODS" "This means the adapter version numbers are out of sync."
-        log::error "PODS" ""
-        log::error "PODS" "Manual fix required:"
-        log::error "PODS" "  1. Update each adapter's getSDKVersion() to return \"$VERSION\""
-        log::error "PODS" "  2. Commit the changes"
-        log::error "PODS" "  3. Push to remote"
-        log::error "PODS" ""
-        log::error "PODS" "Affected adapters: ${adapters[*]}"
-        # Don't return 1 here - pods are already published, we just warn
-    else
-        log::success "PODS" "All adapter SDK versions updated and committed"
-    fi
-
     # Step 2.5: Check availability of dependencies for MSPCore
     if [[ "$DRY_RUN" != "true" ]]; then
         log_section "Step 2.5: Checking availability of dependencies for MSPCore"
@@ -1265,8 +1221,17 @@ release_msp_core() {
     # Update dependencies
     update_adapter_podspec_dependencies "MSPCore" "$VERSION"
 
+    # Keep SDK version SSOT in sync for MSPCore release flow
+    if ! set_sdk_version_in_config "$VERSION"; then
+        log::warn "PODS" "Failed to update SDK version SSOT file before MSPCore Config.plist update"
+    fi
+    local sync_version="$VERSION"
+    if read_sdk_version_from_config >/dev/null 2>&1; then
+        sync_version="$(read_sdk_version_from_config)"
+    fi
+
     # Update MSPCore version in Config.plist
-    update_config_plist_version "$VERSION"
+    update_config_plist_version "$sync_version"
 
     # Create GitHub release (with resume support)
     local github_release_status="unknown"

@@ -62,70 +62,26 @@ get_module_dir() {
 # ============================================================================
 
 load_adapter_sdk_version_config() {
-    if [[ "${ADAPTER_SDK_VERSION_CONFIG_LOADED:-false}" == "true" ]]; then
-        return 0
-    fi
-
-    local config_file="${ADAPTER_SDK_VERSION_CONFIG_FILE:-$ROOT_DIR/Scripts/config/adapter_sdk_version.conf}"
-    if [[ ! -f "$config_file" ]]; then
-        log::error "PODS" "Adapter SDK version config not found: $config_file"
-        return 1
-    fi
-
-    # shellcheck source=/dev/null
-    source "$config_file"
-
-    if [[ -z "${ADAPTER_SDK_VERSION_TOOL:-}" ]]; then
-        log::error "PODS" "Adapter SDK version config missing ADAPTER_SDK_VERSION_TOOL"
-        return 1
-    fi
-    if [[ -z "${ADAPTER_SDK_VERSION_FUNCTION:-}" ]]; then
-        log::error "PODS" "Adapter SDK version config missing ADAPTER_SDK_VERSION_FUNCTION"
-        return 1
-    fi
-    if [[ -z "${ADAPTER_SDK_VERSION_STRICT:-}" ]]; then
-        log::error "PODS" "Adapter SDK version config missing ADAPTER_SDK_VERSION_STRICT"
-        return 1
-    fi
+    # Adapter SDK version auto-update is deprecated.
+    # Keep this function as a compatibility no-op.
     ADAPTER_SDK_VERSION_CONFIG_LOADED="true"
+    ADAPTER_SDK_VERSION_FUNCTION="getSDKVersion"
+    ADAPTER_SDK_VERSION_STRICT="false"
     return 0
 }
 
 adapter_sdk_version_should_skip() {
-    local adapter="$1"
-
-    if ! load_adapter_sdk_version_config; then
-        return 1
+    # Always skip: adapter SDK versions are now dynamically sourced from each adapter/runtime SDK.
+    local _adapter="$1"
+    if [[ -n "$_adapter" ]]; then
+        :
     fi
-
-    if [[ -z "${ADAPTER_SDK_VERSION_SKIP_ADAPTERS:-}" ]]; then
-        return 1
-    fi
-
-    if [[ " ${ADAPTER_SDK_VERSION_SKIP_ADAPTERS} " == *" ${adapter} "* ]]; then
-        return 0
-    fi
-
-    return 1
+    return 0
 }
 
 resolve_adapter_sdk_version_tool() {
-    if ! load_adapter_sdk_version_config; then
-        return 1
-    fi
-
-    local tool="${ADAPTER_SDK_VERSION_TOOL}"
-    if [[ "$tool" != /* ]]; then
-        tool="$ROOT_DIR/$tool"
-    fi
-
-    if [[ ! -x "$tool" ]]; then
-        log::error "PODS" "Adapter SDK version tool not found or not executable: $tool"
-        return 1
-    fi
-
-    echo "$tool"
-    return 0
+    # Deprecated path kept for compatibility with old callers.
+    return 1
 }
 
 # ============================================================================
@@ -135,85 +91,22 @@ resolve_adapter_sdk_version_tool() {
 check_adapter_sdk_version() {
     local adapter="$1"
     local version="$2"
-
-    if adapter_sdk_version_should_skip "$adapter"; then
-        log::info "PODS" "PUBLISH" "Skipping ${ADAPTER_SDK_VERSION_FUNCTION}() check for $adapter (config skip list)"
-        return 0
+    if [[ -n "$adapter" && -n "$version" ]]; then
+        :
     fi
 
-    local module_dir
-    module_dir=$(get_module_dir "$adapter")
-    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
-
-    if [[ ! -d "$adapter_dir" ]]; then
-        log::error "PODS" "PUBLISH" "Adapter directory not found: $adapter_dir"
-        return 1
-    fi
-
-    local tool
-    if ! tool=$(resolve_adapter_sdk_version_tool); then
-        return 1
-    fi
-
-    if "$tool" --path "$adapter_dir" --function "$ADAPTER_SDK_VERSION_FUNCTION" --version "$version" --check; then
-        return 0
-    fi
-    return $?
+    # Adapter SDK version check is deprecated.
+    return 0
 }
 
 # Update adapter SDK version
 update_adapter_sdk_version() {
     local adapter="$1"
     local version="$2"
-
-    if adapter_sdk_version_should_skip "$adapter"; then
-        log::info "PODS" "PUBLISH" "Skipping ${ADAPTER_SDK_VERSION_FUNCTION}() update for $adapter (config skip list)"
-        return 0
+    if [[ -n "$adapter" && -n "$version" ]]; then
+        :
     fi
-
-    log::info "PODS" "PUBLISH" "Updating ${ADAPTER_SDK_VERSION_FUNCTION}() in $adapter to version $version"
-
-    # Map pod name to directory name (for adapters with renamed modules)
-    # Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
-    local module_dir
-    module_dir=$(get_module_dir "$adapter")
-    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
-
-    # Validate directory exists
-    if [[ ! -d "$adapter_dir" ]]; then
-        log::error "PODS" "PUBLISH" "Adapter directory not found: $adapter_dir"
-        log::error "PODS" "PUBLISH" "Expected structure: Sources/Adapters/$module_dir/$module_dir/*.swift"
-        log::error "PODS" "PUBLISH" "Pod name: $adapter, Directory name: $module_dir"
-        return 1
-    fi
-
-    local tool
-    if ! tool=$(resolve_adapter_sdk_version_tool); then
-        return 1
-    fi
-
-    if "$tool" --path "$adapter_dir" --function "$ADAPTER_SDK_VERSION_FUNCTION" --version "$version"; then
-        log::info "PODS" "PUBLISH" "✓ Updated ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter"
-        return 0
-    fi
-
-    local rc=$?
-    case "$rc" in
-        2)
-            log::warn "PODS" "PUBLISH" "No ${ADAPTER_SDK_VERSION_FUNCTION}() found in $adapter"
-            ;;
-        3)
-            log::warn "PODS" "PUBLISH" "No string literal found inside ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter"
-            ;;
-        *)
-            log::error "PODS" "PUBLISH" "Failed to update ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter (exit $rc)"
-            ;;
-    esac
-
-    if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
-        return 1
-    fi
-
+    # Adapter SDK version update is deprecated.
     return 0
 }
 
