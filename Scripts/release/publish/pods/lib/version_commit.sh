@@ -197,6 +197,12 @@ commit_adapter_version_updates() {
     local version="$1"
     shift
     local adapters=("$@")
+    if [[ -n "$version" && ${#adapters[@]} -ge 0 ]]; then
+        :
+    fi
+
+    log::info "PODS" "Adapter SDK version auto-commit is deprecated; skipping."
+    return 0
 
     if [[ "$DRY_RUN" == "true" ]]; then
         log::info "PODS" "DRY RUN: Would commit adapter SDK version updates"

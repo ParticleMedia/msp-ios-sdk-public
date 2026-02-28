@@ -254,8 +254,70 @@ bump_major() {
     echo "$new_version"
 }
 
-update_config_plist_version() {
+get_sdk_version_config_path() {
+    echo "${ROOT_DIR:-.}/Scripts/config/sdk_version.conf"
+}
+
+read_sdk_version_from_config() {
+    local config_path
+    config_path="$(get_sdk_version_config_path)"
+
+    if [[ ! -f "$config_path" ]]; then
+        return 1
+    fi
+
+    local version
+    version=$(sed -n 's/^SDK_VERSION=\"\([^\"]*\)\"/\1/p' "$config_path" | head -1)
+    if [[ -z "$version" ]]; then
+        version=$(sed -n "s/^SDK_VERSION='\([^']*\)'/\1/p" "$config_path" | head -1)
+    fi
+
+    if [[ -z "$version" ]]; then
+        return 1
+    fi
+
+    echo "$version"
+}
+
+set_sdk_version_in_config() {
     local version="$1"
+    local config_path
+    config_path="$(get_sdk_version_config_path)"
+
+    local config_dir
+    config_dir="$(dirname "$config_path")"
+    mkdir -p "$config_dir"
+
+    local temp_file="${config_path}.tmp.$$"
+    cat > "$temp_file" <<EOF
+# Single source of truth for SDK release version.
+# Updated by release scripts.
+SDK_VERSION="${version}"
+EOF
+    mv "$temp_file" "$config_path"
+    log::success "VERSION" "Updated SDK version SSOT: $config_path -> $version"
+}
+
+resolve_effective_sdk_version() {
+    local preferred_version="${1:-}"
+    if [[ -n "$preferred_version" ]]; then
+        echo "$preferred_version"
+        return 0
+    fi
+
+    if read_sdk_version_from_config; then
+        return 0
+    fi
+
+    return 1
+}
+
+update_config_plist_version() {
+    local version="${1:-}"
+    if ! version="$(resolve_effective_sdk_version "$version")"; then
+        log::error "VERSION" "Failed to resolve SDK version for MSPCore Config.plist update"
+        return 1
+    fi
     
     # Find Config.plist dynamically (more robust than hardcoded path)
     local config_plist
@@ -292,7 +354,37 @@ update_config_plist_version() {
     fi
 }
 
+update_novacore_config_plist_version() {
+    local version="${1:-}"
+    if ! version="$(resolve_effective_sdk_version "$version")"; then
+        log::error "VERSION" "Failed to resolve SDK version for NovaCore Config.plist update"
+        return 1
+    fi
+
+    local config_plist="${ROOT_DIR:-.}/Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle/Config.plist"
+
+    if [[ ! -f "$config_plist" ]]; then
+        log::error "VERSION" "NovaCore Config.plist not found"
+        log::error "VERSION" "Expected location: Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle/Config.plist"
+        log::error "VERSION" "ROOT_DIR: ${ROOT_DIR:-<not set>}"
+        return 1
+    fi
+
+    log::info "VERSION" "Found NovaCore Config.plist: $config_plist"
+    log::step "VERSION" "Updating SDKVersion in NovaCore Config.plist to $version"
+
+    local temp_plist="${config_plist}.tmp.$$"
+    sed "s|<string>.*</string>|<string>${version}</string>|g" "$config_plist" > "$temp_plist"
+
+    if grep -q "<string>${version}</string>" "$temp_plist"; then
+        mv "$temp_plist" "$config_plist"
+        log::success "VERSION" "Updated SDKVersion in NovaCore Config.plist to $version"
+    else
+        rm -f "$temp_plist"
+        log::error "VERSION" "Failed to update NovaCore Config.plist — version string not found in output"
+        return 1
+    fi
+}
+
 # Export functions
-export -f validate_version_format compare_versions suggest_next_version bump_patch bump_minor bump_major update_config_plist_version 2>/dev/null || true
-
-
+export -f validate_version_format compare_versions suggest_next_version bump_patch bump_minor bump_major get_sdk_version_config_path read_sdk_version_from_config set_sdk_version_in_config resolve_effective_sdk_version update_config_plist_version update_novacore_config_plist_version 2>/dev/null || true
