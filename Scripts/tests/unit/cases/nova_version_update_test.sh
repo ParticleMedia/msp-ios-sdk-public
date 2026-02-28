@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# @description NovaConstants.version 更新逻辑测试
-# @test release_orchestration.sh 发布适配器时更新 NovaConstants.version
+# @description NovaCore Config.plist SDKVersion 更新逻辑测试
+# @test release_orchestration.sh 发布适配器时更新 NovaCore Config.plist SDKVersion
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 
@@ -16,44 +16,45 @@ ORCH_SH="$REPO_ROOT/Scripts/release/publish/pods/lib/release_orchestration.sh"
 
 test_nova_version_update_exists() {
     local found
-    found=$(grep -c 'NovaConstants.version' "$ORCH_SH")
-    assert_not_equals "0" "$found" "NovaConstants.version update logic should exist"
+    found=$(grep -c 'update_novacore_config_plist_version' "$ORCH_SH")
+    assert_not_equals "0" "$found" "NovaCore Config.plist version update logic should exist"
 }
 
-test_uses_correct_flags() {
+test_calls_version_update_function() {
     local found
-    found=$(grep -c '\-\-function version.*\-\-pattern property' "$ORCH_SH")
-    assert_not_equals "0" "$found" "should use --function version --pattern property flags"
+    found=$(grep -c 'update_novacore_config_plist_version "\$sync_version"' "$ORCH_SH")
+    assert_not_equals "0" "$found" "should call update_novacore_config_plist_version with sync_version"
 }
 
-test_targets_novacore_dir() {
+test_targets_novacore_config_path() {
     local found
-    found=$(grep -c 'Sources/Core/NovaCore/NovaCore' "$ORCH_SH")
-    assert_not_equals "0" "$found" "should target Sources/Core/NovaCore/NovaCore"
+    found=$(grep -c 'NBResourceBundle.bundle/Config.plist' "$REPO_ROOT/Scripts/release/utils/version.sh")
+    assert_not_equals "0" "$found" "should target NovaCore NBResourceBundle Config.plist"
+}
+
+test_uses_sdk_version_ssot() {
+    local found
+    found=$(grep -c 'set_sdk_version_in_config "\$VERSION"' "$ORCH_SH")
+    assert_not_equals "0" "$found" "should update sdk version SSOT file before sync"
 }
 
 test_failure_is_nonfatal() {
     local found
-    found=$(grep -c 'Failed to update NovaConstants.version (non-fatal)' "$ORCH_SH")
-    assert_not_equals "0" "$found" "NovaConstants.version failure should be non-fatal"
-}
-
-test_adapter_version_tool_exists() {
-    assert_file_exists "$REPO_ROOT/Scripts/tools/update_adapter_sdk_version.py" \
-        "update_adapter_sdk_version.py tool should exist"
+    found=$(grep -c 'Failed to update Config.plist SDKVersion (non-fatal)' "$ORCH_SH")
+    assert_not_equals "0" "$found" "NovaCore Config.plist version update failure should be non-fatal"
 }
 
 # ============================================================================
 # 运行测试
 # ============================================================================
 
-info "Running NovaConstants.version update tests..."
+info "Running NovaCore Config.plist version update tests..."
 
 test_nova_version_update_exists
-test_uses_correct_flags
-test_targets_novacore_dir
+test_calls_version_update_function
+test_targets_novacore_config_path
+test_uses_sdk_version_ssot
 test_failure_is_nonfatal
-test_adapter_version_tool_exists
 
 echo ""
-info "All NovaConstants.version update tests passed!"
+info "All NovaCore Config.plist version update tests passed!"
