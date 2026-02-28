@@ -87,6 +87,10 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
     public weak var delegate: NovaNativeAdDelegate?
 
     public var layoutStyle: NovaNativeLayoutStyle {
+        if skOverlayAppStoreId != nil {
+            return .skOverlay
+        }
+
         if let _layoutStyle {
             return _layoutStyle
         }
@@ -150,6 +154,32 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
 }
 
 extension NovaNativeAdItem {
+    public var skOverlayAppStoreId: Int? {
+        guard ctaStyle == .downloadBanner else {
+            return nil
+        }
+        return appStoreId
+    }
+
+    public var skOverlayTrackingURL: URL? {
+        guard ctaStyle == .downloadBanner else {
+            return nil
+        }
+        switch adCtrType {
+        case let .appInstall(model):
+            return model.fallbackWebModel.url
+        case let .playable(model):
+            switch model.launchAdType {
+            case let .appInstall(model):
+                return model.fallbackWebModel.url
+            case .openWeb, .playable:
+                return nil
+            }
+        case .openWeb:
+            return nil
+        }
+    }
+
     public var novaAdReportContext: NovaAdReportContext {
         .init(
             advertiser: advertiser,

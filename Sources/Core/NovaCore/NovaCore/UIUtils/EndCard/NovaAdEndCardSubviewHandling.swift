@@ -114,7 +114,7 @@ extension NovaNativeAdItem: NovaEndCardStylable {
         switch layoutStyle {
         case .horizontal, .sponsor:
             return .horizontalDefault
-        case .vertical, .taller, .interscroller:
+        case .vertical, .skOverlay, .taller, .interscroller:
             return .verticalDefault
         case .unknown, .carousel, .collection:
             return nil
