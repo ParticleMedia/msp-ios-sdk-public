@@ -16,11 +16,24 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     private weak var viewController: UIViewController?
     private let appStoreId: Int
     private let thirdPartyTrackingURL: URL
-    private lazy var skOverlayController = NovaSKOverlayController(encryptedAdToken: interstitialAd.encryptedAdToken, overlayDelegate: self)
-    private var skOverlayShowTimestamp: CFTimeInterval?
-    private var skOverlayNeedToBeShown: Bool = false
-    private var adClickedWillOpenAppStoreObserver: NSObjectProtocol?
-    private var adClickedDidReturnFromAppStoreObserver: NSObjectProtocol?
+    private lazy var skOverlayController: NovaSKOverlayController = {
+        let controller = NovaSKOverlayController(
+            encryptedAdToken: interstitialAd.encryptedAdToken,
+            thirdPartyTrackingURL: thirdPartyTrackingURL,
+            requiredTopViewControllerType: NovaInterstitialAdViewController.self
+        )
+        controller.onWillStartPresentation = { [weak self] transitionContext in
+            transitionContext.addAnimation {
+                self?.bottomContainerView.transform = CGAffineTransform(translationX: 0, y: -80)
+            }
+        }
+        controller.onWillStartDismissal = { [weak self] transitionContext in
+            transitionContext.addAnimation {
+                self?.bottomContainerView.transform = .identity
+            }
+        }
+        return controller
+    }()
 
     private lazy var topGradientView: GradientShadowView = {
         let config = GradientShadowViewConfig(
@@ -113,40 +126,6 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         self.appStoreId = appStoreId
         self.thirdPartyTrackingURL = thirdPartyTrackingURL
         super.init()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(appDidEnterBackground),
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil
-        )
-        adClickedWillOpenAppStoreObserver = NotificationCenter.default
-            .addObserver(
-                forName: .adClickedWillOpenAppStore,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                self?.adClickedWillOpenAppStore()
-            }
-
-        adClickedDidReturnFromAppStoreObserver = NotificationCenter.default
-            .addObserver(
-                forName: .adClickedDidReturnFromAppStore,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                self?.adClickedDidReturnFromAppStore()
-            }
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-
-        if let adClickedWillOpenAppStoreObserver {
-            NotificationCenter.default.removeObserver(adClickedWillOpenAppStoreObserver)
-        }
-        if let adClickedDidReturnFromAppStoreObserver {
-            NotificationCenter.default.removeObserver(adClickedDidReturnFromAppStoreObserver)
-        }
     }
 
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
@@ -220,12 +199,10 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
-        skOverlayNeedToBeShown = false
         dismissSkOverlay()
     }
 
     func willDisappear() {
-        skOverlayNeedToBeShown = false
         dismissSkOverlay()
     }
 
@@ -251,43 +228,6 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     private func dismissSkOverlay() {
         skOverlayController.dismiss()
-        skOverlayShowTimestamp = nil
-    }
-
-    @objc private func appDidEnterBackground() {
-        guard skOverlayController.isShowing else { return }
-        var durationInMs: Int?
-        if let skOverlayShowTimestamp {
-            let duration = CACurrentMediaTime() - skOverlayShowTimestamp
-            if duration.isFinite, !duration.isNaN, let durationValue = (duration * 1000).safeToInt() {
-                durationInMs = durationValue
-            }
-        }
-        NovaAdMetricReporter.logDownloadBannerJumpOut(
-            encryptedAdToken: interstitialAd.encryptedAdToken,
-            durationInMs: durationInMs
-        )
-    }
-
-    private func adClickedWillOpenAppStore() {
-        guard skOverlayController.isShowing else {
-            return
-        }
-        skOverlayNeedToBeShown = true
-        dismissSkOverlay()
-    }
-
-    private func adClickedDidReturnFromAppStore() {
-        guard skOverlayNeedToBeShown else {
-            return
-        }
-        skOverlayNeedToBeShown = false
-
-        // Only restore overlay when the interstitial is still on top.
-        guard UIApplication.novaTopViewController is NovaInterstitialAdViewController else {
-            return
-        }
-        showSkOverlay()
     }
 
     @objc private func didTapVolumeButton() {
@@ -300,39 +240,6 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     @objc private func didTapCloseButton() {
         delegate?.didTapCloseButton()
-    }
-}
-
-// MARK: - SKOverlayDelegate
-
-extension NovaInterstitialAdSKOverlaySubviewHandler: SKOverlayDelegate {
-    func storeOverlayDidFailToLoad(_ overlay: SKOverlay, error: any Error) {
-        DebugLogger.network.error("Failed to load SKOverlay: \(error.localizedDescription)")
-    }
-
-    func storeOverlayWillStartPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
-        transitionContext.addAnimation { [weak self] in
-            self?.bottomContainerView.transform = CGAffineTransform(translationX: 0, y: -80)
-        }
-    }
-
-    func storeOverlayDidFinishPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
-        DebugLogger.network.info("SKOverlay did show successfully")
-        if skOverlayShowTimestamp == nil {
-            skOverlayShowTimestamp = CACurrentMediaTime()
-        }
-        NovaTrackingUrlHelper.fire(url: self.thirdPartyTrackingURL)
-        if !(UIApplication.novaTopViewController is NovaInterstitialAdViewController) {
-            // If the top view controller is not InterstitialNovaAdViewController, we need to dismiss the SKOverlay
-            // this could happen when skoverlay shows after interstitial ad is dismissed
-            dismissSkOverlay()
-        }
-    }
-
-    func storeOverlayWillStartDismissal(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
-        transitionContext.addAnimation { [weak self] in
-            self?.bottomContainerView.transform = .identity
-        }
     }
 }
 
