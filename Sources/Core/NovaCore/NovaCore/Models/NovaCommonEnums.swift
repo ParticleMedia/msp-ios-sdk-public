@@ -19,6 +19,7 @@ public enum NovaNativeLayoutStyle: String, Codable {
     case sponsor
     case horizontal
     case vertical
+    case skOverlay
     case interscroller
     case taller
     case carousel

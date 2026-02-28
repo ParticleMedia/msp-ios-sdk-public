@@ -125,7 +125,11 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
                         let container = DebugNativeAdContainer(
                             frame: CGRect(origin: .zero, size: UIConfig.nativeAdSize))
                         let adView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: container)
-                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: UIConfig.nativeAdSize)
+                        let adVC = DebugAdContainerViewController(
+                            adView: adView,
+                            preferredSize: UIConfig.nativeAdSize,
+                            nativeAd: nativeAd
+                        )
                         self.navigationController?.pushViewController(adVC, animated: true)
                     case .banner(let bannerAd):
                         let adView = bannerAd.adView
