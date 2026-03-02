@@ -19,19 +19,10 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     private lazy var skOverlayController: NovaSKOverlayController = {
         let controller = NovaSKOverlayController(
             encryptedAdToken: interstitialAd.encryptedAdToken,
+            overlayDelegate: self,
             thirdPartyTrackingURL: thirdPartyTrackingURL,
             requiredTopViewControllerType: NovaInterstitialAdViewController.self
         )
-        controller.onWillStartPresentation = { [weak self] transitionContext in
-            transitionContext.addAnimation {
-                self?.bottomContainerView.transform = CGAffineTransform(translationX: 0, y: -80)
-            }
-        }
-        controller.onWillStartDismissal = { [weak self] transitionContext in
-            transitionContext.addAnimation {
-                self?.bottomContainerView.transform = .identity
-            }
-        }
         return controller
     }()
 
@@ -240,6 +231,20 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     @objc private func didTapCloseButton() {
         delegate?.didTapCloseButton()
+    }
+}
+
+extension NovaInterstitialAdSKOverlaySubviewHandler: SKOverlayDelegate {
+    func storeOverlayWillStartPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
+        transitionContext.addAnimation { [weak self] in
+            self?.bottomContainerView.transform = CGAffineTransform(translationX: 0, y: -80)
+        }
+    }
+
+    func storeOverlayWillStartDismissal(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
+        transitionContext.addAnimation { [weak self] in
+            self?.bottomContainerView.transform = .identity
+        }
     }
 }
 

@@ -31,6 +31,15 @@ public struct NovaMediaElementLayout: Equatable {
 }
 
 public class NovaAdImageController {
+    public weak var delegate: NovaAdImageViewDelegate? {
+        get {
+            imageView.delegate
+        }
+        set {
+            imageView.delegate = newValue
+        }
+    }
+
     public var contentMode: UIView.ContentMode {
         get {
             imageView.contentMode

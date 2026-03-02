@@ -7,7 +7,8 @@ public protocol NativeAdSKOverlayControllable: AnyObject {
     func showSKOverlayIfPossible(
         scene: UIWindowScene?,
         position: SKOverlay.Position,
-        userDismissible: Bool
+        userDismissible: Bool,
+        overlayDelegate: (any SKOverlayDelegate)?
     )
 
     func dismissSKOverlay()

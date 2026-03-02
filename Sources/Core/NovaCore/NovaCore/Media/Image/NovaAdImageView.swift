@@ -10,6 +10,14 @@ import CoreImage.CIFilterBuiltins
 @_implementationOnly import MSPSnapKit
 import UIKit
 
+public protocol NovaAdImageViewDelegate: AnyObject {
+    func imageViewDidStartDisplaying()
+}
+
+public extension NovaAdImageViewDelegate {
+    func imageViewDidStartDisplaying() {}
+}
+
 class NovaAdImageView: UIView {
     // MARK: Lifecycle
     // Track start time for click events
@@ -40,6 +48,8 @@ class NovaAdImageView: UIView {
         set { contentImageView.contentMode = newValue }
     }
 
+    weak var delegate: (any NovaAdImageViewDelegate)?
+
     func config(
         with mediaModel: NovaAdImageMediaModel,
         actionContext: NovaAdMediaActionContext?,
@@ -51,11 +61,15 @@ class NovaAdImageView: UIView {
 
         self.mediaModel = mediaModel
         self.actionContext = actionContext
+        hasNotifiedDidStartDisplaying = false
+        isImageReadyForDisplay = false
 
         if let contentMode = mediaModel.imageContentMode {
             contentImageView.contentMode = contentMode
         }
         contentImageView.novaSetup(with: mediaModel.resource) { _ in
+            self.isImageReadyForDisplay = true
+            self.notifyImageDidStartDisplayingIfNeeded()
             completion()
         }
 
@@ -71,6 +85,16 @@ class NovaAdImageView: UIView {
             isUserInteractionEnabled = false
         }
         setupBottomShadow(showBottomShadow: showBottomShadow)
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        notifyImageDidStartDisplayingIfNeeded()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        notifyImageDidStartDisplayingIfNeeded()
     }
 
     private func setupBottomShadow(showBottomShadow: Bool) {
@@ -131,6 +155,17 @@ class NovaAdImageView: UIView {
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
 
     private var bottomShadowView: GradientShadowView?
+    private var hasNotifiedDidStartDisplaying = false
+    private var isImageReadyForDisplay = false
+
+    private func notifyImageDidStartDisplayingIfNeeded() {
+        guard !hasNotifiedDidStartDisplaying else { return }
+        guard isImageReadyForDisplay else { return }
+        guard window != nil, !isHidden, alpha > 0.01, !bounds.isEmpty else { return }
+
+        hasNotifiedDidStartDisplaying = true
+        delegate?.imageViewDidStartDisplaying()
+    }
 
     private func setupActionHelper() {
         guard let actionContext else {
