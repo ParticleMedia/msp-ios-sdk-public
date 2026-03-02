@@ -22,6 +22,9 @@ open msp-ios-sdk.xcworkspace
 # Full release (CocoaPods + SPM)
 ./Scripts/msp-release.sh --profile=production run 1.0.0
 
+# Release with notes (shown in GitHub Release)
+./Scripts/msp-release.sh --profile=production run 1.0.0 --release-notes "Bug fixes and performance improvements"
+
 # Only release CocoaPods
 ./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods
 

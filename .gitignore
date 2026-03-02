@@ -174,9 +174,6 @@ release_backup_*/
 !Scripts/tests/**
 *_cocoapods.podspec
 
-# Slack configuration (contains sensitive webhook URL)
-Scripts/config/slack.conf
-
 # Temporary build artifacts (still ignored)
 BuildReports/
 Tmp/
