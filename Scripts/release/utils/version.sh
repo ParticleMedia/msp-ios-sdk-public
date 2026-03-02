@@ -354,6 +354,31 @@ update_config_plist_version() {
     fi
 }
 
+# @description Update DemoApp MARKETING_VERSION in project.yml.template and update.sh
+# @param $1 version - The new version string (e.g., "0.2.1")
+update_demo_app_version() {
+    local version="$1"
+    local root="${ROOT_DIR:-.}"
+    local template="$root/Examples/MSPDemoApp/project.yml.template"
+    local update_sh="$root/Scripts/workspace/update.sh"
+
+    # Update project.yml.template (MARKETING_VERSION: X.Y.Z)
+    if [[ -f "$template" ]]; then
+        sed -i '' "s/MARKETING_VERSION: .*/MARKETING_VERSION: ${version}/" "$template"
+        log::info "VERSION" "Updated MARKETING_VERSION in project.yml.template to $version"
+    else
+        log::warn "VERSION" "project.yml.template not found: $template"
+    fi
+
+    # Update Scripts/workspace/update.sh (MARKETING_VERSION: X.Y.Z)
+    if [[ -f "$update_sh" ]]; then
+        sed -i '' "s/MARKETING_VERSION: .*/MARKETING_VERSION: ${version}/" "$update_sh"
+        log::info "VERSION" "Updated MARKETING_VERSION in update.sh to $version"
+    else
+        log::warn "VERSION" "update.sh not found: $update_sh"
+    fi
+}
+
 update_novacore_config_plist_version() {
     local version="${1:-}"
     if ! version="$(resolve_effective_sdk_version "$version")"; then
@@ -387,4 +412,4 @@ update_novacore_config_plist_version() {
 }
 
 # Export functions
-export -f validate_version_format compare_versions suggest_next_version bump_patch bump_minor bump_major get_sdk_version_config_path read_sdk_version_from_config set_sdk_version_in_config resolve_effective_sdk_version update_config_plist_version update_novacore_config_plist_version 2>/dev/null || true
+export -f validate_version_format compare_versions suggest_next_version bump_patch bump_minor bump_major get_sdk_version_config_path read_sdk_version_from_config set_sdk_version_in_config resolve_effective_sdk_version update_config_plist_version update_novacore_config_plist_version update_demo_app_version 2>/dev/null || true

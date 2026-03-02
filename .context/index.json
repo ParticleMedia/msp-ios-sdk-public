@@ -2,7 +2,7 @@
   "version": "2.0",
   "generated_at": "2026-02-26T03:03:45Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 18,
+  "entry_count": 20,
   "domains": {
     "compatibility": {
       "count": 0,
@@ -32,9 +32,10 @@
       "layers": []
     },
     "release": {
-      "count": 3,
+      "count": 5,
       "layers": [
-        "experience"
+        "experience",
+        "tech"
       ]
     },
     "ci": {
@@ -257,6 +258,66 @@
       "summary": "Kingfisher statically linked in NovaCore causes duplicate symbol crash; solved with wrapper API pattern",
       "status": "active",
       "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-release-004",
+      "path": ".context/release/experience/ctx-release-004-xcframework-version-stale.md",
+      "title": "XCFramework 二进制中版本号未更新 — 构建时序问题",
+      "domain": "release",
+      "layer": "experience",
+      "tags": [
+        "xcframework",
+        "version",
+        "build-order",
+        "config-plist",
+        "novacore",
+        "novaconstants",
+        "getSDKVersion",
+        "marketing-version"
+      ],
+      "triggers": [
+        "XCFramework version stale after release",
+        "Config.plist SDKVersion wrong in binary",
+        "NovaConstants.version 0.0.0",
+        "getSDKVersion returns old version",
+        "version not updated in xcframework binary",
+        "build order version mismatch"
+      ],
+      "summary": "XCFramework built before version update, so binary contains stale version; NovaConstants.version update also not committed",
+      "status": "active",
+      "updated": "2026-02-27"
+    },
+    {
+      "id": "ctx-release-005",
+      "path": ".context/release/tech/ctx-release-005-version-ssot-flow.md",
+      "title": "SDK 版本 SSOT 及更新流程",
+      "domain": "release",
+      "layer": "tech",
+      "tags": [
+        "version",
+        "ssot",
+        "sdk-version",
+        "config-plist",
+        "marketing-version",
+        "testflight",
+        "sdk_version.conf",
+        "version-flow"
+      ],
+      "triggers": [
+        "SDK version SSOT flow",
+        "sdk_version.conf update process",
+        "MARKETING_VERSION source",
+        "version commit order",
+        "Config.plist version update flow",
+        "TestFlight SDK version",
+        "release version flow",
+        "version SSOT",
+        "version 流转",
+        "版本更新流程"
+      ],
+      "summary": "SDK 版本 SSOT (sdk_version.conf) 的完整流转：modular.sh 首次 commit → release_orchestration.sh 读取更新 plist → version_commit.sh 统一 commit → TestFlight deploy.sh 读取注入 MARKETING_VERSION",
+      "status": "active",
+      "updated": "2026-02-28"
     },
     {
       "id": "ctx-sources-006",

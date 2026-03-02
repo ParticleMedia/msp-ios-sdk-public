@@ -357,7 +357,37 @@ msp_git_delete_remote_branch() {
     return 0
 }
 
+# @description Create a pull request from current branch to target branch using gh CLI
+# @param $1 version - Release version (for PR title)
+# @param $2 target_branch - Target branch (e.g., BASE_BRANCH)
+create_pr_to_branch() {
+    local version="$1"
+    local target_branch="$2"
+    local source_branch
+    source_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    if ! command -v gh >/dev/null 2>&1; then
+        log::warn "GIT" "gh CLI not available — skipping PR creation"
+        log::info "GIT" "Please manually create PR: $source_branch → $target_branch"
+        return 0
+    fi
+
+    log::info "GIT" "Creating PR: $source_branch → $target_branch"
+
+    gh pr create \
+        --base "$target_branch" \
+        --head "$source_branch" \
+        --title "chore(release): merge $version into $target_branch" \
+        --body "Auto-generated PR to sync release $version changes into \`$target_branch\`." \
+        2>&1 || {
+            log::warn "GIT" "PR creation failed (may already exist or branch not pushed)"
+            return 0
+        }
+
+    log::success "GIT" "PR created: $source_branch → $target_branch"
+}
+
 # Export functions
-export -f ensure_git_clean create_branch delete_branch tag_exists create_tag push_branch push_tag fetch_remote msp_git_delete_tag msp_git_delete_remote_branch 2>/dev/null || true
+export -f ensure_git_clean create_branch delete_branch tag_exists create_tag push_branch push_tag fetch_remote msp_git_delete_tag msp_git_delete_remote_branch create_pr_to_branch 2>/dev/null || true
 
 

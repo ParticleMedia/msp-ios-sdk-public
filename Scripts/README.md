@@ -135,6 +135,18 @@ Scripts/
 │   ├── internal/               #   Internal builders (MSPCore, iOSCore, Nova)
 │   └── wrappers/               #   Third-party adapter wrapper builders (7)
 │
+├── testflight/                 # TestFlight deployment
+│   ├── deploy.sh               #   Main orchestrator (entrypoint)
+│   ├── config.yaml             #   Build number + app config (SSOT)
+│   ├── lib/                    #   Modular pipeline stages
+│   │   ├── config.sh           #     Config loader + build number management
+│   │   ├── validate.sh         #     Pre-flight checks (tools, credentials, workspace)
+│   │   ├── archive.sh          #     xcodebuild archive (signed .xcarchive)
+│   │   ├── export.sh           #     xcodebuild -exportArchive (IPA)
+│   │   └── upload.sh           #     fastlane pilot upload to ASC
+│   └── templates/
+│       └── ExportOptions.plist #   Export options for App Store distribution
+│
 ├── target-switching/           # Mode switching internals
 │   ├── common.sh               #   Shared constants
 │   ├── round-trip-test.sh      #   Mode switching validation
@@ -182,6 +194,7 @@ Scripts/
 |--------|---------|
 | `msp-release.sh` | Main release orchestrator with subcommands |
 | `switch-target.sh` | Switch between development modes |
+| `testflight/deploy.sh` | TestFlight deployment (archive → export → upload) |
 
 ### Subcommands
 
@@ -368,6 +381,77 @@ Multi-channel notification framework in `Scripts/notify/`:
 | Email | `email.sh` + `email_sender.sh` | HTML templates |
 
 Configuration via `Scripts/config/notify_mapping.yaml` and profile-based settings.
+
+## TestFlight Deployment
+
+Automated TestFlight deployment pipeline for MSPDemoApp in `Scripts/testflight/`.
+
+### Usage
+
+```bash
+# Dry run — archive + export only (no ASC credentials needed)
+./Scripts/testflight/deploy.sh --dry-run
+
+# Full deploy — archive + export + upload to App Store Connect
+./Scripts/testflight/deploy.sh
+
+# Override build number
+./Scripts/testflight/deploy.sh --build-number 42
+```
+
+### Pipeline Stages
+
+```
+deploy.sh (entrypoint)
+    │
+    ├── validate.sh     — Pre-flight checks (tools, credentials, workspace)
+    ├── config.sh       — Load config.yaml, compute next build number
+    ├── version.sh      — Read SDK version from SSOT (sdk_version.conf)
+    ├── archive.sh      — xcodebuild archive (signed .xcarchive)
+    ├── export.sh       — xcodebuild -exportArchive (IPA)
+    ├── upload.sh       — fastlane pilot upload to App Store Connect
+    └── config.sh       — Commit build number bump to config.yaml
+```
+
+### Configuration
+
+`Scripts/testflight/config.yaml` is the SSOT for build number and app settings:
+
+| Field | Description |
+|-------|-------------|
+| `build_number` | Auto-incremented after each successful upload |
+| `app.scheme` | Xcode scheme (`MSPDemoApp`) |
+| `app.workspace` | Workspace path |
+| `app.bundle_id` | App bundle identifier |
+| `signing.team_id` | Apple Developer Team ID |
+
+### Version Injection
+
+| Build Setting | Source | Description |
+|---------------|--------|-------------|
+| `MARKETING_VERSION` | `Scripts/config/sdk_version.conf` (SSOT) | App version (e.g., `3.1.7`) |
+| `CURRENT_PROJECT_VERSION` | `Scripts/testflight/config.yaml` | Build number (e.g., `2`) |
+
+### Environment Variables (Upload Only)
+
+Required for full deploy (not needed for `--dry-run`):
+
+| Variable | Description |
+|----------|-------------|
+| `ASC_KEY_ID` | App Store Connect API Key ID |
+| `ASC_ISSUER_ID` | App Store Connect Issuer ID |
+| `ASC_KEY_PATH` | Path to AuthKey `.p8` file |
+
+**Setup (recommended):** Copy the `.env` template and fill in your credentials:
+
+```bash
+cp Scripts/testflight/.env.example Scripts/testflight/.env
+# Edit Scripts/testflight/.env with your ASC credentials
+```
+
+The `.env` file is gitignored and loaded automatically by `deploy.sh`. Existing environment variables take precedence over `.env` values. Alternatively, `direnv` users can uncomment the ASC section in `.envrc.example`.
+
+Without ASC credentials, `--dry-run` uses local Keychain for code signing.
 
 ## Shared Tools (AI Agents)
 

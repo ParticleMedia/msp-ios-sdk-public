@@ -151,8 +151,31 @@ check_release_branch() {
         log::warn "BRANCH" "Release branch '$RELEASE_BRANCH' already exists on remote"
         if [[ "$DRY_RUN" != "true" ]]; then
             log::info "BRANCH" "Automatically deleting existing remote release branch"
-            git push origin --delete "$RELEASE_BRANCH"
-            log::success "BRANCH" "Deleted existing remote release branch"
+            local max_delete_attempts=2
+            local delete_attempt=1
+            local delete_success=false
+
+            while [[ $delete_attempt -le $max_delete_attempts ]]; do
+                if git push origin --delete "$RELEASE_BRANCH" 2>/dev/null; then
+                    delete_success=true
+                    break
+                else
+                    log::warn "BRANCH" "Attempt $delete_attempt/$max_delete_attempts failed: delete remote branch $RELEASE_BRANCH"
+                fi
+
+                if [[ $delete_attempt -lt $max_delete_attempts ]]; then
+                    log::info "BRANCH" "Retrying in 3 seconds..."
+                    sleep 3
+                fi
+
+                ((delete_attempt++)) || true
+            done
+
+            if [[ "$delete_success" == "true" ]]; then
+                log::success "BRANCH" "Deleted existing remote release branch"
+            else
+                log::warn "BRANCH" "Could not delete remote branch '$RELEASE_BRANCH' (may not exist on remote, continuing)"
+            fi
         fi
     fi
 }
@@ -190,8 +213,31 @@ create_release_branch() {
     git clean -fd || true
     git checkout "$BASE_BRANCH"
     
-    # Pull latest changes
-    git pull origin "$BASE_BRANCH"
+    # Pull latest changes (retry up to 3 times, 3s interval)
+    local max_pull_attempts=3
+    local pull_attempt=1
+    local pull_success=false
+
+    while [[ $pull_attempt -le $max_pull_attempts ]]; do
+        if git pull origin "$BASE_BRANCH"; then
+            pull_success=true
+            break
+        else
+            log::warn "BRANCH" "Attempt $pull_attempt/$max_pull_attempts failed: git pull origin $BASE_BRANCH"
+        fi
+
+        if [[ $pull_attempt -lt $max_pull_attempts ]]; then
+            log::info "BRANCH" "Retrying in 3 seconds..."
+            sleep 3
+        fi
+
+        ((pull_attempt++)) || true
+    done
+
+    if [[ "$pull_success" == "false" ]]; then
+        log::error "BRANCH" "Failed to pull from origin/$BASE_BRANCH after $max_pull_attempts attempts"
+        exit 1
+    fi
     
     # Create and checkout release branch
     git checkout -b "$RELEASE_BRANCH"
@@ -207,8 +253,32 @@ push_release_branch() {
         return 0
     fi
     
-    git push origin "$RELEASE_BRANCH"
-    
+    # Retry up to 3 times, 3s interval
+    local max_push_attempts=3
+    local push_attempt=1
+    local push_success=false
+
+    while [[ $push_attempt -le $max_push_attempts ]]; do
+        if git push origin "$RELEASE_BRANCH"; then
+            push_success=true
+            break
+        else
+            log::warn "BRANCH" "Attempt $push_attempt/$max_push_attempts failed: git push origin $RELEASE_BRANCH"
+        fi
+
+        if [[ $push_attempt -lt $max_push_attempts ]]; then
+            log::info "BRANCH" "Retrying in 3 seconds..."
+            sleep 3
+        fi
+
+        ((push_attempt++)) || true
+    done
+
+    if [[ "$push_success" == "false" ]]; then
+        log::error "BRANCH" "Failed to push release branch after $max_push_attempts attempts"
+        exit 1
+    fi
+
     log::success "BRANCH" "Pushed release branch to remote"
 }
 

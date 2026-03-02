@@ -8,7 +8,7 @@ import UIKit
 
 @objc public class FacebookAdapter: NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        "6.15.0"
+        FB_AD_SDK_VERSION
     }
 
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {

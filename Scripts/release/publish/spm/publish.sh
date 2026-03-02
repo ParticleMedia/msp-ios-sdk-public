@@ -1561,15 +1561,12 @@ if [[ -z "${RELEASE_VERSION:-}" && $# -eq 0 ]]; then
     exit 1
 fi
 
-# Run main function with all arguments
-main "$@"
-
 # ============================================================================
 # SPM Tag Publishing with Tier Awareness (Patch M)
 # ============================================================================
 spm_publish_tags() {
     local version="$1"
-    
+
     # If version is not provided, try to extract from Package.swift
     if [[ -z "$version" ]]; then
         local package_swift="$ROOT_DIR/Package.swift"
@@ -1606,7 +1603,7 @@ spm_publish_tags() {
         log::info "SPM" "[SPM] [CONFIG] Skipping tag & remote publish (config: spm.enabled=false, version: $version)"
         return 0
     fi
-    
+
     # Real release tier behavior - check config (Patch M+CONFIG)
     if ! should_real_publish; then
         local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
@@ -1614,7 +1611,7 @@ spm_publish_tags() {
         log::error "SPM" "[SPM][BLOCKED] Check Scripts/config/release.yaml for branch policy"
         return 1
     fi
-    
+
     # Real release tier behavior
     log::info "SPM" "[SPM] Creating and pushing tag for version: $version"
     log::info "SPM" "[SPM] All SPM products will share the same version tag (standard SPM practice)"
@@ -1710,5 +1707,8 @@ All binary XCFrameworks are available via GitHub Release assets."; then
     else
         log::info "SPM" "Tag already exists on remote with correct SHA, skipping push"
     fi
-    
+
 }
+
+# Run main function with all arguments
+main "$@"
