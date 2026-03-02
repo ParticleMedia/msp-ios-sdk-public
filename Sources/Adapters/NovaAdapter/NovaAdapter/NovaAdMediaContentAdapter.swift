@@ -59,9 +59,22 @@ class NovaAdMediaContainerAdapter: AdMediaContainer {
 class NovaAdImageControllerAdapter: ImageController {
     init(imageController: NovaAdImageController) {
         self.imageController = imageController
+        self.delegateAdapter = NovaAdImageControllerDelegateAdapter(imageController: nil)
+        imageController.delegate = delegateAdapter
+        self.delegateAdapter.imageController = self
     }
 
     let imageController: NovaAdImageController
+    let delegateAdapter: NovaAdImageControllerDelegateAdapter
+
+    var delegate: (any ImageControllerDelegate)? {
+        get {
+            delegateAdapter.imageControllerDelegate
+        }
+        set {
+            delegateAdapter.imageControllerDelegate = newValue
+        }
+    }
 
     var contentMode: UIView.ContentMode {
         get {
@@ -70,6 +83,19 @@ class NovaAdImageControllerAdapter: ImageController {
         set {
             imageController.contentMode = newValue
         }
+    }
+}
+
+class NovaAdImageControllerDelegateAdapter: NovaAdImageViewDelegate {
+    init(imageController: (any ImageController)?) {
+        self.imageController = imageController
+    }
+
+    weak var imageController: (any ImageController)?
+    weak var imageControllerDelegate: ImageControllerDelegate?
+
+    func imageViewDidStartDisplaying() {
+        imageControllerDelegate?.imageControllerDidStartDisplaying(imageController)
     }
 }
 
@@ -143,6 +169,10 @@ class NovaAdVideoControllerDelegateAdapter: NovaAdVideoViewDelegate {
                 didUpdateProgress: currentTime,
                 videoLength: videoLength
             )
+    }
+
+    func videoViewDidChangeToPlay() {
+        videoControllerDelegate?.videoControllerDidChangeToPlay(videoController)
     }
 }
 

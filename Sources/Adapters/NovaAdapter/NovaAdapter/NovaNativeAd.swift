@@ -47,13 +47,15 @@ public class NovaNativeAd: NativeAd, NativeAdSKOverlayControllable {
     public func showSKOverlayIfPossible(
         scene: UIWindowScene? = nil,
         position: SKOverlay.Position = .bottomRaised,
-        userDismissible: Bool = false
+        userDismissible: Bool,
+        overlayDelegate: (any SKOverlayDelegate)? = nil
     ) {
         guard let appStoreId = nativeAdItem?.skOverlayAppStoreId else {
             return
         }
 
         let controller = makeOrGetSKOverlayController()
+        controller.setOverlayDelegate(overlayDelegate)
         controller.show(
             appStoreId: appStoreId,
             scene: scene,

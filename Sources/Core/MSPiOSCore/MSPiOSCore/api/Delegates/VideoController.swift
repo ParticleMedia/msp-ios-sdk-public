@@ -19,4 +19,10 @@ public protocol VideoControllerDelegate: AnyObject {
         didUpdateProgress currentTime: TimeInterval,
         videoLength: TimeInterval
     )
+
+    func videoControllerDidChangeToPlay(_ controller: VideoController?)
+}
+
+public extension VideoControllerDelegate {
+    func videoControllerDidChangeToPlay(_ controller: VideoController?) {}
 }

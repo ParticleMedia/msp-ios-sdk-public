@@ -10,14 +10,6 @@ import StoreKit
 import UIKit
 
 public final class NovaSKOverlayController: NSObject {
-    public typealias TransitionCallback = (SKOverlay.TransitionContext) -> Void
-    public typealias ErrorCallback = (Error) -> Void
-
-    public var onWillStartPresentation: TransitionCallback?
-    public var onDidFinishPresentation: TransitionCallback?
-    public var onWillStartDismissal: TransitionCallback?
-    public var onDidFailToLoad: ErrorCallback?
-
     private weak var forwardedOverlayDelegate: (any SKOverlayDelegate)?
 
     private var overlay: SKOverlay?
@@ -71,6 +63,10 @@ public final class NovaSKOverlayController: NSObject {
             }
             appStoreObservers = [willOpenObserver, didReturnObserver]
         }
+    }
+
+    public func setOverlayDelegate(_ overlayDelegate: (any SKOverlayDelegate)?) {
+        forwardedOverlayDelegate = overlayDelegate
     }
 
     deinit {
@@ -159,13 +155,11 @@ public final class NovaSKOverlayController: NSObject {
 extension NovaSKOverlayController: SKOverlayDelegate {
     public func storeOverlayDidFailToLoad(_ overlay: SKOverlay, error: any Error) {
         DebugLogger.network.error("Failed to load SKOverlay: \(error.localizedDescription)")
-        onDidFailToLoad?(error)
         forwardedOverlayDelegate?.storeOverlayDidFailToLoad?(overlay, error: error)
     }
 
     public func storeOverlayWillStartPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext)
     {
-        onWillStartPresentation?(transitionContext)
         forwardedOverlayDelegate?.storeOverlayWillStartPresentation?(overlay, transitionContext: transitionContext)
     }
 
@@ -183,12 +177,14 @@ extension NovaSKOverlayController: SKOverlayDelegate {
             }
         }
         DebugLogger.network.info("SKOverlay did show successfully")
-        onDidFinishPresentation?(transitionContext)
         forwardedOverlayDelegate?.storeOverlayDidFinishPresentation?(overlay, transitionContext: transitionContext)
     }
 
     public func storeOverlayWillStartDismissal(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
-        onWillStartDismissal?(transitionContext)
         forwardedOverlayDelegate?.storeOverlayWillStartDismissal?(overlay, transitionContext: transitionContext)
+    }
+
+    public func storeOverlayDidFinishDismissal(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
+        forwardedOverlayDelegate?.storeOverlayDidFinishDismissal?(overlay, transitionContext: transitionContext)
     }
 }
