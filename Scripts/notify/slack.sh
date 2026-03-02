@@ -24,8 +24,6 @@ msp_enforce_main_repo_or_exit
 # Optional Environment Variables (Advanced):
 #   SLACK_BOT_TOKEN          - Bot token for DM and API features (xoxb-...)
 #   MSP_SLACK_DM_OVERRIDE    - User ID to send DM instead of channel (e.g., U0910UJPD7B)
-#   MSP_SLACK_ALERT_ENV      - Environment mode: test/prod (default: prod)
-#   MSP_SLACK_TEST_WEBHOOK   - Test webhook URL for MSP_SLACK_ALERT_ENV=test
 #
 # Configuration:
 #   Can also be configured via Scripts/config/slack.conf
@@ -33,8 +31,6 @@ msp_enforce_main_repo_or_exit
 #
 # Advanced Features:
 #   - Direct Messages: Set MSP_SLACK_DM_OVERRIDE + SLACK_BOT_TOKEN
-#   - Test Mode: Set MSP_SLACK_ALERT_ENV=test to use MSP_SLACK_TEST_WEBHOOK
-#   - Production: Set MSP_SLACK_ALERT_ENV=prod (or unset) for production notifications
 # ============================================================================
 
 # Prevent multiple sourcing
@@ -129,18 +125,12 @@ load_slack_config() {
                         SLACK_ICON_EMOJI)
                             [[ -z "${SLACK_ICON_EMOJI:-}" ]] && export SLACK_ICON_EMOJI="$value"
                             ;;
-                        # Advanced Slack Configuration (DM, Test Mode, Bot Token)
+                        # Advanced Slack Configuration (DM, Bot Token)
                         SLACK_BOT_TOKEN)
                             [[ -z "${SLACK_BOT_TOKEN:-}" ]] && export SLACK_BOT_TOKEN="$value"
                             ;;
                         MSP_SLACK_DM_OVERRIDE)
                             [[ -z "${MSP_SLACK_DM_OVERRIDE:-}" ]] && export MSP_SLACK_DM_OVERRIDE="$value"
-                            ;;
-                        MSP_SLACK_ALERT_ENV)
-                            [[ -z "${MSP_SLACK_ALERT_ENV:-}" ]] && export MSP_SLACK_ALERT_ENV="$value"
-                            ;;
-                        MSP_SLACK_TEST_WEBHOOK)
-                            [[ -z "${MSP_SLACK_TEST_WEBHOOK:-}" ]] && export MSP_SLACK_TEST_WEBHOOK="$value"
                             ;;
                     esac
                 fi
@@ -153,40 +143,6 @@ load_slack_config() {
 
 # Load configuration on source
 load_slack_config
-
-# ============================================================================
-# Environment-based Webhook Selection (TEST/PROD)
-# ============================================================================
-# Select webhook based on MSP_SLACK_ALERT_ENV (test/prod)
-# - test: Uses MSP_SLACK_TEST_WEBHOOK (safe for testing)
-# - prod: Uses SLACK_WEBHOOK_URL (production channel)
-select_slack_webhook() {
-    local alert_env="${MSP_SLACK_ALERT_ENV:-prod}"
-
-    case "$alert_env" in
-        test)
-            # Test mode: use test webhook if available
-            if [[ -n "${MSP_SLACK_TEST_WEBHOOK:-}" ]]; then
-                export SLACK_WEBHOOK_URL="$MSP_SLACK_TEST_WEBHOOK"
-                log::info "NOTIFY" "[SLACK] Using TEST webhook (MSP_SLACK_ALERT_ENV=test)" 2>/dev/null || true
-            else
-                log::warn "NOTIFY" "[SLACK] MSP_SLACK_ALERT_ENV=test but MSP_SLACK_TEST_WEBHOOK not set" 2>/dev/null || true
-                log::warn "NOTIFY" "[SLACK] Falling back to production webhook" 2>/dev/null || true
-            fi
-            ;;
-        prod|production)
-            # Production mode: use production webhook (already set)
-            log::info "NOTIFY" "[SLACK] Using PRODUCTION webhook (MSP_SLACK_ALERT_ENV=${alert_env})" 2>/dev/null || true
-            ;;
-        *)
-            # Unknown mode: warn and use production webhook
-            log::warn "NOTIFY" "[SLACK] Unknown MSP_SLACK_ALERT_ENV: ${alert_env}, using production webhook" 2>/dev/null || true
-            ;;
-    esac
-}
-
-# Call webhook selection
-select_slack_webhook
 
 # Slack configuration with defaults
 SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"

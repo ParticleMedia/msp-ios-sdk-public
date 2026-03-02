@@ -199,11 +199,7 @@ notify::email::send_success_email() {
         return 0
     fi
     
-    # Determine environment (test or prod)
-    local env_mode="${MSP_SLACK_ALERT_ENV:-prod}"
-    if [[ "$env_mode" != "test" ]]; then
-        env_mode="prod"
-    fi
+    local env_mode="prod"
     
     # Get recipient list
     local emails=()

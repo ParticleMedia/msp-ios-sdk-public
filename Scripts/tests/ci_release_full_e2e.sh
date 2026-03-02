@@ -129,7 +129,6 @@ log_test "Sandbox setup complete"
 
 log_test "Setting up CI environment variables..."
 
-export MSP_SLACK_ALERT_ENV="test"
 export MSP_SLACK_BLOCK_MODE="1"
 export MSP_EMAIL_DISABLED="1"
 export MSP_LOCAL_VERIFY_ENABLED="1"
@@ -151,7 +150,6 @@ export RELEASE_NOTES="CI Automated E2E Test Release"
 export ROOT_DIR="$SANDBOX_DIR"
 
 log_test "Environment variables set:"
-log_test "  - MSP_SLACK_ALERT_ENV=$MSP_SLACK_ALERT_ENV"
 log_test "  - MSP_SLACK_BLOCK_MODE=$MSP_SLACK_BLOCK_MODE"
 log_test "  - MSP_EMAIL_DISABLED=$MSP_EMAIL_DISABLED"
 log_test "  - VERSION=$VERSION"

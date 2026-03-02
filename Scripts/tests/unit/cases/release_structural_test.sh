@@ -179,24 +179,6 @@ test_push_failure_continues_to_pr() {
 # Slack: Credential validity
 # ============================================================================
 
-test_slack_not_in_test_mode() {
-    if [[ ! -f "$SLACK_CONF" ]]; then
-        pass "Slack: slack.conf not found (gitignored, skipping)"
-        return
-    fi
-
-    local env_value
-    env_value=$(grep '^MSP_SLACK_ALERT_ENV=' "$SLACK_CONF" | cut -d= -f2 || echo "")
-
-    if [[ "$env_value" == "prod" ]]; then
-        pass "Slack: MSP_SLACK_ALERT_ENV is prod"
-    elif [[ "$env_value" == "test" ]]; then
-        fail "Slack: MSP_SLACK_ALERT_ENV is still 'test' — notifications go to test channel"
-    else
-        pass "Slack: MSP_SLACK_ALERT_ENV is '${env_value:-unset}' (defaults to prod)"
-    fi
-}
-
 test_slack_no_dm_override_in_prod() {
     if [[ ! -f "$SLACK_CONF" ]]; then
         pass "Slack: slack.conf not found (gitignored, skipping)"
@@ -298,7 +280,6 @@ test_push_failure_continues_to_pr
 
 echo ""
 echo "--- Slack credential validation ---"
-test_slack_not_in_test_mode
 test_slack_no_dm_override_in_prod
 test_slack_webhook_reachable
 test_slack_bot_token_valid

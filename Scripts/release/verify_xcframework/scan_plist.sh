@@ -77,42 +77,30 @@ scan_plist() {
             continue
         fi
 
-        local umbrella_path="$slice_path/Headers/$module_name.h"
-        if [[ -f "$umbrella_path" ]]; then
-            umbrella_found=1
-            vr_log::info "VERIFY" "[XCF] Found umbrella header in $slice"
-            echo "[TRACE][XCF]      Found umbrella: $umbrella_path"
+        local found_framework_in_slice=0
+        while IFS= read -r -d '' slice_framework; do
+            found_framework_in_slice=1
+            scanned_frameworks=$((scanned_frameworks + 1))
 
-            # Check if umbrella header references exist (with protection against infinite loops)
-            if command -v grep >/dev/null 2>&1; then
-                echo "[TRACE][XCF]      Scanning umbrella header references..."
-                local referenced_headers
-                if ! referenced_headers="$(timeout 10s grep -E '^#import|<.*\.h>' "$umbrella_path" 2>/dev/null | sed -E 's/.*["<]([^">]+)\.h[">].*/\1.h/' || echo "")"; then
-                    vr_log::warn "VERIFY" "[XCF] grep command timed out on umbrella header"
-                    echo "[TRACE][XCF]      grep TIMEOUT on umbrella header"
-                else
-                    if [[ -n "$referenced_headers" ]]; then
-                        local iteration_count=0
-                        while IFS= read -r header && [[ $iteration_count -lt 1000 ]]; do
-                            iteration_count=$((iteration_count + 1))
-                            local header_path="$slice_path/Headers/$header"
-                            if [[ ! -f "$header_path" ]]; then
-                                vr_log::warn "VERIFY" "[XCF] Umbrella header references missing file: $header"
-                            fi
-                        done <<< "$referenced_headers"
-                        echo "[TRACE][XCF]      Processed $iteration_count header references"
-                    fi
+            local framework_name
+            framework_name="$(basename "$slice_framework" .framework)"
+
+            local fw_plist="$slice_framework/Info.plist"
+            if [[ -f "$fw_plist" ]] && command -v plutil >/dev/null 2>&1; then
+                local short_version
+                short_version="$(plutil -extract CFBundleShortVersionString raw "$fw_plist" 2>/dev/null || echo "")"
+                local bundle_version
+                bundle_version="$(plutil -extract CFBundleVersion raw "$fw_plist" 2>/dev/null || echo "")"
+
+                if [[ -z "$short_version" ]]; then
+                    vr_log_error "[XCF] Missing CFBundleShortVersionString in slice: $slice ($framework_name)"
+                    slice_plist_errors=$((slice_plist_errors + 1))
                 fi
-            fi
 
-            if [[ -z "$short_version" ]]; then
-                vr_log_error "[XCF] Missing CFBundleShortVersionString in slice: $slice ($framework_name)"
-                slice_plist_errors=$((slice_plist_errors + 1))
-            fi
-
-            if [[ -z "$bundle_version" ]]; then
-                vr_log_error "[XCF] Missing CFBundleVersion in slice: $slice ($framework_name)"
-                slice_plist_errors=$((slice_plist_errors + 1))
+                if [[ -z "$bundle_version" ]]; then
+                    vr_log_error "[XCF] Missing CFBundleVersion in slice: $slice ($framework_name)"
+                    slice_plist_errors=$((slice_plist_errors + 1))
+                fi
             fi
         done < <(find "$slice_path" -maxdepth 1 -type d -name "*.framework" -print0 2>/dev/null)
 

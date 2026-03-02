@@ -227,6 +227,9 @@ Tests/notify_runner/__pycache__/
 .envrc
 Scripts/testflight/.env
 
+# Slack notification credentials (NEVER commit actual tokens)
+Scripts/config/slack.conf
+
 # Generated project.yml files (from templates)
 Sources/Adapters/*/project.yml
 # Phase B temporary reports

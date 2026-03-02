@@ -25,21 +25,19 @@ msp_enforce_main_repo_or_exit() {
   # Unset environment variables that might interfere with git detection
   unset GIT_DIR GIT_WORK_TREE
 
-  # Get the repository root
-  ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null)"
+  # Get the git directory (use local to avoid overwriting caller's variables)
+  local _wg_git_dir
+  _wg_git_dir="$(git rev-parse --git-dir 2>/dev/null || true)"
 
-  # Get the git directory relative to ROOT_DIR
-  git_dir="$(git -C "$ROOT_DIR" rev-parse --git-dir 2>/dev/null || true)"
-
-  if [[ -z "$git_dir" ]]; then
-    echo "[MSP][FATAL] Not a git repository: $ROOT_DIR" >&2
+  if [[ -z "$_wg_git_dir" ]]; then
+    echo "[MSP][FATAL] Not a git repository: $(pwd)" >&2
     exit 1
   fi
 
   # Check if git_dir matches the worktree pattern (.git/worktrees/*)
-  if [[ "$git_dir" == .git/worktrees/* ]]; then
+  if [[ "$_wg_git_dir" == .git/worktrees/* || "$_wg_git_dir" == */.git/worktrees/* ]]; then
     echo "[MSP][FATAL] This script must be run in the MAIN MSP repo, not in a Git worktree." >&2
-    echo "[MSP][FATAL] git_dir=$git_dir" >&2
+    echo "[MSP][FATAL] git_dir=$_wg_git_dir" >&2
     exit 1
   fi
 

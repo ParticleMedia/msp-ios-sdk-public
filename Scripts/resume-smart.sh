@@ -167,7 +167,6 @@ echo "  DRY_RUN:                   ${DRY_RUN:-<not set>}"
 echo "  MSP_ALLOW_LOCAL_RELEASE:   ${MSP_ALLOW_LOCAL_RELEASE:-<not set>}"
 echo "  MSP_ALLOW_EXISTING_TAG:    ${MSP_ALLOW_EXISTING_TAG:-<not set>}"
 echo "  MSP_ALLOW_TRUNK_PUSH:      ${MSP_ALLOW_TRUNK_PUSH:-<not set>}"
-echo "  MSP_SLACK_ALERT_ENV:       ${MSP_SLACK_ALERT_ENV:-<not set>}"
 echo "  MSP_SPM_ENABLED:           ${MSP_SPM_ENABLED:-<not set>}"
 echo ""
 

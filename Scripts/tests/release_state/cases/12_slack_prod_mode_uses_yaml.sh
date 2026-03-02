@@ -7,7 +7,7 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Test Case 12: PROD MODE validates YAML webhook routing
+# Test Case 12: Validates YAML webhook routing
 
 repo_root="$(pwd)"
 
@@ -15,18 +15,12 @@ repo_root="$(pwd)"
 # shellcheck source=Scripts/tests/release_state/helpers.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
 
-echo "Test: PROD MODE uses YAML webhook"
+echo "Test: Uses YAML webhook"
 
-# Set PROD MODE (explicit or unset)
-export MSP_SLACK_ALERT_ENV="prod"
-# DO NOT set MSP_SLACK_TEST_WEBHOOK (should be ignored in PROD)
 # DO NOT set SLACK_BOT_TOKEN (user will provide manually)
-
-# Explicitly unset test-specific variables
-unset MSP_SLACK_TEST_WEBHOOK
 unset SLACK_BOT_TOKEN
 
-# Create slack_mapping.yaml with PROD webhook
+# Create slack_mapping.yaml with webhook
 mkdir -p "${repo_root}/Scripts/config"
 cat > "${repo_root}/Scripts/config/slack_mapping.yaml" <<'EOF'
 ---
@@ -63,20 +57,12 @@ clear_mock_log
 # Wait for async operations
 sleep 0.5
 
-# In PROD mode, notify::channel() uses YAML webhook if available
-# Since we're testing routing, we verify:
-# 1. TEST webhook is NOT used (PROD mode ignores it)
-# 2. Either PROD webhook OR channel API is used (both are valid PROD behavior)
-
-# Assert: TEST webhook was NOT called (PROD mode ignores it)
-mock_log_not_contains "$MOCK_LOG" "hooks.slack.com/services/T04Q2K244/B0A0TT1A2A0" "TEST webhook should not be called in PROD mode"
-
-# Check if PROD webhook was called (preferred) or channel API was used (fallback)
-# Both are valid PROD mode behaviors
+# notify::channel() uses YAML webhook if available
+# Check if YAML webhook was called (preferred) or channel API was used (fallback)
 if grep -q "hooks.slack.com/services/PROD/WEBHOOK/URL" "$MOCK_LOG" 2>/dev/null; then
-    echo "✓ PROD webhook from YAML was called"
+    echo "✓ Webhook from YAML was called"
 elif grep -q "chat.postMessage" "$MOCK_LOG" 2>/dev/null; then
-    echo "✓ PROD mode used channel API (fallback when webhook not available)"
+    echo "✓ Used channel API (fallback when webhook not available)"
 else
     # If no Slack calls were made, that's also acceptable (notifications are optional)
     echo "Note: No Slack calls detected (notifications may be optional in this test environment)"
@@ -86,5 +72,5 @@ fi
 run_status="$(read_state_field "$repo_root" '.steps["run"].status // "<missing>"')"
 assert_equals "success" "$run_status" "Release should succeed"
 
-echo "✓ Test passed: PROD MODE uses YAML webhook"
+echo "✓ Test passed: Uses YAML webhook"
 

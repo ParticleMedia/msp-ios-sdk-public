@@ -246,34 +246,26 @@ if [ -z "$BRANCH_NUMBER" ]; then
     fi
 fi
 
-# Use semantic naming without number prefix
-BRANCH_NAME="${BRANCH_SUFFIX}"
-
-# Check for duplicate spec directory or git branch
-if [ -d "$SPECS_DIR/$BRANCH_NAME" ]; then
-    >&2 echo "[specify] ERROR: Spec directory already exists: $SPECS_DIR/$BRANCH_NAME"
-    >&2 echo "[specify] Please use a different feature name."
-    exit 1
-fi
-
-if [ "$HAS_GIT" = true ] && git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
-    >&2 echo "[specify] ERROR: Git branch already exists: $BRANCH_NAME"
-    >&2 echo "[specify] Please use a different feature name."
-    exit 1
-fi
+# Force base-10 interpretation to prevent octal conversion (e.g., 010 → 8 in octal, but should be 10 in decimal)
+FEATURE_NUM=$(printf "%03d" "$((10#$BRANCH_NUMBER))")
+BRANCH_NAME="${FEATURE_NUM}-${BRANCH_SUFFIX}"
 
 # GitHub enforces a 244-byte limit on branch names
 # Validate and truncate if necessary
 MAX_BRANCH_LENGTH=244
 if [ ${#BRANCH_NAME} -gt $MAX_BRANCH_LENGTH ]; then
-    # Truncate to max length at word boundary if possible
-    TRUNCATED_NAME=$(echo "$BRANCH_NAME" | cut -c1-$MAX_BRANCH_LENGTH)
+    # Calculate how much we need to trim from suffix
+    # Account for: feature number (3) + hyphen (1) = 4 chars
+    MAX_SUFFIX_LENGTH=$((MAX_BRANCH_LENGTH - 4))
+    
+    # Truncate suffix at word boundary if possible
+    TRUNCATED_SUFFIX=$(echo "$BRANCH_SUFFIX" | cut -c1-$MAX_SUFFIX_LENGTH)
     # Remove trailing hyphen if truncation created one
-    TRUNCATED_NAME=$(echo "$TRUNCATED_NAME" | sed 's/-$//')
-
+    TRUNCATED_SUFFIX=$(echo "$TRUNCATED_SUFFIX" | sed 's/-$//')
+    
     ORIGINAL_BRANCH_NAME="$BRANCH_NAME"
-    BRANCH_NAME="$TRUNCATED_NAME"
-
+    BRANCH_NAME="${FEATURE_NUM}-${TRUNCATED_SUFFIX}"
+    
     >&2 echo "[specify] Warning: Branch name exceeded GitHub's 244-byte limit"
     >&2 echo "[specify] Original: $ORIGINAL_BRANCH_NAME (${#ORIGINAL_BRANCH_NAME} bytes)"
     >&2 echo "[specify] Truncated to: $BRANCH_NAME (${#BRANCH_NAME} bytes)"
@@ -296,9 +288,10 @@ if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"
 export SPECIFY_FEATURE="$BRANCH_NAME"
 
 if $JSON_MODE; then
-    printf '{"BRANCH_NAME":"%s","SPEC_FILE":"%s"}\n' "$BRANCH_NAME" "$SPEC_FILE"
+    printf '{"BRANCH_NAME":"%s","SPEC_FILE":"%s","FEATURE_NUM":"%s"}\n' "$BRANCH_NAME" "$SPEC_FILE" "$FEATURE_NUM"
 else
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "SPEC_FILE: $SPEC_FILE"
+    echo "FEATURE_NUM: $FEATURE_NUM"
     echo "SPECIFY_FEATURE environment variable set to: $BRANCH_NAME"
 fi

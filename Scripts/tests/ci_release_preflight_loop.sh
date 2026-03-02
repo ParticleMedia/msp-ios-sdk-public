@@ -257,7 +257,6 @@ while true; do
     # Set up environment variables
     log_loop "Setting up environment variables..."
     export MSP_RELEASE_MODE="ci"
-    export MSP_SLACK_ALERT_ENV="test"
     export MSP_SLACK_BLOCK_MODE="1"
     export MSP_EMAIL_DISABLED="1"
     

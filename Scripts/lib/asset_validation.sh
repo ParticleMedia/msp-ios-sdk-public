@@ -172,7 +172,7 @@ asset_log_info() {
     fi
 }
 
-asset_asset_log_verbose() {
+asset_log_verbose() {
     if [[ "$VERBOSE" == "true" && "$QUIET" != "true" ]]; then
         echo "  $1"
     fi
@@ -232,8 +232,8 @@ validate_paths() {
     fi
     
     asset_log_info "Validating asset synchronization..."
-    asset_asset_log_verbose "Source: $ASSETS_SOURCE"
-    asset_asset_log_verbose "Target: $BUNDLE_TARGET"
+    asset_log_verbose "Source: $ASSETS_SOURCE"
+    asset_log_verbose "Target: $BUNDLE_TARGET"
 }
 
 validate_asset_sync() {

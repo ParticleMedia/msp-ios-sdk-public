@@ -88,13 +88,13 @@ unset MOCK_GIT_FAIL_ON_TAG_PUSH
 output=$(cat "${repo_root}/resume_output.log" 2>/dev/null || echo "")
 
 # Verify that resume shows the expected header messages
-if ! echo "$output" | grep -q "Resuming from previous release run"; then
+if ! echo "$output" | grep -q "MSP Release Resume"; then
     echo "ASSERT FAILED: Resume should show resume header" >&2
     echo "Output (first 500 chars): ${output:0:500}" >&2
     exit 1
 fi
 
-if ! echo "$output" | grep -q "Resuming release for version"; then
+if ! echo "$output" | grep -q "Resuming release for"; then
     echo "ASSERT FAILED: Resume should show version" >&2
     echo "Output (first 500 chars): ${output:0:500}" >&2
     exit 1

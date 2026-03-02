@@ -43,23 +43,12 @@ setup_local_profile() {
     export MSP_ALLOW_LOCAL_RELEASE=1
     export MSP_ALLOW_TRUNK_PUSH=1
 
-    # Slack: use test mode by default for local development
-    # - test: Sends to MSP_SLACK_TEST_WEBHOOK (safe for testing)
-    # - prod: Sends to SLACK_WEBHOOK_URL (production channel)
-    export MSP_SLACK_ALERT_ENV=test
-
     echo "✅ Local release environment configured"
     echo "   DRY_RUN: $DRY_RUN (production mode)"
     echo "   MSP_ALLOW_LOCAL_RELEASE: $MSP_ALLOW_LOCAL_RELEASE"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH"
-    echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV (test webhook)"
     echo ""
-    echo "ℹ️  Slack webhooks:"
-    echo "   - Test:  MSP_SLACK_TEST_WEBHOOK (from Scripts/config/slack.conf)"
-    echo "   - Prod:  SLACK_WEBHOOK_URL (from Scripts/config/slack.conf)"
-    echo ""
-    echo "💡 To use production Slack channel:"
-    echo "   export MSP_SLACK_ALERT_ENV=prod"
+    echo "ℹ️  Slack webhook: SLACK_WEBHOOK_URL (from Scripts/config/slack.conf)"
 }
 
 # ============================================================================
@@ -72,16 +61,12 @@ setup_ci_profile() {
     export DRY_RUN=false
     export MSP_ALLOW_TRUNK_PUSH=1
 
-    # Slack: use prod mode (optional)
-    export MSP_SLACK_ALERT_ENV=prod
-
     # Note: CI and GITHUB_ACTIONS are automatically set by CI environment
     # Note: MSP_ALLOW_LOCAL_RELEASE is not needed in CI
 
     echo "✅ CI release environment configured"
     echo "   DRY_RUN: $DRY_RUN (production mode)"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH"
-    echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV"
     echo ""
     echo "ℹ️  SLACK_WEBHOOK_URL should be set via GitHub Secrets"
 }
@@ -109,14 +94,10 @@ setup_test_profile() {
     export MSP_ALLOW_LOCAL_RELEASE=1
     export MSP_ALLOW_TRUNK_PUSH=0
 
-    # Slack: test mode
-    export MSP_SLACK_ALERT_ENV=test
-
     echo "✅ Test environment configured"
     echo "   DRY_RUN: $DRY_RUN (dry-run mode)"
     echo "   MSP_ALLOW_LOCAL_RELEASE: $MSP_ALLOW_LOCAL_RELEASE"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH (no actual push)"
-    echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV"
 }
 
 # ============================================================================

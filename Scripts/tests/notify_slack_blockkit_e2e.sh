@@ -12,9 +12,7 @@ msp_enforce_main_repo_or_exit
 # Usage:   bash Scripts/tests/notify_slack_blockkit_e2e.sh
 #
 # Requirements:
-#   - MSP_SLACK_ALERT_ENV="test"
 #   - MSP_SLACK_DM_OVERRIDE set (test user ID)
-#   - MSP_SLACK_TEST_WEBHOOK set (test webhook URL)
 #   - SLACK_BOT_TOKEN set (for DM sending)
 # ============================================================================
 
@@ -46,8 +44,6 @@ source "${ROOT_DIR}/Scripts/notify/notify_core.sh" 2>/dev/null || {
 # Test Configuration
 # ============================================================================
 
-# Ensure TEST MODE
-export MSP_SLACK_ALERT_ENV="${MSP_SLACK_ALERT_ENV:-test}"
 export MSP_SLACK_DISABLED="${MSP_SLACK_DISABLED:-0}"
 
 # Disable email for this test
@@ -57,7 +53,6 @@ export MSP_EMAIL_DISABLED=1
 export MSP_SLACK_BLOCK_MODE=1
 
 echo "[TEST] notify_slack_blockkit_e2e.sh: START"
-echo "[TEST] Environment: MSP_SLACK_ALERT_ENV=$MSP_SLACK_ALERT_ENV"
 echo "[TEST] BlockKit mode: MSP_SLACK_BLOCK_MODE=$MSP_SLACK_BLOCK_MODE"
 echo "[TEST] Email disabled: MSP_EMAIL_DISABLED=$MSP_EMAIL_DISABLED"
 
@@ -131,7 +126,7 @@ notify::send_release_summary "$NOTIFY_DATA_JSON" || echo "[WARN] notify::send_re
 
 echo "[TEST] Slack BlockKit E2E test: DONE (check your Slack)"
 echo "[TEST] Expected:"
-echo "  - Slack Channel message sent to test webhook (if MSP_SLACK_TEST_WEBHOOK set)"
+echo "  - Slack Channel message sent"
 echo "  - BlockKit message with new section-based design"
 echo "  - Formatted timestamp (not raw ISO8601)"
 echo "  - Email NOT sent (MSP_EMAIL_DISABLED=1)"

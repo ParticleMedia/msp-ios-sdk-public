@@ -122,7 +122,6 @@ if [[ "$_msp_log_level_num" -le 0 ]] || [[ "${VERBOSE:-false}" == "true" ]]; the
         echo "[DIAG]   SLACK_BOT_TOKEN: NOT SET" >&2
     fi
     echo "[DIAG]   MSP_SLACK_DM_OVERRIDE: ${MSP_SLACK_DM_OVERRIDE:-NOT SET}" >&2
-    echo "[DIAG]   MSP_SLACK_ALERT_ENV: ${MSP_SLACK_ALERT_ENV:-prod (default)}" >&2
     echo "[DIAG]   SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:+SET}${SLACK_WEBHOOK_URL:-NOT SET}" >&2
 fi
 

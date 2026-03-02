@@ -52,8 +52,7 @@ echo ""
 
 echo "[ROUTING] send_blockkit() Logic:"
 echo "  - DM: Uses chat.postMessage API with blocks (if MSP_SLACK_DM_OVERRIDE set)"
-echo "  - Channel TEST: Uses webhook with blocks (MSP_SLACK_TEST_WEBHOOK)"
-echo "  - Channel PROD: Uses API with blocks (if SLACK_BOT_TOKEN) or webhook fallback"
+echo "  - Channel: Uses API with blocks (if SLACK_BOT_TOKEN) or webhook fallback"
 echo ""
 
 echo "[ROUTING] Confirmation:"
@@ -73,26 +72,19 @@ echo ""
 
 export MSP_SLACK_BLOCK_MODE=1
 export MSP_EMAIL_DISABLED=1
-export MSP_SLACK_ALERT_ENV=test
 
 echo "[ENV] Setting BlockKit mode..."
 echo "  MSP_SLACK_BLOCK_MODE=${MSP_SLACK_BLOCK_MODE}"
 echo "  MSP_EMAIL_DISABLED=${MSP_EMAIL_DISABLED}"
-echo "  MSP_SLACK_ALERT_ENV=${MSP_SLACK_ALERT_ENV}"
 echo ""
 
 echo "[ENV] Required variables:"
 echo "  MSP_SLACK_DM_OVERRIDE=${MSP_SLACK_DM_OVERRIDE:-NOT SET}"
-echo "  MSP_SLACK_TEST_WEBHOOK=${MSP_SLACK_TEST_WEBHOOK:-NOT SET}"
 echo "  SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:+SET (length: ${#SLACK_BOT_TOKEN})}"
 echo ""
 
 if [[ -z "${MSP_SLACK_DM_OVERRIDE:-}" ]]; then
     echo "[WARN] MSP_SLACK_DM_OVERRIDE not set - DM will be skipped"
-fi
-
-if [[ -z "${MSP_SLACK_TEST_WEBHOOK:-}" ]]; then
-    echo "[WARN] MSP_SLACK_TEST_WEBHOOK not set - Channel will be skipped"
 fi
 
 if [[ -z "${SLACK_BOT_TOKEN:-}" ]]; then
@@ -413,7 +405,7 @@ echo "==========================================================================
 echo ""
 echo "Next steps:"
 echo "  1. Check Slack DM (if MSP_SLACK_DM_OVERRIDE was set)"
-echo "  2. Check Slack Channel (if MSP_SLACK_TEST_WEBHOOK was set)"
+echo "  2. Check Slack Channel"
 echo "  3. Verify messages show BlockKit sections (not plain text)"
 echo "  4. Verify timestamp is formatted (not raw ISO8601)"
 echo "  5. Verify modules show first 5 + (+N more)"

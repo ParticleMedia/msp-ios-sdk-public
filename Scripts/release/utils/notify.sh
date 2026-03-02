@@ -8,29 +8,14 @@ msp_enforce_main_repo_or_exit
 # ============================================================================
 # Notification Utilities for Release Scripts
 # ============================================================================
-# Provides wrapper functions for Slack notifications with TEST/PROD mode support
+# Provides wrapper functions for Slack notifications
 #
 # Environment Variables:
-#   MSP_SLACK_ALERT_ENV
-#     - Determines Slack notification mode: "test" or "prod" (default)
-#     - TEST mode: Uses test webhook, requires MSP_SLACK_DM_OVERRIDE for DMs
-#     - PROD mode: Uses YAML config webhooks and user mappings
-#
 #   MSP_SLACK_DM_OVERRIDE
 #     - If set, ALL direct messages are sent to this Slack user_id
-#     - Applies in BOTH test and prod modes
 #     - Fully bypasses resolve_user() and module_owner mapping
-#     - In TEST mode, if not set, DMs are skipped with a warning
 #
-#   MSP_SLACK_TEST_WEBHOOK
-#     - In TEST mode, ALL channel notifications use this webhook URL
-#     - YAML alerts.webhook is ignored in TEST mode for safety
-#     - If missing in TEST mode, channel messages are skipped with a warning
-#
-# TEST MODE Safety:
-#   - TEST mode ignores YAML webhooks to prevent accidental production notifications
-#   - TEST mode requires explicit DM override to prevent hardcoded user IDs
-#   - All failures are soft-fail (logged but non-blocking)
+# All failures are soft-fail (logged but non-blocking)
 # ============================================================================
 
 # ============================================================================
@@ -236,13 +221,8 @@ notify_summary() {
 export -f notify_start notify_success notify_failure notify_warning notify_summary 2>/dev/null || true
 
 # ============================================================================
-# Slack Notification Functions (TEST MODE Safe)
+# Slack Notification Functions
 # ============================================================================
-
-# Check if TEST MODE is enabled
-notify::is_test_mode() {
-    [[ "${MSP_SLACK_ALERT_ENV:-}" == "test" ]]
-}
 
 # Internal helper: Send DM to Slack user (with detailed logging)
 notify::_send_dm() {
@@ -412,17 +392,9 @@ EOF
 }
 
 # Resolve Slack user ID from module or author email
-# PROD MODE: Uses email_map/module_owner mapping
-# TEST MODE: Returns empty (DM override required)
 notify::resolve_user() {
     local module="$1"
-    
-    # TEST MODE: Return empty (DM override must be used)
-    if notify::is_test_mode; then
-        return 0
-    fi
-    
-    # PROD MODE: Use actual mapping
+
     local author="${MSP_AUTHOR_EMAIL:-}"
     
     # Load mapping if not already loaded
@@ -452,30 +424,22 @@ EOF
 }
 
 # Send direct message to Slack user
-# Respects MSP_SLACK_DM_OVERRIDE if set (applies in both test and prod)
-# TEST MODE: Requires MSP_SLACK_DM_OVERRIDE, otherwise logs warning and skips
-# PROD MODE: Uses resolve_user() if override not set
+# Respects MSP_SLACK_DM_OVERRIDE if set
+# Uses resolve_user() if override not set
 notify::dm() {
     local user="$1"
     local message="$2"
-    
+
     local target_user=""
-    
-    # Check for DM override (applies in both test and prod)
+
+    # Check for DM override
     if [[ -n "${MSP_SLACK_DM_OVERRIDE:-}" ]]; then
         target_user="$MSP_SLACK_DM_OVERRIDE"
-    elif notify::is_test_mode; then
-        # TEST MODE: Override required
-        log::warn "NOTIFY" "TEST MODE active but MSP_SLACK_DM_OVERRIDE not set; skipping DM (soft-fail)"
-        return 0
+    elif [[ -z "$user" ]]; then
+        # Try to resolve from module (if called from module_success)
+        target_user="$(notify::resolve_user "" 2>/dev/null || echo "")"
     else
-        # PROD MODE: Use resolved user or provided user
-        if [[ -z "$user" ]]; then
-            # Try to resolve from module (if called from module_success)
-            target_user="$(notify::resolve_user "" 2>/dev/null || echo "")"
-        else
-            target_user="$user"
-        fi
+        target_user="$user"
     fi
     
     [[ -z "$target_user" ]] && return 0
@@ -491,25 +455,12 @@ notify::dm() {
     return 0
 }
 
-# TEST MODE: Uses MSP_SLACK_TEST_WEBHOOK (ignores YAML webhook for safety)
-# PROD MODE: Uses alerts.webhook from slack_mapping.yaml
+# Send message to Slack channel
+# Uses alerts.webhook from slack_mapping.yaml or SLACK_WEBHOOK_URL
 notify::channel() {
     local message="$1"
 
-    # TEST MODE: Use test webhook only (ignore YAML webhook)
-    if notify::is_test_mode; then
-        local test_webhook="${MSP_SLACK_TEST_WEBHOOK:-}"
-        if [[ -z "$test_webhook" ]]; then
-            log::warn "NOTIFY" "TEST MODE active but MSP_SLACK_TEST_WEBHOOK not set; skipping channel message (soft-fail)"
-            return 0
-        fi
-        
-        # Send to test webhook using internal helper (soft-fail)
-        notify::_send_webhook "$test_webhook" "$message"
-        return 0
-    fi
-    
-    # PROD MODE: Use webhook with priority order
+    # Use webhook with priority order
     # Priority:
     #   1. SLACK_WEBHOOK_URL (from slack.conf or environment variable)
     #   2. alerts.webhook from slack_mapping.yaml (fallback, deprecated)
@@ -655,9 +606,8 @@ notify::module_success() {
 }
 
 # Notify module release error
-# Sends DM ONLY (no channel notification in test or prod)
-# TEST MODE: Requires MSP_SLACK_DM_OVERRIDE
-# PROD MODE: Uses resolve_user() unless overridden
+# Sends DM ONLY (no channel notification)
+# Uses resolve_user() unless MSP_SLACK_DM_OVERRIDE is set
 notify::module_error() {
     local module="$1"
     local version="$2"
@@ -668,12 +618,7 @@ notify::module_error() {
 
     # Compute author and environment
     local author="${MSP_AUTHOR_EMAIL:-unknown}"
-    local env
-    if notify::is_test_mode; then
-        env="test"
-    else
-        env="prod"
-    fi
+    local env="prod"
 
     # Build message using template
     local message
@@ -695,7 +640,6 @@ notify::module_error() {
 }
 
 # Notify global release success (DM only)
-# Sends DM to appropriate user based on TEST/PROD mode and routing rules
 # Soft-fail always
 # DEPRECATED: Use notify::send_release_summary() instead
 # This function is kept for backward compatibility only
@@ -708,14 +652,13 @@ notify::release_success_dm() {
         message="$message"$'\n\n'"Verification:"$'\n'"${REMOTE_VERIFY_STATUS}"
     fi
     
-    # Send DM using existing routing logic (respects MSP_SLACK_DM_OVERRIDE, TEST/PROD mode)
+    # Send DM using existing routing logic (respects MSP_SLACK_DM_OVERRIDE)
     notify::dm "" "$message" 2>/dev/null || true
     
     return 0
 }
 
 # Notify global release success (Channel broadcast only)
-# Sends to channel using TEST/PROD webhook rules
 # Soft-fail always
 # DEPRECATED: Use notify::send_release_summary() instead
 # This function is kept for backward compatibility only
@@ -728,7 +671,7 @@ notify::release_success_channel() {
         message="$message"$'\n\n'"Verification:"$'\n'"${REMOTE_VERIFY_STATUS}"
     fi
     
-    # Send channel message using existing routing logic (TEST/PROD webhook rules)
+    # Send channel message using existing routing logic
     notify::channel "$message" 2>/dev/null || true
     
     return 0
@@ -806,5 +749,5 @@ notify::safe() {
 }
 
 # Export Slack notification functions
-export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook notify::release_success_dm notify::release_success_channel notify::send_release_summary notify::safe 2>/dev/null || true
+export -f notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook notify::release_success_dm notify::release_success_channel notify::send_release_summary notify::safe 2>/dev/null || true
 

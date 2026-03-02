@@ -32,7 +32,7 @@ notify::slack::send_dm() {
         return 0
     fi
     
-    # Use existing notify::dm function (respects TEST MODE / PROD MODE routing)
+    # Use existing notify::dm function
     notify::dm "" "$message" 2>/dev/null || true
     
     return 0
@@ -49,7 +49,7 @@ notify::slack::send_channel() {
         return 0
     fi
     
-    # Use existing notify::channel function (respects TEST MODE / PROD MODE routing)
+    # Use existing notify::channel function
     notify::channel "$message" 2>/dev/null || true
     
     return 0
@@ -79,96 +79,35 @@ notify::slack::send_blockkit() {
         return 0  # Soft-fail: no blocks
     fi
     
-    # Determine if we're in TEST MODE
-    local is_test_mode=false
-    if [[ "${MSP_SLACK_ALERT_ENV:-}" == "test" ]]; then
-        is_test_mode=true
-    fi
-    
-    # For DM: Get user ID and open DM channel
-    if [[ -n "${MSP_SLACK_DM_OVERRIDE:-}" ]]; then
-        # TEMPORARY FIX: Disable DM notifications to unblock release
-        # TODO: Update SLACK_BOT_TOKEN when new token is available
-        echo "[SLACK][DM] DM notifications temporarily disabled" >&2
-        # Fall through to webhook channel notification
-        MSP_SLACK_DM_OVERRIDE=""
-    fi
+    # Send Block Kit via channel: Prefer API if bot token available, otherwise use webhook
+    if [[ -n "${SLACK_BOT_TOKEN:-}" ]]; then
+        # Load channel from YAML config
+        source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
+        notify::load_mapping 2>/dev/null || true
 
-    # Original DM logic (now unreachable, kept for reference)
-    if [[ -n "${MSP_SLACK_DM_OVERRIDE_DISABLED:-}" ]]; then
-        local user_id="$MSP_SLACK_DM_OVERRIDE"
-        
-        # Skip if no bot token
-        [[ -z "${SLACK_BOT_TOKEN:-}" ]] && return 0
-        
-        # Open DM channel
-        local channel
-        channel=$(curl -s -X POST \
-          -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-          -H "Content-type: application/json; charset=utf-8" \
-          --data "{\"users\": \"$user_id\"}" \
-          https://slack.com/api/conversations.open 2>/dev/null | python3 -c "import sys, json; print(json.load(sys.stdin).get('channel',{}).get('id',''))" 2>/dev/null) || true
-        
-        if [[ -n "$channel" ]]; then
-            # Send Block Kit message via chat.postMessage
-            local dm_payload
-            dm_payload="{\"channel\":\"$channel\",\"blocks\":$blocks_json}"
-            echo "[SLACK][DM] Sending BlockKit to channel: $channel" >&2
-            echo "[SLACK][DM] Payload: $dm_payload" >&2
-            curl -s -w "\n[SLACK][DM] HTTP Status: %{http_code}\n" -X POST \
-              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-              -H "Content-type: application/json" \
-              --data "$dm_payload" \
-              https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
-        fi
-    fi
-    
-    # For Channel: Use webhook or channel API
-    if [[ "$is_test_mode" == "true" ]]; then
-        # TEST MODE: Use test webhook
-        local test_webhook="${MSP_SLACK_TEST_WEBHOOK:-}"
-        if [[ -n "$test_webhook" ]]; then
-            # Webhooks DO support Block Kit blocks parameter
-            # Send Block Kit JSON directly via webhook
-            local channel_payload
-            channel_payload="{\"blocks\":$blocks_json}"
-            echo "[SLACK][CHANNEL] Sending BlockKit to webhook" >&2
-            echo "[SLACK][CHANNEL] Payload: $channel_payload" >&2
-            curl -s -w "\n[SLACK][CHANNEL] HTTP Status: %{http_code}\n" -X POST \
-              -H "Content-type: application/json" \
-              --data "$channel_payload" \
-              "$test_webhook" >/dev/null 2>&1 || true
-        fi
-    else
-        # PROD MODE: Prefer API if bot token available, otherwise use webhook
-        if [[ -n "${SLACK_BOT_TOKEN:-}" ]]; then
-            # Load channel from YAML config
-            source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
-            notify::load_mapping 2>/dev/null || true
-            
-            local channel_id
-            channel_id=$(python3 - <<EOF
+        local channel_id
+        channel_id=$(python3 - <<EOF
 import json
 alerts = json.loads('${SLACK_ALERTS:-{}}')
 print(alerts.get('channel', ''))
 EOF
 2>/dev/null || echo "")
-            
-            if [[ -n "$channel_id" ]]; then
-                # Send Block Kit message via chat.postMessage API
-                curl -s -X POST \
-                  -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-                  -H "Content-type: application/json" \
-                  --data "{\"channel\":\"$channel_id\",\"blocks\":$blocks_json}" \
-                  https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
-            fi
-        else
-            # Fallback to webhook if no bot token
-            source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
-            notify::load_mapping 2>/dev/null || true
-            
-            local webhook_url
-            webhook_url=$(python3 - <<EOF
+
+        if [[ -n "$channel_id" ]]; then
+            # Send Block Kit message via chat.postMessage API
+            curl -s -X POST \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-type: application/json" \
+              --data "{\"channel\":\"$channel_id\",\"blocks\":$blocks_json}" \
+              https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
+        fi
+    else
+        # Fallback to webhook if no bot token
+        source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
+        notify::load_mapping 2>/dev/null || true
+
+        local webhook_url
+        webhook_url=$(python3 - <<EOF
 import json
 try:
     alerts = json.loads('${SLACK_ALERTS:-{}}')
@@ -177,14 +116,13 @@ except Exception:
     print('')
 EOF
 2>/dev/null || echo "")
-            
-            if [[ -n "$webhook_url" ]]; then
-                # Send Block Kit via webhook
-                curl -s -X POST \
-                  -H "Content-type: application/json" \
-                  --data "{\"blocks\":$blocks_json}" \
-                  "$webhook_url" >/dev/null 2>&1 || true
-            fi
+
+        if [[ -n "$webhook_url" ]]; then
+            # Send Block Kit via webhook
+            curl -s -X POST \
+              -H "Content-type: application/json" \
+              --data "{\"blocks\":$blocks_json}" \
+              "$webhook_url" >/dev/null 2>&1 || true
         fi
     fi
     
@@ -208,40 +146,20 @@ notify::slack::send_block() {
         return 0  # Soft-fail: invalid JSON
     fi
     
-    # Determine if we're in TEST MODE
-    local is_test_mode=false
-    if [[ "${MSP_SLACK_ALERT_ENV:-}" == "test" ]]; then
-        is_test_mode=true
-    fi
-    
     # Extract blocks from payload
     local blocks_json
     blocks_json="$(echo "$json_payload" | python3 -c "import sys, json; print(json.dumps(json.load(sys.stdin).get('blocks', [])))" 2>/dev/null || echo "[]")"
-    
+
     if [[ "$blocks_json" == "[]" ]] || [[ -z "$blocks_json" ]]; then
         return 0  # Soft-fail: no blocks
     fi
-    
-    # Use webhook to send Block Kit JSON
-    if [[ "$is_test_mode" == "true" ]]; then
-        # TEST MODE: Use test webhook
-        local test_webhook="${MSP_SLACK_TEST_WEBHOOK:-}"
-        if [[ -z "$test_webhook" ]]; then
-            return 0  # Soft-fail: test webhook not set
-        fi
-        
-        # Send Block Kit via webhook (webhooks support blocks parameter)
-        curl -s -X POST \
-          -H "Content-type: application/json" \
-          --data "{\"blocks\":$blocks_json}" \
-          "$test_webhook" >/dev/null 2>&1 || true
-    else
-        # PROD MODE: Use production webhook from YAML config
-        source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
-        notify::load_mapping 2>/dev/null || true
-        
-        local webhook_url
-        webhook_url=$(python3 - <<EOF
+
+    # Use production webhook from YAML config
+    source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
+    notify::load_mapping 2>/dev/null || true
+
+    local webhook_url
+    webhook_url=$(python3 - <<EOF
 import json
 try:
     alerts = json.loads('${SLACK_ALERTS:-{}}')
@@ -250,14 +168,13 @@ except Exception:
     print('')
 EOF
 2>/dev/null || echo "")
-        
-        if [[ -n "$webhook_url" ]]; then
-            # Send Block Kit via webhook
-            curl -s -X POST \
-              -H "Content-type: application/json" \
-              --data "{\"blocks\":$blocks_json}" \
-              "$webhook_url" >/dev/null 2>&1 || true
-        fi
+
+    if [[ -n "$webhook_url" ]]; then
+        # Send Block Kit via webhook
+        curl -s -X POST \
+          -H "Content-type: application/json" \
+          --data "{\"blocks\":$blocks_json}" \
+          "$webhook_url" >/dev/null 2>&1 || true
     fi
     
     return 0

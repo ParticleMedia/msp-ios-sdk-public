@@ -20,7 +20,6 @@ msp_enforce_main_repo_or_exit
 #   BASE_BRANCH      - Base branch (optional, defaults to current branch)
 #   RELEASE_BRANCH   - Release branch (optional, defaults to release/$VERSION)
 #   MSP_EMAIL_DISABLED - Set to "1" to disable email notifications
-#   MSP_SLACK_ALERT_ENV - Set to "test" or "prod" (defaults to "test")
 # ============================================================================
 
 set -euo pipefail
@@ -113,7 +112,6 @@ echo "[CI] Release Notes: ${RELEASE_NOTES:0:50}${RELEASE_NOTES:50:+...}"
 export MSP_RELEASE_MODE="ci"
 export MSP_SLACK_BLOCK_MODE="${MSP_SLACK_BLOCK_MODE:-1}"
 export MSP_EMAIL_DISABLED="${MSP_EMAIL_DISABLED:-0}"
-export MSP_SLACK_ALERT_ENV="${MSP_SLACK_ALERT_ENV:-test}"
 
 # Pass version, notes, branches to orchestrator
 export RELEASE_VERSION="$VERSION"
@@ -132,7 +130,6 @@ export DRY_RUN="false"
 export SKIP_PUSH="false"
 
 echo "[CI] MSP_SLACK_BLOCK_MODE=${MSP_SLACK_BLOCK_MODE}"
-echo "[CI] MSP_SLACK_ALERT_ENV=${MSP_SLACK_ALERT_ENV}"
 
 # ============================================================================
 # STEP 4 — Run Main Release Orchestrator

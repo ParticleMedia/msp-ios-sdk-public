@@ -17,10 +17,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
 
 echo "Test: Slack soft-failure (curl failures don't break release)"
 
-# Set TEST MODE environment variables
 export MSP_SLACK_DM_OVERRIDE="U0910UJPD7B"
-export MSP_SLACK_ALERT_ENV="test"
-export MSP_SLACK_TEST_WEBHOOK="https://hooks.slack.com/services/REDACTED"
 
 # Explicitly unset SLACK_BOT_TOKEN
 unset SLACK_BOT_TOKEN

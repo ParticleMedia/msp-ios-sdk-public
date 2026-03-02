@@ -59,3 +59,10 @@ constitution.md (all), ARCHITECTURE.md, README.md — require human approval.
 
 - constitution.md — Supreme law
 - .claude/CLAUDE.md | .codex/CODEX.md | .cursor/CURSOR.md — Agent directives
+
+## Active Technologies
+- Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation) + GitHub Actions, existing Scripts/ infrastructure (step_lifecycle.sh, build_module.sh, etc.) (ci-self-hosted-migration)
+- N/A (filesystem-based, no database) (ci-self-hosted-migration)
+
+## Recent Changes
+- ci-self-hosted-migration: Added Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation) + GitHub Actions, existing Scripts/ infrastructure (step_lifecycle.sh, build_module.sh, etc.)

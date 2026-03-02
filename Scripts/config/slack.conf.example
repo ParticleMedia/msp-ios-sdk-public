@@ -1,0 +1,124 @@
+# Slack Notification Configuration Template
+# =============================================================================
+# DO NOT commit actual credentials to Git!
+# =============================================================================
+#
+# Usage:
+#   1. Copy this file to slack.conf:
+#      cp Scripts/config/slack.conf.example Scripts/config/slack.conf
+#
+#   2. Edit slack.conf and fill in your actual values
+#
+#   3. OR use environment variables (recommended for CI/CD):
+#      export SLACK_WEBHOOK_URL="your-webhook-url"
+#      export SLACK_BOT_TOKEN="your-bot-token"
+#
+# Note: Environment variables take precedence over this config file.
+# =============================================================================
+
+# ============================================================================
+# Configuration Architecture (Config-Driven Development)
+# ============================================================================
+#
+# This project uses a layered configuration architecture:
+#
+# 1. Secrets Layer (THIS FILE - slack.conf, gitignored):
+#    - SLACK_WEBHOOK_URL, SLACK_BOT_TOKEN
+#    - Contains sensitive credentials only
+#
+# 2. Config Layer (slack_mapping.yaml, committed to git):
+#    - email_map: Maps git user.email -> Slack UserID (for smart DM routing)
+#    - module_owner: Fallback routing when email not in map
+#    - templates: Message templates with variable substitution
+#    - Contains business logic and mappings, NO secrets
+#
+# 3. Logic Layer (notify.sh):
+#    - Implements smart routing and notification delivery
+#    - Reads secrets from THIS file, config from slack_mapping.yaml
+#
+# See: Scripts/config/slack_mapping.yaml for email_map and routing config
+# ============================================================================
+
+# ============================================================================
+# Basic Slack Configuration
+# ============================================================================
+
+# Slack Webhook URL (for channel notifications)
+# Get from: Slack App -> Incoming Webhooks -> Add New Webhook
+# Example: https://hooks.slack.com/services/REDACTED
+SLACK_WEBHOOK_URL=
+
+# Optional Slack Configuration (uses defaults if not set)
+# SLACK_CHANNEL=#releases
+# SLACK_USERNAME=MSP iOS SDK Bot
+# SLACK_ICON_EMOJI=:rocket:
+
+# ============================================================================
+# Advanced Slack Configuration
+# ============================================================================
+# These parameters enable advanced features like Direct Messages
+
+# Slack Bot Token (for DM and advanced API features)
+# Get from: https://api.slack.com/apps -> Your App -> OAuth & Permissions
+# Required for: Sending Direct Messages via MSP_SLACK_DM_OVERRIDE
+# Example: xoxb-REDACTED
+SLACK_BOT_TOKEN=
+
+# Direct Message Override (User ID)
+# When set, sends notifications as DM to this user ID instead of channel
+# Find User ID: Right-click user in Slack -> View Profile -> More -> Copy member ID
+# Example: MSP_SLACK_DM_OVERRIDE=U0910UJPD7B
+
+# ============================================================================
+# Smart DM Routing
+# ============================================================================
+#
+# By DEFAULT, the system uses SMART ROUTING to automatically DM the release author:
+#   1. Get git user.email from the release author
+#   2. Look up UserID in email_map (slack_mapping.yaml)
+#   3. Send DM to that UserID
+#   4. Fallback: module_owner[module] -> module_owner[default]
+#
+# This ensures the ACTUAL release author gets notified, not a hardcoded person.
+#
+# To add yourself to Smart Routing:
+#   1. Get your Slack UserID:
+#      Right-click your name in Slack -> View Profile -> More -> Copy member ID
+#   2. Edit Scripts/config/slack_mapping.yaml
+#   3. Add to email_map section:
+#      your.email@newsbreak.com: U0XXXXXXXXX
+#   4. Commit and push the change
+
+# ============================================================================
+# Usage Examples
+# ============================================================================
+#
+# 1. Release (send to channel + smart DM to author):
+#    ./Scripts/msp-release.sh run <version>
+#
+# 2. Send DM to specific user (override smart routing):
+#    export MSP_SLACK_DM_OVERRIDE=U0910UJPD7B
+#    ./Scripts/msp-release.sh run <version>
+#
+# ============================================================================
+# Quick Setup for New Users
+# ============================================================================
+#
+# Step 1: Copy this template
+#   cp Scripts/config/slack.conf.example Scripts/config/slack.conf
+#
+# Step 2: Fill in secrets (get from team lead or Slack App settings)
+#   SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+#   SLACK_BOT_TOKEN=xoxb-...
+#
+# Step 3: Add yourself to email_map (optional but recommended)
+#   Edit Scripts/config/slack_mapping.yaml:
+#   email_map:
+#     your.email@newsbreak.com: U0XXXXXXXXX  # Your Slack UserID
+#
+# Step 4: Test
+#   source Scripts/notify/slack.sh
+#   load_slack_config
+#   test_slack_notification
+#
+# Done! Smart routing will now automatically DM you on releases.

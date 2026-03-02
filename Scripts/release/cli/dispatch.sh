@@ -298,9 +298,13 @@ msp_do_verify_matrix() {
 # do_rollback - Rollback a release
 # ============================================================================
 msp_do_rollback() {
-    # Parse rollback-specific flags
+    # Check global FORCE flag (already parsed by msp_parse_flags)
     local force=0
+    if [[ "${FORCE:-false}" == "true" ]]; then
+        force=1
+    fi
 
+    # Also check REMAINING_ARGS for backward compatibility
     for arg in "${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}"; do
         case "$arg" in
             --force)

@@ -425,11 +425,6 @@ _load_env_overrides() {
         return 1
     fi
 
-    # Old: MSP_SLACK_ALERT_ENV
-    if [[ -n "${MSP_SLACK_ALERT_ENV:-}" ]]; then
-        MSP_SLACK_ENV="$MSP_SLACK_ALERT_ENV"
-    fi
-
     # Re-export all variables to ensure overrides take effect
     _export_all_vars
 }

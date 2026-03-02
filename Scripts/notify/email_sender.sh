@@ -63,13 +63,9 @@ PYEOF
 "$email_mapping_file" 2>/dev/null || echo "{}")"
             
         if [[ -n "$email_yaml_data" ]] && [[ "$email_yaml_data" != "{}" ]]; then
-            # Determine environment (test or prod)
-            local env_mode="${MSP_SLACK_ALERT_ENV:-prod}"
-            [[ "$env_mode" != "test" ]] && env_mode="prod"
-            
-            # Get recipient list
+            # Get recipient list (production)
             local recipients_json
-            recipients_json="$(echo "$email_yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); emails=data.get('success_list', {}).get('$env_mode', []); print(json.dumps(emails))" 2>/dev/null || echo "[]")"
+            recipients_json="$(echo "$email_yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); emails=data.get('success_list', {}).get('prod', []); print(json.dumps(emails))" 2>/dev/null || echo "[]")"
             
             # Parse recipients into array
             EMAIL_RECIPIENTS=()

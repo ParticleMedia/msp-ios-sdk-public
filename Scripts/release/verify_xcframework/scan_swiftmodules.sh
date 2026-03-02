@@ -60,15 +60,8 @@ scan_swiftmodules() {
             else
                 vr_log_info "[XCF] Found $iface_count .swiftinterface file(s) in $slice"
             fi
-        fi
-        
-        if [[ ! -f "$swiftinterface_path" ]]; then
-            vr_log::error "VERIFY" "[XCF] Missing .swiftinterface in $slice"
-            missing_files=$((missing_files + 1))
-        else
-            vr_log::info "VERIFY" "[XCF] Found .swiftinterface in $slice"
-        fi
-        
+        done < <(find "$slice_path" -type d -name "*.swiftmodule" -print0 2>/dev/null)
+
         local swiftmodule_path="$slice_path/$module_name.swiftmodule/$(uname -m).swiftmodule"
         if [[ ! -f "$swiftmodule_path" ]]; then
             swiftmodule_path="$slice_path/$module_name.swiftmodule/arm64-apple-ios.swiftmodule"

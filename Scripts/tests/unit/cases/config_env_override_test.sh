@@ -290,28 +290,6 @@ test_empty_env_var_uses_config_value() {
 }
 
 # ============================================================================
-# 测试: 向后兼容性 - 旧环境变量映射
-# ============================================================================
-
-test_backward_compat_slack_alert_env() {
-    setup_test_env
-    # Note: Do NOT cd to temp dir - config_loader.sh uses git rev-parse
-    create_base_config
-
-    # 旧的 MSP_SLACK_ALERT_ENV 应该映射到 MSP_SLACK_ENV
-    export MSP_SLACK_ALERT_ENV="custom-env"
-
-    # shellcheck source=/dev/null
-    source "${REPO_ROOT}/Scripts/lib/config_loader.sh"
-    load_config "local-dev"
-
-    assert_equals "custom-env" "${MSP_SLACK_ENV:-}" "MSP_SLACK_ALERT_ENV 应该映射到 MSP_SLACK_ENV"
-
-    unset MSP_SLACK_ALERT_ENV
-    info "MSP_SLACK_ALERT_ENV 向后兼容映射正确"
-}
-
-# ============================================================================
 # 运行所有测试
 # ============================================================================
 
@@ -327,6 +305,5 @@ test_env_override_sandbox_dir
 test_multiple_env_overrides
 test_env_provides_value_when_config_missing
 test_empty_env_var_uses_config_value
-test_backward_compat_slack_alert_env
 
 info "config 环境变量覆盖测试全部通过！"

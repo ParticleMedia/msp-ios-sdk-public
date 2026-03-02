@@ -101,7 +101,6 @@ else
     print_warning "DM will be sent to resolved user (may not work in test)"
 fi
 
-echo "  MSP_SLACK_ALERT_ENV: ${MSP_SLACK_ALERT_ENV:-prod (default)}"
 
 # Test 1: Basic function availability
 print_header "Test 1: Function Availability"

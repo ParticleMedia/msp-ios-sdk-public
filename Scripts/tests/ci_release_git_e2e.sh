@@ -113,7 +113,6 @@ log_test "Sandbox setup complete"
 log_test "Setting up CI environment variables..."
 
 export MSP_RELEASE_MODE="ci"
-export MSP_SLACK_ALERT_ENV="test"
 export MSP_SLACK_BLOCK_MODE="1"
 export MSP_EMAIL_DISABLED="1"
 
@@ -140,7 +139,6 @@ export ROOT_DIR="$SANDBOX_DIR"
 
 log_test "Environment variables set:"
 log_test "  - MSP_RELEASE_MODE=$MSP_RELEASE_MODE"
-log_test "  - MSP_SLACK_ALERT_ENV=$MSP_SLACK_ALERT_ENV"
 log_test "  - PODS_ENABLED=$PODS_ENABLED"
 log_test "  - SPM_ENABLED=$SPM_ENABLED"
 log_test "  - SKIP_PUSH=$SKIP_PUSH"

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feature/**", "fix/**"]
+  pull_request:
+    branches: [main, develop, "release/*", "feature/*", "fix/*"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+
+jobs:
+  validate:
+    name: Quick Validation
+    runs-on: [self-hosted, macOS, ARM64, bj_ios]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Quick Validation
+        run: bash Scripts/ci/ci-validate-quick.sh
+
+  build-and-test:
+    name: Build & Test
+    needs: validate
+    runs-on: [self-hosted, macOS, ARM64, bj_ios]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Full CI Pipeline
+        run: bash Scripts/ci/ci-pipeline.sh
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            build/TestResults.xcresult
+            build/coverage.json
+          retention-days: 7

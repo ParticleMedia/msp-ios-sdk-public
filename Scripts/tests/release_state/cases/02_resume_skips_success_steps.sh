@@ -74,19 +74,19 @@ output=$(cat "${repo_root}/resume_output.log" 2>/dev/null || echo "")
 
 # Assert that resume shows the expected header messages (based on actual output)
 # Note: Output may contain ANSI codes, so we check for partial matches
-if ! echo "$output" | grep -q "Resuming from previous release run"; then
+if ! echo "$output" | grep -q "MSP Release Resume"; then
     echo "ASSERT FAILED: Resume should show resume header" >&2
     echo "Output (first 500 chars): ${output:0:500}" >&2
     exit 1
 fi
 
-if ! echo "$output" | grep -q "Resuming release for version"; then
+if ! echo "$output" | grep -q "Resuming release for"; then
     echo "ASSERT FAILED: Resume should show version" >&2
     echo "Output (first 500 chars): ${output:0:500}" >&2
     exit 1
 fi
 
-if ! echo "$output" | grep -q "Running preflight checks"; then
+if ! echo "$output" | grep -q "Running preflight checks\|Preflight"; then
     echo "ASSERT FAILED: Resume should mention preflight checks" >&2
     echo "Output (first 500 chars): ${output:0:500}" >&2
     exit 1

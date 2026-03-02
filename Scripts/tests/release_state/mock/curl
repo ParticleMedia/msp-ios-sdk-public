@@ -7,8 +7,6 @@
 # IMPORTANT: This mock does NOT require or validate SLACK_BOT_TOKEN.
 # Tests rely ONLY on:
 #   - MSP_SLACK_DM_OVERRIDE
-#   - MSP_SLACK_ALERT_ENV
-#   - MSP_SLACK_TEST_WEBHOOK
 # The real SLACK_BOT_TOKEN will be injected manually by the user if needed.
 
 MOCK_LOG="${MOCK_LOG:-./mock_invocations.log}"

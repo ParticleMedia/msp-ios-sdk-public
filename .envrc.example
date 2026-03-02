@@ -32,9 +32,6 @@ export MSP_ALLOW_TRUNK_PUSH=1
 # ============================================================================
 # Uncomment if you want to override slack.conf settings
 
-# Slack environment: test (safe) or prod (production channel)
-# export MSP_SLACK_ALERT_ENV=test
-
 # Slack webhook URL (overrides slack.conf)
 # export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/REDACTED"
 
