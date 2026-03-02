@@ -42,8 +42,6 @@
     var currentPositionRect = { x: 0, y: 0, width: 0, height: 0 };
     var defaultPositionRect = null;
     var lastExposurePayload = null;
-    var lastKnownLocation = null;
-    var locationRequested = false;
     var lastKnownVolume = 1;
 
     var supportedFeatures = {
@@ -53,7 +51,7 @@
         storePicture: true,
         inlineVideo: true,
         vpaid: false,
-        location: !!navigator.geolocation,
+        location: false,
     };
     var orientationProperties = {
         allowOrientationChange: true,
@@ -141,24 +139,6 @@
 
         lastExposurePayload = payload;
         mraid._fireEvent(EVENTS.EXPOSURE_CHANGE, payload);
-    }
-
-    function requestLocationIfNeeded() {
-        if (lastKnownLocation || locationRequested || !navigator.geolocation) {
-            return;
-        }
-        locationRequested = true;
-        navigator.geolocation.getCurrentPosition(function(result) {
-            lastKnownLocation = {
-                lat: result.coords.latitude,
-                lon: result.coords.longitude,
-                type: result.coords.accuracy,
-                accuracy: result.coords.accuracy,
-                lastfix: Math.floor(result.timestamp / 1000)
-            };
-        }, function() {
-            lastKnownLocation = null;
-        }, { maximumAge: 60000, enableHighAccuracy: false });
     }
 
     function handleOrientationChange() {
@@ -364,8 +344,7 @@
     };
 
     mraid.getLocation = function() {
-        requestLocationIfNeeded();
-        return lastKnownLocation ? Object.assign({}, lastKnownLocation) : null;
+        return null;
     };
 
     // --- Native → JS Bridge ---
