@@ -301,12 +301,6 @@ fi
 # See lib/version_management.sh for function implementations:
 #   - update_podspec_for_release
 #   - update_adapter_podspec_dependencies
-#   - load_adapter_sdk_version_config
-#   - check_adapter_sdk_version
-#   - update_adapter_sdk_version
-#   - adapter_sdk_version_should_skip
-
-# Legacy inline fallback removed - see lib/version_management.sh
 
 # ============================================================================
 # Tag Management Functions

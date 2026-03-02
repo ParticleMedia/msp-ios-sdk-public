@@ -228,6 +228,7 @@ Tests/notify_runner/*.log
 Tests/notify_runner/*.tmp
 Tests/notify_runner/__pycache__/
 .envrc
+Scripts/testflight/.env
 
 # Generated project.yml files (from templates)
 Sources/Adapters/*/project.yml

@@ -13,7 +13,7 @@ import PrebidMobile
 
 @objc public class PubmaticAdapter: NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        "4.0.0"
+        OpenWrapSDK.version()
     }
 
 
