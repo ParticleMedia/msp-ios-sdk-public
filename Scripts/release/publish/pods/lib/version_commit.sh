@@ -3,23 +3,17 @@
 # Version Commit Module
 # ============================================================================
 # Module: version_commit.sh
-# Purpose: Git commit operations for adapter SDK version and MSPCore version updates
-# Extracted from: publish.sh
+# Purpose: Update Config.plist versions and commit immediately
 #
 # Functions:
-#   - ensure_adapter_version_committed: Ensure adapter version is committed
-#   - commit_adapter_version_updates: Batch commit adapter version updates
-#   - ensure_mspcore_version_committed: Ensure MSPCore Config.plist version is committed
+#   - update_and_commit_plist_version: Update a Config.plist + git commit (DRY)
+#   - ensure_version_files_committed: Safety net for any uncommitted version files
 #
 # Dependencies:
-#   - version_management.sh (get_module_dir, adapter_sdk_version_should_skip, etc.)
-#   - Logging functions (log::info, log::error, log::success, log::warn, log::debug)
+#   - version.sh (update_config_plist_version, update_novacore_config_plist_version)
+#   - Logging functions (log::info, log::error, log::success, log::warn)
 #   - ROOT_DIR environment variable
 #   - DRY_RUN environment variable (optional)
-#
-# Environment Variables:
-#   - ROOT_DIR: Project root directory
-#   - DRY_RUN: If "true", skip actual commit operations
 # ============================================================================
 
 set -euo pipefail
@@ -29,323 +23,181 @@ set -euo pipefail
 readonly _VERSION_COMMIT_SOURCED=1
 
 # ============================================================================
-# Helper: Ensure Adapter Version is Committed
+# DRY Helper: Update Config.plist version and commit immediately
 # ============================================================================
-# Checks if adapter version file matches target version and commits if needed.
-# This handles the case where pod was published but version commit was interrupted.
+# Updates a Config.plist SDKVersion and commits the change right away.
+# Called from Step 0.9 (NovaCore) and release_msp_core (MSPCore).
 #
 # Args:
-#   $1: adapter name (e.g., MSPPrebidAdapter)
-#   $2: target version (e.g., 1.0.0-rc.24)
+#   $1: target — "mspcore" or "novacore"
+#   $2: version (e.g., 3.1.7)
 #
 # Returns:
-#   0: Version committed successfully or no action needed
-#   1: Fatal error (e.g., directory not found)
+#   0: Updated and committed (or dry-run/already up-to-date)
+#   1: Update failed
 # ============================================================================
-ensure_adapter_version_committed() {
-    local adapter="$1"
+update_and_commit_plist_version() {
+    local target="$1"
     local version="$2"
+    local rel_path label
 
-    # Skip if in dry-run mode
-    if [[ "$DRY_RUN" == "true" ]]; then
-        return 0
-    fi
-
-    # Skip adapters based on config
-    if adapter_sdk_version_should_skip "$adapter"; then
-        log::info "PODS" "[$adapter] Skipping version commit check (config skip list)"
-        return 0
-    fi
-
-    log::info "PODS" "[$adapter] Checking version file state..."
-
-    # Map pod name to directory name
-    local module_dir
-    module_dir=$(get_module_dir "$adapter")
-    local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
-    local adapter_abs_path="$ROOT_DIR/$adapter_path"
-
-    # Validate directory exists
-    if [[ ! -d "$adapter_abs_path" ]]; then
-        log::error "PODS" "[$adapter] Directory not found: $adapter_abs_path"
-        return 1
-    fi
-
-    if ! load_adapter_sdk_version_config; then
-        log::error "PODS" "[$adapter] Failed to load adapter SDK version config"
-        return 1
-    fi
-
-    local rc=0
-    check_adapter_sdk_version "$adapter" "$version" || rc=$?
-    case "$rc" in
-        0)
-            log::info "PODS" "[$adapter] ${ADAPTER_SDK_VERSION_FUNCTION}() already matches $version"
+    case "$target" in
+        mspcore)
+            rel_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+            label="MSPCore"
+            if ! update_config_plist_version "$version"; then
+                log::error "PODS" "[$label] Failed to update Config.plist version"
+                return 1
+            fi
             ;;
-        1)
-            log::info "PODS" "[$adapter] ${ADAPTER_SDK_VERSION_FUNCTION}() mismatch detected, updating to $version..."
-            if ! update_adapter_sdk_version "$adapter" "$version"; then
-                log::error "PODS" "[$adapter] Failed to update SDK version"
+        novacore)
+            rel_path="Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle/Config.plist"
+            label="NovaCore"
+            if ! update_novacore_config_plist_version "$version"; then
+                log::error "PODS" "[$label] Failed to update Config.plist version"
                 return 1
             fi
-            # Verify the file was actually modified
-            if git diff --quiet -- "$adapter_abs_path"; then
-                log::error "PODS" "[$adapter] update_adapter_sdk_version returned success but file was not modified!"
-                log::error "PODS" "[$adapter] Expected path: $adapter_abs_path"
-                log::error "PODS" "[$adapter] This indicates a bug in the version update tool"
-                return 1
-            fi
-            log::debug "PODS" "[$adapter] File modification verified"
-            ;;
-        2)
-            log::warn "PODS" "[$adapter] No ${ADAPTER_SDK_VERSION_FUNCTION}() found; skipping version commit check"
-            if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
-                return 1
-            fi
-            return 0
-            ;;
-        3)
-            log::warn "PODS" "[$adapter] No string literal in ${ADAPTER_SDK_VERSION_FUNCTION}(); skipping version commit check"
-            if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
-                return 1
-            fi
-            return 0
             ;;
         *)
-            log::error "PODS" "[$adapter] SDK version check failed (exit $rc)"
+            log::error "PODS" "Unknown target: $target (expected mspcore or novacore)"
             return 1
             ;;
     esac
 
-    # Check if there are uncommitted changes (don't suppress errors)
-    local diff_exit_code=0
-    git diff --quiet -- "$adapter_abs_path" || diff_exit_code=$?
+    log::success "PODS" "[$label] Config.plist SDKVersion updated to $version"
 
-    if [[ $diff_exit_code -eq 1 ]]; then
-        # Exit code 1 means there are differences (uncommitted changes)
-        log::info "PODS" "[$adapter] Uncommitted version changes detected, committing now..."
-
-        # Change to ROOT_DIR for git operations
-        pushd "$ROOT_DIR" > /dev/null || {
-            log::error "PODS" "[$adapter] Failed to change to ROOT_DIR: $ROOT_DIR"
-            return 1
+    # Commit immediately (skip in dry-run mode)
+    if [[ "${DRY_RUN:-false}" != "true" ]]; then
+        pushd "$ROOT_DIR" > /dev/null || true
+        git add "$rel_path" 2>/dev/null || true
+        git commit -m "chore(release): update $label Config.plist SDKVersion to ${version}" 2>/dev/null || {
+            log::warn "PODS" "[$label] Config.plist already committed or nothing to commit"
         }
-
-        # Find and stage Swift files
-        local swift_files_staged=0
-        while IFS= read -r -d '' swift_file; do
-            if git add "$swift_file"; then
-                ((swift_files_staged++)) || true
-                log::debug "PODS" "[$adapter] Staged: $swift_file"
-            else
-                log::warn "PODS" "[$adapter] Failed to stage: $swift_file"
-            fi
-        done < <(find "$adapter_path" -name "*.swift" -type f -print0)
-
-        if [[ $swift_files_staged -gt 0 ]]; then
-            # Commit with detailed message
-            if git commit -m "chore(release): update ${adapter} SDK version to ${version}
-
-- Update ${ADAPTER_SDK_VERSION_FUNCTION}() return value to ${version}
-- Committed during resume/idempotency check
-- Part of release ${version} preparation"; then
-                log::success "PODS" "[$adapter] ✓ Committed version update ($swift_files_staged files)"
-            else
-                log::error "PODS" "[$adapter] ✗ Failed to commit version update"
-                log::error "PODS" "[$adapter] Manual fix: cd $ROOT_DIR && git add ${adapter_path} && git commit"
-                popd > /dev/null || true
-                return 1
-            fi
-        else
-            log::error "PODS" "[$adapter] No Swift files found or staged in ${adapter_path}"
-            log::error "PODS" "[$adapter] Expected to find Swift files but found none"
-            log::error "PODS" "[$adapter] adapter_path=$adapter_path"
-            log::error "PODS" "[$adapter] Listing directory contents:"
-            ls -la "$adapter_path" 2>&1 | while read -r line; do log::error "PODS" "[$adapter]   $line"; done
-            popd > /dev/null || true
-            return 1
-        fi
-
         popd > /dev/null || true
-    elif [[ $diff_exit_code -eq 0 ]]; then
-        # Exit code 0 means no differences (already committed or no changes)
-        log::info "PODS" "[$adapter] Version already committed, no action needed"
-    else
-        # Other exit codes indicate an error
-        log::error "PODS" "[$adapter] git diff failed with exit code $diff_exit_code"
-        log::error "PODS" "[$adapter] adapter_abs_path=$adapter_abs_path"
-        return 1
     fi
 
     return 0
 }
 
 # ============================================================================
-# Helper: Commit Adapter Version Updates (Post-All)
+# Safety Net: Ensure all version files are committed
 # ============================================================================
-# Runs after all adapters are released successfully to avoid git index contention.
+# Catches any version files that slipped through uncommitted.
+# In normal flow each file is committed at its modification site,
+# so this function usually finds nothing to do.
 #
-# Args:
-#   $1: target version (e.g., 1.0.0-rc.24)
-#   $@: adapter names
-#
-# Returns:
-#   0: All commits handled (or no action needed)
-#   1: One or more adapters failed commit/update
-# ============================================================================
-commit_adapter_version_updates() {
-    local version="$1"
-    shift
-    local adapters=("$@")
-    if [[ -n "$version" && ${#adapters[@]} -ge 0 ]]; then
-        :
-    fi
-
-    log::info "PODS" "Adapter SDK version auto-commit is deprecated; skipping."
-    return 0
-
-    if [[ "$DRY_RUN" == "true" ]]; then
-        log::info "PODS" "DRY RUN: Would commit adapter SDK version updates"
-        return 0
-    fi
-
-    if [[ ${#adapters[@]} -eq 0 ]]; then
-        log::info "PODS" "No adapters to update"
-        return 0
-    fi
-
-    log_section "Post-Release: Committing adapter SDK version updates"
-
-    local failed=0
-    local committed_any=false
-    for adapter in "${adapters[@]}"; do
-        if ! ensure_adapter_version_committed "$adapter" "$version"; then
-            log::warn "PODS" "[$adapter] Version commit/update failed"
-            failed=1
-        else
-            # Check if a commit was actually made (not just "already committed")
-            # by checking if HEAD changed
-            committed_any=true
-        fi
-    done
-
-    # Push version update commits to origin if any were made
-    if [[ "$committed_any" == "true" ]] && [[ $failed -eq 0 ]]; then
-        log::info "PODS" "Pushing adapter SDK version commits to origin..."
-
-        # Get current branch
-        local current_branch
-        current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || {
-            log::warn "PODS" "Failed to get current branch, skipping push"
-            log::warn "PODS" "You may need to push manually: git push origin HEAD"
-            return $failed
-        }
-
-        # Push to origin
-        if git push origin "$current_branch" 2>&1; then
-            log::success "PODS" "✓ Pushed adapter SDK version commits to origin/$current_branch"
-        else
-            log::warn "PODS" "Failed to push adapter SDK version commits"
-            log::warn "PODS" "You may need to push manually: git push origin $current_branch"
-            # Don't fail the release for push failure - pods are already published
-        fi
-    fi
-
-    return $failed
-}
-
-# ============================================================================
-# Helper: Ensure MSPCore Version is Committed
-# ============================================================================
-# Checks if MSPCore Config.plist version matches target version and commits if needed.
-# This handles the case where pod was published but version commit was interrupted.
+# Checks and commits:
+#   - MSPCore Config.plist (update if version mismatches)
+#   - NovaCore Config.plist (update if version mismatches)
+#   - sdk_version.conf (SSOT)
 #
 # Args:
 #   $1: target version (e.g., 1.0.0-rc.24)
 #
 # Returns:
-#   0: Version committed successfully or no action needed
-#   1: Fatal error (e.g., Config.plist not found)
+#   0: All committed or no action needed
+#   1: Fatal error
 # ============================================================================
-ensure_mspcore_version_committed() {
+ensure_version_files_committed() {
     local version="$1"
 
     # Skip if in dry-run mode
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
         return 0
     fi
 
-    log::info "PODS" "[MSPCore] Checking Config.plist version state..."
+    log::info "PODS" "Checking version files commit state..."
 
-    # Locate Config.plist
-    local config_plist_rel_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
-    local config_plist_abs_path="$ROOT_DIR/$config_plist_rel_path"
+    # --- MSPCore Config.plist ---
+    local mspcore_rel="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+    local mspcore_abs="$ROOT_DIR/$mspcore_rel"
 
-    # Validate file exists
-    if [[ ! -f "$config_plist_abs_path" ]]; then
-        log::error "PODS" "[MSPCore] Config.plist not found at: $config_plist_abs_path"
-        return 1
-    fi
-
-    # Read current version from Config.plist
-    local current_version=""
-    current_version=$(grep -A1 "SDKVersion" "$config_plist_abs_path" | grep "<string>" | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
-
-    log::info "PODS" "[MSPCore] Current version: $current_version, Target version: $version"
-
-    # Case 1: Version mismatch - update and commit
-    if [[ "$current_version" != "$version" ]]; then
-        log::info "PODS" "[MSPCore] Version mismatch detected, updating to $version..."
-
-        if ! update_config_plist_version "$version"; then
-            log::error "PODS" "[MSPCore] Failed to update Config.plist version"
-            return 1
+    if [[ -f "$mspcore_abs" ]]; then
+        local mspcore_ver=""
+        mspcore_ver=$(grep -A1 "SDKVersion" "$mspcore_abs" | grep "<string>" | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+        if [[ "$mspcore_ver" != "$version" ]]; then
+            log::info "PODS" "[MSPCore] Version mismatch ($mspcore_ver != $version), updating..."
+            update_config_plist_version "$version" || true
         fi
-
-        log::info "PODS" "[MSPCore] Config.plist updated, committing changes..."
-    else
-        log::info "PODS" "[MSPCore] Version already correct ($version)"
     fi
 
-    # Case 2: Check if there are uncommitted changes
-    if ! git diff --quiet -- "$config_plist_abs_path" 2>/dev/null; then
-        log::info "PODS" "[MSPCore] Uncommitted Config.plist changes detected, committing now..."
+    # --- NovaCore Config.plist ---
+    local novacore_rel="Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle/Config.plist"
+    local novacore_abs="$ROOT_DIR/$novacore_rel"
 
-        # Change to ROOT_DIR for git operations
+    if [[ -f "$novacore_abs" ]]; then
+        local novacore_ver=""
+        novacore_ver=$(grep -A1 "SDKVersion" "$novacore_abs" | grep "<string>" | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+        if [[ "$novacore_ver" != "$version" ]]; then
+            log::info "PODS" "[NovaCore] Version mismatch ($novacore_ver != $version), updating..."
+            update_novacore_config_plist_version "$version" || true
+        fi
+    fi
+
+    # --- Check for any uncommitted changes ---
+    local ssot_rel="Scripts/config/sdk_version.conf"
+
+    local has_changes=false
+    git diff --quiet -- "$mspcore_abs" 2>/dev/null || has_changes=true
+    git diff --quiet -- "$novacore_abs" 2>/dev/null || has_changes=true
+    git diff --quiet -- "$ROOT_DIR/$ssot_rel" 2>/dev/null || has_changes=true
+
+    if [[ "$has_changes" == "true" ]]; then
+        log::info "PODS" "Uncommitted version file changes detected, committing now..."
+
         pushd "$ROOT_DIR" > /dev/null || {
-            log::error "PODS" "[MSPCore] Failed to change to ROOT_DIR: $ROOT_DIR"
-            return 0  # Non-fatal: pod is already published
+            log::error "PODS" "Failed to change to ROOT_DIR: $ROOT_DIR"
+            return 0  # Non-fatal
         }
 
-        # Stage Config.plist
-        if git add "$config_plist_rel_path"; then
-            # Commit with detailed message
-            if git commit -m "chore(release): update MSPCore version to ${version}
+        git add "$mspcore_rel" 2>/dev/null || true
+        git add "$novacore_rel" 2>/dev/null || true
+        git add "$ssot_rel" 2>/dev/null || true
 
-- Update Config.plist SDKVersion to ${version}
-- Committed during resume/idempotency check
-- Part of release ${version} preparation"; then
-                log::success "PODS" "[MSPCore] ✓ Committed version update"
-            else
-                log::error "PODS" "[MSPCore] ✗ Failed to commit version update"
-                log::warn "PODS" "[MSPCore] You may need to commit manually: cd $ROOT_DIR && git add $config_plist_rel_path && git commit"
-            fi
+        if git commit -m "chore(release): update version files to ${version}
+
+- MSPCore Config.plist SDKVersion → ${version}
+- NovaCore Config.plist SDKVersion → ${version}
+- sdk_version.conf (SSOT)
+- Safety net commit during release ${version}"; then
+            log::success "PODS" "Committed version files"
         else
-            log::error "PODS" "[MSPCore] Failed to stage $config_plist_rel_path"
+            log::error "PODS" "Failed to commit version files"
+            log::warn "PODS" "Manual fix: cd $ROOT_DIR && git add $mspcore_rel $novacore_rel $ssot_rel && git commit"
         fi
 
         popd > /dev/null || true
     else
-        log::info "PODS" "[MSPCore] Version already committed, no action needed"
+        log::info "PODS" "All version files already committed"
+    fi
+
+    # Also update DemoApp MARKETING_VERSION to match SDK version
+    if command -v update_demo_app_version &>/dev/null; then
+        update_demo_app_version "$version"
+
+        local template_rel="Examples/MSPDemoApp/project.yml.template"
+        local update_sh_rel="Scripts/workspace/update.sh"
+
+        pushd "$ROOT_DIR" > /dev/null || true
+        git add "$template_rel" "$update_sh_rel" 2>/dev/null || true
+        git commit -m "chore(release): update DemoApp MARKETING_VERSION to ${version}" 2>/dev/null || {
+            log::warn "PODS" "DemoApp version commit failed or nothing to commit"
+        }
+        popd > /dev/null || true
     fi
 
     return 0
+}
+
+# Backward compatibility alias
+ensure_mspcore_version_committed() {
+    ensure_version_files_committed "$@"
 }
 
 # ============================================================================
 # Export Functions
 # ============================================================================
 
-export -f ensure_adapter_version_committed 2>/dev/null || true
-export -f commit_adapter_version_updates 2>/dev/null || true
+export -f update_and_commit_plist_version 2>/dev/null || true
+export -f ensure_version_files_committed 2>/dev/null || true
 export -f ensure_mspcore_version_committed 2>/dev/null || true

@@ -13,7 +13,7 @@ import PrebidMobile
 
 @objc public class MobilefuseAdapter: NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        "1.8.2"
+        MobileFuse.version()
     }
 
 

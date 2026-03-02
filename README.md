@@ -32,6 +32,40 @@ open msp-ios-sdk.xcworkspace
 ./Scripts/msp-release.sh resume
 ```
 
+### TestFlight Deployment
+
+```bash
+# Dry run (archive + export only, no upload)
+./Scripts/testflight/deploy.sh --dry-run
+
+# Full deploy (archive + export + upload to App Store Connect)
+./Scripts/testflight/deploy.sh
+
+# Override build number
+./Scripts/testflight/deploy.sh --build-number 42
+```
+
+**Required environment variables** (for upload only, not needed for `--dry-run`):
+
+| Variable | Description |
+|----------|-------------|
+| `ASC_KEY_ID` | App Store Connect API Key ID |
+| `ASC_ISSUER_ID` | App Store Connect Issuer ID |
+| `ASC_KEY_PATH` | Path to AuthKey `.p8` file |
+
+**Setup (recommended):** Copy the `.env` template and fill in your credentials:
+
+```bash
+cp Scripts/testflight/.env.example Scripts/testflight/.env
+# Edit Scripts/testflight/.env with your ASC credentials
+```
+
+The `.env` file is gitignored and loaded automatically by `deploy.sh`. Existing environment variables take precedence over `.env` values.
+
+> ASC API Keys are created at [App Store Connect > Users and Access > Integrations > Team Keys](https://appstoreconnect.apple.com/access/integrations/api). Requires Admin or App Manager role.
+
+The SDK version (`MARKETING_VERSION`) is automatically read from `Scripts/config/sdk_version.conf` (SSOT). Build number is auto-incremented from `Scripts/testflight/config.yaml`.
+
 **Common Release Commands:**
 
 | Command | Purpose |
@@ -57,13 +91,13 @@ See [Docs/RELEASE.md](Docs/RELEASE.md) for detailed release documentation.
 │  Sources/                    Scripts/                            │
 │  ├─ Core/                    ├─ msp-release.sh   (Entrypoint)  │
 │  │  ├─ MSPCore              ├─ switch-target.sh  (Mode switch) │
-│  │  ├─ MSPiOSCore           └─ release/          (Modular)     │
-│  │  └─ NovaCore                 ├─ cli/          • Commands    │
-│  └─ Adapters/                   ├─ orchestrator/ • Workflow    │
-│     ├─ Facebook                 ├─ publish/      • Publishing  │
-│     ├─ Google                   ├─ utils/        • Utilities   │
-│     ├─ Nova                     └─ verify/       • Validation  │
-│     └─ ...                                                      │
+│  │  ├─ MSPiOSCore           ├─ release/          (Modular)     │
+│  │  └─ NovaCore             │   ├─ cli/          • Commands    │
+│  └─ Adapters/               │   ├─ orchestrator/ • Workflow    │
+│     ├─ Facebook             │   ├─ publish/      • Publishing  │
+│     ├─ Google               │   ├─ utils/        • Utilities   │
+│     ├─ Nova                 │   └─ verify/       • Validation  │
+│     └─ ...                  └─ testflight/       (TF Deploy)   │
 │                                                                  │
 ├─────────────────────────────────────────────────────────────────┤
 │  Distribution                                                    │
@@ -101,6 +135,7 @@ Switch between different development modes:
 |----------|---------|
 | **[Scripts/README.md](Scripts/README.md)** | Scripts architecture and usage |
 | **[Scripts/release/README.md](Scripts/release/README.md)** | Release system deep dive |
+| **[Scripts/testflight/](#testflight-deployment)** | TestFlight deployment guide |
 | **[Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md)** | System architecture |
 | **[Docs/RELEASE.md](Docs/RELEASE.md)** | Release process guide |
 | **[Docs/TARGET_SWITCHING.md](Docs/TARGET_SWITCHING.md)** | Mode switching details |

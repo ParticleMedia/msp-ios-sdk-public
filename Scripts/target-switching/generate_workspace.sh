@@ -465,8 +465,8 @@ if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
     build:
       targets:
         MSPDemoApp: all
-        MSPDemoAppTests: test
-        MSPDemoAppUITests: test
+        MSPDemoAppTests: [test]
+        MSPDemoAppUITests: [test]
     test:
       config: Debug
       gatherCoverageData: false

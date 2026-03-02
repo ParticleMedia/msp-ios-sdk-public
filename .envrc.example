@@ -39,6 +39,15 @@ export MSP_ALLOW_TRUNK_PUSH=1
 # export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
 
 # ============================================================================
+# Optional: App Store Connect API Key (TestFlight)
+# ============================================================================
+# Uncomment if you prefer direnv over Scripts/testflight/.env
+
+# export ASC_KEY_ID="YOUR_KEY_ID"
+# export ASC_ISSUER_ID="YOUR_ISSUER_ID"
+# export ASC_KEY_PATH="$HOME/.appstoreconnect/AuthKey_XXXXXX.p8"
+
+# ============================================================================
 # Info
 # ============================================================================
 echo "✅ MSP Release environment loaded (direnv)"

@@ -1,0 +1,24 @@
+schema_version: 1
+build_number: 1
+
+app:
+  scheme: MSPDemoApp
+  workspace: msp-ios-sdk.xcworkspace
+  bundle_id: MSPDemoApp.MSPDemoApp
+  configuration: Release
+
+signing:
+  team_id: 4PEHUZX8QH
+  # Credentials passed via environment variables (never stored in repo):
+  #   ASC_KEY_ID       - App Store Connect API Key ID
+  #   ASC_ISSUER_ID    - App Store Connect Issuer ID
+  #   ASC_KEY_PATH     - Path to .p8 private key file
+
+testflight:
+  skip_waiting: true
+  changelog_template: "Build {build_number} - Internal testing"
+
+output:
+  archive_path: build/testflight/MSPDemoApp.xcarchive
+  export_path: build/testflight/export
+  log_path: build/testflight/logs

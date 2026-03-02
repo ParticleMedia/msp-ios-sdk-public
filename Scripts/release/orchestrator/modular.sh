@@ -496,8 +496,66 @@ release_cocoapods() {
     # Checkout release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         git checkout "$RELEASE_BRANCH"
+
+        # Commit SSOT as the first commit on the release branch
+        log::info "MODULAR" "Writing SDK version SSOT ($VERSION) to sdk_version.conf..."
+        if set_sdk_version_in_config "$VERSION"; then
+            pushd "$ROOT_DIR" > /dev/null || true
+            git add Scripts/config/sdk_version.conf
+            git commit -m "chore(release): set SDK version SSOT to ${VERSION}" 2>/dev/null || {
+                log::warn "MODULAR" "SSOT already committed or nothing to commit"
+            }
+            popd > /dev/null || true
+        else
+            log::warn "MODULAR" "Failed to write SDK version SSOT (non-fatal)"
+        fi
+
+        # Propagate version to Config.plist files and DemoApp BEFORE tagging
+        # (Tags are created in pods/publish.sh; they must include these commits)
+        log::info "MODULAR" "Propagating version $VERSION to Config.plist files and DemoApp..."
+
+        if command -v update_novacore_config_plist_version &>/dev/null; then
+            if update_novacore_config_plist_version "$VERSION"; then
+                pushd "$ROOT_DIR" > /dev/null || true
+                git add -A
+                git commit -m "chore(release): update NovaCore Config.plist to ${VERSION}" 2>/dev/null || {
+                    log::info "MODULAR" "NovaCore Config.plist already up to date"
+                }
+                popd > /dev/null || true
+            else
+                log::warn "MODULAR" "Failed to update NovaCore Config.plist (non-fatal)"
+            fi
+        fi
+
+        if command -v update_config_plist_version &>/dev/null; then
+            if update_config_plist_version "$VERSION"; then
+                pushd "$ROOT_DIR" > /dev/null || true
+                git add -A
+                git commit -m "chore(release): update MSPCore Config.plist to ${VERSION}" 2>/dev/null || {
+                    log::info "MODULAR" "MSPCore Config.plist already up to date"
+                }
+                popd > /dev/null || true
+            else
+                log::warn "MODULAR" "Failed to update MSPCore Config.plist (non-fatal)"
+            fi
+        fi
+
+        if command -v update_demo_app_version &>/dev/null; then
+            if update_demo_app_version "$VERSION"; then
+                pushd "$ROOT_DIR" > /dev/null || true
+                git add -A
+                git commit -m "chore(release): update DemoApp MARKETING_VERSION to ${VERSION}" 2>/dev/null || {
+                    log::info "MODULAR" "DemoApp version already up to date"
+                }
+                popd > /dev/null || true
+            else
+                log::warn "MODULAR" "Failed to update DemoApp version (non-fatal)"
+            fi
+        fi
+
+        log::success "MODULAR" "Version propagation complete"
     fi
-    
+
     # Export environment variables for cocoapods.sh
     # Child script should NOT parse CLI arguments, only use environment variables
     export RELEASE_VERSION="$VERSION"
@@ -687,8 +745,28 @@ push_release_branch() {
         git checkout "$RELEASE_BRANCH"
     fi
 
-    # Push release branch
-    if git push origin "$RELEASE_BRANCH"; then
+    # Push release branch with timeout + retry (consistent with branch.sh)
+    local max_push_attempts=3
+    local push_attempt=1
+    local push_success=false
+
+    while [[ $push_attempt -le $max_push_attempts ]]; do
+        if timeout 120 git push origin "$RELEASE_BRANCH"; then
+            push_success=true
+            break
+        else
+            log::warn "MODULAR" "Attempt $push_attempt/$max_push_attempts failed: git push origin $RELEASE_BRANCH"
+        fi
+
+        if [[ $push_attempt -lt $max_push_attempts ]]; then
+            log::info "MODULAR" "Retrying in 3 seconds..."
+            sleep 3
+        fi
+
+        ((push_attempt++)) || true
+    done
+
+    if [[ "$push_success" == "true" ]]; then
         log::success "MODULAR" "Release branch pushed successfully"
         mark_step_success "push_release_branch"
         GITHUB_RELEASES_SUCCESS+=("Release branch $RELEASE_BRANCH")
@@ -698,7 +776,7 @@ push_release_branch() {
             msp_state_mark_git_flag "release_branch_pushed" true
         fi
     else
-        fail_step "push_release_branch" "git push failed"
+        fail_step "push_release_branch" "git push failed after $max_push_attempts attempts"
         OVERALL_SUCCESS="false"
         GITHUB_RELEASES_FAILED+=("Release branch $RELEASE_BRANCH")
         return 1
@@ -1474,14 +1552,15 @@ main() {
         fi
     fi
     
-    # Step 4: Push release branch
+    # Step 4: Push release branch (soft-fail: continue to PR creation even on failure)
     step "push_release_branch"
     export CURRENT_STEP="push_release_branch"
     if push_release_branch; then
         step_done "push_release_branch"
     else
         step_fail "push_release_branch" $?
-        return 14
+        OVERALL_SUCCESS="false"
+        log::warn "MODULAR" "Push failed but continuing to PR creation and post-release steps"
     fi
     
     # Record end time
@@ -1697,6 +1776,12 @@ fi
     # Task 5: Post-release cleanup — remove backup files, commit release report
     log::step "MODULAR" "Post-release cleanup"
     _post_release_cleanup "$VERSION"
+
+    # Task 6: Create PR to base branch for version sync
+    if [[ "${DRY_RUN:-false}" != "true" ]]; then
+        log::step "MODULAR" "Creating PR to $BASE_BRANCH branch"
+        create_pr_to_branch "$VERSION" "$BASE_BRANCH" || true
+    fi
 
     # End timing and generate metrics report
     if command -v metrics::end &>/dev/null; then

@@ -579,6 +579,56 @@ release_adapters() {
     fi
 
     # ========================================================================
+    # Step -1: Extract adapters list early (needed for version updates)
+    # ========================================================================
+    local core_modules=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore")
+    local adapters=()
+
+    # Split PODS_MODULES space-separated string and filter out core modules
+    # Intentional word-splitting: PODS_MODULES is a space-delimited name list
+    # shellcheck disable=SC2086
+    for module in $PODS_MODULES; do
+        local is_core=false
+        for core in "${core_modules[@]}"; do
+            if [[ "$module" == "$core" ]]; then
+                is_core=true
+                break
+            fi
+        done
+        if [[ "$is_core" == "false" ]]; then
+            adapters+=("$module")
+        fi
+    done
+
+    if [[ ${#adapters[@]} -eq 0 ]]; then
+        log::warn "PODS" "No adapters found in PODS_MODULES. Using default adapter list for backward compatibility."
+        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter")
+    fi
+
+    log::info "PODS" "Adapters to release: ${adapters[*]}"
+
+    # ========================================================================
+    # Step 0.9: Sync SDK version SSOT and NovaCore Config.plist
+    # ========================================================================
+    # IMPORTANT: Version updates MUST happen BEFORE XCFramework builds so
+    # that the compiled binaries contain the correct release version numbers.
+    # Adapter SDK versions are read at runtime from each third-party SDK
+    # (e.g. DTBAds.version(), Prebid.shared.version) — no patching needed.
+    if [[ "$DRY_RUN" != "true" ]]; then
+        log_section "Step 0.9: Syncing NovaCore Config.plist from SSOT"
+        # SSOT (sdk_version.conf) is already committed by modular.sh — just read it
+        local sync_version="$VERSION"
+        if read_sdk_version_from_config >/dev/null 2>&1; then
+            sync_version="$(read_sdk_version_from_config)"
+        fi
+
+        # Update NovaCore SDKVersion in Config.plist and commit immediately
+        if ! update_and_commit_plist_version "novacore" "$sync_version"; then
+            log::warn "PODS" "[NovaCore] Failed to update Config.plist SDKVersion (non-fatal)"
+        fi
+    fi
+
+    # ========================================================================
     # Step 0: Ensure NovaCore.xcframework is available for MSPNovaAdapter
     # ========================================================================
     log_section "Step 0: Ensuring NovaCore.xcframework is available"
@@ -591,6 +641,20 @@ release_adapters() {
     fi
 
     log::success "PODS" "NovaCore.xcframework is ready for MSPNovaAdapter"
+
+    # Rebuild MSPNovaAdapter XCFramework now that NovaCore is available
+    # (MSPNovaAdapter was excluded from the earlier adapter rebuild because it depends on NovaCore)
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if is_binary_distribution "MSPNovaAdapter"; then
+            log::step "PODS" "Rebuilding MSPNovaAdapter XCFramework (depends on NovaCore)..."
+            local nova_module_dir
+            nova_module_dir=$(get_module_dir "MSPNovaAdapter")
+            local build_script="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"
+            if [[ -x "$build_script" ]]; then
+                "$build_script" "$nova_module_dir" || log::warn "PODS" "MSPNovaAdapter XCFramework rebuild failed (non-fatal)"
+            fi
+        fi
+    fi
 
     # Pre-flight check: GitHub CLI authentication (required for binary distribution adapters)
     if [[ "${DRY_RUN:-true}" == "false" ]]; then
@@ -798,30 +862,7 @@ release_adapters() {
 
     log::success "PODS" "All required dependencies (MSPSharedLibraries, MSPGoogleAdsTypes, MSPiOSCore) are available, proceeding with parallel adapter releases"
 
-    # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries, MSPGoogleAdsTypes, and MSPCore)
-    local core_modules=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore")
-    local adapters=()
-
-    # Split PODS_MODULES space-separated string and filter out core modules
-    # shellcheck disable=SC2086 -- intentional word-splitting: PODS_MODULES is a space-delimited name list
-    for module in $PODS_MODULES; do
-        local is_core=false
-        for core in "${core_modules[@]}"; do
-            if [[ "$module" == "$core" ]]; then
-                is_core=true
-                break
-            fi
-        done
-        if [[ "$is_core" == "false" ]]; then
-            adapters+=("$module")
-        fi
-    done
-
-    if [[ ${#adapters[@]} -eq 0 ]]; then
-        log::warn "PODS" "No adapters found in PODS_MODULES. Using default adapter list for backward compatibility."
-        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter")
-    fi
-
+    # adapters array already extracted at function start (Step -1)
     log::info "PODS" "Releasing adapters from PODS_MODULES: ${adapters[*]}"
 
     # ========================================================================
@@ -890,30 +931,6 @@ release_adapters() {
     if ! update_specs_repo; then
         log::error "PODS" "Failed to update specs repository before adapter releases"
         return 1
-    fi
-
-    # ========================================================================
-    # Step 0.9: Sync SDK version SSOT and NovaCore Config.plist BEFORE release
-    # ========================================================================
-    if [[ "$DRY_RUN" != "true" ]]; then
-        log_section "Step 0.9: Syncing SDK versions"
-        log::info "PODS" "Updating SDK version SSOT to $VERSION..."
-        if ! set_sdk_version_in_config "$VERSION"; then
-            log::warn "PODS" "Failed to update SDK version SSOT file (non-fatal)"
-        fi
-
-        local sync_version="$VERSION"
-        if read_sdk_version_from_config >/dev/null 2>&1; then
-            sync_version="$(read_sdk_version_from_config)"
-        fi
-
-        # Update NovaCore SDKVersion in Config.plist to match SSOT version
-        log::info "PODS" "[NovaCore] Updating Config.plist SDKVersion to $sync_version..."
-        if update_novacore_config_plist_version "$sync_version"; then
-            log::success "PODS" "[NovaCore] Config.plist SDKVersion updated"
-        else
-            log::warn "PODS" "[NovaCore] Failed to update Config.plist SDKVersion (non-fatal)"
-        fi
     fi
 
     # ========================================================================
@@ -1169,9 +1186,9 @@ release_msp_core() {
                 fi
             fi
 
-            # Ensure Config.plist version is committed (handles interrupted commits)
-            if ! ensure_mspcore_version_committed "$VERSION"; then
-                log::error "PODS" "Failed to ensure MSPCore version is committed"
+            # Ensure all version files are committed (handles interrupted commits)
+            if ! ensure_version_files_committed "$VERSION"; then
+                log::error "PODS" "Failed to ensure version files are committed"
                 # Don't fail the release - pod is already published
                 log::warn "PODS" "Continuing despite version commit issue (pod already published)"
             fi
@@ -1181,9 +1198,21 @@ release_msp_core() {
         fi
     fi
 
-    # Update MSPCore version in Config.plist BEFORE creating the zip,
-    # so the packaged Config.plist contains the correct SDKVersion.
-    update_config_plist_version "$VERSION"
+    # Update MSPCore version in Config.plist and commit immediately,
+    # BEFORE creating the zip so the binary contains the correct SDKVersion.
+    update_and_commit_plist_version "mspcore" "$VERSION"
+
+    # Rebuild MSPCore.xcframework with updated Config.plist so the binary
+    # contains the correct SDKVersion (not the pre-release value)
+    log::step "PODS" "Rebuilding MSPCore.xcframework with updated SDKVersion..."
+    local build_core_script="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
+    if [[ -x "$build_core_script" ]]; then
+        if ! bash "$build_core_script"; then
+            log::warn "PODS" "MSPCore XCFramework rebuild failed, using existing binary"
+        fi
+    else
+        log::warn "PODS" "build-core.sh not found, using existing MSPCore binary"
+    fi
 
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     if is_binary_distribution "MSPCore"; then
@@ -1244,53 +1273,10 @@ release_msp_core() {
         return 1
     fi
 
-    # Commit version update immediately after successful publish
-    if [[ "$DRY_RUN" != "true" ]]; then
-        # Check if there are uncommitted changes for Config.plist
-        local config_plist_rel_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
-        local config_plist_abs_path="$ROOT_DIR/$config_plist_rel_path"
-
-        # Validate file exists before attempting git operations
-        if [[ ! -f "$config_plist_abs_path" ]]; then
-            log::warn "PODS" "Config.plist not found at: $config_plist_abs_path"
-            log::warn "PODS" "Skipping MSPCore version commit (file may have been moved or renamed)"
-        elif ! git diff --quiet -- "$config_plist_abs_path" 2>/dev/null; then
-            log::info "PODS" "Committing MSPCore version update to $VERSION..."
-
-            # Change to ROOT_DIR to ensure correct relative paths for git
-            pushd "$ROOT_DIR" > /dev/null || {
-                log::error "PODS" "Failed to change to ROOT_DIR: $ROOT_DIR"
-                log::warn "PODS" "Skipping MSPCore version commit due to directory change failure"
-                # Don't fail release - pod is already published
-                # Return early to avoid executing git commands in wrong directory
-                return 0
-            }
-
-            # Stage Config.plist using relative path (git prefers relative paths)
-            if git add "$config_plist_rel_path"; then
-                # Commit with detailed message
-                if git commit -m "chore(release): update MSPCore version to ${VERSION}
-
-- Update Config.plist SDKVersion to ${VERSION}
-- Committed immediately after successful publish to CocoaPods
-- Part of release ${VERSION} preparation"; then
-                    log::success "PODS" "Committed MSPCore version update"
-                else
-                    log::error "PODS" "Failed to commit MSPCore version update"
-                    log::warn "PODS" "Pod published successfully but version commit failed"
-                    log::warn "PODS" "You may need to commit manually: cd $ROOT_DIR && git add $config_plist_rel_path && git commit"
-                fi
-            else
-                log::error "PODS" "Failed to stage $config_plist_rel_path"
-                log::error "PODS" "Git add exit code: $?"
-                log::warn "PODS" "Current directory: $(pwd)"
-                log::warn "PODS" "File exists check: $(ls -la "$config_plist_abs_path" 2>&1 || echo 'File not found')"
-            fi
-
-            popd > /dev/null || true
-        else
-            log::info "PODS" "MSPCore version already committed or no changes"
-        fi
+    # Safety net: catch any version files that slipped through uncommitted
+    # (each file should already be committed at its modification site)
+    if ! ensure_version_files_committed "$VERSION"; then
+        log::warn "PODS" "Version commit failed (non-fatal — pod already published)"
     fi
 
     # Wait for availability (skip in dry-run mode)

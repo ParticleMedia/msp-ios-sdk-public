@@ -3,19 +3,19 @@
 # Version Management Module
 # ============================================================================
 # Module: version_management.sh
-# Purpose: Pod version updating, adapter SDK version management, podspec generation
+# Purpose: Pod version updating, podspec generation
 # Extracted from: publish.sh
 #
 # Functions:
 #   - get_module_dir: Map pod name to directory name
-#   - load_adapter_sdk_version_config: Load adapter SDK version config
-#   - adapter_sdk_version_should_skip: Check if adapter should skip version update
-#   - resolve_adapter_sdk_version_tool: Get path to version update tool
-#   - check_adapter_sdk_version: Verify adapter SDK version matches target
-#   - update_adapter_sdk_version: Update adapter SDK version in source
 #   - update_mspcore_version: Update MSPCore version
 #   - update_podspec_for_release: Generate release podspec
 #   - update_adapter_podspec_dependencies: Update podspec dependencies
+#
+# Note: Adapter SDK version functions (load_adapter_sdk_version_config,
+# adapter_sdk_version_should_skip, resolve_adapter_sdk_version_tool,
+# check_adapter_sdk_version, update_adapter_sdk_version) have been removed.
+# Adapter SDK versions are now read at runtime from each third-party SDK.
 #
 # Dependencies:
 #   - Logging functions (log::info, log::error, log::success, log::step, log::warn, log::debug)
@@ -23,7 +23,6 @@
 #
 # Environment Variables:
 #   - ROOT_DIR: Project root directory
-#   - ADAPTER_SDK_VERSION_CONFIG_FILE: Custom config file path (optional)
 # ============================================================================
 
 set -euo pipefail
@@ -31,13 +30,6 @@ set -euo pipefail
 # Guard against multiple sourcing
 [[ -n "${_VERSION_MANAGEMENT_SOURCED:-}" ]] && return 0
 readonly _VERSION_MANAGEMENT_SOURCED=1
-
-# ============================================================================
-# Module State
-# ============================================================================
-
-# Adapter SDK version configuration (config-driven)
-ADAPTER_SDK_VERSION_CONFIG_LOADED="${ADAPTER_SDK_VERSION_CONFIG_LOADED:-false}"
 
 # ============================================================================
 # Pod Name → Directory Name Mapping
@@ -55,59 +47,6 @@ get_module_dir() {
         "MSPNovaAdapter") echo "NovaAdapter" ;;
         *) echo "$pod_name" ;;
     esac
-}
-
-# ============================================================================
-# Adapter SDK Version Configuration
-# ============================================================================
-
-load_adapter_sdk_version_config() {
-    # Adapter SDK version auto-update is deprecated.
-    # Keep this function as a compatibility no-op.
-    ADAPTER_SDK_VERSION_CONFIG_LOADED="true"
-    ADAPTER_SDK_VERSION_FUNCTION="getSDKVersion"
-    ADAPTER_SDK_VERSION_STRICT="false"
-    return 0
-}
-
-adapter_sdk_version_should_skip() {
-    # Always skip: adapter SDK versions are now dynamically sourced from each adapter/runtime SDK.
-    local _adapter="$1"
-    if [[ -n "$_adapter" ]]; then
-        :
-    fi
-    return 0
-}
-
-resolve_adapter_sdk_version_tool() {
-    # Deprecated path kept for compatibility with old callers.
-    return 1
-}
-
-# ============================================================================
-# Adapter SDK Version Check and Update
-# ============================================================================
-
-check_adapter_sdk_version() {
-    local adapter="$1"
-    local version="$2"
-    if [[ -n "$adapter" && -n "$version" ]]; then
-        :
-    fi
-
-    # Adapter SDK version check is deprecated.
-    return 0
-}
-
-# Update adapter SDK version
-update_adapter_sdk_version() {
-    local adapter="$1"
-    local version="$2"
-    if [[ -n "$adapter" && -n "$version" ]]; then
-        :
-    fi
-    # Adapter SDK version update is deprecated.
-    return 0
 }
 
 # ============================================================================
@@ -236,11 +175,6 @@ update_adapter_podspec_dependencies() {
 # ============================================================================
 
 export -f get_module_dir 2>/dev/null || true
-export -f load_adapter_sdk_version_config 2>/dev/null || true
-export -f adapter_sdk_version_should_skip 2>/dev/null || true
-export -f resolve_adapter_sdk_version_tool 2>/dev/null || true
-export -f check_adapter_sdk_version 2>/dev/null || true
-export -f update_adapter_sdk_version 2>/dev/null || true
 export -f update_mspcore_version 2>/dev/null || true
 export -f update_podspec_for_release 2>/dev/null || true
 export -f update_adapter_podspec_dependencies 2>/dev/null || true

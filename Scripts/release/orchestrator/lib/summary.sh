@@ -423,12 +423,12 @@ orch_show_release_summary() {
             log::info "SUMMARY" "1. Verify the release on GitHub: https://github.com/ParticleMedia/msp-ios-sdk-public/releases/tag/$version"
             log::info "SUMMARY" "2. Test CocoaPods installation: pod 'MSPCore', '~> $version'"
             log::info "SUMMARY" "3. Test SPM installation: .package(url: \"https://github.com/ParticleMedia/msp-ios-sdk-public.git\", from: \"$version\")"
-            log::info "SUMMARY" "4. Create pull request to merge release branch if needed"
+            log::info "SUMMARY" "4. PR to base branch has been created — review and merge"
         else
             echo "1. Verify the release on GitHub: https://github.com/ParticleMedia/msp-ios-sdk-public/releases/tag/$version"
             echo "2. Test CocoaPods installation: pod 'MSPCore', '~> $version'"
             echo "3. Test SPM installation: .package(url: \"https://github.com/ParticleMedia/msp-ios-sdk-public.git\", from: \"$version\")"
-            echo "4. Create pull request to merge release branch if needed"
+            echo "4. PR to base branch has been created — review and merge"
         fi
     else
         if command -v log::info &>/dev/null; then

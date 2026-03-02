@@ -15,7 +15,7 @@ import PrebidMobile
 
 @objc public class MintegralAdapter: NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        ""
+        MTGSDK.sdkVersion()
     }
 
 
