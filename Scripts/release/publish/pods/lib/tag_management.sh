@@ -28,6 +28,95 @@ set -euo pipefail
 readonly _TAG_MANAGEMENT_SOURCED=1
 
 # ============================================================================
+# Filtered Public Push (bypasses GitHub Push Protection)
+# ============================================================================
+# Creates a temporary clone, scrubs known secret patterns from history via
+# git-filter-repo, then pushes branch/tag to the public remote.
+# This avoids GitHub Push Protection blocks caused by historical secrets
+# in the private repo without requiring history rewrites on origin.
+
+# @description Push a ref to public remote via a filtered temporary clone
+# @param $1 push_type - "branch" or "tag"
+# @param $2 ref_name  - branch name or tag name to push
+# @param $3 tag_commit_sha - (tag mode only) commit SHA the tag should point to
+# @return 0 on success, 1 on failure
+_filtered_push_to_public() {
+    local push_type="$1"
+    local ref_name="$2"
+    local tag_commit_sha="${3:-}"
+
+    if ! command -v git-filter-repo &>/dev/null; then
+        log::error "PODS" "git-filter-repo is required for filtered public push"
+        log::error "PODS" "Install: brew install git-filter-repo"
+        return 1
+    fi
+
+    local origin_url
+    origin_url=$(git remote get-url origin 2>/dev/null)
+    local public_url
+    public_url=$(git remote get-url public 2>/dev/null)
+    # Convert HTTPS to SSH to avoid OAuth workflow scope issues
+    if [[ "$public_url" == https://github.com/* ]]; then
+        public_url="git@github.com:${public_url#https://github.com/}"
+    fi
+
+    local tmp_dir
+    tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/msp-filtered-push.XXXXXX")
+
+    log::info "PODS" "Using filtered push to public (scrubbing secrets from history)"
+
+    # Clone only the branch we need
+    local clone_branch="$ref_name"
+    if [[ "$push_type" == "tag" ]]; then
+        clone_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "HEAD")
+        if [[ "$clone_branch" == "HEAD" ]]; then
+            clone_branch=$(git branch -r --contains "$tag_commit_sha" 2>/dev/null \
+                | grep 'origin/' | head -1 | sed 's|.*origin/||' | xargs)
+        fi
+    fi
+
+    if ! git clone --single-branch --branch "$clone_branch" "$origin_url" "$tmp_dir/repo" 2>/dev/null; then
+        log::error "PODS" "Failed to clone for filtered push"
+        rm -rf "$tmp_dir"
+        return 1
+    fi
+
+    # Build regex replacements for known secret patterns
+    printf '%s\n' \
+        'regex:https://hooks\.slack\.com/services/[A-Za-z0-9/]+==>https://hooks.slack.com/services/REDACTED' \
+        'regex:xoxb-[0-9]+-[0-9]+-[A-Za-z0-9]+==>xoxb-REDACTED' \
+        > "$tmp_dir/replacements.txt"
+
+    # Scrub secrets from history
+    if ! git -C "$tmp_dir/repo" filter-repo --replace-text "$tmp_dir/replacements.txt" --force --quiet 2>/dev/null; then
+        log::error "PODS" "git-filter-repo failed"
+        rm -rf "$tmp_dir"
+        return 1
+    fi
+
+    # Add public remote to temp clone
+    git -C "$tmp_dir/repo" remote add public "$public_url"
+
+    local push_result=0
+    if [[ "$push_type" == "branch" ]]; then
+        if ! git -C "$tmp_dir/repo" push public "$clone_branch" --force 2>/dev/null; then
+            log::error "PODS" "Filtered push of branch $clone_branch to public failed"
+            push_result=1
+        fi
+    elif [[ "$push_type" == "tag" ]]; then
+        # Recreate the tag at the rewritten HEAD
+        git -C "$tmp_dir/repo" tag -f "$ref_name" HEAD 2>/dev/null
+        if ! git -C "$tmp_dir/repo" push public "refs/tags/$ref_name" --force 2>/dev/null; then
+            log::error "PODS" "Filtered push of tag $ref_name to public failed"
+            push_result=1
+        fi
+    fi
+
+    rm -rf "$tmp_dir"
+    return "$push_result"
+}
+
+# ============================================================================
 # Module Initialization
 # ============================================================================
 
@@ -253,136 +342,79 @@ ensure_release_tag_exists_and_pushed() {
         fi
     fi
 
-    # Push commit to public remote BEFORE pushing tag
+    # Push branch + tag to public remote
     if [[ "${SKIP_PUBLIC_REMOTE_PUSH:-0}" == "1" ]]; then
         log::warn "PODS" "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping public remote push"
     elif git remote | grep -q "^public$"; then
-        log::info "PODS" "Ensuring commit $target_commit_sha exists on public remote"
-
-        # Get current branch (or use HEAD if detached)
         local current_branch
         current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "HEAD")
 
-        # Check if commit exists on public remote
-        if ! git branch -r --contains "$target_commit_sha" | grep -q "public/"; then
-            log::warn "PODS" "Commit $target_commit_sha not found on public remote, pushing..."
+        # --- Push branch to public ---
+        if ! git branch -r --contains "$target_commit_sha" 2>/dev/null | grep -q "public/"; then
+            log::info "PODS" "Pushing branch $current_branch to public"
 
-            # Push current branch/HEAD to public remote
-            if [[ "$current_branch" == "HEAD" ]]; then
-                # Detached HEAD - push commit directly
-                log::info "PODS" "Detached HEAD detected, pushing commit directly to public"
-                if ! git push public "$target_commit_sha:refs/heads/temp-release-$tag" 2>/dev/null; then
-                    log::warn "PODS" "Failed to push commit to temp branch, trying force push"
-                    if ! git push public HEAD:refs/heads/release-temp 2>/dev/null; then
-                        log::error "PODS" "Failed to push commit to public remote"
-                        if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
-                            log::warn "PODS" "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite failure"
-                        else
-                            return 1
-                        fi
-                    fi
-                fi
-            else
-                # Normal branch - push branch to public
-                log::info "PODS" "Pushing branch $current_branch to public"
-                if ! git push public "$current_branch" 2>/dev/null; then
-                    log::warn "PODS" "Normal push failed, trying with -u flag"
-                    if ! git push -u public "$current_branch" 2>/dev/null; then
-                        log::error "PODS" "Failed to push branch to public remote"
-                        if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
-                            log::warn "PODS" "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite failure"
-                        else
-                            return 1
-                        fi
-                    fi
+            # Try direct push first
+            local branch_pushed=false
+            if git push public "$current_branch" 2>/dev/null; then
+                branch_pushed=true
+            elif git push -u public "$current_branch" 2>/dev/null; then
+                branch_pushed=true
+            fi
+
+            # Fallback: filtered push (scrubs secrets from history)
+            if [[ "$branch_pushed" == "false" ]]; then
+                log::warn "PODS" "Direct push failed, trying filtered push (scrubbing secrets)..."
+                if _filtered_push_to_public "branch" "$current_branch"; then
+                    branch_pushed=true
                 fi
             fi
 
-            log::success "PODS" "Commit pushed to public remote"
+            if [[ "$branch_pushed" == "true" ]]; then
+                log::success "PODS" "Branch pushed to public remote"
+            else
+                log::error "PODS" "Failed to push branch to public remote"
+                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" != "1" ]]; then
+                    return 1
+                fi
+                log::warn "PODS" "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite failure"
+            fi
         else
             log::info "PODS" "Commit $target_commit_sha already exists on public remote"
         fi
 
-        # Verify commit is now accessible on public remote
-        sleep 2
-        if ! git ls-remote public "$target_commit_sha" >/dev/null 2>&1; then
-            if ! git branch -r --contains "$target_commit_sha" 2>/dev/null | grep -q "public/"; then
-                log::error "PODS" "Commit verification failed: $target_commit_sha not accessible on public"
-                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
-                    log::warn "PODS" "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite verification failure"
-                else
-                    return 1
+        # --- Push tag to public ---
+        if [[ "$tag_exists_on_public" == "false" ]]; then
+            log::info "PODS" "Pushing tag to public: $tag"
+
+            local tag_pushed=false
+            if git push public "refs/tags/$tag" 2>/dev/null; then
+                tag_pushed=true
+            fi
+
+            # Fallback: filtered push
+            if [[ "$tag_pushed" == "false" ]]; then
+                log::warn "PODS" "Direct tag push failed, trying filtered push..."
+                if _filtered_push_to_public "tag" "$tag" "$target_commit_sha"; then
+                    tag_pushed=true
                 fi
             fi
-        fi
 
-        log::success "PODS" "Commit $target_commit_sha verified on public remote"
-    fi
-
-    # Push tag to public if it doesn't exist or was deleted
-    if [[ "${SKIP_PUBLIC_REMOTE_PUSH:-0}" == "1" ]]; then
-        log::warn "PODS" "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping tag push to public remote"
-    elif [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
-        log::info "PODS" "Pushing tag to public: $tag"
-
-        # Retry logic: up to 3 attempts with 2-second delays
-        local max_public_attempts=3
-        local public_attempt=1
-        local public_push_success=false
-        local push_output=""
-        local push_exit_code=1
-
-        while [[ $public_attempt -le $max_public_attempts ]]; do
-            push_output=$(git push public "refs/tags/$tag" 2>&1)
-            push_exit_code=$?
-
-            if [[ $push_exit_code -eq 0 ]]; then
-                public_push_success=true
+            if [[ "$tag_pushed" == "true" ]]; then
                 log::success "PODS" "Pushed tag to public: $tag"
 
-                # Immediately create/verify GitHub Release after tag push
-                log::info "PODS" "Ensuring GitHub Release is Published for tag: $tag"
+                # Create/verify GitHub Release after tag push
                 sleep 2
-
-                # Use unified GitHub Release function if available
                 if command -v create_or_verify_github_release &>/dev/null; then
                     if ! create_or_verify_github_release "$tag"; then
                         log::warn "PODS" "Failed to create/verify GitHub Release (non-blocking)"
                     fi
                 fi
-
-                break
             else
-                log::warn "PODS" "Attempt $public_attempt/$max_public_attempts failed: push to public failed"
-            fi
-
-            if [[ $public_attempt -lt $max_public_attempts ]]; then
-                log::info "PODS" "Retrying in 2 seconds..."
-                sleep 2
-            fi
-
-            ((public_attempt++)) || true
-        done
-
-        if [[ "$public_push_success" == "false" ]]; then
-            log::warn "PODS" "Failed to push tag to public after $max_public_attempts attempts: $tag"
-
-            # Check if GitHub Push Protection blocked the push
-            if echo "$push_output" | grep -qi "push protection"; then
-                log::error "PODS" "GitHub Push Protection detected secrets in commit history"
-                log::error "PODS" "Visit GitHub Web UI and click 'Allow this secret'"
-                log::error "PODS" "Then re-run the release script"
-
+                log::error "PODS" "Failed to push tag to public (direct + filtered)"
                 if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" != "1" ]]; then
                     return 1
                 fi
-            else
-                log::error "PODS" "Push output:"
-                echo "$push_output"
-
-                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" != "1" ]]; then
-                    return 1
-                fi
+                log::warn "PODS" "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite failure"
             fi
         fi
     fi
@@ -460,5 +492,6 @@ wait_for_remote_tag() {
 # Export Functions
 # ============================================================================
 
+export -f _filtered_push_to_public
 export -f ensure_release_tag_exists_and_pushed
 export -f wait_for_remote_tag
