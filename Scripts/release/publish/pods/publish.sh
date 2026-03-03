@@ -596,32 +596,40 @@ main() {
             local_tag_sha=$(git rev-parse "refs/tags/$VERSION" 2>/dev/null)
 
             if [[ -n "$public_tag_sha" ]] && [[ -n "$local_tag_sha" ]] && [[ "$public_tag_sha" != "$local_tag_sha" ]]; then
-                log::error "PODS" "════════════════════════════════════════════════════════════"
-                log::error "PODS" "  ❌ Public Remote Tag SHA Mismatch!"
-                log::error "PODS" "════════════════════════════════════════════════════════════"
-                log::error "PODS" ""
-                log::error "PODS" "Tag: $VERSION"
-                log::error "PODS" "本地 Local:  $local_tag_sha"
-                log::error "PODS" "远程 Public: $public_tag_sha"
-                log::error "PODS" ""
-                log::error "PODS" "这意味着 public remote 上的 tag 指向错误的 commit！"
-                log::error "PODS" "CocoaPods 验证将会失败（source_files 找不到）"
-                log::error "PODS" ""
-                log::error "PODS" "解决方案:"
-                log::error "PODS" "  1. 强制更新 public remote tag:"
-                log::error "PODS" "     git push public :refs/tags/$VERSION"
-                log::error "PODS" "     git push public refs/tags/$VERSION"
-                log::error "PODS" ""
-                log::error "PODS" "  2. 或者运行修复命令:"
-                log::error "PODS" "     ./Scripts/msp-release.sh fix-public-tag $VERSION"
-                log::error "PODS" ""
-                log::error "PODS" "════════════════════════════════════════════════════════════"
-
-                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
-                    log::warn "PODS" "⚠️  MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: 继续执行但可能失败"
+                if [[ "${MSP_PUBLIC_PUSH_FILTERED:-0}" == "1" ]]; then
+                    log::warn "PODS" "Public tag SHA differs from local after filtered push (expected in rewritten history)"
+                    log::warn "PODS" "Tag: $VERSION"
+                    log::warn "PODS" "本地 Local:  $local_tag_sha"
+                    log::warn "PODS" "远程 Public: $public_tag_sha"
+                    log::warn "PODS" "Filtered push rewrites commit SHA; skip strict SHA-equality check"
                 else
-                    log::error "PODS" "🛑 停止执行"
-                    exit 1
+                    log::error "PODS" "════════════════════════════════════════════════════════════"
+                    log::error "PODS" "  ❌ Public Remote Tag SHA Mismatch!"
+                    log::error "PODS" "════════════════════════════════════════════════════════════"
+                    log::error "PODS" ""
+                    log::error "PODS" "Tag: $VERSION"
+                    log::error "PODS" "本地 Local:  $local_tag_sha"
+                    log::error "PODS" "远程 Public: $public_tag_sha"
+                    log::error "PODS" ""
+                    log::error "PODS" "这意味着 public remote 上的 tag 指向错误的 commit！"
+                    log::error "PODS" "CocoaPods 验证将会失败（source_files 找不到）"
+                    log::error "PODS" ""
+                    log::error "PODS" "解决方案:"
+                    log::error "PODS" "  1. 强制更新 public remote tag:"
+                    log::error "PODS" "     git push public :refs/tags/$VERSION"
+                    log::error "PODS" "     git push public refs/tags/$VERSION"
+                    log::error "PODS" ""
+                    log::error "PODS" "  2. 或者运行修复命令:"
+                    log::error "PODS" "     ./Scripts/msp-release.sh fix-public-tag $VERSION"
+                    log::error "PODS" ""
+                    log::error "PODS" "════════════════════════════════════════════════════════════"
+
+                    if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                        log::warn "PODS" "⚠️  MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: 继续执行但可能失败"
+                    else
+                        log::error "PODS" "🛑 停止执行"
+                        exit 1
+                    fi
                 fi
             elif [[ -n "$public_tag_sha" ]] && [[ -n "$local_tag_sha" ]] && [[ "$public_tag_sha" == "$local_tag_sha" ]]; then
                 log::success "PODS" "✅ Tag SHA verified: local and public match"

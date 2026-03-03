@@ -152,6 +152,9 @@ ensure_release_tag_exists_and_pushed() {
     local tag="$1"
     local target_commit="${2:-HEAD}"
 
+    # Reset per-invocation status for downstream verification logic.
+    export MSP_PUBLIC_PUSH_FILTERED=0
+
     if [[ -z "$tag" ]]; then
         log::error "PODS" "ensure_release_tag_exists_and_pushed: tag parameter is required"
         return 1
@@ -366,6 +369,7 @@ ensure_release_tag_exists_and_pushed() {
                 log::warn "PODS" "Direct push failed, trying filtered push (scrubbing secrets)..."
                 if _filtered_push_to_public "branch" "$current_branch"; then
                     branch_pushed=true
+                    export MSP_PUBLIC_PUSH_FILTERED=1
                 fi
             fi
 
@@ -396,6 +400,7 @@ ensure_release_tag_exists_and_pushed() {
                 log::warn "PODS" "Direct tag push failed, trying filtered push..."
                 if _filtered_push_to_public "tag" "$tag" "$target_commit_sha"; then
                     tag_pushed=true
+                    export MSP_PUBLIC_PUSH_FILTERED=1
                 fi
             fi
 
