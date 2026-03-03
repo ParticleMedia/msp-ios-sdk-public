@@ -125,6 +125,7 @@ private extension NovaNativeAdView {
                 let token = nativeAd.encryptedAdToken
                 NovaAdImageMetricReporter.makeRecord(encryptedAdToken: token)
                 NovaAdImageMetricReporter.trackImageShowTime(encryptedAdToken: token)
+                nativeAd.mediaContent.imageController?.delegate?.imageViewDidStartDisplaying()
                 isImageShowing = true
             }
         } else if isImageShowing {
