@@ -127,27 +127,7 @@ public class NovaAdapter: AdNetworkAdapter {
         novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
         novaNativeAdItem.mediaContent.elementLayout = mediaElementLayout
 
-        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
-            novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
-            novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
-            novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
-            novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
-            novaNativeAdView.customClickableViews = nativeAdView.nativeAdViewBinder?.customClickableViews
-
-            var clickableViews: [UIView] = [
-                novaNativeAdView.titleLabel,
-                novaNativeAdView.bodyLabel,
-                novaNativeAdView.advertiserLabel,
-                novaNativeAdView.callToActionButton,
-                novaNativeAdView.icon,
-            ].compactMap {
-                $0
-            }
-
-            novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
-
-            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
-        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+        if let nativeAdContainer = nativeAdView.nativeAdContainer {
             novaNativeAdView.titleLabel = nativeAdContainer.getTitle()
             novaNativeAdView.bodyLabel = nativeAdContainer.getbody()
             novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()

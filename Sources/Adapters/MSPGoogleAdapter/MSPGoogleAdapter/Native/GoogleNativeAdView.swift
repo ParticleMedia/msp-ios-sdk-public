@@ -39,26 +39,6 @@ open class GoogleNativeAdView: UIView {
         ])
     }
 
-    public func bindViewWithNativeViewBinder(binder: GoogleNativeAdViewBinder, nativeAd: MSPGADNativeAd) {
-        if let titleLabelTag = binder.titleLabelTag {
-            nativeAdView.headlineView = nativeAdView.viewWithTag(titleLabelTag)
-        }
-        if let bodyLabelTag = binder.bodyLabelTag {
-            nativeAdView.bodyView = nativeAdView.viewWithTag(bodyLabelTag)
-        }
-        if let advertiserLabelTag = binder.advertiserLabelTag {
-            nativeAdView.advertiserView = nativeAdView.viewWithTag(advertiserLabelTag)
-        }
-        if let callToActionButtonTag = binder.callToActionButtonTag {
-            nativeAdView.callToActionView = nativeAdView.viewWithTag(callToActionButtonTag)
-        }
-        if let mediaViewTag = binder.mediaViewTag {
-            nativeAdView.mediaView = nativeAdView.viewWithTag(mediaViewTag) as? MSPGADMediaView
-        }
-
-        self.setUpView(nativeAd: nativeAd)
-    }
-
     public func bindView(nativeAd: MSPGADNativeAd) {
         titleLabel = UILabel()
         bodyLabel = UILabel()

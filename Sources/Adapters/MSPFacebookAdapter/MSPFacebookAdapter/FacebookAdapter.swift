@@ -23,26 +23,7 @@ import UIKit
         else { return }
         //let fbNativeAdView = UIView()
         nativeAdView.translatesAutoresizingMaskIntoConstraints = false
-        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
-            let fbSubViews = [
-                nativeAdView.nativeAdViewBinder?.titleLabel, nativeAdView.nativeAdViewBinder?.bodyLabel,
-                nativeAdView.nativeAdViewBinder?.advertiserLabel, nativeAdView.nativeAdViewBinder?.callToActionButton,
-                mediaView,
-            ]
-            for view in fbSubViews {
-                if let view = view {
-                    nativeAdView.addSubview(view)
-                }
-            }
-            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: nativeAdView)
-
-            fbNativeAdItem.registerView(
-                forInteraction: nativeAdView,
-                mediaView: mediaView,
-                iconImageView: nil,
-                viewController: nil,
-                clickableViews: fbSubViews.compactMap { $0 })
-        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+        if let nativeAdContainer = nativeAdView.nativeAdContainer {
             nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
 
             nativeAdView.addSubview(nativeAdContainer)

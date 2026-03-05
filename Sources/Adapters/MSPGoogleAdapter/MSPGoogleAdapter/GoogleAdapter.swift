@@ -23,24 +23,7 @@ import PrebidMobile
         gadNativeAdView.translatesAutoresizingMaskIntoConstraints = false
         gadNativeAdView.nativeAd = gadNativeAdItem
 
-        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
-            gadNativeAdView.headlineView = nativeAdView.nativeAdViewBinder?.titleLabel
-            gadNativeAdView.bodyView = nativeAdView.nativeAdViewBinder?.bodyLabel
-            gadNativeAdView.advertiserView = nativeAdView.nativeAdViewBinder?.advertiserLabel
-            gadNativeAdView.callToActionView = nativeAdView.nativeAdViewBinder?.callToActionButton
-            gadNativeAdView.mediaView = nativeAdView.nativeAdViewBinder?.mediaView as? MSPGADMediaView
-
-            let gadSubViews = [
-                gadNativeAdView.headlineView, gadNativeAdView.bodyView, gadNativeAdView.advertiserView,
-                gadNativeAdView.callToActionView, gadNativeAdView.mediaView,
-            ]
-            for view in gadSubViews {
-                if let view = view {
-                    gadNativeAdView.addSubview(view)
-                }
-            }
-            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: gadNativeAdView)
-        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+        if let nativeAdContainer = nativeAdView.nativeAdContainer {
             nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
 
             gadNativeAdView.headlineView = nativeAdContainer.getTitle()

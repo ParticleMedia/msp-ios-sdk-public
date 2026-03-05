@@ -4,7 +4,6 @@ import UIKit
 public class NativeAdView: UIView {
     public weak var nativeAd: NativeAd?
     public weak var rootViewController: UIViewController?
-    public var nativeAdViewBinder: NativeAdViewBinder?
     public var nativeAdContainer: MSPNativeAdContainer?
 
     private var titleLabel: UILabel?
@@ -16,56 +15,6 @@ public class NativeAdView: UIView {
     private var displayContext: [MSPNativeElement: MSPNativeDisplayContext]?
     private var mediaViewContainerView: UIView?
     private var icon: UIImageView?
-
-    public init(nativeAd: NativeAd, nativeAdViewBinder: NativeAdViewBinder) {
-        self.nativeAd = nativeAd
-        self.nativeAdViewBinder = nativeAdViewBinder
-
-        self.titleLabel = nativeAdViewBinder.titleLabel
-        self.bodyLabel = nativeAdViewBinder.bodyLabel
-        self.advertiserLabel = nativeAdViewBinder.advertiserLabel
-        self.callToActionButton = nativeAdViewBinder.callToActionButton
-        self.customClickableViews = nativeAdViewBinder.customClickableViews
-        self.displayContext = nativeAdViewBinder.displayContext
-
-        if let displayContext,
-            let titleDisplayContext = displayContext[.title] as? MSPNativeLabelDisplayContext
-        {
-            let attributedString = NSAttributedString(
-                string: nativeAd.title, attributes: titleDisplayContext.attributes)
-            titleLabel?.attributedText = attributedString
-        } else {
-            titleLabel?.text = nativeAd.title
-        }
-
-        if let displayContext,
-            let bodyDisplayContext = displayContext[.body] as? MSPNativeLabelDisplayContext
-        {
-            let attributedString = NSAttributedString(string: nativeAd.body, attributes: bodyDisplayContext.attributes)
-            bodyLabel?.attributedText = attributedString
-        } else {
-            bodyLabel?.text = nativeAd.body
-        }
-
-        if let displayContext,
-            let advertiserDisplayContext = displayContext[.advertiser] as? MSPNativeLabelDisplayContext
-        {
-            let attributedString = NSAttributedString(
-                string: nativeAd.advertiser, attributes: advertiserDisplayContext.attributes)
-            advertiserLabel?.attributedText = attributedString
-        } else {
-            advertiserLabel?.text = nativeAd.advertiser
-        }
-
-        self.callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
-
-
-        self.mediaViewContainerView = nativeAdViewBinder.mediaView
-
-        super.init(frame: .zero)
-
-        nativeAd.adNetworkAdapter?.prepareViewForInteraction(nativeAd: nativeAd, nativeAdView: self)
-    }
 
     public init(nativeAd: NativeAd, nativeAdContainer: MSPNativeAdContainer) {
         self.nativeAd = nativeAd
@@ -122,29 +71,5 @@ public class NativeAdView: UIView {
 
         callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
         nativeAd.adNetworkAdapter?.prepareViewForInteraction(nativeAd: nativeAd, nativeAdView: self)
-    }
-}
-
-open class NativeAdViewBinder {
-    public var titleLabel: UILabel?
-    public var bodyLabel: UILabel?
-    public var advertiserLabel: UILabel?
-    public var callToActionButton: UIButton?
-    public var optionView: UIView?
-    public var mediaView: UIView?
-    public var customClickableViews: [UIView]?
-    public var displayContext: [MSPNativeElement: MSPNativeDisplayContext]?
-
-    public init(nativeAd: NativeAd) {
-        titleLabel = UILabel()
-        bodyLabel = UILabel()
-        advertiserLabel = UILabel()
-        callToActionButton = UIButton(type: .custom)
-        mediaView = (nativeAd.mediaView as? UIView)
-        customClickableViews = nil
-        displayContext = nil
-    }
-
-    open func setUpViews(parentView: UIView) {
     }
 }
