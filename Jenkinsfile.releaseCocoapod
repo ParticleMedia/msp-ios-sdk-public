@@ -68,7 +68,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${params.BRANCH ?: 'develop'}"]],
+                    userRemoteConfigs: scm.userRemoteConfigs
+                ])
             }
         }
 
