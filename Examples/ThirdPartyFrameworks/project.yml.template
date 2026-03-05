@@ -1,6 +1,6 @@
 # XcodeGen Project for Third-Party Frameworks
-# Builds SwiftProtobuf, MSPSnapKit, Lottie, and Kingfisher for XCFramework packaging.
-# Kingfisher/MSPSnapKit are built as static frameworks to allow static linkage into MSPNovaAdapter.
+# Builds SwiftProtobuf and MSPSnapKit for XCFramework packaging.
+# MSPSnapKit is built as static framework to allow static linkage into NovaCore.
 # Note: Shimmer is now provided via XCFramework (Shimmer Plan B), not built here.
 
 name: ThirdPartyFrameworks
@@ -62,24 +62,7 @@ targets:
         SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
         MACH_O_TYPE: staticlib
 
-  Lottie:
-    type: framework
-    platform: iOS
-    sources:
-      - path: ../../Pods/lottie-ios/Sources/Public
-        excludes:
-          - "**/*.md"
-          - "**/*.docc/**"
-      - path: ../../Pods/lottie-ios/Sources/Private
-        excludes:
-          - "**/*.md"
-    settings:
-      base:
-        PRODUCT_NAME: Lottie
-        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.Lottie
-        PRODUCT_MODULE_NAME: Lottie
-        SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
-        MACH_O_TYPE: staticlib
+  # Lottie removed — NovaCore no longer depends on lottie-ios
 
   # Shimmer is now provided via XCFramework (Shimmer Plan B)
   # Removed: Shimmer target (no longer built from Pods source)
@@ -104,12 +87,6 @@ schemes:
     archive:
       config: Release
 
-  Lottie:
-    build:
-      targets:
-        Lottie: all
-    archive:
-      config: Release
-
+  # Lottie scheme removed — NovaCore no longer depends on lottie-ios
   # Shimmer scheme removed (Shimmer Plan B: using XCFramework)
   # Kingfisher scheme removed (using MSPKingfisher pod instead)

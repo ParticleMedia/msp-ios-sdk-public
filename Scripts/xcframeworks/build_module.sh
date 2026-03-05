@@ -175,9 +175,9 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
     
     # Build SEPARATE path arrays for iOS and Simulator Pod modules
     # CRITICAL: Each archive must ONLY see its own platform's modules to avoid redefinition errors
-    # NovaCore needs: Kingfisher, MSPSnapKit, Lottie
+    # NovaCore needs: Kingfisher, MSPSnapKit
     # MSPCore needs: MSPPrebidAdapter
-    POD_MODULES=("MSPKingfisher" "MSPSnapKit" "lottie-ios" "MSPPrebidAdapter")
+    POD_MODULES=("MSPKingfisher" "MSPSnapKit" "MSPPrebidAdapter")
     POD_IOS_MODULES=""
     POD_SIM_MODULES=""
     

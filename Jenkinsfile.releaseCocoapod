@@ -4,6 +4,13 @@
 // Integrates the unified release flow: preflight, pre_release_setup, create
 // release branch, CocoaPods (Trunk), SPM, push, verification.
 // Uses: ./Scripts/msp-release.sh --profile=production run <VERSION>
+//
+// Parameters:
+//   BRANCH        - Branch to build from (default: develop)
+//   VERSION       - Release version (e.g. 1.2.3)
+//   RELEASE_NOTES - Optional release notes
+//   RESUME        - Resume a previously failed release
+//   SKIP_PREFLIGHT / ONLY_PODS - Advanced options
 // ============================================================================
 
 pipeline {
@@ -16,14 +23,24 @@ pipeline {
 
     parameters {
         string(
+            name: 'BRANCH',
+            defaultValue: 'develop',
+            description: 'Branch to build from (e.g. develop, main, release/1.0.6).'
+        )
+        string(
             name: 'VERSION',
             defaultValue: '',
-            description: 'Release version (e.g. 1.2.3). Required for running the release. Leave blank to skip release (e.g. for pipeline validation).'
+            description: 'Release version (e.g. 1.2.3). Required for a new release. Leave blank if resuming.'
         )
         string(
             name: 'RELEASE_NOTES',
             defaultValue: '',
             description: 'Optional release notes. Leave blank for default/auto.'
+        )
+        booleanParam(
+            name: 'RESUME',
+            defaultValue: false,
+            description: 'Resume a previously failed release. State is automatically saved from the last failed build.'
         )
         booleanParam(
             name: 'SKIP_PREFLIGHT',
@@ -43,8 +60,9 @@ pipeline {
         SLACK_CONFIG  = 'Scripts/config/slack.conf'
         LANG = 'en_US.UTF-8'
         LC_ALL = 'en_US.UTF-8'
-        // So release safety/scripts treat this as CI (e.g. allow production when run from Jenkins)
         CI = 'true'
+        // Persistent directory on the Jenkins agent for release state files
+        MSP_STATE_PERSIST_DIR = "${JENKINS_HOME}/msp-release-state/${JOB_NAME}"
     }
 
     stages {
@@ -54,7 +72,61 @@ pipeline {
             }
         }
 
+        // ── Resume path ────────────────────────────────────────────────
+        stage('Restore release state') {
+            when {
+                expression { params.RESUME }
+            }
+            steps {
+                script {
+                    sh """
+                        set -euo pipefail
+                        if [ -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json" ]; then
+                            cp "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json" .msp-release-state.json
+                            echo "✅ Restored state file from persistent storage"
+                            cat .msp-release-state.json
+                        elif [ -f .msp-release-state.json ]; then
+                            echo "✅ Using existing state file in workspace"
+                        else
+                            echo "❌ No state file found. Cannot resume."
+                            exit 1
+                        fi
+                    """
+                }
+            }
+        }
+
+        stage('Resume: Install dependencies') {
+            when {
+                expression { params.RESUME }
+            }
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle install
+                    ./Scripts/workspace/update.sh
+                    bundle exec pod install
+                '''
+            }
+        }
+
+        stage('Resume release') {
+            when {
+                expression { params.RESUME }
+            }
+            steps {
+                sh '''
+                    set -euo pipefail
+                    ./Scripts/msp-release.sh --profile=production --no-ansi resume
+                '''
+            }
+        }
+
+        // ── New release path ───────────────────────────────────────────
         stage('Install Ruby dependencies') {
+            when {
+                expression { !params.RESUME }
+            }
             steps {
                 sh '''
                     set -euo pipefail
@@ -64,6 +136,9 @@ pipeline {
         }
 
         stage('Prepare workspace') {
+            when {
+                expression { !params.RESUME }
+            }
             steps {
                 sh '''
                     set -euo pipefail
@@ -73,9 +148,9 @@ pipeline {
             }
         }
 
-        stage('Run full release (msp-release.sh)') {
+        stage('Run full release') {
             when {
-                expression { params.VERSION?.trim() }
+                expression { !params.RESUME && params.VERSION?.trim() }
             }
             steps {
                 script {
@@ -99,31 +174,49 @@ pipeline {
             }
         }
 
-        stage('Skip release (no version)') {
+        stage('No action') {
             when {
-                expression { !params.VERSION?.trim() }
+                expression { !params.RESUME && !params.VERSION?.trim() }
             }
             steps {
-                echo 'VERSION parameter is empty. Skipping release. Set VERSION (e.g. 1.2.3) to run the full release.'
+                echo 'VERSION is empty and RESUME is false. Nothing to do. Set VERSION to start a release, or check RESUME to continue a failed one.'
             }
         }
     }
 
     post {
+        failure {
+            script {
+                // Save state file to persistent directory for future resume
+                sh """
+                    mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
+                    if [ -f .msp-release-state.json ]; then
+                        cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                        echo "💾 State file saved for resume"
+                    fi
+                """
+                // Also archive as build artifact for manual recovery
+                archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
+            }
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'danger',
+                      message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Use RESUME=true to continue."
+        }
         success {
             script {
-                def msg = params.VERSION?.trim()
-                    ? "✅ Release pipeline succeeded: ${params.VERSION} (${env.BUILD_TAG})"
-                    : "✅ Release pipeline (no version) succeeded: ${env.BUILD_TAG}"
+                // Clean up persistent state on success
+                sh """
+                    rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                """
+                def msg = params.RESUME
+                    ? "✅ Release resume succeeded (${env.BUILD_TAG})"
+                    : params.VERSION?.trim()
+                        ? "✅ Release ${params.VERSION} succeeded (${env.BUILD_TAG})"
+                        : "✅ Pipeline validation succeeded (${env.BUILD_TAG})"
                 slackSend channel: env.SLACK_CHANNEL,
                           color: 'good',
                           message: msg
             }
-        }
-        failure {
-            slackSend channel: env.SLACK_CHANNEL,
-                      color: 'danger',
-                      message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Check Jenkins logs."
         }
     }
 }

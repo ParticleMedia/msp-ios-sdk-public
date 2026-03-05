@@ -5,7 +5,6 @@
 //  Created by Shanyu Li on 2025/8/7.
 //
 
-internal import Lottie
 @_implementationOnly import MSPSnapKit
 import UIKit
 
@@ -69,19 +68,11 @@ public final class NovaAdMediaView: UIView {
 
     private lazy var discountTag: NovaAdDiscountTag = .init()
 
-    private lazy var tapToTryAnimationView: LottieAnimationView? = {
-        let view = LottieAnimationView()
-        if let animationPath = NovaResource.getLottieResourceURL("tap_to_try")?.path {
-            DebugLogger.data.info("load lottie file success")
-            view.isUserInteractionEnabled = false
-            view.animation = LottieAnimation.filepath(animationPath)
-            view.loopMode = .loop
-            view.adClickArea = .tapToTry
-            return view
-        } else {
-            DebugLogger.data.error("can not load lottie file")
-            return nil
-        }
+    private lazy var tapToTryAnimationView: NovaAdTapToTryAnimationView = {
+        let view = NovaAdTapToTryAnimationView()
+        view.isUserInteractionEnabled = false
+        view.adClickArea = .tapToTry
+        return view
     }()
 
     private lazy var tapToTryStaticView: NovaAdTapToTryStaticView = {
@@ -161,7 +152,7 @@ extension NovaAdMediaView {
             currentView?.adClickArea = .media
         }
 
-        tapToTryAnimationView?.removeFromSuperview()
+        tapToTryAnimationView.removeFromSuperview()
         tapToTryStaticView.removeFromSuperview()
         discountTag.removeFromSuperview()
 
@@ -228,22 +219,20 @@ extension NovaAdMediaView {
 
     func cleanupBusinessSubviews() {
         discountTag.removeFromSuperview()
-        tapToTryAnimationView?.stop()
-        tapToTryAnimationView?.removeFromSuperview()
+        tapToTryAnimationView.stop()
+        tapToTryAnimationView.removeFromSuperview()
         tapToTryStaticView.removeFromSuperview()
     }
 
     private func setupTapToTry(with mediaModel: NovaAdPlayableMediaModel) {
         switch mediaModel.tapToTryFormat {
         case .default:
-            if let tapToTryAnimationView {
-                addSubview(tapToTryAnimationView)
-                tapToTryAnimationView.snp.remakeConstraints { make in
-                    make.center.equalToSuperview()
-                    make.size.equalTo(72.0)
-                }
-                tapToTryAnimationView.play()
+            addSubview(tapToTryAnimationView)
+            tapToTryAnimationView.snp.remakeConstraints { make in
+                make.center.equalToSuperview()
+                make.size.equalTo(72.0)
             }
+            tapToTryAnimationView.play()
         case .gamepadWithText:
             addSubview(tapToTryStaticView)
             tapToTryStaticView.snp.remakeConstraints { make in

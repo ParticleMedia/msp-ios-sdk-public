@@ -15,12 +15,12 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: msp.NovaCore
     PRODUCT_MODULE_NAME: NovaCore
 
-    # Hide statically linked third-party symbols (Kingfisher, SnapKit, Lottie, Shimmer)
+    # Hide statically linked third-party symbols (Kingfisher, SnapKit, Shimmer)
     # to prevent duplicate symbol crashes when SDK consumers also use these libraries
     UNEXPORTED_SYMBOLS_FILE: $(SRCROOT)/unexported_symbols.txt
     
     # Framework Search Paths - Core XCFrameworks only
-    # Third-party dependencies (Kingfisher, MSPSnapKit, Lottie) are provided
+    # Third-party dependencies (Kingfisher, MSPSnapKit) are provided
     # via Pods at application level, not as XCFrameworks
     FRAMEWORK_SEARCH_PATHS:
       - $(inherited)
@@ -51,7 +51,7 @@ targets:
       # Path is relative to project.yml location: Sources/Core/NovaCore/
       - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework
         embed: false
-      # Third-party dependencies (Kingfisher, MSPSnapKit, Lottie) are provided
+      # Third-party dependencies (Kingfisher, MSPSnapKit) are provided
       # via Pods at application level. Core XCFrameworks use @_implementationOnly
       # imports and do NOT embed these frameworks.
     settings:
@@ -72,36 +72,30 @@ targets:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPSnapKit
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
         SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPSnapKit
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
         # Header search paths for ObjC interop
         HEADER_SEARCH_PATHS[sdk=iphoneos*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPSnapKit
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
         HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPSnapKit
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
         # Phase 4 Step 5: Library search paths for static libraries
         LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPSnapKit
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
         LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPSnapKit
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
         # Phase 4 Step 5: Link static libraries
-        # MSPSnapKit, MSPKingfisher, lottie-ios: Swift static libraries, regular linking should work
+        # MSPSnapKit, MSPKingfisher: Swift static libraries, regular linking should work
         OTHER_LDFLAGS[sdk=iphoneos*]:
           - $(inherited)
           # Link MSPSnapKit (Swift static library, regular linking)
@@ -110,9 +104,6 @@ targets:
           # Link MSPKingfisher (Swift static library, regular linking)
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
           - -lMSPKingfisher
-          # Link lottie-ios (Swift static library, regular linking)
-          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
-          - -llottie-ios
         OTHER_LDFLAGS[sdk=iphonesimulator*]:
           - $(inherited)
           # Link MSPSnapKit (Swift static library, regular linking)
@@ -121,9 +112,6 @@ targets:
           # Link MSPKingfisher (Swift static library, regular linking)
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
           - -lMSPKingfisher
-          # Link lottie-ios (Swift static library, regular linking)
-          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
-          - -llottie-ios
 
 schemes:
   NovaCore-XCFramework:

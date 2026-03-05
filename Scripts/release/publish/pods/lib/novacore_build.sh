@@ -56,7 +56,7 @@ prebuild_novacore_dependencies() {
     mkdir -p "$shared_derived_data"
 
     # Pod schemes that NovaCore depends on
-    local pod_schemes=("MSPKingfisher" "MSPSnapKit" "lottie-ios")
+    local pod_schemes=("MSPKingfisher" "MSPSnapKit")
 
     for pod_scheme in "${pod_schemes[@]}"; do
         log::info "PODS" "Pre-building $pod_scheme for iOS..."

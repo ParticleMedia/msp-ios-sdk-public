@@ -1,4 +1,4 @@
-module OMSDK_Newsbreak1 {
-    header "Headers/OMIDImports.h"
+framework module OMSDK_Newsbreak1 {
+    header "OMIDImports.h"
     export *
 }

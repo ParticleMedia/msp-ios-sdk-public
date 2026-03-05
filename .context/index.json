@@ -152,17 +152,21 @@
         "novacore",
         "unexported-symbols",
         "snapkit",
-        "kingfisher"
+        "kingfisher",
+        "omsdk",
+        "prebidmobile"
       ],
       "triggers": [
         "NovaCore duplicate symbol crash with SnapKit or Kingfisher",
         "xcframework static link third-party library conflict",
         "UNEXPORTED_SYMBOLS_FILE usage for symbol hiding",
-        "host app duplicate symbol linker error"
+        "host app duplicate symbol linker error",
+        "OMSDK duplicate class warning",
+        "PrebidMobile OMID class conflict"
       ],
-      "summary": "NovaCore statically links SnapKit/Kingfisher/Lottie causing duplicate symbols; solved with UNEXPORTED_SYMBOLS_FILE",
+      "summary": "NovaCore statically links SnapKit/Kingfisher causing duplicate symbols; solved with UNEXPORTED_SYMBOLS_FILE. OMSDK deduplication solved by switching PrebidMobile to dynamic linking.",
       "status": "active",
-      "updated": "2026-02-22"
+      "updated": "2026-03-03"
     },
     {
       "id": "ctx-integration-002",

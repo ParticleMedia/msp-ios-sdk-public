@@ -253,18 +253,7 @@ generate_asset_report() {
             echo "  - $asset_name"
         done
         
-        echo ""
-        echo "Lottie files found in source:"
-        if [[ -d "$NOVACORE_DIR/Resources/Lottie" ]]; then
-            find "$NOVACORE_DIR/Resources/Lottie" -type f \( -name "*.json" -o -name "*.lottie" \) | while read -r lottie_file; do
-                local filename=$(basename "$lottie_file")
-                local file_size=$(stat -f%z "$lottie_file" 2>/dev/null || echo "0")
-                echo "  - $filename ($file_size bytes)"
-            done
-        else
-            echo "  - No Lottie directory found"
-        fi
-        
+
         echo ""
         echo "Bundle contents after sync:"
         if [[ -d "$BUNDLE_TARGET" ]]; then

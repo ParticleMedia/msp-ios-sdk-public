@@ -16,7 +16,9 @@ env:
 jobs:
   validate:
     name: Quick Validation
-    runs-on: [self-hosted, macOS, ARM64, bj_ios]
+    runs-on:
+      group: Client
+      labels: [self-hosted, macOS, ARM64, bj_ios]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +28,9 @@ jobs:
   build-and-test:
     name: Build & Test
     needs: validate
-    runs-on: [self-hosted, macOS, ARM64, bj_ios]
+    runs-on:
+      group: Client
+      labels: [self-hosted, macOS, ARM64, bj_ios]
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4

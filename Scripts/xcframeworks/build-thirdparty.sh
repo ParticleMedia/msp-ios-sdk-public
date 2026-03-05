@@ -51,7 +51,7 @@ ensure_repo_root
 THIRDPARTY_TARGETS=(
     "SwiftProtobuf:SwiftProtobuf"
     "MSPSnapKit:MSPSnapKit"
-    "Lottie:Lottie"
+    # "Lottie:Lottie" - Removed: NovaCore no longer depends on lottie-ios
     # "Shimmer:Shimmer" - Removed: Shimmer Plan B (using XCFramework)
     # "Kingfisher:Kingfisher" - Removed: MSPKingfisher/Sources doesn't exist during pre_install
     #                          (downloaded via podspec prepare_command during pod install)

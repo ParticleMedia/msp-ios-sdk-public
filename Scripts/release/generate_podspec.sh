@@ -721,11 +721,6 @@ if is_binary_distribution "$POD_NAME"; then
                                 echo "  spec.dependency 'Kingfisher', '7.12.0'" >> "$OUTPUT_PODSPEC"
                             fi
                             ;;
-                        Lottie|Lottie_iOS|lottie_ios)
-                            log::warn "PODSPEC" "Missing dependency detected in swiftinterface: $import_module"
-                            log::info "PODSPEC" "Adding Lottie dependency (required by swiftinterface)"
-                            echo "  spec.dependency 'lottie-ios', '4.5.2'" >> "$OUTPUT_PODSPEC"
-                            ;;
                         *)
                             log::warn "PODSPEC" "Missing dependency detected in swiftinterface: $import_module"
                             log::warn "PODSPEC" "Unknown import module: $import_module (may need manual dependency addition)"
@@ -919,29 +914,30 @@ fi
 if is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: binary XCFrameworks
     if [[ "$POD_NAME" == "MSPSharedLibraries" ]]; then
-        # MSPSharedLibraries: includes PrebidMobile, MSPSnapKit, and Kingfisher (MSPiOSCore is now a separate dependency)
+        # MSPSharedLibraries: includes PrebidMobile, MSPSnapKit, Kingfisher, and OMSDK
         # Kingfisher is required because NovaCore statically embeds Kingfisher code but consumers still need
         # the Kingfisher module for Swift's type system to resolve Kingfisher types at link time
+        # OMSDK_Newsbreak1 is unified here to avoid duplicate classes with PrebidMobile
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
   spec.vendored_frameworks = [
     "Binary/MSPSharedLibraries.xcframework",
     "ThirdParty/PrebidMobile/PrebidMobile.xcframework",
     "ThirdParty/MSPSnapKit/MSPSnapKit.xcframework",
-    "Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework"
+    "Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework",
+    "ThirdParty/OMSDK/OMSDK_Newsbreak1.xcframework"
   ]
 EOF_VENDOR_MULTI
     elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-        # NovaAdapter: pure binary distribution with embedded NovaCore + OMSDK
+        # NovaAdapter: pure binary distribution with embedded NovaCore
+        # OMSDK_Newsbreak1 is now provided by MSPSharedLibraries (deduplication)
         # NovaCore uses AVFoundation/AVFAudio which depend on AudioToolbox/CoreAudio
         # CoreAudioTypes was removed from iOS SDK 18+ - types are now available via CoreAudio/AudioToolbox
-        # NovaCore dynamically links OMSDK_Newsbreak1.framework at runtime
         # NOTE: SnapKit is provided via MSPSharedLibraries dependency (MSPSnapKit.xcframework)
         #       Do NOT bundle SnapKit separately here to avoid duplicate symbol issues
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
   spec.vendored_frameworks = [
     "Binary/MSPNovaAdapter.xcframework",
-    "Binary/NovaCore.xcframework",
-    "Binary/OMSDK_Newsbreak1.xcframework"
+    "Binary/NovaCore.xcframework"
   ]
   spec.frameworks = 'AVFoundation', 'AVFAudio', 'AudioToolbox', 'CoreAudio'
 EOF_VENDOR_NOVA

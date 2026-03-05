@@ -165,23 +165,8 @@ validate_dependency_versions() {
         log::warn "TARGET" "⚠ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (unable to verify)"
     fi
     
-    # Lottie version check
-    local pods_lottie spm_lottie
-    pods_lottie=$(get_pods_version "lottie-ios")
-    spm_lottie=$(get_spm_version "lottie-ios")
-    
-    if [[ "$pods_lottie" != "unknown" ]] && [[ "$spm_lottie" != "not-resolved" ]] && [[ "$spm_lottie" != "unknown" ]]; then
-        if [[ "$pods_lottie" == "$spm_lottie" ]]; then
-            log::success "TARGET" "✓ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (match)"
-        else
-            log::error "TARGET" "❌ Lottie version mismatch: Pods=$pods_lottie, SPM=$spm_lottie"
-            log::error "TARGET" "   Update Package.swift to use exact: \"$pods_lottie\""
-            ((errors++)) || true
-        fi
-    else
-        log::warn "TARGET" "⚠ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (unable to verify)"
-    fi
-    
+    # Lottie removed — NovaCore no longer depends on lottie-ios
+
     return $errors
 }
 
@@ -234,7 +219,7 @@ main() {
         log::warn "TARGET" "$adapter_warnings adapter source(s) have issues (non-blocking)"
     fi
     
-    # Validate Dependency Versions (SwiftProtobuf, Lottie)
+    # Validate Dependency Versions (SwiftProtobuf)
     if ! validate_dependency_versions; then
         version_errors=$?
         ((total_errors += version_errors))

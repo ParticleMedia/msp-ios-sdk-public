@@ -201,7 +201,8 @@ create_tag() {
 
     if tag_exists "$tag_name"; then
         local existing_commit_sha
-        existing_commit_sha=$(git rev-parse "$tag_name" 2>/dev/null || echo "")
+        # Use ^{commit} to dereference annotated tags to their underlying commit SHA
+        existing_commit_sha=$(git rev-parse "${tag_name}^{commit}" 2>/dev/null || echo "")
 
         if [[ -n "$existing_commit_sha" ]]; then
             if [[ "$existing_commit_sha" == "$target_commit_sha" ]]; then
@@ -225,7 +226,7 @@ create_tag() {
         log::success "GIT" "Created tag $tag_name at commit $target_commit_sha"
 
         local final_commit_sha
-        final_commit_sha=$(git rev-parse "$tag_name" 2>/dev/null || echo "")
+        final_commit_sha=$(git rev-parse "${tag_name}^{commit}" 2>/dev/null || echo "")
         if [[ "$final_commit_sha" != "$target_commit_sha" ]]; then
             log::error "GIT" "Tag verification failed: tag points to $final_commit_sha instead of $target_commit_sha"
             return 1
@@ -369,6 +370,12 @@ create_pr_to_branch() {
     if ! command -v gh >/dev/null 2>&1; then
         log::warn "GIT" "gh CLI not available — skipping PR creation"
         log::info "GIT" "Please manually create PR: $source_branch → $target_branch"
+        return 0
+    fi
+
+    # Guard: skip if source and target are the same branch
+    if [[ "$source_branch" == "$target_branch" ]]; then
+        log::warn "GIT" "Source and target branch are the same ($source_branch) — skipping PR creation"
         return 0
     fi
 

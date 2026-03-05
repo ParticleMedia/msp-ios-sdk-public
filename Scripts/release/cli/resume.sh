@@ -430,6 +430,17 @@ msp_resume_setup_environment() {
         fi
     fi
 
+    # Restore BASE_BRANCH from state file so the post-release PR
+    # targets the correct branch (not the release branch itself)
+    if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
+        local saved_base_branch
+        saved_base_branch=$(jq -r '.base_branch // empty' "$state_file" 2>/dev/null || echo "")
+        if [[ -n "$saved_base_branch" && "$saved_base_branch" != "unknown" ]]; then
+            export BASE_BRANCH="$saved_base_branch"
+            log::debug "RELEASE" "[RESUME] Restored BASE_BRANCH from state: $saved_base_branch"
+        fi
+    fi
+
     # Resume allows existing release and tag
     export MSP_ALLOW_EXISTING_RELEASE=true
     export MSP_ALLOW_EXISTING_TAG=true

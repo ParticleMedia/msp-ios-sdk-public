@@ -20,7 +20,7 @@ end
 msp_mode = ENV['MSP_MODE'] || 'pods-release'
 # Force integrate to always generate workspace (required by build-core.sh)
 # Core XCFramework build requires workspace to:
-# - Pre-build Pod dependencies (MSPKingfisher, MSPSnapKit, lottie-ios, MSPPrebidAdapter, SwiftProtobuf)
+# - Pre-build Pod dependencies (MSPKingfisher, MSPSnapKit, MSPPrebidAdapter, SwiftProtobuf)
 # - Resolve Pod Swift modules in shared DerivedData
 integrate = true  # Was: (msp_mode == 'pods-dev')
 
@@ -38,7 +38,7 @@ puts "[MSPDemoApp] Integrating CocoaPods dependencies for DemoApp target"
 # ============================================================================
 # Pre-install hook: Ensure third-party XCFrameworks exist before pod install
 # ============================================================================
-# Automatically builds missing XCFrameworks (Shimmer, Lottie, etc.) if needed
+# Automatically builds missing XCFrameworks (Shimmer, etc.) if needed
 # This ensures DemoApp can compile in dev mode without manual intervention
 pre_install do |installer|
   puts "[pre_install] Checking third-party XCFrameworks..."
@@ -47,7 +47,6 @@ pre_install do |installer|
   required_xcframeworks = [
     'Shimmer',
     # Note: Kingfisher is NOT required - project uses MSPKingfisher pod (source-based) instead
-    'Lottie',
     'MSPSnapKit',
     'SwiftProtobuf'
   ]
@@ -127,9 +126,7 @@ target 'MSPDemoApp' do
   pod 'MSPKingfisher', :path => 'ThirdParty/MSPKingfisher/MSPKingfisher.podspec', :configurations => demoapp_pod_configs
   # MSPSnapKit is a private SnapKit wrapper to avoid collisions with host SnapKit
   pod 'MSPSnapKit', :path => 'ThirdParty/MSPSnapKit/MSPSnapKit.podspec', :configurations => demoapp_pod_configs
-  # Lottie is needed by NovaCore at compile time
   # Shimmer is now provided via XCFramework (Shimmer Plan B)
-  pod 'lottie-ios', '4.5.2', :configurations => demoapp_pod_configs
   # SwiftProtobuf is needed by MSPCore at compile time
   pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs
 

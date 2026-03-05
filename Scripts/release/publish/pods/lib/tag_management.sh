@@ -174,7 +174,8 @@ ensure_release_tag_exists_and_pushed() {
     local tag_commit_sha=""
     if git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
         tag_exists_locally=true
-        tag_commit_sha=$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "")
+        # Use ^{commit} to dereference annotated tags to their underlying commit SHA
+        tag_commit_sha=$(git rev-parse "refs/tags/${tag}^{commit}" 2>/dev/null || echo "")
 
         if [[ -n "$tag_commit_sha" ]]; then
             if [[ "$tag_commit_sha" == "$target_commit_sha" ]]; then
@@ -276,7 +277,7 @@ ensure_release_tag_exists_and_pushed() {
 
                 # Verify tag points to correct commit
                 local verify_sha
-                verify_sha=$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "")
+                verify_sha=$(git rev-parse "refs/tags/${tag}^{commit}" 2>/dev/null || echo "")
                 if [[ "$verify_sha" == "$target_commit_sha" ]]; then
                     log::success "PODS" "Tag verification passed: $tag -> $target_commit_sha"
                     break
@@ -426,7 +427,7 @@ ensure_release_tag_exists_and_pushed() {
 
     # Final verification
     local final_tag_sha
-    final_tag_sha=$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "")
+    final_tag_sha=$(git rev-parse "refs/tags/${tag}^{commit}" 2>/dev/null || echo "")
     if [[ "$final_tag_sha" != "$target_commit_sha" ]]; then
         log::error "PODS" "Tag verification failed: tag $tag points to $final_tag_sha, expected $target_commit_sha"
         return 1

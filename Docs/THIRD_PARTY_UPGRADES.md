@@ -54,8 +54,7 @@ Always present in `ThirdParty/`:
 
 - PrebidMobile.xcframework
 - Shimmer.xcframework
-- Lottie.xcframework
-- SnapKit.xcframework
+- MSPSnapKit.xcframework
 - SwiftProtobuf.xcframework
 - Kingfisher.xcframework
 
@@ -81,7 +80,11 @@ Uses a local wrapper pod (`ThirdParty/MSPKingfisher/`) instead of official Kingf
 
 ### Prebid
 
-PrebidMobile is included as a pre-built XCFramework in `ThirdParty/PrebidMobile/` and referenced via `vendored_frameworks` in MSPSharedLibraries.podspec.
+PrebidMobile is included as a pre-built XCFramework in `ThirdParty/PrebidMobile/` and referenced via `vendored_frameworks` in MSPSharedLibraries.podspec. PrebidMobile dynamically links `OMSDK_Newsbreak1` (does NOT statically embed it) to avoid duplicate OMID class conflicts.
+
+### OMSDK
+
+`OMSDK_Newsbreak1.xcframework` is distributed via MSPSharedLibraries (not MSPNovaAdapter) to provide a single runtime copy shared by both PrebidMobile and NovaCore.
 
 ### Google Mobile Ads
 

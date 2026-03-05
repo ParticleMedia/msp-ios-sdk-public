@@ -15,4 +15,4 @@ FOUNDATION_EXPORT const unsigned char OMSDKVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <OMSDK/PublicHeader.h>
 
-#import <OMSDK/OMIDImports.h>
+#import <OMSDK_Newsbreak1/OMIDImports.h>

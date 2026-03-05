@@ -475,7 +475,11 @@ spm_local_validation() {
         fi
     }
     
-    trap "cleanup_temp_dir \"$SPM_LOCAL_TMPDIR\"" EXIT
+    # Save and compose with existing EXIT trap so error logging is preserved
+    local _prev_exit_trap
+    _prev_exit_trap=$(trap -p EXIT | sed "s/^trap -- '//;s/' EXIT$//" || echo "")
+    # shellcheck disable=SC2064
+    trap "cleanup_temp_dir \"$SPM_LOCAL_TMPDIR\"; ${_prev_exit_trap:-:}" EXIT
     
     cd "$SPM_LOCAL_TMPDIR" || {
         log::error "SPM" "Failed to change to temporary directory"
@@ -1638,7 +1642,8 @@ spm_publish_tags() {
 
     # Check local tag
     if git tag -l | grep -q "^${tag_name}$"; then
-        local_tag_sha=$(git rev-parse "refs/tags/${tag_name}" 2>/dev/null || echo "")
+        # Use ^{commit} to dereference annotated tags to their underlying commit SHA
+        local_tag_sha=$(git rev-parse "refs/tags/${tag_name}^{commit}" 2>/dev/null || echo "")
         if [[ "$local_tag_sha" == "$current_head_sha" ]]; then
             log::info "SPM" "Local tag $tag_name already exists and points to correct commit"
             tag_is_correct=true
@@ -1652,7 +1657,8 @@ spm_publish_tags() {
     fi
 
     # Check remote tag (origin) with timeout
-    remote_tag_sha=$(timeout 30 git ls-remote --tags origin "refs/tags/${tag_name}" 2>/dev/null | cut -f1 || echo "")
+    # Use ^{} pattern to get the dereferenced commit SHA for annotated tags
+    remote_tag_sha=$(timeout 30 git ls-remote --tags origin "refs/tags/${tag_name}" "refs/tags/${tag_name}^{}" 2>/dev/null | tail -1 | cut -f1 || echo "")
     if [[ -n "$remote_tag_sha" ]]; then
         if [[ "$remote_tag_sha" == "$current_head_sha" ]]; then
             log::info "SPM" "Remote tag $tag_name already exists on origin and points to correct commit"

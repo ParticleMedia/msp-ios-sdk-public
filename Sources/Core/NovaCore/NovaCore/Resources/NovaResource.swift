@@ -10,10 +10,6 @@ import Foundation
 class NovaResource {
     // MARK: Internal
 
-    static func getLottieResourceURL(_ name: String) -> URL? {
-        getResourceURL(name, withExtension: "json", subdirectory: "Lottie")
-    }
-
     static func getJSScriptResourceURL(_ name: String) -> URL? {
         getResourceURL(name, withExtension: "js", subdirectory: "Scripts")
     }

@@ -19,7 +19,7 @@ Core modules are distributed as binary XCFrameworks in release mode.
 | `MSPOMSDK` | Open Measurement SDK integration | MSPSharedLibraries |
 | `MSPCore` | Core SDK logic, ad request handling | MSPSharedLibraries, SwiftProtobuf |
 | `MSPiOSCore` | iOS-specific implementations | MSPCore, MSPSharedLibraries |
-| `NovaCore` | Nova ad format rendering | MSPiOSCore, MSPOMSDK, MSPKingfisher, lottie-ios, SnapKit, Shimmer |
+| `NovaCore` | Nova ad format rendering | MSPiOSCore, MSPOMSDK, MSPKingfisher, MSPSnapKit, Shimmer |
 
 ### Adapter Modules
 

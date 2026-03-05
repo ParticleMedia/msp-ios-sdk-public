@@ -326,7 +326,42 @@ validate_inputs() {
             exit 1
         fi
     fi
-    
+
+    # Safety: if BASE_BRANCH is a release branch, it was likely auto-detected
+    # while already on the release branch (e.g., during resume). Resolve the
+    # actual base branch so the post-release PR targets the right branch.
+    if [[ "$BASE_BRANCH" =~ ^release/ ]]; then
+        log::warn "MODULAR" "BASE_BRANCH '$BASE_BRANCH' is a release branch — resolving actual base"
+        local resolved_base=""
+
+        # Try state file first (may have correct base from initial run)
+        local state_file="$ROOT_DIR/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq &>/dev/null; then
+            local saved
+            saved=$(jq -r '.base_branch // empty' "$state_file" 2>/dev/null || echo "")
+            if [[ -n "$saved" && ! "$saved" =~ ^release/ && "$saved" != "unknown" ]]; then
+                resolved_base="$saved"
+            fi
+        fi
+
+        # Fall back to well-known branches
+        if [[ -z "$resolved_base" ]]; then
+            for branch in develop main master; do
+                if git rev-parse --verify "$branch" &>/dev/null 2>&1; then
+                    resolved_base="$branch"
+                    break
+                fi
+            done
+        fi
+
+        if [[ -n "$resolved_base" ]]; then
+            log::info "MODULAR" "Resolved BASE_BRANCH: $BASE_BRANCH → $resolved_base"
+            BASE_BRANCH="$resolved_base"
+        else
+            log::warn "MODULAR" "Could not resolve actual base branch, keeping '$BASE_BRANCH'"
+        fi
+    fi
+
     # Set release branch if not provided
     if [[ -z "$RELEASE_BRANCH" ]]; then
         RELEASE_BRANCH="release/$VERSION"

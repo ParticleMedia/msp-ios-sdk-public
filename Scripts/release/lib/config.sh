@@ -28,6 +28,9 @@ readonly _MSP_RELEASE_CONFIG_SOURCED=1
 # ============================================================================
 MSP_RELEASE_CONFIG_FILE=""
 
+# Initialize config cache (must be set before first use to avoid set -u errors)
+_MSP_CFG_CACHE="${_MSP_CFG_CACHE:-}"
+
 # ============================================================================
 # Load Configuration File
 # ============================================================================
@@ -104,6 +107,7 @@ _msp_parse_yaml_value() {
         branch_escaped="\"${branch_escaped}\""
     fi
 
+    local result
     result=$(awk -v branch="$branch_escaped" -v key="$key_name" '
         BEGIN { in_rules=0; in_branch=0 }
         /^[[:space:]]*branch_policy:/ { in_rules=1; next }

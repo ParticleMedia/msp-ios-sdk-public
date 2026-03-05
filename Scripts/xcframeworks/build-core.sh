@@ -116,11 +116,10 @@ log::step "XCFW" "Pre-building Pod dependencies for Core modules"
 # These Pods provide Swift modules needed by Core modules:
 # - MSPKingfisher: provides Kingfisher module (used by NovaCore)
 # - MSPSnapKit: used by NovaCore
-# - lottie-ios: used by NovaCore
 # - SwiftProtobuf: used by MSPCore
 # NOTE: MSPPrebidAdapter is NOT pre-built here because it depends on MSPiOSCore.
 #       It will be rebuilt AFTER MSPiOSCore.xcframework is created to ensure ABI compatibility.
-POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "MSPSnapKit" "lottie-ios" "SwiftProtobuf")
+POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "MSPSnapKit" "SwiftProtobuf")
 
 for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
     log::info "XCFW" "Pre-building $pod_scheme for iOS..."

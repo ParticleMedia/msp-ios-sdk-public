@@ -344,12 +344,28 @@ create_zip_from_xcframework() {
             fi
             _ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/MSPSnapKit/$(basename "$snapkit_path")"
 
+            # Copy OMSDK_Newsbreak1
+            local omsdk_path="$root_dir/Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+            if [[ ! -d "$omsdk_path" ]]; then
+                log::error "PODS" "OMSDK_Newsbreak1.xcframework not found: $omsdk_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            mkdir -p "$temp_zip_dir/ThirdParty/OMSDK"
+            if ! ditto "$omsdk_path" "$temp_zip_dir/ThirdParty/OMSDK/OMSDK_Newsbreak1.xcframework"; then
+                log::error "PODS" "Failed to copy OMSDK_Newsbreak1.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            _ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/OMSDK/OMSDK_Newsbreak1.xcframework"
+            log::success "PODS" "Copied OMSDK_Newsbreak1.xcframework"
+
             # Copy Sources (optional)
             if [[ -d "$root_dir/Sources" ]]; then
                 ditto "$root_dir/Sources" "$temp_zip_dir/Sources" || log::warn "PODS" "Failed to copy Sources directory (non-critical)"
             fi
 
-            log::success "PODS" "Prepared MSPSharedLibraries structure"
+            log::success "PODS" "Prepared MSPSharedLibraries structure (with OMSDK)"
             ;;
 
         MSPiOSCore)
@@ -399,21 +415,7 @@ create_zip_from_xcframework() {
                 return 1
             fi
             log::success "PODS" "Copied NovaCore.xcframework"
-
-            # Copy OMSDK_Newsbreak1.xcframework
-            local omsdk_path="$root_dir/Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
-            if [[ ! -d "$omsdk_path" ]]; then
-                log::error "PODS" "OMSDK_Newsbreak1.xcframework not found: $omsdk_path"
-                rm -rf "$temp_zip_dir"
-                return 1
-            fi
-            if ! ditto "$omsdk_path" "$temp_zip_dir/Binary/OMSDK_Newsbreak1.xcframework"; then
-                log::error "PODS" "Failed to copy OMSDK_Newsbreak1.xcframework"
-                rm -rf "$temp_zip_dir"
-                return 1
-            fi
-            log::success "PODS" "Copied OMSDK_Newsbreak1.xcframework"
-            log::success "PODS" "Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore + OMSDK)"
+            log::success "PODS" "Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
             ;;
 
         MSPMolocoAdapter)

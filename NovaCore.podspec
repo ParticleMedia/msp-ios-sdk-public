@@ -48,7 +48,6 @@ Pod::Spec.new do |spec|
   # Dependencies
   spec.dependency 'MSPiOSCore'     # Ad protocols and interfaces
   spec.dependency 'MSPKingfisher'  # Image loading (forked Kingfisher)
-  spec.dependency 'lottie-ios'     # Animation support
   spec.dependency 'MSPSnapKit'        # Auto Layout DSL
   # Shimmer is provided via vendored_frameworks (XCFramework) in development mode
   # No spec.dependency needed to avoid duplicate linking
