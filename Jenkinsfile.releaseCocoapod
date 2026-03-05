@@ -190,28 +190,34 @@ pipeline {
 
     post {
         failure {
-            script {
-                // Save state file to persistent directory for future resume
-                sh """
-                    mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
-                    if [ -f .msp-release-state.json ]; then
-                        cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
-                        echo "💾 State file saved for resume"
-                    fi
-                """
-                // Also archive as build artifact for manual recovery
-                archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
+            node('') {
+                script {
+                    // Save state file to persistent directory for future resume
+                    sh """
+                        mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
+                        if [ -f .msp-release-state.json ]; then
+                            cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                            echo "💾 State file saved for resume"
+                        fi
+                    """
+                    // Also archive as build artifact for manual recovery
+                    archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
+                }
             }
             slackSend channel: env.SLACK_CHANNEL,
                       color: 'danger',
                       message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Use RESUME=true to continue."
         }
         success {
+            node('') {
+                script {
+                    // Clean up persistent state on success
+                    sh """
+                        rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                    """
+                }
+            }
             script {
-                // Clean up persistent state on success
-                sh """
-                    rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
-                """
                 def msg = params.RESUME
                     ? "✅ Release resume succeeded (${env.BUILD_TAG})"
                     : params.VERSION?.trim()

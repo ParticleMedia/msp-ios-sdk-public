@@ -163,12 +163,10 @@ pods:
 
 # SPM packages
 # NOTE: SPM packages should match CocoaPods modules (all binary)
-# TODO: Confirm actual SPM package list during implementation
 spm:
   enabled: true
 
   packages:
-    # Should match pods modules (all binaryTarget)
     - MSPiOSCore
     - MSPSharedLibraries
     - MSPGoogleAdsTypes
