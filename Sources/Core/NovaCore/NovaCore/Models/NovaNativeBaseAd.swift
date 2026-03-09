@@ -437,7 +437,8 @@ extension NovaNativeBaseAd {
                 closeDelaySeconds: pageItem.skipDelay ?? 0,
                 useClickUrl: pageItem.useClickUrl ?? false,
                 useCustomClose: pageItem.useCustomClose ?? false,
-                appStoreId: self.appStoreId
+                appStoreId: self.appStoreId,
+                theme: pageItem.theme
             )
         }
 

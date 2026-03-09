@@ -61,6 +61,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.scrollView.contentInsetAdjustmentBehavior = .never
         self.scrollView.showsVerticalScrollIndicator = false
         self.scrollView.showsHorizontalScrollIndicator = false
+        
+        self.isOpaque = false
 
         injectNovaNativeBridge(enableFeedback: supportReportHandling)
         injectGetAdContextBridge()
@@ -255,6 +257,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.useCustomUrl = model.useClickUrl
         self.useCustomClose = model.useCustomClose
         mraidController.resetState()
+        setBackgroundTheme(theme: model.theme)
         if pageResource == nil || pageResource != resource || preloadState != .finishedWithSuccess {
             switch resource {
             case let .html(html, baseUrl):
@@ -272,6 +275,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         preloadState = .pending
         let resource = model.resource
         self.pageResource = resource
+        setBackgroundTheme(theme: model.theme)
         switch resource {
         case let .html(html, baseUrl):
             loadHTMLString(html, baseURL: baseUrl)
@@ -329,6 +333,20 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             self.attachAdContext()
         default:
             DebugLogger.data.debug("Unknown JS message: \(message.name, privacy: .public)")
+        }
+    }
+    
+    func setBackgroundTheme(theme: String?) {
+        guard let theme else {
+            return
+        }
+        switch theme {
+        case "LIGHT":
+            self.backgroundColor = .white
+        case "DARK":
+            self.backgroundColor = .black
+        default :
+            break
         }
     }
 }

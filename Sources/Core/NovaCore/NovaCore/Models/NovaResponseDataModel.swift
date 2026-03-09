@@ -65,6 +65,7 @@ struct PageItem: Codable {
     let skipCountdown: Int?
     let useClickUrl: Bool?
     let useCustomClose: Bool?
+    let theme: String?
 }
 
 struct MultipleItemsItem: Codable {

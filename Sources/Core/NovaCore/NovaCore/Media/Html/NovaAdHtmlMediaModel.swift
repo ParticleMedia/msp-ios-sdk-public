@@ -74,10 +74,11 @@ public struct NovaAdHtmlPageModel {
     var useClickUrl: Bool
     var useCustomClose: Bool
     var appStoreId: Int?
+    var theme: String?
 
     init(
         resource: NovaAdHtmlResource, closeCountDownSeconds: Int?, closeDelaySeconds: Int?, useClickUrl: Bool,
-        useCustomClose: Bool, appStoreId: Int?
+        useCustomClose: Bool, appStoreId: Int?, theme: String?
     ) {
         self.resource = resource
         self.closeCountDownSeconds = closeCountDownSeconds
@@ -85,5 +86,6 @@ public struct NovaAdHtmlPageModel {
         self.useClickUrl = useClickUrl
         self.useCustomClose = useCustomClose
         self.appStoreId = appStoreId
+        self.theme = theme
     }
 }
