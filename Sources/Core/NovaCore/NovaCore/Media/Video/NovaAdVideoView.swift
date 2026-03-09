@@ -235,6 +235,7 @@ extension NovaAdVideoView {
     func prepareForReuse() {
         videoPlayer.stop(endKind: .none)
         willAutoPlayingAfterShowCover = false
+        isPausedByUser = false
         mediaModel = nil
         videoStartPlayingAfterFinishLoading = false
         bottomShadowView?.removeFromSuperview()

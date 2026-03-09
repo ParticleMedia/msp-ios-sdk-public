@@ -274,7 +274,8 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
         case .fullscreen:
             break
         case .partOfScreen:
-            videoView?.stop()
+            // Keep the shared video state at `.paused` so feed playback can resume from the last position.
+            videoView?.pause()
         }
     }
 
