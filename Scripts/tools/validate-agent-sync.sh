@@ -41,12 +41,12 @@ check_line_count() {
     fi
 }
 
-check_line_count ".claude/CLAUDE.md" 60 "CLAUDE.md"
-check_line_count ".codex/CODEX.md" 60 "CODEX.md"
-check_line_count ".cursor/CURSOR.md" 60 "CURSOR.md"
-check_line_count "AGENTS.md" 70 "AGENTS.md"
+check_line_count ".claude/CLAUDE.md" 70 "CLAUDE.md"
+check_line_count ".codex/CODEX.md" 80 "CODEX.md"
+check_line_count ".cursor/CURSOR.md" 80 "CURSOR.md"
+check_line_count "AGENTS.md" 100 "AGENTS.md"
 check_line_count "Sources/AGENTS-SOURCES.md" 25 "AGENTS-SOURCES.md"
-check_line_count "Scripts/AGENTS-SCRIPTS.md" 25 "AGENTS-SCRIPTS.md"
+check_line_count "Scripts/AGENTS-SCRIPTS.md" 40 "AGENTS-SCRIPTS.md"
 
 # --- Check 2: All agents reference .context/index.json ---
 echo ""
@@ -124,6 +124,62 @@ if [[ -f "$INDEX_FILE" ]]; then
 else
     echo "   ✗ index.json not found"
     errors=$((errors + 1))
+fi
+
+# --- Check 5: Auto-generated sections are up to date ---
+echo ""
+echo "5. Checking auto-generated sections (staleness)..."
+
+SYNC_SCRIPT="$PROJECT_ROOT/Scripts/tools/sync-agent-rules.py"
+if [[ -f "$SYNC_SCRIPT" ]]; then
+    sync_output=$(python3 "$SYNC_SCRIPT" --dry-run 2>&1)
+    stale_count=$(echo "$sync_output" | grep -c "WOULD UPDATE" || true)
+    if [[ "$stale_count" -eq 0 ]]; then
+        echo "   ✓ All generated sections are up to date"
+    else
+        echo "   ✗ $stale_count file(s) have stale generated sections"
+        echo "$sync_output" | grep "WOULD UPDATE" | sed 's/^/     /'
+        echo "   → Fix: python3 Scripts/tools/generate-context-index.py && python3 Scripts/tools/sync-agent-rules.py"
+        errors=$((errors + 1))
+    fi
+else
+    echo "   ⚠ sync-agent-rules.py not found, skipping"
+fi
+
+# --- Check 6: Skills mirror consistency ---
+echo ""
+echo "6. Checking skills mirror (.agents-shared/skills/ ↔ .claude/skills/)..."
+
+SHARED_SKILLS="$PROJECT_ROOT/.agents-shared/skills"
+CLAUDE_SKILLS="$PROJECT_ROOT/.claude/skills"
+
+if [[ -d "$SHARED_SKILLS" ]] && [[ -d "$CLAUDE_SKILLS" ]]; then
+    shared_list=$(cd "$SHARED_SKILLS" && ls *.skill.md 2>/dev/null | sort)
+    claude_list=$(cd "$CLAUDE_SKILLS" && ls *.skill.md 2>/dev/null | sort)
+
+    if [[ "$shared_list" == "$claude_list" ]]; then
+        shared_count=$(echo "$shared_list" | wc -l | tr -d ' ')
+        echo "   ✓ Both directories have $shared_count identical skill files"
+
+        # Check content matches
+        content_mismatch=0
+        for skill in $shared_list; do
+            if ! diff -q "$SHARED_SKILLS/$skill" "$CLAUDE_SKILLS/$skill" > /dev/null 2>&1; then
+                echo "   ✗ Content mismatch: $skill"
+                content_mismatch=$((content_mismatch + 1))
+            fi
+        done
+        if [[ $content_mismatch -gt 0 ]]; then
+            echo "   → Fix: Copy the newer version to the other directory"
+            errors=$((errors + 1))
+        fi
+    else
+        echo "   ✗ File lists differ:"
+        diff <(echo "$shared_list") <(echo "$claude_list") | sed 's/^/     /' || true
+        errors=$((errors + 1))
+    fi
+else
+    echo "   ⚠ One or both skills directories missing, skipping"
 fi
 
 # --- Summary ---

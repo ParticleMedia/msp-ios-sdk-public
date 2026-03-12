@@ -115,10 +115,13 @@ Both directories must have identical `.skill.md` files at all times.
 ### Step 4: Validate
 
 ```bash
-python3 Scripts/tools/sync-agent-rules.py --dry-run --verbose
+./Scripts/tools/validate-agent-sync.sh
 ```
 
-**Expected**: "0 file(s) would be updated" — confirms everything is in sync.
+Runs 6 automated checks: line counts, index references, playbook ID coverage,
+JSON validity, staleness detection (dry-run sync), and skills mirror consistency.
+
+**Expected**: "ALL CHECKS PASSED"
 
 ---
 
@@ -167,10 +170,17 @@ generate-context-index.py                          │
                       ▼
             sync-agent-rules.py
                       │
-           ┌──────────┼──────────┐
-           ▼          ▼          ▼
-  context-system.mdc  skills-sync.mdc  (extensible to Codex)
-  (inventory table)   (skills table)
+       ┌──────────────┼──────────────┐
+       ▼              ▼              ▼
+  Cursor rules   Codex rules    .claude/skills/
+  - context-     - instructions  (mirror)
+    system.mdc     .md
+  - skills-
+    sync.mdc
+                      │
+                      ▼
+           validate-agent-sync.sh
+           (6 automated checks)
 ```
 
 ---
@@ -189,12 +199,13 @@ generate-context-index.py                          │
 
 ## Verification Checklist
 
-After sync, confirm:
-- [ ] `.context/index.json` entry count matches actual `ctx-*.md` file count
-- [ ] `.cursor/rules/context-system.mdc` inventory shows all entries
-- [ ] `.cursor/rules/skills-sync.mdc` lists all skills
+Run `./Scripts/tools/validate-agent-sync.sh` — it automates all of these:
+- [ ] Agent entry point files under line limits
+- [ ] All agents reference `.context/index.json`
+- [ ] Playbook IDs in loading guides exist in `index.json`
+- [ ] `index.json` is valid JSON
+- [ ] Auto-generated sections match current source data (staleness check)
 - [ ] `.claude/skills/` and `.agents-shared/skills/` have identical file sets
-- [ ] `sync-agent-rules.py --dry-run` reports 0 changes
 
 ---
 

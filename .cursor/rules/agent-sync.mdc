@@ -90,7 +90,16 @@ python Scripts/tools/generate-context-index.py && python Scripts/tools/sync-agen
 
 ## Validation
 
-After sync, verify:
-1. `.context/index.json` entry count matches `.context/` file count
-2. `.cursor/rules/context-system.mdc` inventory matches `index.json`
-3. `.claude/skills/` and `.agents-shared/skills/` have identical file sets
+After sync, run the validation script:
+
+```bash
+./Scripts/tools/validate-agent-sync.sh
+```
+
+This checks:
+1. Agent entry point line counts (prevents bloat)
+2. All agents reference `.context/index.json`
+3. Playbook IDs in loading guides exist in `index.json`
+4. `index.json` is valid JSON
+5. Auto-generated sections are up to date (staleness detection)
+6. Skills mirror consistency (`.agents-shared/skills/` ↔ `.claude/skills/`)
