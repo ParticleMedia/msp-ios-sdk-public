@@ -182,6 +182,47 @@ else
     echo "   ⚠ One or both skills directories missing, skipping"
 fi
 
+# --- Check 7: All sync targets have required markers ---
+echo ""
+echo "7. Checking generated section markers across all agents..."
+
+check_markers() {
+    local file="$1"
+    local label="$2"
+    shift 2
+    local markers=("$@")
+
+    if [[ ! -f "$PROJECT_ROOT/$file" ]]; then
+        echo "   ✗ $label: FILE NOT FOUND ($file)"
+        errors=$((errors + 1))
+        return
+    fi
+
+    local all_present=true
+    for marker in "${markers[@]}"; do
+        if ! grep -q "BEGIN:GENERATED:$marker" "$PROJECT_ROOT/$file"; then
+            echo "   ✗ $label: missing <!-- BEGIN:GENERATED:$marker --> marker"
+            all_present=false
+            errors=$((errors + 1))
+        fi
+        if ! grep -q "END:GENERATED:$marker" "$PROJECT_ROOT/$file"; then
+            echo "   ✗ $label: missing <!-- END:GENERATED:$marker --> marker"
+            all_present=false
+            errors=$((errors + 1))
+        fi
+    done
+
+    if [[ "$all_present" == true ]]; then
+        echo "   ✓ $label: all ${#markers[@]} marker pair(s) present"
+    fi
+}
+
+check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY"
+check_markers ".cursor/rules/skills-sync.mdc" "Cursor skills-sync" "SKILLS_LIST"
+check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "SKILLS_LIST"
+check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY"
+check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST"
+
 # --- Summary ---
 echo ""
 echo "------------------------------------------------------------"

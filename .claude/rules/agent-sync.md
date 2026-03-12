@@ -9,9 +9,9 @@ can leave the others stale. This rule enforces automatic sync.
 
 | Resource | SSOT Location | Derived Files |
 |----------|---------------|---------------|
-| Context entries | `.context/{domain}/{layer}/ctx-*.md` | `.context/index.json`, `.cursor/rules/context-system.mdc` |
-| Context index | `.context/index.json` (generated) | `.cursor/rules/context-system.mdc` inventory section |
-| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), `.cursor/rules/skills-sync.mdc` |
+| Context entries | `.context/{domain}/{layer}/ctx-*.md` | `.context/index.json` → inventory in Cursor, Claude, Codex |
+| Context index | `.context/index.json` (generated) | `.cursor/rules/context-system.mdc`, `.claude/rules/context-system.md`, `.codex/instructions.md` |
+| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), skills list in Cursor, Claude, Codex |
 | Agent rules | Each agent owns its own | Sync conceptual parity, not file copies |
 
 ## Sync Triggers & Actions
@@ -25,7 +25,7 @@ python Scripts/tools/generate-context-index.py
 python Scripts/tools/sync-agent-rules.py
 ```
 
-Both steps are REQUIRED. The sync script updates auto-generated sections in Cursor rules.
+Both steps are REQUIRED. The sync script updates auto-generated sections across all three agents (Cursor, Claude, Codex).
 
 ### After Modifying Context Entry
 
@@ -41,7 +41,7 @@ python Scripts/tools/sync-agent-rules.py
 When skills change in `.agents-shared/skills/`:
 
 1. Mirror to `.claude/skills/` (bidirectional — see skills-sync.md)
-2. Run `python Scripts/tools/sync-agent-rules.py` to update Cursor skills list
+2. Run `python Scripts/tools/sync-agent-rules.py` to update skills list across all agents
 
 ### After Modifying Agent Rules
 

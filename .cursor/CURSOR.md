@@ -1,6 +1,6 @@
 # Cursor IDE Directives
 
-> **Version**: 4.0
+> **Version**: 5.1
 > **Last Updated**: 2026-03-12
 > **Applies To**: Cursor IDE
 

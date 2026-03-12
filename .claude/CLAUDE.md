@@ -1,7 +1,7 @@
 # Claude Code Directives
 
-> **Version**: 5.0
-> **Last Updated**: 2026-02-22
+> **Version**: 5.1
+> **Last Updated**: 2026-03-12
 > **Applies To**: Claude Code CLI
 
 ## Role: Strategic Technical Advisor

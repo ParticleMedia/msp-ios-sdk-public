@@ -1,7 +1,7 @@
 # AI Agent Shared Context
 
-> **Version**: 4.1
-> **Last Updated**: 2026-03-08
+> **Version**: 5.1
+> **Last Updated**: 2026-03-12
 > **Applies To**: All AI Agents
 
 ## Project Technical Context

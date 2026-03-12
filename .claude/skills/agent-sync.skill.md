@@ -90,11 +90,14 @@ python3 Scripts/tools/sync-agent-rules.py
 
 This reads `.context/index.json` and `.agents-shared/skills/` to regenerate
 auto-generated sections (between `<!-- BEGIN:GENERATED:* -->` / `<!-- END:GENERATED:* -->` markers)
-in Cursor rule files.
+across all three agents.
 
 **Files updated**:
 - `.cursor/rules/context-system.mdc` → context inventory table
 - `.cursor/rules/skills-sync.mdc` → skills list table
+- `.codex/instructions.md` → context inventory + skills list
+- `.claude/rules/context-system.md` → context inventory table
+- `.claude/rules/skills-sync.md` → skills list table
 
 **Expected output**: "Sync complete: N file(s) updated"
 
