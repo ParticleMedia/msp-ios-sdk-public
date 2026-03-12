@@ -11,10 +11,11 @@
 #   make beta           Upload DemoApp to TestFlight
 #   make release        Production CocoaPods release
 #   make resume         Resume a failed release
+#   make sync           Sync agent rules across Claude/Cursor/Codex
 #   make clean          Clean DerivedData and Pods
 # ============================================================================
 
-.PHONY: setup open test validate rtt ci beta release resume clean help
+.PHONY: setup open test validate rtt ci beta release resume clean sync help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -35,6 +36,7 @@ help:
 	@echo "  make beta-dry           Archive + export only, no upload"
 	@echo "  make release            Production release (VERSION= NOTES= required)"
 	@echo "  make resume             Resume failed release (VERSION= required)"
+	@echo "  make sync               Sync agent rules across Claude/Cursor/Codex"
 	@echo "  make clean              Clean DerivedData and Pods"
 	@echo ""
 	@echo "Examples:"
@@ -46,6 +48,7 @@ help:
 # setup — Install all dependencies
 # --------------------------------------------------------------------------
 setup:
+	git config core.hooksPath .githooks
 	bundle install
 	pod install
 	$(SCRIPTS)/workspace/update.sh
@@ -125,6 +128,20 @@ ifndef VERSION
 endif
 	$(SCRIPTS)/msp-release.sh resume $(VERSION) \
 		$(EXTRA_FLAGS)
+
+# --------------------------------------------------------------------------
+# sync — Sync agent rules across Claude/Cursor/Codex
+# --------------------------------------------------------------------------
+sync:
+	python3 $(SCRIPTS)/tools/generate-context-index.py
+	python3 $(SCRIPTS)/tools/sync-agent-rules.py
+	@echo "Agent sync complete. Run 'make validate-sync' to verify."
+
+# --------------------------------------------------------------------------
+# validate-sync — Validate agent sync consistency
+# --------------------------------------------------------------------------
+validate-sync:
+	$(SCRIPTS)/tools/validate-agent-sync.sh
 
 # --------------------------------------------------------------------------
 # clean — Clean build artifacts

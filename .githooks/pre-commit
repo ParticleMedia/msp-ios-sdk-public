@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pre-commit hook: auto-sync agent rules when shared resources change.
+# Install: git config core.hooksPath .githooks
+# Or:      make setup  (auto-installs)
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Check if any staged files are in sync-sensitive paths
+SYNC_PATHS=(
+    ".context/"
+    ".agents-shared/skills/"
+)
+
+needs_sync=false
+for path in "${SYNC_PATHS[@]}"; do
+    if git diff --cached --name-only | grep -q "^${path}"; then
+        needs_sync=true
+        break
+    fi
+done
+
+if [[ "$needs_sync" == "true" ]]; then
+    echo "[pre-commit] Detected changes in shared resources, running agent sync..."
+
+    # Regenerate context index if .context/ files changed
+    if git diff --cached --name-only | grep -q "^\.context/"; then
+        if [[ -f "$PROJECT_ROOT/Scripts/tools/generate-context-index.py" ]]; then
+            python3 "$PROJECT_ROOT/Scripts/tools/generate-context-index.py"
+        fi
+    fi
+
+    # Sync agent rules
+    python3 "$PROJECT_ROOT/Scripts/tools/sync-agent-rules.py"
+
+    # Stage any files that were updated by sync
+    SYNC_TARGETS=(
+        ".cursor/rules/context-system.mdc"
+        ".cursor/rules/skills-sync.mdc"
+        ".codex/instructions.md"
+        ".claude/rules/context-system.md"
+        ".claude/rules/skills-sync.md"
+        ".agents-shared/skills/README.md"
+        ".context/index.json"
+    )
+    for target in "${SYNC_TARGETS[@]}"; do
+        if [[ -f "$PROJECT_ROOT/$target" ]]; then
+            git add "$PROJECT_ROOT/$target"
+        fi
+    done
+
+    # Stage mirrored skill files
+    if [[ -d "$PROJECT_ROOT/.claude/skills" ]]; then
+        git add "$PROJECT_ROOT/.claude/skills/"*.skill.md 2>/dev/null || true
+    fi
+
+    echo "[pre-commit] Agent sync complete."
+fi

@@ -188,12 +188,13 @@ if [[ -d "$SHARED_SKILLS" ]] && [[ -d "$CLAUDE_SKILLS" ]]; then
             fi
         done
         if [[ $content_mismatch -gt 0 ]]; then
-            echo "   → Fix: Copy the newer version to the other directory"
+            echo "   → Fix: make sync (auto-mirrors skills)"
             errors=$((errors + 1))
         fi
     else
         echo "   ✗ File lists differ:"
         diff <(echo "$shared_list") <(echo "$claude_list") | sed 's/^/     /' || true
+        echo "   → Fix: make sync (auto-mirrors skills)"
         errors=$((errors + 1))
     fi
 else

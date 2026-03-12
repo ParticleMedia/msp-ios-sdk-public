@@ -28,6 +28,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 CONTEXT_INDEX = PROJECT_ROOT / ".context" / "index.json"
 SKILLS_DIR = PROJECT_ROOT / ".agents-shared" / "skills"
+CLAUDE_SKILLS_DIR = PROJECT_ROOT / ".claude" / "skills"
 
 SYNC_TARGETS = {
     "cursor_context": PROJECT_ROOT / ".cursor" / "rules" / "context-system.mdc",
@@ -266,6 +267,62 @@ def sync_file(filepath, sections, dry_run=False, verbose=False):
     return True
 
 
+def sync_skills_mirror(dry_run=False, verbose=False):
+    """Sync skill files between .agents-shared/skills/ and .claude/skills/.
+
+    SSOT: .agents-shared/skills/ is the source of truth.
+    .claude/skills/ is a mirror copy for Claude Code's progressive loading.
+    """
+    if not SKILLS_DIR.exists():
+        print("  SKIP: .agents-shared/skills/ not found")
+        return 0
+    if not CLAUDE_SKILLS_DIR.exists():
+        CLAUDE_SKILLS_DIR.mkdir(parents=True, exist_ok=True)
+        print(f"  CREATED: {CLAUDE_SKILLS_DIR.relative_to(PROJECT_ROOT)}/")
+
+    changes = 0
+    shared_skills = {f.name for f in SKILLS_DIR.glob("*.skill.md")}
+    claude_skills = {f.name for f in CLAUDE_SKILLS_DIR.glob("*.skill.md")}
+
+    # Copy new/updated skills from shared → claude
+    for name in sorted(shared_skills):
+        src = SKILLS_DIR / name
+        dst = CLAUDE_SKILLS_DIR / name
+        if not dst.exists():
+            if dry_run:
+                print(f"  WOULD COPY: {name} → .claude/skills/")
+            else:
+                import shutil
+                shutil.copy2(src, dst)
+                print(f"  COPIED: {name} → .claude/skills/")
+            changes += 1
+        else:
+            src_content = src.read_text(encoding="utf-8")
+            dst_content = dst.read_text(encoding="utf-8")
+            if src_content != dst_content:
+                if dry_run:
+                    print(f"  WOULD UPDATE: .claude/skills/{name}")
+                else:
+                    dst.write_text(src_content, encoding="utf-8")
+                    print(f"  UPDATED: .claude/skills/{name}")
+                changes += 1
+            elif verbose:
+                print(f"  OK: {name} (identical)")
+
+    # Remove orphaned skills in claude that no longer exist in shared
+    orphans = claude_skills - shared_skills
+    for name in sorted(orphans):
+        orphan_path = CLAUDE_SKILLS_DIR / name
+        if dry_run:
+            print(f"  WOULD REMOVE: .claude/skills/{name} (orphaned)")
+        else:
+            orphan_path.unlink()
+            print(f"  REMOVED: .claude/skills/{name} (orphaned)")
+        changes += 1
+
+    return changes
+
+
 def main():
     parser = argparse.ArgumentParser(description="Sync agent rule files from shared sources")
     parser.add_argument("--dry-run", action="store_true", help="Show what would change without writing")
@@ -324,6 +381,13 @@ def main():
                  {"SKILLS_LIST": skills_table},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
+
+    # Skills mirror: .agents-shared/skills/ → .claude/skills/
+    print("\n--- Skills Mirror ---")
+    mirror_changes = sync_skills_mirror(dry_run=args.dry_run, verbose=args.verbose)
+    if mirror_changes == 0:
+        print("  Skills mirror is up to date")
+    changes += mirror_changes
 
     print(f"\nSync complete: {changes} file(s) {'would be ' if args.dry_run else ''}updated")
 
