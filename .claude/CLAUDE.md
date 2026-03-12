@@ -38,6 +38,7 @@ See `.claude/skills/` — progressive loading built-in (metadata at startup, ful
 | Deep Reviewer | deep-reviewer | Complex PRs, pre-release audit |
 | Doc Synthesizer | document-writer | Architecture docs, ADRs |
 | Root-Cause Analyst | scripts-failure-analyst, sources-bug-analyst | Failures |
+| Knowledge Sync | agent-sync | After adding context entries or skills |
 
 ## Best Practices
 

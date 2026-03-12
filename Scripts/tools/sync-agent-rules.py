@@ -35,23 +35,26 @@ SYNC_TARGETS = {
     "codex_instructions": PROJECT_ROOT / ".codex" / "instructions.md",
     "claude_context": PROJECT_ROOT / ".claude" / "rules" / "context-system.md",
     "claude_skills": PROJECT_ROOT / ".claude" / "rules" / "skills-sync.md",
+    "skills_readme": PROJECT_ROOT / ".agents-shared" / "skills" / "README.md",
 }
 
 BEGIN_MARKER = "<!-- BEGIN:GENERATED:{section} -->"
 END_MARKER = "<!-- END:GENERATED:{section} -->"
 
 
-def load_context_index():
-    """Load .context/index.json and return entries list."""
+def load_index_data():
+    """Load full .context/index.json and return the parsed dict."""
     if not CONTEXT_INDEX.exists():
         print(f"WARNING: {CONTEXT_INDEX} not found, skipping context sync",
               file=sys.stderr)
-        return []
-
+        return {}
     with open(CONTEXT_INDEX, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        return json.load(f)
 
-    return data.get("entries", [])
+
+def load_context_index():
+    """Load .context/index.json and return entries list."""
+    return load_index_data().get("entries", [])
 
 
 def load_skills_list():
@@ -86,6 +89,55 @@ def load_skills_list():
         })
 
     return skills
+
+
+def generate_keyword_domain_map(entries, index_data):
+    """Generate keyword→domain mapping table from index tags.
+
+    Only includes domains that have at least one entry (count > 0).
+    Uses the 'tags' field (short, human-readable terms) rather than the
+    'triggers' field (full error phrases) so the table stays scannable.
+    """
+    domains_info = index_data.get("domains", {})
+    active_domains = sorted(
+        d for d, info in domains_info.items() if info.get("count", 0) > 0
+    )
+
+    if not active_domains:
+        return "_No active domains._\n"
+
+    # Collect unique tags per domain preserving insertion order
+    domain_tags: dict = {d: [] for d in active_domains}
+    seen_per_domain: dict = {d: set() for d in active_domains}
+
+    for entry in entries:
+        domain = entry.get("domain", "")
+        if domain not in domain_tags:
+            continue
+        for tag in entry.get("tags", []):
+            tag_lower = tag.lower()
+            if tag_lower not in seen_per_domain[domain]:
+                seen_per_domain[domain].add(tag_lower)
+                domain_tags[domain].append(tag)
+
+    lines = []
+    lines.append("| Keywords | Domain |")
+    lines.append("|----------|--------|")
+    for domain in active_domains:
+        tags = domain_tags.get(domain, [])
+        shown = tags[:7]
+        kw_str = ", ".join(shown)
+        if len(tags) > 7:
+            kw_str += ", ..."
+        lines.append(f"| {kw_str} | `{domain}` |")
+
+    lines.append("")
+    lines.append(
+        "> Auto-generated from `.context/index.json` tags. "
+        "Only domains with entries are listed."
+    )
+
+    return "\n".join(lines) + "\n"
 
 
 def generate_context_inventory(entries):
@@ -223,19 +275,23 @@ def main():
     print("=== Agent Rules Sync ===")
     print(f"Project root: {PROJECT_ROOT}")
 
-    entries = load_context_index()
+    index_data = load_index_data()
+    entries = index_data.get("entries", [])
     print(f"Context entries: {len(entries)}")
 
     skills = load_skills_list()
     print(f"Skills: {len(skills)}")
 
     context_inventory = generate_context_inventory(entries)
+    keyword_domain_map = generate_keyword_domain_map(entries, index_data)
     skills_table = generate_skills_table(skills)
 
     changes = 0
 
+    # Cursor: context inventory + keyword map
     if sync_file(SYNC_TARGETS["cursor_context"],
-                 {"CONTEXT_INVENTORY": context_inventory},
+                 {"CONTEXT_INVENTORY": context_inventory,
+                  "KEYWORD_DOMAIN_MAP": keyword_domain_map},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
 
@@ -250,12 +306,20 @@ def main():
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
 
+    # Claude: context inventory + keyword map
     if sync_file(SYNC_TARGETS["claude_context"],
-                 {"CONTEXT_INVENTORY": context_inventory},
+                 {"CONTEXT_INVENTORY": context_inventory,
+                  "KEYWORD_DOMAIN_MAP": keyword_domain_map},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
 
     if sync_file(SYNC_TARGETS["claude_skills"],
+                 {"SKILLS_LIST": skills_table},
+                 dry_run=args.dry_run, verbose=args.verbose):
+        changes += 1
+
+    # Shared skills README (SSOT: auto-generated from skill files)
+    if sync_file(SYNC_TARGETS["skills_readme"],
                  {"SKILLS_LIST": skills_table},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1

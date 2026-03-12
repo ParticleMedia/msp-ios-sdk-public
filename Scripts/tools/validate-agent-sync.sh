@@ -217,11 +217,12 @@ check_markers() {
     fi
 }
 
-check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY"
+check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP"
 check_markers ".cursor/rules/skills-sync.mdc" "Cursor skills-sync" "SKILLS_LIST"
 check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "SKILLS_LIST"
-check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY"
+check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP"
 check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST"
+check_markers ".agents-shared/skills/README.md" "Skills README" "SKILLS_LIST"
 
 # --- Summary ---
 echo ""
