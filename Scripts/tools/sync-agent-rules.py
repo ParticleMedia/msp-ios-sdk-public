@@ -32,6 +32,7 @@ SKILLS_DIR = PROJECT_ROOT / ".agents-shared" / "skills"
 SYNC_TARGETS = {
     "cursor_context": PROJECT_ROOT / ".cursor" / "rules" / "context-system.mdc",
     "cursor_skills": PROJECT_ROOT / ".cursor" / "rules" / "skills-sync.mdc",
+    "codex_instructions": PROJECT_ROOT / ".codex" / "instructions.md",
 }
 
 BEGIN_MARKER = "<!-- BEGIN:GENERATED:{section} -->"
@@ -238,6 +239,12 @@ def main():
 
     if sync_file(SYNC_TARGETS["cursor_skills"],
                  {"SKILLS_LIST": skills_table},
+                 dry_run=args.dry_run, verbose=args.verbose):
+        changes += 1
+
+    if sync_file(SYNC_TARGETS["codex_instructions"],
+                 {"CONTEXT_INVENTORY": context_inventory,
+                  "SKILLS_LIST": skills_table},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
 
