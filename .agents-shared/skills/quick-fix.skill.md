@@ -5,6 +5,7 @@ category: generation
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Read, Edit, Grep]
+quick_reference: "When: Mechanical fixes (force unwrap → guard let, nil check, import fix, typo). Pattern-based, no architectural changes."
 ---
 
 # Quick Fix Skill

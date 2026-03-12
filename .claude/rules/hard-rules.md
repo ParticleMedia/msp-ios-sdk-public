@@ -1,26 +1,9 @@
----
-description: >
-  Swift & UIKit coding rules for Sources/ directory.
-  Auto-loads when editing any Swift file under Sources/.
-  Contains inlined critical Hard Rules and playbook loading instructions.
-globs:
-  - "Sources/**/*.swift"
----
+# Hard Rules — Swift, UIKit, Scripts
 
-# Swift & UIKit Rules (Sources/)
-
-## MANDATORY: Load Full Playbooks
-
-Before writing or modifying Swift code, read all `Sources/` playbooks listed in the
-auto-generated directory playbooks table in `context-system.mdc` (DIRECTORY_PLAYBOOKS section).
-Also consult `Sources/AGENTS-SOURCES.md` for the loading guide.
-
-## Critical Hard Rules (Inlined for Enforcement)
-
-These are NON-NEGOTIABLE. Violation = bug.
+These are NON-NEGOTIABLE coding standards. Violation = bug.
 SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.py`.
 
-### Swift Hard Rules
+## Swift Hard Rules
 
 <!-- BEGIN:GENERATED:HARD_RULES_SWIFT -->
 - **HR-S1**: NEVER force-unwrap (`!`) in production code. Use `guard let` / `if let` / `??`.
@@ -38,7 +21,7 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 
 <!-- END:GENERATED:HARD_RULES_SWIFT -->
 
-### UIKit Hard Rules
+## UIKit Hard Rules
 
 <!-- BEGIN:GENERATED:HARD_RULES_UIKIT -->
 - **HR-U1**: ALWAYS update UI on the main thread (`DispatchQueue.main.async`).
@@ -56,7 +39,7 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 
 <!-- END:GENERATED:HARD_RULES_UIKIT -->
 
-## AI Common Mistakes (NEVER DO)
+## AI NEVER-DO List
 
 <!-- BEGIN:GENERATED:HARD_RULES_NEVERDO -->
 1. NEVER generate SwiftUI code (`struct ContentView: View`, `@State`, `@StateObject`) — this is a UIKit project
@@ -67,6 +50,15 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 6. NEVER put network calls in UIViewController — they belong in Repository layer
 
 <!-- END:GENERATED:HARD_RULES_NEVERDO -->
+
+## Script Hard Rules
+
+<!-- BEGIN:GENERATED:HARD_RULES_SCRIPT -->
+- **HR-SCR1**: ALWAYS use `set -euo pipefail` at the beginning of shell scripts.
+- **HR-SCR2**: ALWAYS validate with `shellcheck` before completion.
+- **HR-SCR3**: Scripts must be POSIX-compatible and idempotent.
+
+<!-- END:GENERATED:HARD_RULES_SCRIPT -->
 
 ## Architecture
 
@@ -81,20 +73,3 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 | DataSource | Foundation | Network, persistence |
 
 <!-- END:GENERATED:HARD_RULES_ARCHITECTURE -->
-
-## Role When Working in Sources/
-
-Act as a **Senior iOS & SDK Architect** specializing in:
-- API quality and stability (public APIs are contracts)
-- Performance on iOS 15.0+ devices
-- Backward compatibility (use `@available(*, deprecated, message:)` for deprecation)
-- Testability via dependency injection and protocol-first design
-- Memory management (retain cycle prevention)
-
-## Validation Before Completion
-
-1. Code compiles without warnings
-2. All `public` APIs have Swift DocC comments (`///`)
-3. No potential retain cycles in closures
-4. No `import UIKit` in ViewModel/Repository files
-5. No force-unwraps in production code

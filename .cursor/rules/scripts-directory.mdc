@@ -36,15 +36,22 @@ Act as a specialist in system automation and build processes.
 
 **Key principle**: Config-driven development (YAML config -> script -> deterministic output).
 
-## Core Scripting Rules
+## Script Hard Rules
 
-1. **POSIX Compliance**: All `.sh` scripts must be POSIX-compatible
-2. **Error Handling**: Always use `set -euo pipefail` at the beginning
-3. **Static Analysis**: Validate with `shellcheck` before completion
-4. **Idempotency**: Scripts should be safe to run multiple times
-5. **Module Guards**: Use `_MODULE_SOURCED` pattern to prevent double-sourcing
-6. **Comments**: Explain "why", not "what". Document side effects.
-7. **Robustness over Cleverness**: Clarity is paramount
+SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.py`.
+
+<!-- BEGIN:GENERATED:HARD_RULES_SCRIPT -->
+- **HR-SCR1**: ALWAYS use `set -euo pipefail` at the beginning of shell scripts.
+- **HR-SCR2**: ALWAYS validate with `shellcheck` before completion.
+- **HR-SCR3**: Scripts must be POSIX-compatible and idempotent.
+
+<!-- END:GENERATED:HARD_RULES_SCRIPT -->
+
+## Additional Scripting Rules
+
+1. **Module Guards**: Use `_MODULE_SOURCED` pattern to prevent double-sourcing
+2. **Comments**: Explain "why", not "what". Document side effects.
+3. **Robustness over Cleverness**: Clarity is paramount
 
 ## Python Scripts
 

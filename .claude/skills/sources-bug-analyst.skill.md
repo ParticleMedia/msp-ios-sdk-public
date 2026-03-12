@@ -6,6 +6,7 @@ shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Read, Glob, Grep]
 applies-to: Sources/
+quick_reference: "When: Runtime crash or logic bug in Swift. Steps: Parse stack trace → Trace code path → Identify root cause → Propose fix."
 ---
 
 # Sources Bug Analyst Skill

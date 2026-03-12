@@ -1,0 +1,17 @@
+{
+  "_comment": "SSOT: maps directories to mandatory playbook IDs. Used by sync-agent-rules.py to generate DIRECTORY_PLAYBOOKS sections. IDs must exist in .context/index.json.",
+  "Sources/": [
+    "ctx-sources-001",
+    "ctx-sources-002",
+    "ctx-sources-003",
+    "ctx-sources-005"
+  ],
+  "Scripts/": [
+    "ctx-sources-004"
+  ],
+  "Tests/": [
+    "ctx-testing-001",
+    "ctx-testing-002",
+    "ctx-testing-003"
+  ]
+}

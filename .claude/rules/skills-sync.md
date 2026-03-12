@@ -54,6 +54,55 @@ Skills are documented procedures for completing specific types of tasks. They li
 
 <!-- END:GENERATED:SKILLS_LIST -->
 
+## Quick Reference Guides
+
+> Auto-generated from skill frontmatter `quick_reference` field.
+
+<!-- BEGIN:GENERATED:SKILL_GUIDES -->
+### Agent Sync
+
+When: After adding/modifying context entries or skills. Run: python3 Scripts/tools/generate-context-index.py && python3 Scripts/tools/sync-agent-rules.py
+
+**Full Skill**: `.agents-shared/skills/agent-sync.skill.md`
+
+### Constitutional Auditor
+
+When: Checking code compliance. Steps: Identify applicable constitution → Check violations → Report with article citations.
+
+**Full Skill**: `.agents-shared/skills/constitutional-auditor.skill.md`
+
+### Quick Fix
+
+When: Mechanical fixes (force unwrap → guard let, nil check, import fix, typo). Pattern-based, no architectural changes.
+
+**Full Skill**: `.agents-shared/skills/quick-fix.skill.md`
+
+### Refactor Pattern
+
+When: Extract method (>50 lines), replace magic numbers, consolidate conditionals.
+
+**Full Skill**: `.agents-shared/skills/refactor-pattern.skill.md`
+
+### Scripts Failure Analyst
+
+When: CI/CD or release script fails. Steps: Check .msp-release-state.json → Parse failure → Propose script-based fix (per Article I.4).
+
+**Full Skill**: `.agents-shared/skills/scripts-failure-analyst.skill.md`
+
+### Sources Bug Analyst
+
+When: Runtime crash or logic bug in Swift. Steps: Parse stack trace → Trace code path → Identify root cause → Propose fix.
+
+**Full Skill**: `.agents-shared/skills/sources-bug-analyst.skill.md`
+
+### Unit Test Generator
+
+When: Creating unit tests. Steps: (1) Get template via `./Scripts/tools/get-test-template.sh` (2) Replace {{module_name}} and {{class_name}} (3) Save to Tests/{Module}Tests/{ClassName}Spec.swift
+
+**Full Skill**: `.agents-shared/skills/unit-test-generator.skill.md`
+
+<!-- END:GENERATED:SKILL_GUIDES -->
+
 ## Sync Rule
 
 When creating or modifying skill files:

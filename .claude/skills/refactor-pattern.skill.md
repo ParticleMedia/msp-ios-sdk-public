@@ -5,6 +5,7 @@ category: generation
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Read, Edit, Grep]
+quick_reference: "When: Extract method (>50 lines), replace magic numbers, consolidate conditionals."
 ---
 
 # Refactor Pattern Skill

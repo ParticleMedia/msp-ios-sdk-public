@@ -5,6 +5,7 @@ category: generation
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Read, Glob, Bash]
+quick_reference: "When: Creating unit tests. Steps: (1) Get template via `./Scripts/tools/get-test-template.sh` (2) Replace {{module_name}} and {{class_name}} (3) Save to Tests/{Module}Tests/{ClassName}Spec.swift"
 ---
 
 # Unit Test Generator Skill

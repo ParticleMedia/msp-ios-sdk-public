@@ -1,28 +1,16 @@
+# Hard Rules — Single Source of Truth
+
+> **Version**: 1.0
+> **Last Updated**: 2026-03-12
+> **Applies To**: All AI Agents (Claude, Cursor, Codex)
+> **Sync**: Auto-injected by `Scripts/tools/sync-agent-rules.py`
+
+These rules are NON-NEGOTIABLE. Violation = bug.
+
 ---
-description: >
-  Swift & UIKit coding rules for Sources/ directory.
-  Auto-loads when editing any Swift file under Sources/.
-  Contains inlined critical Hard Rules and playbook loading instructions.
-globs:
-  - "Sources/**/*.swift"
----
 
-# Swift & UIKit Rules (Sources/)
+## Swift Hard Rules
 
-## MANDATORY: Load Full Playbooks
-
-Before writing or modifying Swift code, read all `Sources/` playbooks listed in the
-auto-generated directory playbooks table in `context-system.mdc` (DIRECTORY_PLAYBOOKS section).
-Also consult `Sources/AGENTS-SOURCES.md` for the loading guide.
-
-## Critical Hard Rules (Inlined for Enforcement)
-
-These are NON-NEGOTIABLE. Violation = bug.
-SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.py`.
-
-### Swift Hard Rules
-
-<!-- BEGIN:GENERATED:HARD_RULES_SWIFT -->
 - **HR-S1**: NEVER force-unwrap (`!`) in production code. Use `guard let` / `if let` / `??`.
 - **HR-S2**: ALWAYS use `[weak self]` in escaping closures.
 - **HR-S3**: ALWAYS use `Result<T, Error>` for async callbacks (not `(T?, Error?)`).
@@ -36,11 +24,8 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 - **HR-S11**: NEVER introduce `async`/`await`. Project uses completion handlers only.
 - **HR-S12**: ALWAYS use `[weak self]` with Combine `.sink` and `.receive(on:)`.
 
-<!-- END:GENERATED:HARD_RULES_SWIFT -->
+## UIKit Hard Rules
 
-### UIKit Hard Rules
-
-<!-- BEGIN:GENERATED:HARD_RULES_UIKIT -->
 - **HR-U1**: ALWAYS update UI on the main thread (`DispatchQueue.main.async`).
 - **HR-U2**: ALWAYS set `translatesAutoresizingMaskIntoConstraints = false` for programmatic views.
 - **HR-U3**: ALWAYS use `weak` for delegate properties.
@@ -54,11 +39,8 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 - **HR-U11**: NEVER block the main thread with synchronous network/I/O calls.
 - **HR-U12**: ALWAYS implement `prepareForReuse()` to reset cell state.
 
-<!-- END:GENERATED:HARD_RULES_UIKIT -->
+## AI NEVER-DO List
 
-## AI Common Mistakes (NEVER DO)
-
-<!-- BEGIN:GENERATED:HARD_RULES_NEVERDO -->
 1. NEVER generate SwiftUI code (`struct ContentView: View`, `@State`, `@StateObject`) — this is a UIKit project
 2. NEVER use `async`/`await` / `@MainActor` / `Task { }` — use completion handlers
 3. NEVER use Storyboards/XIBs (`@IBOutlet`, `@IBAction`) — programmatic UI only
@@ -66,11 +48,14 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 5. NEVER use `Package.swift` / SPM syntax — this project uses CocoaPods
 6. NEVER put network calls in UIViewController — they belong in Repository layer
 
-<!-- END:GENERATED:HARD_RULES_NEVERDO -->
+## Script Hard Rules
+
+- **HR-SCR1**: ALWAYS use `set -euo pipefail` at the beginning of shell scripts.
+- **HR-SCR2**: ALWAYS validate with `shellcheck` before completion.
+- **HR-SCR3**: Scripts must be POSIX-compatible and idempotent.
 
 ## Architecture
 
-<!-- BEGIN:GENERATED:HARD_RULES_ARCHITECTURE -->
 **Pattern**: MVVM-Repository (View → ViewModel → Repository → DataSource)
 
 | Layer | Allowed Imports | Responsibility |
@@ -79,22 +64,3 @@ SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.
 | ViewModel | Foundation, Combine | Business logic, state |
 | Repository | Foundation | Data coordination |
 | DataSource | Foundation | Network, persistence |
-
-<!-- END:GENERATED:HARD_RULES_ARCHITECTURE -->
-
-## Role When Working in Sources/
-
-Act as a **Senior iOS & SDK Architect** specializing in:
-- API quality and stability (public APIs are contracts)
-- Performance on iOS 15.0+ devices
-- Backward compatibility (use `@available(*, deprecated, message:)` for deprecation)
-- Testability via dependency injection and protocol-first design
-- Memory management (retain cycle prevention)
-
-## Validation Before Completion
-
-1. Code compiles without warnings
-2. All `public` APIs have Swift DocC comments (`///`)
-3. No potential retain cycles in closures
-4. No `import UIKit` in ViewModel/Repository files
-5. No force-unwraps in production code

@@ -144,9 +144,35 @@ else
     echo "   ✓ Legacy Agents.md absent"
 fi
 
-# --- Check 6: Auto-generated sections are up to date ---
+# --- Check 6: CLAUDE.md not contaminated by .specify ---
 echo ""
-echo "6. Checking auto-generated sections (staleness)..."
+echo "6. Checking CLAUDE.md for .specify contamination..."
+
+CLAUDE_FILE="$PROJECT_ROOT/.claude/CLAUDE.md"
+if [[ -f "$CLAUDE_FILE" ]]; then
+    contaminated=false
+    if grep -q "^## Active Technologies" "$CLAUDE_FILE"; then
+        echo "   ✗ CLAUDE.md contains '## Active Technologies' (SSOT is AGENTS.md)"
+        contaminated=true
+        errors=$((errors + 1))
+    fi
+    if grep -q "^## Recent Changes" "$CLAUDE_FILE"; then
+        echo "   ✗ CLAUDE.md contains '## Recent Changes' (SSOT is AGENTS.md)"
+        contaminated=true
+        errors=$((errors + 1))
+    fi
+    if [[ "$contaminated" == false ]]; then
+        echo "   ✓ CLAUDE.md is clean (no .specify contamination)"
+    else
+        echo "   → Fix: Remove these sections from .claude/CLAUDE.md (SSOT is AGENTS.md)"
+    fi
+else
+    echo "   ⚠ .claude/CLAUDE.md not found"
+fi
+
+# --- Check 7: Auto-generated sections are up to date ---
+echo ""
+echo "7. Checking auto-generated sections (staleness)..."
 
 SYNC_SCRIPT="$PROJECT_ROOT/Scripts/tools/sync-agent-rules.py"
 if [[ -f "$SYNC_SCRIPT" ]]; then
@@ -164,9 +190,9 @@ else
     echo "   ⚠ sync-agent-rules.py not found, skipping"
 fi
 
-# --- Check 7: Skills mirror consistency ---
+# --- Check 8: Skills mirror consistency ---
 echo ""
-echo "7. Checking skills mirror (.agents-shared/skills/ ↔ .claude/skills/)..."
+echo "8. Checking skills mirror (.agents-shared/skills/ ↔ .claude/skills/)..."
 
 SHARED_SKILLS="$PROJECT_ROOT/.agents-shared/skills"
 CLAUDE_SKILLS="$PROJECT_ROOT/.claude/skills"
@@ -201,9 +227,9 @@ else
     echo "   ⚠ One or both skills directories missing, skipping"
 fi
 
-# --- Check 8: All sync targets have required markers ---
+# --- Check 9: All sync targets have required markers ---
 echo ""
-echo "8. Checking generated section markers across all agents..."
+echo "9. Checking generated section markers across all agents..."
 
 check_markers() {
     local file="$1"
@@ -236,16 +262,19 @@ check_markers() {
     fi
 }
 
-check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP"
-check_markers ".cursor/rules/skills-sync.mdc" "Cursor skills-sync" "SKILLS_LIST"
-check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "SKILLS_LIST"
-check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP"
-check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST"
+check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE"
+check_markers ".cursor/rules/skills-sync.mdc" "Cursor skills-sync" "SKILLS_LIST" "SKILL_GUIDES"
+check_markers ".cursor/rules/sources-swift.mdc" "Cursor sources-swift" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_ARCHITECTURE"
+check_markers ".cursor/rules/scripts-directory.mdc" "Cursor scripts-directory" "HARD_RULES_SCRIPT"
+check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "SKILLS_LIST" "SKILL_GUIDES" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE"
+check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE"
+check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST" "SKILL_GUIDES"
+check_markers ".claude/rules/hard-rules.md" "Claude hard-rules" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE"
 check_markers ".agents-shared/skills/README.md" "Skills README" "SKILLS_LIST"
 
-# --- Check 9: Generated sections are identical across agents ---
+# --- Check 10: Generated sections are identical across agents ---
 echo ""
-echo "9. Checking generated section parity across agents..."
+echo "10. Checking generated section parity across agents..."
 
 if python3 - "$PROJECT_ROOT" <<'PY'
 import re
@@ -260,6 +289,9 @@ files = {
     "claude_skills": root / ".claude/rules/skills-sync.md",
     "cursor_skills": root / ".cursor/rules/skills-sync.mdc",
     "shared_skills_readme": root / ".agents-shared/skills/README.md",
+    "claude_hr": root / ".claude/rules/hard-rules.md",
+    "cursor_swift": root / ".cursor/rules/sources-swift.mdc",
+    "cursor_scripts": root / ".cursor/rules/scripts-directory.mdc",
 }
 
 def extract(path: Path, marker: str) -> str:
@@ -277,6 +309,14 @@ checks = [
     ("CONTEXT_INVENTORY", ["claude_context", "cursor_context", "codex"]),
     ("KEYWORD_DOMAIN_MAP", ["claude_context", "cursor_context", "codex"]),
     ("SKILLS_LIST", ["claude_skills", "cursor_skills", "codex", "shared_skills_readme"]),
+    ("SKILL_GUIDES", ["claude_skills", "cursor_skills", "codex"]),
+    ("HARD_RULES_SWIFT", ["claude_hr", "cursor_swift", "codex"]),
+    ("HARD_RULES_UIKIT", ["claude_hr", "cursor_swift", "codex"]),
+    ("HARD_RULES_NEVERDO", ["claude_hr", "cursor_swift", "codex"]),
+    ("HARD_RULES_SCRIPT", ["claude_hr", "cursor_scripts", "codex"]),
+    ("HARD_RULES_ARCHITECTURE", ["claude_hr", "cursor_swift", "codex"]),
+    ("DIRECTORY_PLAYBOOKS", ["claude_context", "cursor_context", "codex"]),
+    ("TOOLS_AVAILABLE", ["claude_context", "cursor_context", "codex"]),
 ]
 
 for marker, keys in checks:

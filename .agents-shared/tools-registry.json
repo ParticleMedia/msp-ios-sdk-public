@@ -1,0 +1,47 @@
+{
+  "_comment": "SSOT: Developer/agent tools registry. Used by sync-agent-rules.py to generate TOOLS_AVAILABLE sections.",
+  "tools": [
+    {
+      "name": "get-test-template.sh",
+      "path": "Scripts/tools/get-test-template.sh",
+      "description": "Print Quick/Nimble unit test boilerplate template",
+      "usage": "./Scripts/tools/get-test-template.sh"
+    },
+    {
+      "name": "validate-script.sh",
+      "path": "Scripts/tools/validate-script.sh",
+      "description": "Validate a shell script using shellcheck",
+      "usage": "./Scripts/tools/validate-script.sh <script-path>"
+    },
+    {
+      "name": "validate-agent-sync.sh",
+      "path": "Scripts/tools/validate-agent-sync.sh",
+      "description": "Validate multi-agent consistency (10 checks across Claude/Cursor/Codex)",
+      "usage": "./Scripts/tools/validate-agent-sync.sh"
+    },
+    {
+      "name": "post-process-protobuf.sh",
+      "path": "Scripts/tools/post-process-protobuf.sh",
+      "description": "Post-process protoc-generated .pb.swift files for XCFramework compatibility",
+      "usage": "./Scripts/tools/post-process-protobuf.sh"
+    },
+    {
+      "name": "format-all-swift.sh",
+      "path": "Scripts/tools/format-all-swift.sh",
+      "description": "Format all Swift files in the project (excluding Pods/build dirs)",
+      "usage": "./Scripts/tools/format-all-swift.sh"
+    },
+    {
+      "name": "generate-context-index.py",
+      "path": "Scripts/tools/generate-context-index.py",
+      "description": "Generate .context/index.json from context entry frontmatter",
+      "usage": "python3 Scripts/tools/generate-context-index.py"
+    },
+    {
+      "name": "sync-agent-rules.py",
+      "path": "Scripts/tools/sync-agent-rules.py",
+      "description": "Sync all auto-generated sections across Claude/Cursor/Codex agent configs",
+      "usage": "python3 Scripts/tools/sync-agent-rules.py [--dry-run] [--verbose]"
+    }
+  ]
+}

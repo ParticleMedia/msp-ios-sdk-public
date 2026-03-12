@@ -6,6 +6,7 @@ shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Read, Glob, Bash]
 applies-to: Scripts/
+quick_reference: "When: CI/CD or release script fails. Steps: Check .msp-release-state.json → Parse failure → Propose script-based fix (per Article I.4)."
 ---
 
 # Scripts Failure Analyst Skill

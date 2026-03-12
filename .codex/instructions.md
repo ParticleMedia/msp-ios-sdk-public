@@ -9,65 +9,111 @@
 ## Swift & UIKit Hard Rules (MUST follow when touching Sources/)
 
 These are NON-NEGOTIABLE. Violation = bug.
+SSOT: `.agents-shared/rules/hard-rules.md` — auto-synced by `sync-agent-rules.py`.
 
 ### Swift Hard Rules
-- **NEVER** force-unwrap (`!`) in production code. Use `guard let` / `if let` / `??`.
-- **ALWAYS** use `[weak self]` in escaping closures.
-- **ALWAYS** use `Result<T, Error>` for async callbacks (not `(T?, Error?)`).
-- **NEVER** `import UIKit` in ViewModel or Repository layers. Only `Foundation`/`Combine`.
-- **ALWAYS** use `let` over `var` unless mutation is required.
-- **NEVER** use `Any`/`AnyObject` when protocol or generic works.
-- **ALWAYS** define protocol before implementation (Protocol-First Design).
-- **NEVER** use singletons in ViewModel/Repository. Use dependency injection.
-- **ALWAYS** handle all `Result`/`Optional` cases explicitly. No silent failures.
-- **ALWAYS** use `private` by default, promote access only as needed.
-- **NEVER** introduce `async`/`await`. Project uses completion handlers only.
-- **ALWAYS** use `[weak self]` with Combine `.sink` and `.receive(on:)`.
+
+<!-- BEGIN:GENERATED:HARD_RULES_SWIFT -->
+- **HR-S1**: NEVER force-unwrap (`!`) in production code. Use `guard let` / `if let` / `??`.
+- **HR-S2**: ALWAYS use `[weak self]` in escaping closures.
+- **HR-S3**: ALWAYS use `Result<T, Error>` for async callbacks (not `(T?, Error?)`).
+- **HR-S4**: NEVER `import UIKit` in ViewModel or Repository layers. Only `Foundation`/`Combine`.
+- **HR-S5**: ALWAYS use `let` over `var` unless mutation is required.
+- **HR-S6**: NEVER use `Any`/`AnyObject` when protocol or generic works.
+- **HR-S7**: ALWAYS define protocol before implementation (Protocol-First Design).
+- **HR-S8**: NEVER use singletons in ViewModel/Repository. Use dependency injection.
+- **HR-S9**: ALWAYS handle all `Result`/`Optional` cases explicitly. No silent failures.
+- **HR-S10**: ALWAYS use `private` by default, promote access only as needed.
+- **HR-S11**: NEVER introduce `async`/`await`. Project uses completion handlers only.
+- **HR-S12**: ALWAYS use `[weak self]` with Combine `.sink` and `.receive(on:)`.
+
+<!-- END:GENERATED:HARD_RULES_SWIFT -->
 
 ### UIKit Hard Rules
-- **ALWAYS** update UI on the main thread (`DispatchQueue.main.async`).
-- **ALWAYS** set `translatesAutoresizingMaskIntoConstraints = false`.
-- **ALWAYS** use `weak` for delegate properties.
-- **NEVER** put business logic in UIViewController. Logic belongs in ViewModel.
-- **ALWAYS** pair `register` + `dequeue` for reusable cells.
-- **NEVER** force-cast cells (`as!` in `cellForRowAt`).
-- **ALWAYS** remove observers/notifications in `deinit`.
-- **ALWAYS** configure views in `viewDidLoad`, NOT in `init`.
-- **NEVER** access `self.view` from `init`.
-- **ALWAYS** use `NSLayoutAnchor` API for programmatic constraints.
-- **NEVER** block the main thread with synchronous network/I/O calls.
-- **ALWAYS** implement `prepareForReuse()` to reset cell state.
+
+<!-- BEGIN:GENERATED:HARD_RULES_UIKIT -->
+- **HR-U1**: ALWAYS update UI on the main thread (`DispatchQueue.main.async`).
+- **HR-U2**: ALWAYS set `translatesAutoresizingMaskIntoConstraints = false` for programmatic views.
+- **HR-U3**: ALWAYS use `weak` for delegate properties.
+- **HR-U4**: NEVER put business logic in UIViewController. Logic belongs in ViewModel.
+- **HR-U5**: ALWAYS pair `register` + `dequeue` for reusable cells.
+- **HR-U6**: NEVER force-cast cells (`as!` in `cellForRowAt`). Use `guard let` + `as?`.
+- **HR-U7**: ALWAYS remove observers/notifications in `deinit`.
+- **HR-U8**: ALWAYS configure views in `viewDidLoad`, NOT in `init`.
+- **HR-U9**: NEVER access `self.view` from `init` (triggers premature `loadView()`).
+- **HR-U10**: ALWAYS use `NSLayoutAnchor` API for programmatic constraints.
+- **HR-U11**: NEVER block the main thread with synchronous network/I/O calls.
+- **HR-U12**: ALWAYS implement `prepareForReuse()` to reset cell state.
+
+<!-- END:GENERATED:HARD_RULES_UIKIT -->
 
 ### AI NEVER-DO List
-1. NEVER generate SwiftUI code — this is a UIKit project
+
+<!-- BEGIN:GENERATED:HARD_RULES_NEVERDO -->
+1. NEVER generate SwiftUI code (`struct ContentView: View`, `@State`, `@StateObject`) — this is a UIKit project
 2. NEVER use `async`/`await` / `@MainActor` / `Task { }` — use completion handlers
 3. NEVER use Storyboards/XIBs (`@IBOutlet`, `@IBAction`) — programmatic UI only
-4. NEVER use third-party mocking frameworks — hand-written test doubles only
+4. NEVER use third-party mocking frameworks (Mockingbird, Cuckoo) — hand-written test doubles only
 5. NEVER use `Package.swift` / SPM syntax — this project uses CocoaPods
+6. NEVER put network calls in UIViewController — they belong in Repository layer
+
+<!-- END:GENERATED:HARD_RULES_NEVERDO -->
 
 ### Script Hard Rules (when touching Scripts/)
-- **ALWAYS** use `set -euo pipefail` at the beginning of shell scripts
-- **ALWAYS** validate with `shellcheck` before completion
-- Scripts must be POSIX-compatible and idempotent
+
+<!-- BEGIN:GENERATED:HARD_RULES_SCRIPT -->
+- **HR-SCR1**: ALWAYS use `set -euo pipefail` at the beginning of shell scripts.
+- **HR-SCR2**: ALWAYS validate with `shellcheck` before completion.
+- **HR-SCR3**: Scripts must be POSIX-compatible and idempotent.
+
+<!-- END:GENERATED:HARD_RULES_SCRIPT -->
+
+### Architecture
+
+<!-- BEGIN:GENERATED:HARD_RULES_ARCHITECTURE -->
+**Pattern**: MVVM-Repository (View → ViewModel → Repository → DataSource)
+
+| Layer | Allowed Imports | Responsibility |
+|-------|----------------|----------------|
+| View (VC) | UIKit, Foundation | UI only, binds to ViewModel |
+| ViewModel | Foundation, Combine | Business logic, state |
+| Repository | Foundation | Data coordination |
+| DataSource | Foundation | Network, persistence |
+
+<!-- END:GENERATED:HARD_RULES_ARCHITECTURE -->
 
 ---
 
 ## Directory-Triggered Context
 
-**When working in Sources/**: Read `Sources/AGENTS-SOURCES.md` for playbook loading guide.
-Mandatory playbooks:
-- `.context/sources/tech/ctx-sources-001-swift-best-practices.md`
-- `.context/sources/tech/ctx-sources-002-uikit-best-practices.md`
-- `.context/sources/tech/ctx-sources-003-mvvm-repo.md`
-- `.context/sources/tech/ctx-sources-005-code-comment-best-practices.md`
+> Auto-generated from `.agents-shared/directory-playbooks.json`.
+> DO NOT edit manually — run `python Scripts/tools/sync-agent-rules.py` to regenerate.
 
-**When working in Scripts/**: Read `Scripts/AGENTS-SCRIPTS.md` for playbook loading guide.
-Mandatory playbook:
-- `.context/sources/tech/ctx-sources-004-script-best-practices.md`
+<!-- BEGIN:GENERATED:DIRECTORY_PLAYBOOKS -->
+### When working in `Scripts/`
 
-**When working in Tests/**: Mandatory playbooks:
-- `.context/testing/tech/ctx-testing-001-unit-test-quick-nimble.md`
-- `.context/testing/tech/ctx-testing-002-bdd-best-practices.md`
+| Playbook | Title | File |
+|----------|-------|------|
+| ctx-sources-004 | 脚本最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-004-script-best-practices.md` |
+
+### When working in `Sources/`
+
+| Playbook | Title | File |
+|----------|-------|------|
+| ctx-sources-001 | Swift 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-001-swift-best-practices.md` |
+| ctx-sources-002 | UIKit 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-002-uikit-best-practices.md` |
+| ctx-sources-003 | MVVM-Repository 架构指南 (AI-First) | `.context/sources/tech/ctx-sources-003-mvvm-repo.md` |
+| ctx-sources-005 | Code Comment 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-005-code-comment-best-practices.md` |
+
+### When working in `Tests/`
+
+| Playbook | Title | File |
+|----------|-------|------|
+| ctx-testing-001 | Unit Test 最佳实践 — Quick/Nimble (AI-First) | `.context/testing/tech/ctx-testing-001-unit-test-quick-nimble.md` |
+| ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` |
+| ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` |
+
+<!-- END:GENERATED:DIRECTORY_PLAYBOOKS -->
 
 ---
 
@@ -208,87 +254,73 @@ For full skill details: `cat .agents-shared/skills/{skill-name}.skill.md`
 
 ## Condensed Skill Guides
 
-### Unit Test Generator
+> Auto-generated from skill frontmatter `quick_reference` field.
 
-**When**: Creating unit tests for a Swift class
-**Template**: `Tests/templates/unit_test_spec.swift.template`
+<!-- BEGIN:GENERATED:SKILL_GUIDES -->
+### Agent Sync
 
-Quick Steps:
-1. Find module: `grep -r "class ClassName" Sources/`
-2. Get template: `cat Tests/templates/unit_test_spec.swift.template`
-3. Replace: `{{module_name}}` → module, `{{class_name}}` → class
-4. Save to: `Tests/{Module}Tests/{ClassName}Spec.swift`
-5. Verify: `swift test --filter {ClassName}Spec`
+When: After adding/modifying context entries or skills. Run: python3 Scripts/tools/generate-context-index.py && python3 Scripts/tools/sync-agent-rules.py
 
-**Full Skill**: `.agents-shared/skills/unit-test-generator.skill.md`
+**Full Skill**: `.agents-shared/skills/agent-sync.skill.md`
+
+### Constitutional Auditor
+
+When: Checking code compliance. Steps: Identify applicable constitution → Check violations → Report with article citations.
+
+**Full Skill**: `.agents-shared/skills/constitutional-auditor.skill.md`
 
 ### Quick Fix
 
-**When**: Mechanical, pattern-based fixes (force unwrap, nil check, import, typo)
-
-Common patterns:
-```diff
-- let value = optional!
-+ guard let value = optional else { return }
-```
-```diff
-  func process(_ data: Data?) {
-+     guard let data = data else { return }
-```
+When: Mechanical fixes (force unwrap → guard let, nil check, import fix, typo). Pattern-based, no architectural changes.
 
 **Full Skill**: `.agents-shared/skills/quick-fix.skill.md`
 
 ### Refactor Pattern
 
-**When**: Extract method (>50 lines), replace magic numbers, consolidate conditionals
+When: Extract method (>50 lines), replace magic numbers, consolidate conditionals.
 
 **Full Skill**: `.agents-shared/skills/refactor-pattern.skill.md`
 
-### Constitutional Auditor
-
-**When**: Checking code compliance against constitution
-
-Quick steps: Identify applicable constitution → Check violations → Report with article citations
-
-**Full Skill**: `.agents-shared/skills/constitutional-auditor.skill.md`
-
 ### Scripts Failure Analyst
 
-**When**: CI/CD or release script fails
-
-Quick steps: Check `.msp-release-state.json` → Parse failure → Propose script-based fix (per Article I.4)
+When: CI/CD or release script fails. Steps: Check .msp-release-state.json → Parse failure → Propose script-based fix (per Article I.4).
 
 **Full Skill**: `.agents-shared/skills/scripts-failure-analyst.skill.md`
 
 ### Sources Bug Analyst
 
-**When**: Runtime crash or logic bug in Swift code
-
-Quick steps: Parse stack trace → Trace code path → Identify root cause → Propose fix
+When: Runtime crash or logic bug in Swift. Steps: Parse stack trace → Trace code path → Identify root cause → Propose fix.
 
 **Full Skill**: `.agents-shared/skills/sources-bug-analyst.skill.md`
 
-### Agent Sync
+### Unit Test Generator
 
-**When**: After adding/modifying context entries or skills
+When: Creating unit tests. Steps: (1) Get template via `./Scripts/tools/get-test-template.sh` (2) Replace {{module_name}} and {{class_name}} (3) Save to Tests/{Module}Tests/{ClassName}Spec.swift
 
-```bash
-python3 Scripts/tools/generate-context-index.py && python3 Scripts/tools/sync-agent-rules.py
-```
+**Full Skill**: `.agents-shared/skills/unit-test-generator.skill.md`
 
-**Full Skill**: `.agents-shared/skills/agent-sync.skill.md`
+<!-- END:GENERATED:SKILL_GUIDES -->
 
 ---
 
 ## Shared Tools
 
-| Tool | Usage | Purpose |
-|------|-------|---------|
-| `find-class.sh` | `./Sources/tools/find-class.sh <TypeName>` | Find type definition |
-| `list-public-api.sh` | `./Sources/tools/list-public-api.sh <Module>` | List public API |
-| `check-imports.sh` | `./Sources/tools/check-imports.sh [Module]` | Check imports (Article III.1) |
-| `validate-script.sh` | `./Scripts/tools/validate-script.sh <path>` | Run shellcheck |
-| `get-test-template.sh` | `./Scripts/tools/get-test-template.sh` | Print unit test template |
+> Auto-generated from `.agents-shared/tools-registry.json`.
+
+<!-- BEGIN:GENERATED:TOOLS_AVAILABLE -->
+| Tool | Description | Usage |
+|------|-------------|-------|
+| `format-all-swift.sh` | Format all Swift files in the project (excluding Pods/build dirs) | `./Scripts/tools/format-all-swift.sh` |
+| `generate-context-index.py` | Generate .context/index.json from context entry frontmatter | `python3 Scripts/tools/generate-context-index.py` |
+| `get-test-template.sh` | Print Quick/Nimble unit test boilerplate template | `./Scripts/tools/get-test-template.sh` |
+| `post-process-protobuf.sh` | Post-process protoc-generated .pb.swift files for XCFramework compatibility | `./Scripts/tools/post-process-protobuf.sh` |
+| `sync-agent-rules.py` | Sync all auto-generated sections across Claude/Cursor/Codex agent configs | `python3 Scripts/tools/sync-agent-rules.py [--dry-run] [--verbose]` |
+| `validate-agent-sync.sh` | Validate multi-agent consistency (10 checks across Claude/Cursor/Codex) | `./Scripts/tools/validate-agent-sync.sh` |
+| `validate-script.sh` | Validate a shell script using shellcheck | `./Scripts/tools/validate-script.sh <script-path>` |
+
+**Total: 7 tools**
+
+<!-- END:GENERATED:TOOLS_AVAILABLE -->
 
 ---
 

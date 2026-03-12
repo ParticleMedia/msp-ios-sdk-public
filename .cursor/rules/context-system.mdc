@@ -114,6 +114,56 @@ When user questions match keywords in the inventory below, READ the matching `.c
 
 <!-- END:GENERATED:KEYWORD_DOMAIN_MAP -->
 
+## Directory-Triggered Mandatory Playbooks
+
+> Auto-generated from `.agents-shared/directory-playbooks.json`.
+> DO NOT edit manually — run `python Scripts/tools/sync-agent-rules.py` to regenerate.
+
+<!-- BEGIN:GENERATED:DIRECTORY_PLAYBOOKS -->
+### When working in `Scripts/`
+
+| Playbook | Title | File |
+|----------|-------|------|
+| ctx-sources-004 | 脚本最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-004-script-best-practices.md` |
+
+### When working in `Sources/`
+
+| Playbook | Title | File |
+|----------|-------|------|
+| ctx-sources-001 | Swift 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-001-swift-best-practices.md` |
+| ctx-sources-002 | UIKit 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-002-uikit-best-practices.md` |
+| ctx-sources-003 | MVVM-Repository 架构指南 (AI-First) | `.context/sources/tech/ctx-sources-003-mvvm-repo.md` |
+| ctx-sources-005 | Code Comment 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-005-code-comment-best-practices.md` |
+
+### When working in `Tests/`
+
+| Playbook | Title | File |
+|----------|-------|------|
+| ctx-testing-001 | Unit Test 最佳实践 — Quick/Nimble (AI-First) | `.context/testing/tech/ctx-testing-001-unit-test-quick-nimble.md` |
+| ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` |
+| ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` |
+
+<!-- END:GENERATED:DIRECTORY_PLAYBOOKS -->
+
+## Shared Tools
+
+> Auto-generated from `.agents-shared/tools-registry.json`.
+
+<!-- BEGIN:GENERATED:TOOLS_AVAILABLE -->
+| Tool | Description | Usage |
+|------|-------------|-------|
+| `format-all-swift.sh` | Format all Swift files in the project (excluding Pods/build dirs) | `./Scripts/tools/format-all-swift.sh` |
+| `generate-context-index.py` | Generate .context/index.json from context entry frontmatter | `python3 Scripts/tools/generate-context-index.py` |
+| `get-test-template.sh` | Print Quick/Nimble unit test boilerplate template | `./Scripts/tools/get-test-template.sh` |
+| `post-process-protobuf.sh` | Post-process protoc-generated .pb.swift files for XCFramework compatibility | `./Scripts/tools/post-process-protobuf.sh` |
+| `sync-agent-rules.py` | Sync all auto-generated sections across Claude/Cursor/Codex agent configs | `python3 Scripts/tools/sync-agent-rules.py [--dry-run] [--verbose]` |
+| `validate-agent-sync.sh` | Validate multi-agent consistency (10 checks across Claude/Cursor/Codex) | `./Scripts/tools/validate-agent-sync.sh` |
+| `validate-script.sh` | Validate a shell script using shellcheck | `./Scripts/tools/validate-script.sh <script-path>` |
+
+**Total: 7 tools**
+
+<!-- END:GENERATED:TOOLS_AVAILABLE -->
+
 ## Post-Debugging Context Capture
 
 When debugging completes (3+ rounds, root cause found):

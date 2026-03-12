@@ -5,6 +5,7 @@ category: analysis
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Read, Glob]
+quick_reference: "When: Checking code compliance. Steps: Identify applicable constitution → Check violations → Report with article citations."
 ---
 
 # Constitutional Auditor Skill
