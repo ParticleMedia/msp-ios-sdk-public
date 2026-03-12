@@ -1,17 +1,19 @@
 {
   "version": "2.0",
-  "generated_at": "2026-02-26T03:03:45Z",
+  "generated_at": "2026-03-12T07:03:24Z",
   "generator": "Scripts/tools/generate-context-index.py",
   "entry_count": 20,
   "domains": {
-    "compatibility": {
-      "count": 0,
-      "layers": []
-    },
-    "sources": {
-      "count": 6,
+    "release": {
+      "count": 5,
       "layers": [
         "experience",
+        "tech"
+      ]
+    },
+    "testing": {
+      "count": 3,
+      "layers": [
         "tech"
       ]
     },
@@ -21,28 +23,26 @@
         "experience"
       ]
     },
-    "testing": {
-      "count": 3,
-      "layers": [
-        "tech"
-      ]
-    },
     "architecture": {
       "count": 0,
       "layers": []
-    },
-    "release": {
-      "count": 5,
-      "layers": [
-        "experience",
-        "tech"
-      ]
     },
     "ci": {
       "count": 4,
       "layers": [
         "experience"
       ]
+    },
+    "sources": {
+      "count": 6,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
+    "compatibility": {
+      "count": 0,
+      "layers": []
     }
   },
   "entries": [
@@ -164,7 +164,7 @@
         "OMSDK duplicate class warning",
         "PrebidMobile OMID class conflict"
       ],
-      "summary": "NovaCore statically links SnapKit/Kingfisher causing duplicate symbols; solved with UNEXPORTED_SYMBOLS_FILE. OMSDK deduplication solved by switching PrebidMobile to dynamic linking.",
+      "summary": "NovaCore static links SnapKit/Kingfisher and triggers duplicate symbols; fix with symbol hiding and dynamic OMSDK.",
       "status": "active",
       "updated": "2026-03-03"
     },
@@ -276,7 +276,7 @@
         "config-plist",
         "novacore",
         "novaconstants",
-        "getSDKVersion",
+        "getsdkversion",
         "marketing-version"
       ],
       "triggers": [
@@ -287,7 +287,7 @@
         "version not updated in xcframework binary",
         "build order version mismatch"
       ],
-      "summary": "XCFramework built before version update, so binary contains stale version; NovaConstants.version update also not committed",
+      "summary": "XCFramework built before version update leaves stale binary versions; NovaConstants update also missed commit.",
       "status": "active",
       "updated": "2026-02-27"
     },
@@ -304,7 +304,7 @@
         "config-plist",
         "marketing-version",
         "testflight",
-        "sdk_version.conf",
+        "sdk-version-conf",
         "version-flow"
       ],
       "triggers": [
@@ -319,7 +319,7 @@
         "version 流转",
         "版本更新流程"
       ],
-      "summary": "SDK 版本 SSOT (sdk_version.conf) 的完整流转：modular.sh 首次 commit → release_orchestration.sh 读取更新 plist → version_commit.sh 统一 commit → TestFlight deploy.sh 读取注入 MARKETING_VERSION",
+      "summary": "Defines sdk_version.conf as SSOT and the commit/build order for release and TestFlight version propagation.",
       "status": "active",
       "updated": "2026-02-28"
     },

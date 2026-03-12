@@ -302,6 +302,7 @@ def main():
 
     if sync_file(SYNC_TARGETS["codex_instructions"],
                  {"CONTEXT_INVENTORY": context_inventory,
+                  "KEYWORD_DOMAIN_MAP": keyword_domain_map,
                   "SKILLS_LIST": skills_table},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1

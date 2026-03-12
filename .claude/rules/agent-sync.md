@@ -11,8 +11,8 @@ can leave the others stale. This rule enforces automatic sync.
 |----------|---------------|---------------|
 | Context entries | `.context/{domain}/{layer}/ctx-*.md` | `.context/index.json` → inventory in Cursor, Claude, Codex |
 | Context index | `.context/index.json` (generated) | `.cursor/rules/context-system.mdc`, `.claude/rules/context-system.md`, `.codex/instructions.md` |
-| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), skills list in Cursor, Claude, Codex |
-| Agent rules | Each agent owns its own | Sync conceptual parity, not file copies |
+| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), skills list in Cursor, Claude, Codex, shared skills README |
+| Agent rules | Each agent owns its own shell | Generated sections must stay identical across agents |
 
 ## Sync Triggers & Actions
 

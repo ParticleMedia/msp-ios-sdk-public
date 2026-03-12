@@ -25,8 +25,8 @@ can leave the others stale. This rule enforces automatic sync.
 |----------|---------------|---------------|
 | Context entries | `.context/{domain}/{layer}/ctx-*.md` | `.context/index.json` → inventory in Cursor, Claude, Codex |
 | Context index | `.context/index.json` (generated) | `.cursor/rules/context-system.mdc`, `.claude/rules/context-system.md`, `.codex/instructions.md` |
-| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), skills list in Cursor, Claude, Codex |
-| Agent rules | Each agent owns its own | Sync conceptual parity, not file copies |
+| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), skills list in Cursor, Claude, Codex, shared skills README |
+| Agent rules | Each agent owns its own shell | Generated sections must stay identical across agents |
 
 ## Sync Triggers & Actions
 
@@ -101,5 +101,8 @@ This checks:
 2. All agents reference `.context/index.json`
 3. Playbook IDs in loading guides exist in `index.json`
 4. `index.json` is valid JSON
-5. Auto-generated sections are up to date (staleness detection)
-6. Skills mirror consistency (`.agents-shared/skills/` ↔ `.claude/skills/`)
+5. Canonical `AGENTS.md` naming is enforced
+6. Auto-generated sections are up to date (staleness detection)
+7. Skills mirror consistency (`.agents-shared/skills/` ↔ `.claude/skills/`)
+8. Required generated markers exist in all sync targets
+9. Generated sections are identical across agents

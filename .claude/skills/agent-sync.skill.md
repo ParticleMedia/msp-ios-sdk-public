@@ -183,7 +183,7 @@ generate-context-index.py                          │
                       │
                       ▼
            validate-agent-sync.sh
-           (6 automated checks)
+           (9 automated checks)
 ```
 
 ---
@@ -192,7 +192,6 @@ generate-context-index.py                          │
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| "jsonschema package required" | Missing Python dependency | `pip install jsonschema pyyaml` |
 | "No valid frontmatter" | Context .md missing `---` block | Add YAML frontmatter to the file |
 | "Missing fields [...]" | Required frontmatter fields absent | Add: id, title, domain, layer, tags, triggers, summary, status |
 | "Markers not found" | Rule file missing `<!-- BEGIN:GENERATED:* -->` | Re-create the rule file from template |
@@ -207,8 +206,10 @@ Run `./Scripts/tools/validate-agent-sync.sh` — it automates all of these:
 - [ ] All agents reference `.context/index.json`
 - [ ] Playbook IDs in loading guides exist in `index.json`
 - [ ] `index.json` is valid JSON
+- [ ] Canonical `AGENTS.md` naming is enforced
 - [ ] Auto-generated sections match current source data (staleness check)
 - [ ] `.claude/skills/` and `.agents-shared/skills/` have identical file sets
+- [ ] Generated sections are identical across Claude / Cursor / Codex
 
 ---
 

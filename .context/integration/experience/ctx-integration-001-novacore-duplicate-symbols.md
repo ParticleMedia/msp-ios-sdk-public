@@ -20,7 +20,7 @@ triggers:
   - "host app duplicate symbol linker error"
   - "OMSDK duplicate class warning"
   - "PrebidMobile OMID class conflict"
-summary: "NovaCore statically links SnapKit/Kingfisher causing duplicate symbols; solved with UNEXPORTED_SYMBOLS_FILE. OMSDK deduplication solved by switching PrebidMobile to dynamic linking."
+summary: "NovaCore static links SnapKit/Kingfisher and triggers duplicate symbols; fix with symbol hiding and dynamic OMSDK."
 version: "2.0"
 status: active
 created: "2026-02-15"

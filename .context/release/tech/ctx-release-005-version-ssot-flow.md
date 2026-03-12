@@ -1,10 +1,38 @@
-# ctx-release-005: SDK 版本 SSOT 及完整发布流程
+---
+id: ctx-release-005
+title: "SDK 版本 SSOT 及更新流程"
+domain: release
+layer: tech
+tags:
+  - version
+  - ssot
+  - sdk-version
+  - config-plist
+  - marketing-version
+  - testflight
+  - sdk-version-conf
+  - version-flow
+triggers:
+  - "SDK version SSOT flow"
+  - "sdk_version.conf update process"
+  - "MARKETING_VERSION source"
+  - "version commit order"
+  - "Config.plist version update flow"
+  - "TestFlight SDK version"
+  - "release version flow"
+  - "version SSOT"
+  - "version 流转"
+  - "版本更新流程"
+summary: "Defines sdk_version.conf as SSOT and the commit/build order for release and TestFlight version propagation."
+version: "2.0"
+created: "2026-02-28"
+updated: "2026-02-28"
+source: manual
+status: active
+confidence: high
+---
 
-> **Domain**: release
-> **Layer**: tech
-> **Status**: active
-> **Created**: 2026-02-28
-> **Updated**: 2026-02-28
+# ctx-release-005: SDK 版本 SSOT 及完整发布流程
 
 ## SSOT 定义
 

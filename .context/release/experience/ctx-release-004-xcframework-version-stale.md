@@ -1,9 +1,35 @@
+---
+id: ctx-release-004
+title: "XCFramework 二进制中版本号未更新 — 构建时序问题"
+domain: release
+layer: experience
+tags:
+  - xcframework
+  - version
+  - build-order
+  - config-plist
+  - novacore
+  - novaconstants
+  - getsdkversion
+  - marketing-version
+triggers:
+  - "XCFramework version stale after release"
+  - "Config.plist SDKVersion wrong in binary"
+  - "NovaConstants.version 0.0.0"
+  - "getSDKVersion returns old version"
+  - "version not updated in xcframework binary"
+  - "build order version mismatch"
+summary: "XCFramework built before version update leaves stale binary versions; NovaConstants update also missed commit."
+version: "2.0"
+created: "2026-02-27"
+updated: "2026-02-27"
+source: manual
+status: active
+confidence: high
+---
+
 # ctx-release-004: XCFramework 二进制中版本号未更新
 
-> **Domain**: release
-> **Layer**: experience
-> **Status**: active
-> **Created**: 2026-02-27
 > **Root Cause Confirmed**: Yes
 
 ## 问题描述

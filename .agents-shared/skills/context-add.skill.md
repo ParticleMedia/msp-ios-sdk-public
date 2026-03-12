@@ -48,7 +48,7 @@ Guide users through creating a new context entry in the `.context/` knowledge ba
 **Primary Scenarios**:
 1. After solving a complex problem that took 3+ conversation rounds
 2. When user explicitly wants to save debugging experience
-3. When AI suggests context precipitation (Section 7.2 in Agents.md)
+3. When AI suggests context precipitation (Section 7.2 in AGENTS.md)
 4. After discovering non-obvious root causes
 
 **Trigger Phrases**:

@@ -126,9 +126,27 @@ else
     errors=$((errors + 1))
 fi
 
-# --- Check 5: Auto-generated sections are up to date ---
+# --- Check 5: Canonical AGENTS filename ---
 echo ""
-echo "5. Checking auto-generated sections (staleness)..."
+echo "5. Checking canonical AGENTS filename..."
+
+if [[ -f "$PROJECT_ROOT/AGENTS.md" ]]; then
+    echo "   ✓ AGENTS.md exists"
+else
+    echo "   ✗ AGENTS.md missing"
+    errors=$((errors + 1))
+fi
+
+if ls -1 "$PROJECT_ROOT" | grep -qx "Agents.md"; then
+    echo "   ✗ Legacy Agents.md still exists"
+    errors=$((errors + 1))
+else
+    echo "   ✓ Legacy Agents.md absent"
+fi
+
+# --- Check 6: Auto-generated sections are up to date ---
+echo ""
+echo "6. Checking auto-generated sections (staleness)..."
 
 SYNC_SCRIPT="$PROJECT_ROOT/Scripts/tools/sync-agent-rules.py"
 if [[ -f "$SYNC_SCRIPT" ]]; then
@@ -146,9 +164,9 @@ else
     echo "   ⚠ sync-agent-rules.py not found, skipping"
 fi
 
-# --- Check 6: Skills mirror consistency ---
+# --- Check 7: Skills mirror consistency ---
 echo ""
-echo "6. Checking skills mirror (.agents-shared/skills/ ↔ .claude/skills/)..."
+echo "7. Checking skills mirror (.agents-shared/skills/ ↔ .claude/skills/)..."
 
 SHARED_SKILLS="$PROJECT_ROOT/.agents-shared/skills"
 CLAUDE_SKILLS="$PROJECT_ROOT/.claude/skills"
@@ -182,9 +200,9 @@ else
     echo "   ⚠ One or both skills directories missing, skipping"
 fi
 
-# --- Check 7: All sync targets have required markers ---
+# --- Check 8: All sync targets have required markers ---
 echo ""
-echo "7. Checking generated section markers across all agents..."
+echo "8. Checking generated section markers across all agents..."
 
 check_markers() {
     local file="$1"
@@ -219,10 +237,61 @@ check_markers() {
 
 check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP"
 check_markers ".cursor/rules/skills-sync.mdc" "Cursor skills-sync" "SKILLS_LIST"
-check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "SKILLS_LIST"
+check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "SKILLS_LIST"
 check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP"
 check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST"
 check_markers ".agents-shared/skills/README.md" "Skills README" "SKILLS_LIST"
+
+# --- Check 9: Generated sections are identical across agents ---
+echo ""
+echo "9. Checking generated section parity across agents..."
+
+if python3 - "$PROJECT_ROOT" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+files = {
+    "claude_context": root / ".claude/rules/context-system.md",
+    "cursor_context": root / ".cursor/rules/context-system.mdc",
+    "codex": root / ".codex/instructions.md",
+    "claude_skills": root / ".claude/rules/skills-sync.md",
+    "cursor_skills": root / ".cursor/rules/skills-sync.mdc",
+    "shared_skills_readme": root / ".agents-shared/skills/README.md",
+}
+
+def extract(path: Path, marker: str) -> str:
+    text = path.read_text(encoding="utf-8")
+    pattern = re.compile(
+        rf"<!-- BEGIN:GENERATED:{marker} -->\n(.*?)\n<!-- END:GENERATED:{marker} -->",
+        re.DOTALL,
+    )
+    match = pattern.search(text)
+    if not match:
+        raise SystemExit(f"missing {marker} in {path}")
+    return match.group(1).strip()
+
+checks = [
+    ("CONTEXT_INVENTORY", ["claude_context", "cursor_context", "codex"]),
+    ("KEYWORD_DOMAIN_MAP", ["claude_context", "cursor_context", "codex"]),
+    ("SKILLS_LIST", ["claude_skills", "cursor_skills", "codex", "shared_skills_readme"]),
+]
+
+for marker, keys in checks:
+    baseline = extract(files[keys[0]], marker)
+    for key in keys[1:]:
+        if extract(files[key], marker) != baseline:
+            raise SystemExit(f"mismatch in {marker}: {keys[0]} != {key}")
+
+print("parity-ok")
+PY
+then
+    echo "   ✓ Generated sections match across agents"
+else
+    echo "   ✗ Generated sections differ across agents"
+    errors=$((errors + 1))
+fi
 
 # --- Summary ---
 echo ""
