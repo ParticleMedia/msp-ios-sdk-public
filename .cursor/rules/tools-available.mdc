@@ -1,0 +1,78 @@
+---
+description: >
+  Shared development tools — shell scripts available for code analysis and validation.
+  Auto-loads when editing Swift source files or shell scripts.
+globs:
+  - "Sources/**/*.swift"
+  - "Scripts/**/*.sh"
+  - "Tests/**/*.swift"
+---
+
+# Available Development Tools
+
+These shell scripts are shared tools usable by all agents. Use them for validation and analysis.
+
+## Source Code Tools
+
+### find-class — Find Swift type definitions
+```bash
+./Sources/tools/find-class.sh <TypeName>
+```
+Locates where a Swift type (class/struct/protocol/enum) is defined in Sources/.
+Returns `file:line` for type definitions and extensions.
+
+### check-imports — Validate Core module imports
+```bash
+./Sources/tools/check-imports.sh [ModulePath]
+# Or check all Core modules:
+./Sources/tools/check-imports.sh
+```
+Checks that Core modules don't import third-party SDK headers (per constitution Article III.1).
+Exit 0 = clean, Exit 1 = violations found.
+
+### list-public-api — Enumerate public API surface
+```bash
+./Sources/tools/list-public-api.sh <ModulePath>
+```
+Lists all `public`/`open` declarations in a module. Use for API review before release.
+
+## Script Tools
+
+### validate-script — Run shellcheck validation
+```bash
+./Scripts/tools/validate-script.sh <script-path>
+```
+Validates shell scripts with shellcheck. Exit 0 = passes, Exit 1 = issues found.
+
+## Test Tools
+
+### get-test-template — Quick/Nimble test boilerplate
+```bash
+./Scripts/tools/get-test-template.sh
+```
+Returns the standard Quick/Nimble unit test template with placeholders:
+- `{{module_name}}` — Swift module to import
+- `{{class_name}}` — Class under test
+
+## Context Management Tools
+
+### add-context — Save debugging experience
+```bash
+./Scripts/context/add-context.sh
+```
+Interactive script to create a new `.context/` entry. Use after solving complex problems.
+
+### list-context — Browse context knowledge base
+```bash
+./Scripts/context/list-context.sh [--domain release] [--layer experience] [--search keyword]
+```
+List and filter context entries. Supports domain/layer/tag/search filters.
+
+## When to Use
+
+- **Before modifying public APIs**: Run `list-public-api` to understand current surface
+- **After modifying Core modules**: Run `check-imports` to validate no forbidden imports
+- **After modifying shell scripts**: Run `validate-script` for shellcheck
+- **When looking for a type**: Run `find-class` instead of manual grep
+- **When writing tests**: Run `get-test-template` for boilerplate
+- **After solving complex bugs**: Run `add-context` to preserve the experience

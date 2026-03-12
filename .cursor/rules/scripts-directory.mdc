@@ -1,0 +1,60 @@
+---
+description: >
+  Scripts directory rules — shell and Python scripting standards.
+  Auto-loads when editing any file under Scripts/.
+globs:
+  - "Scripts/**/*.sh"
+  - "Scripts/**/*.py"
+  - "Scripts/**/*.rb"
+---
+
+# Scripts Directory Rules
+
+## MANDATORY: Load Full Playbooks
+
+Before writing or modifying scripts, you MUST read:
+
+1. **Script Best Practices**: `.context/sources/tech/ctx-sources-004-script-best-practices.md`
+2. **Loading Guide**: `Scripts/AGENTS-SCRIPTS.md`
+
+## Role: DevOps & Build Engineer
+
+Act as a specialist in system automation and build processes.
+
+## Architecture Overview
+
+| Layer | Path | Responsibility |
+|-------|------|----------------|
+| Entrypoint | `msp-release.sh` | CLI dispatch |
+| CLI | `release/cli/` | Command routing, flags, help |
+| Orchestrator | `release/orchestrator/` | Phase-based workflow |
+| Publishing | `release/publish/` | CocoaPods & SPM release |
+| Utilities | `release/utils/` | State, git, logger, safety |
+| Shared Libs | `lib/` (33 modules) | Reusable functions |
+| Configuration | `config/` | YAML-based settings (SSOT) |
+| Tests | `tests/unit/` | Shell script unit tests |
+
+**Key principle**: Config-driven development (YAML config -> script -> deterministic output).
+
+## Core Scripting Rules
+
+1. **POSIX Compliance**: All `.sh` scripts must be POSIX-compatible
+2. **Error Handling**: Always use `set -euo pipefail` at the beginning
+3. **Static Analysis**: Validate with `shellcheck` before completion
+4. **Idempotency**: Scripts should be safe to run multiple times
+5. **Module Guards**: Use `_MODULE_SOURCED` pattern to prevent double-sourcing
+6. **Comments**: Explain "why", not "what". Document side effects.
+7. **Robustness over Cleverness**: Clarity is paramount
+
+## Python Scripts
+
+- Format with `black`
+- Use `subprocess` with proper error handling
+- Follow config-driven pattern
+
+## Validation Before Completion
+
+1. Run `shellcheck <script.sh>` — no warnings
+2. Test script in isolation if possible
+3. Run relevant unit tests: `./Scripts/tests/unit/run_all.sh`
+4. Run `./Scripts/target-switching/round-trip-test.sh` for system integrity

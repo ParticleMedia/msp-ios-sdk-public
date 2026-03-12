@@ -1,0 +1,55 @@
+---
+description: >
+  Testing rules for Quick/Nimble BDD tests.
+  Auto-loads when editing any Swift test file under Tests/.
+globs:
+  - "Tests/**/*.swift"
+  - "Tests/**/*Spec.swift"
+---
+
+# Testing Rules (Tests/)
+
+## MANDATORY: Load Full Playbooks
+
+Before writing or modifying tests, you MUST read:
+
+1. **Unit Test Practices**: `.context/testing/tech/ctx-testing-001-unit-test-quick-nimble.md`
+2. **BDD Practices**: `.context/testing/tech/ctx-testing-002-bdd-best-practices.md`
+
+For bugfix regression tests, also read:
+3. **Bugfix Regression**: `.context/testing/tech/ctx-testing-003-bugfix-regression.md`
+
+## Framework Stack
+
+- **Quick** ~> 7.0 (BDD test structure)
+- **Nimble** ~> 13.0 (matchers)
+- **OHHTTPStubs/Swift** ~> 9.1 (network stubbing)
+
+## Critical Rules
+
+1. **BDD Structure**: Always use `describe` / `context` / `it` pattern
+2. **Given-When-Then**: Every `it` block follows Given-When-Then internally
+3. **Hand-written Test Doubles**: NEVER use third-party mocking frameworks. Implement protocol-conforming stub/spy/fake classes manually
+4. **@TestState**: Use `@TestState` for test variables that need reset between specs
+5. **Force-unwrap OK**: `!` is acceptable inside `it()` assertion blocks (exception to production HR-S1)
+6. **Async**: Use `AsyncSpec` for async test cases, NOT `async/await`
+7. **YAML-First**: When test case definitions exist in `packages/test-cases/`, load from YAML
+
+## Test File Location
+
+Pattern: `Tests/{ModuleName}Tests/{ClassName}Spec.swift`
+
+## Test Double Naming
+
+| Type | Naming | Purpose |
+|------|--------|---------|
+| Stub | `Stub{Protocol}` | Returns canned responses |
+| Spy | `Spy{Protocol}` | Records calls for verification |
+| Fake | `Fake{Protocol}` | Simplified working implementation |
+| Dummy | `Dummy{Protocol}` | Fills parameter lists, never called |
+
+## Validation
+
+1. Tests pass: `swift test --filter {TestName}Spec`
+2. Coverage: aim for >= 80% on new code
+3. No flaky tests (no timing-dependent assertions)

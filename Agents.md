@@ -52,6 +52,19 @@ Knowledge base in `.context/` — discover entries via `.context/index.json`.
 
 After debugging (3+ rounds, root cause found): suggest `/context.add`.
 
+## Cross-Agent Sync Protocol
+
+All agents (Claude, Cursor, Codex) share `.context/` and `.agents-shared/skills/`.
+When any agent modifies these shared resources, it MUST run the sync chain:
+
+```bash
+python Scripts/tools/generate-context-index.py   # SSOT: .context/index.json
+python Scripts/tools/sync-agent-rules.py          # Propagate to agent rule files
+```
+
+This is auto-triggered by `add-context.sh` and `init-context.sh`. For manual edits, run both commands.
+See `.claude/rules/agent-sync.md` or `.cursor/rules/agent-sync.mdc` for full protocol.
+
 ## Read-Only Zones
 
 constitution.md (all), ARCHITECTURE.md, README.md — require human approval.

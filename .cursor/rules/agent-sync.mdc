@@ -1,0 +1,96 @@
+---
+description: >
+  Cross-agent synchronization protocol. Ensures Claude, Cursor, and Codex
+  stay in sync when shared resources change. Activates when modifying
+  .context/, skills, or agent configuration files.
+globs:
+  - ".context/**/*.md"
+  - ".agents-shared/skills/**/*.md"
+  - ".claude/skills/**/*.md"
+  - ".claude/rules/**/*.md"
+  - ".cursor/rules/**/*.mdc"
+  - ".codex/**/*.md"
+---
+
+# Cross-Agent Sync Protocol
+
+## The Problem
+
+Three agents (Claude, Cursor, Codex) share resources. Changes made by one agent
+can leave the others stale. This rule enforces automatic sync.
+
+## Shared Resources (Single Source of Truth)
+
+| Resource | SSOT Location | Derived Files |
+|----------|---------------|---------------|
+| Context entries | `.context/{domain}/{layer}/ctx-*.md` | `.context/index.json`, `.cursor/rules/context-system.mdc` |
+| Context index | `.context/index.json` (generated) | `.cursor/rules/context-system.mdc` inventory section |
+| Skills | `.agents-shared/skills/*.skill.md` | `.claude/skills/` (mirror), `.cursor/rules/skills-sync.mdc` |
+| Agent rules | Each agent owns its own | Sync conceptual parity, not file copies |
+
+## Sync Triggers & Actions
+
+### Trigger: New Context Entry Added
+
+When a new `.context/` entry is created (via `add-context.sh` or manually):
+
+```bash
+# Step 1: Regenerate index.json from entry frontmatter
+python Scripts/tools/generate-context-index.py
+
+# Step 2: Sync agent rule files from index.json
+python Scripts/tools/sync-agent-rules.py
+```
+
+Both steps are REQUIRED. The sync script updates the auto-generated inventory
+in `.cursor/rules/context-system.mdc`.
+
+### Trigger: Context Entry Modified
+
+When an existing `.context/` entry is edited (title, tags, triggers, status changed):
+
+```bash
+python Scripts/tools/generate-context-index.py
+python Scripts/tools/sync-agent-rules.py
+```
+
+### Trigger: New Skill Added
+
+When a new skill is created in `.agents-shared/skills/`:
+
+```bash
+# Step 1: Mirror to Claude
+cp .agents-shared/skills/new-skill.skill.md .claude/skills/new-skill.skill.md
+
+# Step 2: Sync Cursor skills list
+python Scripts/tools/sync-agent-rules.py
+```
+
+### Trigger: Skill Modified
+
+When an existing skill is modified:
+
+1. If edited in `.agents-shared/skills/` → copy to `.claude/skills/`
+2. If edited in `.claude/skills/` → copy to `.agents-shared/skills/`
+3. Run `python Scripts/tools/sync-agent-rules.py`
+
+### Trigger: Agent Rule Modified
+
+When `.claude/rules/*.md` or `.cursor/rules/*.mdc` is modified:
+- Evaluate if the conceptual change applies to other agents
+- If yes, apply equivalent change to the other agents' rules
+
+## Quick Sync Command
+
+For a full sync of everything:
+
+```bash
+python Scripts/tools/generate-context-index.py && python Scripts/tools/sync-agent-rules.py
+```
+
+## Validation
+
+After sync, verify:
+1. `.context/index.json` entry count matches `.context/` file count
+2. `.cursor/rules/context-system.mdc` inventory matches `index.json`
+3. `.claude/skills/` and `.agents-shared/skills/` have identical file sets

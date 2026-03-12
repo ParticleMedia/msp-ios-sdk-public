@@ -420,6 +420,13 @@ main() {
     print_info "更新索引..."
     update_index
 
+    # Regenerate JSON index and sync agent rules
+    print_info "同步 agent 规则..."
+    if command -v python3 >/dev/null 2>&1; then
+        python3 "$REPO_ROOT/Scripts/tools/generate-context-index.py" 2>/dev/null || true
+        python3 "$REPO_ROOT/Scripts/tools/sync-agent-rules.py" 2>/dev/null || true
+    fi
+
     print_header "✨ 完成！"
     echo ""
     print_success "上下文已成功创建: $context_id"

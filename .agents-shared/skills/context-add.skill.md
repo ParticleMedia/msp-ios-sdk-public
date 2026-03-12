@@ -153,9 +153,22 @@ After successful creation, the script will:
 - Generate a unique context ID (e.g., `ctx-release-001`)
 - Create the context file in `.context/{domain}/`
 - Update the index.md automatically
+- Regenerate `.context/index.json` and sync agent rules (auto-triggered)
 - Display the file path
 
 Confirm with user: "上下文已成功创建: {context_id}"
+
+### Step 6: Verify Cross-Agent Sync
+
+If the auto-sync in `add-context.sh` succeeds, no action needed. If it fails or
+you created the context file manually, invoke the `agent-sync` skill:
+
+```bash
+python3 Scripts/tools/generate-context-index.py
+python3 Scripts/tools/sync-agent-rules.py
+```
+
+This ensures Claude, Cursor, and Codex all see the new entry.
 
 ---
 
@@ -214,6 +227,7 @@ Confirm with user: "上下文已成功创建: {context_id}"
 
 ## Related Skills
 
+- `agent-sync.skill.md` - **MUST invoke** after adding context (auto-triggered by script, manual if needed)
 - `/context.init` - Initialize context from commit history
 - `/context.list` - Search and view existing contexts
 - `deep-reviewer.skill.md` - For comprehensive code review (may suggest contexts to create)

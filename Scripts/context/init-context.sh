@@ -464,6 +464,15 @@ main() {
         fi
     done
 
+    # Regenerate JSON index and sync agent rules
+    if [ "$created_count" -gt 0 ] && command -v python3 >/dev/null 2>&1; then
+        local repo_root
+        repo_root=$(get_repo_root)
+        echo "📇 Syncing agent rules..."
+        python3 "$repo_root/Scripts/tools/generate-context-index.py" 2>/dev/null || true
+        python3 "$repo_root/Scripts/tools/sync-agent-rules.py" 2>/dev/null || true
+    fi
+
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "✨ Initialization complete!"
