@@ -29,7 +29,7 @@ readonly _NOVACORE_BUILD_SOURCED=1
 # Pre-build NovaCore Dependencies
 # ============================================================================
 # Pre-builds Pod dependencies that NovaCore needs:
-# NovaCore imports: Kingfisher (via MSPKingfisher), MSPSnapKit, Lottie
+# NovaCore imports: Kingfisher (via MSPKingfisher), MSPSnapKit
 # These must be built to shared DerivedData before NovaCore can compile
 #
 # Args:
@@ -105,7 +105,7 @@ prebuild_novacore_dependencies() {
 # ============================================================================
 # Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
 # ALWAYS rebuilds NovaCore to ensure source code changes are included
-# Pre-builds Pod dependencies (Kingfisher, MSPSnapKit, Lottie) before building NovaCore
+# Pre-builds Pod dependencies (Kingfisher, MSPSnapKit) before building NovaCore
 #
 # Returns:
 #   0 if NovaCore.xcframework is ready, 1 if failed
@@ -166,7 +166,7 @@ ensure_novacore_xcframework() {
         log::error "PODS" "Failed to build NovaCore.xcframework"
         log::error "PODS" "Please check build logs and fix any build errors"
         log::error "PODS" "Common issues:"
-        log::error "PODS" "  1. Missing dependencies (Kingfisher, MSPSnapKit, Lottie, etc.)"
+        log::error "PODS" "  1. Missing dependencies (Kingfisher, MSPSnapKit, Shimmer, etc.)"
         log::error "PODS" "  2. Code signing issues"
         log::error "PODS" "  3. Xcode version incompatibility"
         return 1

@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 # ============================================================================
 # Target Switching Script - Dual-Track Architecture Support
 # ============================================================================
@@ -479,7 +483,9 @@ ensure_prepare_command_pod_sources() {
     tmp_dir="$(mktemp -d)"
     local clone_log
     clone_log="$(mktemp)"
-    trap 'rm -f "$clone_log"' EXIT
+    # Note: do NOT use `trap ... EXIT` with a local variable — the trap fires
+    # after the function returns when the local is already out of scope, causing
+    # "unbound variable" under set -u. Explicit cleanup is used instead.
 
     log_info "Downloading $pod_name source (branch/tag: $branch_or_tag)..."
     if ! git clone --depth 1 --branch "$branch_or_tag" "$git_url" "$tmp_dir/$clone_subdir_name" > "$clone_log" 2>&1; then
@@ -487,6 +493,7 @@ ensure_prepare_command_pod_sources() {
         log_info "Git clone output (for troubleshooting):"
         sed 's/^/  /' "$clone_log" >&2
         log_info "Ensure you have network access and git installed, then re-run switch-target.sh pods-dev"
+        rm -f "$clone_log"
         rm -rf "$tmp_dir"
         exit 1
     fi
@@ -494,6 +501,7 @@ ensure_prepare_command_pod_sources() {
     local cloned_sources="$tmp_dir/$clone_subdir_name/$source_dir_in_repo"
     if [[ ! -d "$cloned_sources" ]]; then
         log_error "Cloned $pod_name repo missing $source_dir_in_repo/ directory"
+        rm -f "$clone_log"
         rm -rf "$tmp_dir"
         exit 1
     fi

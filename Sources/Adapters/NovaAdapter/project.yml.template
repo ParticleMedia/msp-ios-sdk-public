@@ -35,7 +35,7 @@ targets:
         embed: false
       - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework
         embed: false
-      # Kingfisher, SnapKit, Lottie, Shimmer are statically linked into NovaCore.xcframework
+      # Kingfisher, SnapKit, Shimmer are statically linked into NovaCore.xcframework
       # and hidden via UNEXPORTED_SYMBOLS_FILE. NovaAdapter does not import them directly.
     settings:
       base:

@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # Modular CocoaPods Release Script
 # Follows the exact release workflow: MSPiOSCore → MSPSharedLibraries → Adapters → MSPCore
@@ -1058,12 +1062,6 @@ main() {
     print_section "CocoaPods Release Process Completed Successfully"
     log::success "PODS" "All pods released successfully for version: $VERSION"
     log::info "PODS" "Release branch '$RELEASE_BRANCH' is ready to be pushed"
-    
-    # Send single comprehensive success notification (skip in dry-run mode)
-    if [[ "$DRY_RUN" != "true" ]]; then
-        local pods_list=$(IFS=", "; echo "${cocoapods_pods[*]}")
-        notify_release_success_with_summary "CocoaPods" "$VERSION" "$pods_list" "$duration_formatted" "$release_notes" "$total_pods" "$successful_pods" "$failed_pods" "$RELEASE_BRANCH"
-    fi
     
     # Mark pods_publish step as successful
     msp_state_mark_step_success "pods_publish"

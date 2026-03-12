@@ -6,14 +6,13 @@
 #          to prevent accidental production releases.
 #
 # Safety Features:
-#   1. Block Release tier from running locally (requires CI environment)
-#      - Local release is enabled by default (MSP_ALLOW_LOCAL_RELEASE=1)
-#      - Set MSP_ALLOW_LOCAL_RELEASE=0 in Jenkins CI to enforce CI-only releases
-#   2. Require clean Git state
-#   3. Validate version format
-#   4. Require confirmation unless --force is passed
-#   5. Block release if branch name is not allowed
-#   6. Require changelog (release.md)
+#   1. Prefer CI for production releases
+#   2. Allow local production only as an explicit emergency override
+#   3. Require clean Git state
+#   4. Validate version format
+#   5. Require --force for local emergency overrides
+#   6. Block release if branch name is not allowed
+#   7. Require changelog (release.md)
 # ============================================================================
 
 # Prevent multiple sourcing
@@ -29,43 +28,61 @@ fi
 # shellcheck source=Scripts/lib/validation.sh
 source "$ROOT_DIR/Scripts/lib/validation.sh" 2>/dev/null || true
 
+# Helper: detect CI execution
+msp_safety_is_ci() {
+    [[ "${CI:-}" == "true" ]] || [[ "${GITHUB_ACTIONS:-}" == "true" ]]
+}
+
+# Helper: current branch name
+msp_safety_current_branch() {
+    git rev-parse --abbrev-ref HEAD 2>/dev/null || echo ""
+}
+
+# Helper: local emergency release branch allowlist
+msp_safety_is_local_override_branch_allowed() {
+    local branch="$1"
+    [[ "$branch" == "develop" ]] || \
+    [[ "$branch" == "main" ]] || \
+    [[ "$branch" == "master" ]] || \
+    [[ "$branch" =~ ^hotfix/ ]]
+}
+
 # ============================================================================
-# Safety Check 1: Block Release Tier from Running Locally
+# Safety Check 1: CI default, local production requires explicit override
 # ============================================================================
 msp_safety_require_ci_for_release() {
-    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
     local dry_run="${DRY_RUN:-true}"
+    local current_branch
 
-    # Production mode (DRY_RUN=false) requires CI environment
-    # TODO: Re-enable this check when CI pipeline is fully set up
-    # For now, allow local execution since all releases are done locally
-    # See README.md for details
-    if [[ "$dry_run" == "false" ]]; then
-        # Check for CI environment variables (CI, GITHUB_ACTIONS, etc.)
-        local ci_detected=false
-        if [[ -n "${CI:-}" ]] && [[ "${CI}" == "true" ]]; then
-            ci_detected=true
-        elif [[ -n "${GITHUB_ACTIONS:-}" ]] && [[ "${GITHUB_ACTIONS}" == "true" ]]; then
-            ci_detected=true
-        fi
-        
-        if [[ "$ci_detected" == "false" ]]; then
-            # TEMPORARY: Local releases allowed while CI pipeline is not yet set up.
-            # TODO(CI-ready): Re-enable CI-only restriction. Future logic:
-            #   if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
-            #       return 0  # explicit override for emergencies
-            #   fi
-            #   log::error "SAFETY" "Production mode cannot be executed locally. Use CI pipeline only."
-            #   return 1
-            # See README.md - "Future CI Integration" section
-            log::info "SAFETY" "[SAFETY] ℹ️  本地发布模式 (Local release mode)"
-            log::info "SAFETY" "[SAFETY] ℹ️  注意: 当前允许本地执行生产模式 (Currently allowing local production mode)"
-            log::info "SAFETY" "[SAFETY] ℹ️  未来 CI 流水线就绪后将恢复限制 (CI restriction will be re-enabled when CI pipeline is ready)"
-            return 0
-        fi
-        log::info "SAFETY" "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
+    if [[ "$dry_run" != "false" ]]; then
+        return 0
     fi
 
+    if msp_safety_is_ci; then
+        log::info "SAFETY" "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
+        return 0
+    fi
+
+    if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" != "1" ]]; then
+        log::error "SAFETY" "[SAFETY] Production releases default to CI."
+        log::error "SAFETY" "[SAFETY] For emergency local releases, set MSP_ALLOW_LOCAL_RELEASE=1 and pass --force."
+        return 1
+    fi
+
+    current_branch="$(msp_safety_current_branch)"
+    if [[ -z "$current_branch" ]]; then
+        log::error "SAFETY" "[SAFETY] Cannot determine current Git branch for local production override"
+        return 1
+    fi
+
+    if ! msp_safety_is_local_override_branch_allowed "$current_branch"; then
+        log::error "SAFETY" "[SAFETY] Local production override is not allowed on branch '$current_branch'"
+        log::error "SAFETY" "[SAFETY] Allowed local production branches: develop, main, master, hotfix/*"
+        return 1
+    fi
+
+    log::warn "SAFETY" "[SAFETY] Emergency local production override enabled"
+    log::warn "SAFETY" "[SAFETY] Branch '$current_branch' is allowed for local production override"
     return 0
 }
 
@@ -152,29 +169,23 @@ msp_safety_validate_version() {
 msp_safety_require_confirmation() {
     local version="$1"
     local force="${MSP_RELEASE_FORCE:-false}"
-    # Phase B: Use DRY_RUN directly, removed tier variable
     local dry_run="${DRY_RUN:-true}"
 
-    # Production mode (DRY_RUN=false) requires confirmation
-    if [[ "$dry_run" == "false" ]]; then
-        # Skip confirmation in DRY_RUN mode
-        if [[ "$dry_run" == "true" ]]; then
-            log::info "SAFETY" "[SAFETY] ℹ️  DRY RUN mode: Skipping confirmation"
-            return 0
-        fi
-        
-        # Local release mode: Allow local execution (defaults to enabled)
-        # MSP_ALLOW_LOCAL_RELEASE defaults to 1 for local development
-        # Will be set to 0 in Jenkins CI environment
-        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-1}" == "1" ]]; then
-            log::info "SAFETY" "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
-            log::info "SAFETY" "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
-            return 0
-        fi
-
-        log::info "SAFETY" "[SAFETY] ✓ Production release confirmed (non-interactive)"
+    if [[ "$dry_run" != "false" ]]; then
+        return 0
     fi
 
+    if ! msp_safety_is_ci; then
+        if [[ "$force" != "true" ]]; then
+            log::error "SAFETY" "[SAFETY] Local production override requires --force"
+            log::error "SAFETY" "[SAFETY] Example: MSP_ALLOW_LOCAL_RELEASE=1 ./Scripts/msp-release.sh --profile=production run <version> --force"
+            return 1
+        fi
+        log::info "SAFETY" "[SAFETY] ✓ Local production override confirmed with --force"
+        return 0
+    fi
+
+    log::info "SAFETY" "[SAFETY] ✓ Production release confirmed (non-interactive CI)"
     return 0
 }
 
@@ -182,25 +193,20 @@ msp_safety_require_confirmation() {
 # Safety Check 5: Validate Branch Name
 # ============================================================================
 msp_safety_validate_branch() {
-    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
     local dry_run="${DRY_RUN:-true}"
 
-    # Production mode (DRY_RUN=false) requires branch validation
-    if [[ "$dry_run" == "false" ]]; then
-        # Local release mode: Allow local execution when explicitly enabled
-        # MSP_ALLOW_LOCAL_RELEASE defaults to 1 (enabled) for local development
-        # Will be set to 0 in Jenkins CI environment
-        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-1}" == "1" ]]; then
-            log::info "SAFETY" "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
-            log::info "SAFETY" "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
-            return 0
-        fi
+    if [[ "$dry_run" != "false" ]]; then
+        return 0
+    fi
 
-        # Use centralized branch validation from validation.sh (DRY principle)
-        # This ensures consistency between safety.sh and modular.sh
-        if ! validate_release_branch; then
-            return 1
-        fi
+    if ! msp_safety_is_ci; then
+        return 0
+    fi
+
+    # Use centralized branch validation from validation.sh (DRY principle)
+    # This ensures consistency between safety.sh and modular.sh
+    if ! validate_release_branch; then
+        return 1
     fi
 
     return 0
@@ -214,24 +220,14 @@ msp_safety_require_changelog() {
     local dry_run="${DRY_RUN:-true}"
     local repo_root="${ROOT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null)}"
 
-    # Production mode (DRY_RUN=false) requires changelog
-    # But only in CI environment - local releases skip this check
-    # (consistent with msp_safety_require_ci_for_release behavior)
-    if [[ "$dry_run" == "false" ]]; then
-        # Check for CI environment - skip changelog check for local releases
-        local ci_detected=false
-        if [[ -n "${CI:-}" ]] && [[ "${CI}" == "true" ]]; then
-            ci_detected=true
-        elif [[ -n "${GITHUB_ACTIONS:-}" ]] && [[ "${GITHUB_ACTIONS}" == "true" ]]; then
-            ci_detected=true
-        fi
+    # Resume mode: release.md was already verified in the original run.
+    # git clean removes it from the workspace, so skip the check here.
+    if [[ "${MSP_RESUME_MODE:-}" == "1" ]]; then
+        log::info "SAFETY" "[SAFETY] Skipping changelog check in resume mode (already verified in original run)"
+        return 0
+    fi
 
-        if [[ "$ci_detected" == "false" ]]; then
-            # Local release mode - skip changelog check
-            # All releases are currently done locally, changelog will be required when CI is ready
-            log::info "SAFETY" "[SAFETY] ℹ️  Changelog check skipped (local release mode)"
-            return 0
-        fi
+    if [[ "$dry_run" == "false" ]]; then
         local changelog_file="$repo_root/release.md"
 
         log::info "SAFETY" "[SAFETY] Checking for changelog: release.md"
@@ -320,6 +316,9 @@ msp_release_safety_check() {
 
 # Export functions
 export -f msp_safety_require_ci_for_release \
+         msp_safety_is_ci \
+         msp_safety_current_branch \
+         msp_safety_is_local_override_branch_allowed \
          msp_safety_require_clean_git \
          msp_safety_validate_version \
          msp_safety_require_confirmation \

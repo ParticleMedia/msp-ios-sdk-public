@@ -31,11 +31,15 @@ set -euo pipefail
 [[ -n "${_VERIFY_DISPATCHER_SOURCED:-}" ]] && return 0
 readonly _VERIFY_DISPATCHER_SOURCED=1
 
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # shellcheck source=Scripts/lib/path-helpers.sh
 source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"

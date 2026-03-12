@@ -149,9 +149,10 @@ msp_do_fix_public_tag() {
 msp_do_run() {
     local root_dir="${ROOT_DIR:-$_DISPATCH_ROOT_DIR}"
 
-    # Record author email for Slack notifications
+    # Record author email for notifications.
+    # Preserve CI/Jenkins-provided value when present; fall back to local git config.
     export MSP_AUTHOR_EMAIL
-    MSP_AUTHOR_EMAIL="$(git config user.email 2>/dev/null || echo "")"
+    MSP_AUTHOR_EMAIL="${MSP_AUTHOR_EMAIL:-$(git config user.email 2>/dev/null || echo "")}"
 
     # Set release mode (simple vs full)
     if command -v msp_determine_release_mode &>/dev/null; then
@@ -185,6 +186,10 @@ msp_do_run() {
     [[ "${MSP_PODS_ENABLED:-}" == "false" ]] && export PODS_ENABLED="false"
     [[ "${MSP_SPM_ENABLED:-}" == "true" ]] && export SPM_ENABLED="true"
     [[ "${MSP_SPM_ENABLED:-}" == "false" ]] && export SPM_ENABLED="false"
+    export SKIP_PODS="${SKIP_PODS:-false}"
+    export SKIP_SPM="${SKIP_SPM:-false}"
+    export ONLY_PODS="${ONLY_PODS:-false}"
+    export ONLY_SPM="${ONLY_SPM:-false}"
 
     # Require version
     if [[ -z "${RELEASE_VERSION:-}" ]]; then
@@ -404,14 +409,16 @@ msp_do_resume() {
     # Increment resume count
     command -v msp_state_increment_resume_count &>/dev/null && msp_state_increment_resume_count
 
-    # Setup environment
-    if command -v msp_resume_setup_environment &>/dev/null; then
-        msp_resume_setup_environment "$version"
-    fi
-
-    # Load config
+    # Load config first (must run before setup_environment so that
+    # msp_resume_setup_environment can override RELEASE_VERSION without
+    # being overwritten by msp_load_release_config afterwards)
     if command -v msp_load_release_config &>/dev/null; then
         msp_load_release_config
+    fi
+
+    # Setup environment (sets RELEASE_VERSION, MSP_RESUME_MODE, BASE_BRANCH, etc.)
+    if command -v msp_resume_setup_environment &>/dev/null; then
+        msp_resume_setup_environment "$version"
     fi
 
     # Run preflight checks
@@ -429,8 +436,10 @@ msp_do_resume() {
     log::info "RELEASE" "Delegating to: $MODULAR_SCRIPT"
     log::info "RELEASE" "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
 
-    if ! bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}; then
-        local exit_code=$?
+    # Capture exit code without using `! cmd` (which resets $? to 0 inside the then-block)
+    local exit_code=0
+    bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"} || exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
         log::error "RELEASE" "Resume failed with exit code: $exit_code"
         command -v notify_release_failure &>/dev/null && \
             notify_release_failure "MSP iOS SDK" "$RELEASE_VERSION" "Release execution failed" "Resume Execution"

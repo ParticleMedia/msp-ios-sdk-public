@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # ============================================================================
 # MSP Release Configuration Loader (Patch M+CONFIG)
@@ -30,6 +34,25 @@ MSP_RELEASE_CONFIG_FILE=""
 
 # Initialize config cache (must be set before first use to avoid set -u errors)
 _MSP_CFG_CACHE="${_MSP_CFG_CACHE:-}"
+
+# ============================================================================
+# Resolve Effective Branch for Policy Checks
+# ============================================================================
+msp_resolve_branch_for_policy() {
+    local branch="${1:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")}"
+    local base_branch="${BASE_BRANCH:-}"
+    local jenkins_branch="${GIT_BRANCH:-}"
+
+    if [[ "$branch" == "HEAD" ]]; then
+        if [[ -n "$base_branch" ]]; then
+            branch="$base_branch"
+        elif [[ -n "$jenkins_branch" ]]; then
+            branch="${jenkins_branch#origin/}"
+        fi
+    fi
+
+    echo "$branch"
+}
 
 # ============================================================================
 # Load Configuration File
@@ -140,7 +163,11 @@ _msp_parse_yaml_value() {
 # ============================================================================
 msp_get_branch_policy_value() {
     local key="$1"
-    local branch="${2:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")}"
+    local branch="${2:-$(msp_resolve_branch_for_policy)}"
+
+    if [[ -n "$branch" ]]; then
+        branch="$(msp_resolve_branch_for_policy "$branch")"
+    fi
     
     if [[ -z "$branch" ]]; then
         echo "[CONFIG][ERROR] Cannot determine current branch" >&2
@@ -221,6 +248,7 @@ should_preflight_run() {
 # Export Functions
 # ============================================================================
 export -f msp_load_release_config \
+         msp_resolve_branch_for_policy \
          msp_get_branch_policy_value \
          should_real_publish \
          should_test_publish \

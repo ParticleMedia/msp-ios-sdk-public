@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # Modular SPM Release Script
 # Releases Swift Package Manager packages
@@ -852,12 +856,6 @@ process_binary_targets_for_cloud_distribution() {
             rm -f "$zip_path"
             ((failed_count++)) || true
             
-            # Send Slack alert on checksum failure
-            if [[ "$DRY_RUN" != "true" ]]; then
-                if command -v notify_release_failure &>/dev/null; then
-                    notify_release_failure "SPM" "$version" "Failed to compute checksum for $framework_name" "Checksum Computation"
-                fi
-            fi
             return 1
         fi
         
@@ -1248,11 +1246,6 @@ main() {
     log_section "Phase: Cloud Distribution Processing"
     if ! process_binary_targets_for_cloud_distribution "$VERSION"; then
         log::error "SPM" "Cloud distribution processing failed"
-        if [[ "$DRY_RUN" != "true" ]] && [[ "${DRY_RUN:-false}" != "1" ]]; then
-            if command -v notify_release_failure &>/dev/null; then
-                notify_release_failure "SPM" "$VERSION" "Cloud distribution processing failed" "Cloud Distribution"
-            fi
-        fi
         msp_state_mark_step_failed "spm_publish" "Cloud distribution processing failed" "1"
         return 1
     fi
@@ -1505,9 +1498,6 @@ main() {
         else
             ((failed_packages++)) || true
             failed_package_names+=("$package")
-            if [[ "$DRY_RUN" != "true" ]]; then
-                notify_release_failure "SPM" "$VERSION" "$package release failed" "Package Release"
-            fi
             msp_state_mark_step_failed "spm_publish" "$package release failed" "1"
             exit 1
         fi
@@ -1517,9 +1507,6 @@ main() {
     log::step "SPM" "Running local SPM build validation"
     if ! spm_local_validation; then
         log::error "SPM" "Local SPM validation failed — aborting SPM release"
-        if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "SPM" "$VERSION" "Local SPM build validation failed" "Local Validation"
-        fi
         msp_state_mark_step_failed "spm_publish" "SPM publish failed due to local validation failure" "1"
         return 1
     fi
@@ -1528,9 +1515,6 @@ main() {
     if push_spm_tags; then
         log::success "SPM" "All SPM tags pushed successfully"
     else
-        if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "SPM" "$VERSION" "Failed to push SPM tags" "Tag Push"
-        fi
         msp_state_mark_step_failed "spm_publish" "Failed to push SPM tags" "1"
         exit 1
     fi
@@ -1546,12 +1530,6 @@ main() {
     for package in "${successful_package_names[@]}"; do
         log::info "SPM" "  $package: https://github.com/ParticleMedia/msp-ios-sdk-public.git (tag: ${package}-${VERSION})"
     done
-    
-    # Send single comprehensive success notification (skip in dry-run mode)
-    if [[ "$DRY_RUN" != "true" ]]; then
-        local spm_packages_list=$(IFS=", "; echo "${successful_package_names[*]}")
-        notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages_list" "$duration_formatted" "$RELEASE_NOTES" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
-    fi
     
     # Mark spm_publish step as successful
     msp_state_mark_step_success "spm_publish"

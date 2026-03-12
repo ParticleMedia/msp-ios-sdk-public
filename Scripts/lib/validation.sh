@@ -16,6 +16,11 @@ fi
 
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/../release/lib/config.sh" ]]; then
+    # shellcheck source=Scripts/release/lib/config.sh
+    source "$(dirname "${BASH_SOURCE[0]}")/../release/lib/config.sh" 2>/dev/null || true
+fi
+
 # Required commands for different operations (using functions for bash 3.x compatibility)
 get_required_commands() {
     case "$1" in
@@ -508,6 +513,14 @@ validate_release_branch() {
 
     local current_branch
     current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
+    if command -v msp_resolve_branch_for_policy &>/dev/null; then
+        local resolved_branch
+        resolved_branch="$(msp_resolve_branch_for_policy "$current_branch")"
+        if [[ -n "$resolved_branch" && "$resolved_branch" != "$current_branch" ]]; then
+            log::info "VALIDATE" "[BRANCH_VALIDATION] Effective branch for policy checks: $resolved_branch"
+            current_branch="$resolved_branch"
+        fi
+    fi
 
     if [[ -z "$current_branch" ]]; then
         log::error "VALIDATE" "[BRANCH_VALIDATION] Cannot determine current Git branch"
@@ -516,25 +529,22 @@ validate_release_branch() {
 
     log::info "VALIDATE" "[BRANCH_VALIDATION] Validating branch: $current_branch"
 
-    # Allowed branches: release/*, feature/*, main, master, develop
-    # Explanation:
-    # - release/*: Already on a release branch (no branch creation needed)
-    # - feature/*: Feature branches will create release/* branch in Step 1
-    # - main/master: Main branches (will create release/* branch in Step 1)
-    if [[ "$current_branch" =~ ^release/ ]] || \
-       [[ "$current_branch" =~ ^feature/ ]] || \
-       [[ "$current_branch" == "main" ]] || \
-       [[ "$current_branch" == "master" ]]; then
-        log::info "VALIDATE" "[BRANCH_VALIDATION] ✓ Branch '$current_branch' is allowed for release"
-        if [[ "$current_branch" =~ ^feature/ ]]; then
-            log::info "VALIDATE" "[BRANCH_VALIDATION] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
-        fi
-        return 0
-    else
-        log::error "VALIDATE" "[BRANCH_VALIDATION] Production mode cannot run on branch '$current_branch'"
-        log::error "VALIDATE" "[BRANCH_VALIDATION] Allowed branches: release/*, feature/*, main, master"
+    if ! command -v msp_get_branch_policy_value &>/dev/null; then
+        log::error "VALIDATE" "[BRANCH_VALIDATION] Branch policy loader unavailable"
         return 1
     fi
+
+    local allow_real_publish
+    allow_real_publish="$(msp_get_branch_policy_value "allow_real_publish" "$current_branch" 2>/dev/null || echo "false")"
+
+    if [[ "$allow_real_publish" == "true" ]]; then
+        log::info "VALIDATE" "[BRANCH_VALIDATION] ✓ Branch '$current_branch' is allowed for release by branch_policy"
+        return 0
+    fi
+
+    log::error "VALIDATE" "[BRANCH_VALIDATION] Production mode cannot run on branch '$current_branch'"
+    log::error "VALIDATE" "[BRANCH_VALIDATION] Check Scripts/config/release.yaml -> branch_policy.rules"
+    return 1
 }
 
 # Export validation functions

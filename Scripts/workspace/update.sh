@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -420,7 +424,7 @@ pods_detected=0
   echo "    - name: MSPDemoApp"
   echo "      path: ${DEMOAPP_PROJECT_REL_PATH}"
   echo "      type: file"
-  for proj in "${PROJECTS[@]}"; do
+  for proj in ${PROJECTS[@]+"${PROJECTS[@]}"}; do
     rel="${proj#$ROOT_DIR/}"
     # Skip the generated MSPDemoApp project - it will be created from the spec above.
     if [[ "$rel" == "$DEMOAPP_XCODEPROJ_REL" ]]; then
@@ -455,7 +459,7 @@ XML
       location = "group:${DEMOAPP_XCODEPROJ_REL}">
    </FileRef>
 XML
-  for proj in "${PROJECTS[@]}"; do
+  for proj in ${PROJECTS[@]+"${PROJECTS[@]}"}; do
     rel="${proj#$ROOT_DIR/}"
     if [[ "$rel" == "$DEMOAPP_XCODEPROJ_REL" ]]; then
       continue

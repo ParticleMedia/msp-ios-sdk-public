@@ -9,43 +9,57 @@ MSP (Mobile SDK Platform) iOS SDK provides a unified advertising mediation frame
 ### Local Development
 
 ```bash
-# Switch to development mode
-./Scripts/switch-target.sh pods-dev
+# Setup + switch to dev mode + open Xcode (one command)
+make open
 
-# Open workspace
-open msp-ios-sdk.xcworkspace
+# Or step by step:
+make setup        # bundle install + pod install + workspace update
+make open         # switch pods-dev + open workspace
+```
+
+### Run Tests & Validation
+
+```bash
+make test         # Swift unit tests (MSPDemoApp scheme)
+make validate     # Quick CI validation
+make rtt          # Round-trip test (full target-switching compatibility)
+make ci           # Full CI pipeline
 ```
 
 ### Release a Version
 
 ```bash
 # Full release (CocoaPods + SPM)
-./Scripts/msp-release.sh --profile=production run 1.0.0
+make release VERSION=1.0.0 NOTES="Bug fixes and performance improvements"
 
-# Release with notes (shown in GitHub Release)
-./Scripts/msp-release.sh --profile=production run 1.0.0 --release-notes "Bug fixes and performance improvements"
-
-# Only release CocoaPods
-./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods
-
-# Only release SPM
-./Scripts/msp-release.sh --profile=production run 1.0.0 --only-spm
+# With extra flags
+make release VERSION=1.0.0 NOTES="Fix crash" EXTRA_FLAGS="--only-pods"
 
 # Resume interrupted release
+make resume VERSION=1.0.0
+
+# Or use the script directly:
+./Scripts/msp-release.sh --profile=production run 1.0.0
 ./Scripts/msp-release.sh resume
 ```
 
 ### TestFlight Deployment
 
 ```bash
-# Dry run (archive + export only, no upload)
-./Scripts/testflight/deploy.sh --dry-run
-
 # Full deploy (archive + export + upload to App Store Connect)
-./Scripts/testflight/deploy.sh
+make beta
+
+# Dry run (archive + export only, no upload)
+make beta-dry
 
 # Override build number
 ./Scripts/testflight/deploy.sh --build-number 42
+```
+
+### Cleanup
+
+```bash
+make clean        # Remove DerivedData + Pods
 ```
 
 **Required environment variables** (for upload only, not needed for `--dry-run`):
@@ -69,16 +83,30 @@ The `.env` file is gitignored and loaded automatically by `deploy.sh`. Existing 
 
 The SDK version (`MARKETING_VERSION`) is automatically read from `Scripts/config/sdk_version.conf` (SSOT). Build number is auto-incremented from `Scripts/testflight/config.yaml`.
 
-**Common Release Commands:**
+**All Makefile Targets:**
+
+| Target | Purpose |
+|--------|---------|
+| `make setup` | Install dependencies (bundle + pod + workspace update) |
+| `make open` | Switch to pods-dev and open Xcode workspace |
+| `make test` | Run Swift unit tests (MSPDemoApp scheme) |
+| `make validate` | Quick CI validation |
+| `make rtt` | Round-trip test (target-switching compatibility) |
+| `make ci` | Full CI pipeline |
+| `make beta` | Upload DemoApp to TestFlight |
+| `make beta-dry` | Archive + export only, no upload |
+| `make release VERSION=x NOTES="..."` | Production CocoaPods + SPM release |
+| `make resume VERSION=x` | Resume interrupted release |
+| `make clean` | Clean DerivedData and Pods |
+
+**Advanced Release Commands (via script):**
 
 | Command | Purpose |
 |---------|---------|
-| `run <version>` | Execute full release (CocoaPods + SPM) |
-| `run <version> --only-pods` | CocoaPods only |
-| `run <version> --only-spm` | SPM only |
-| `resume` | Resume from state file |
-| `create-github-releases <version>` | Fix missing GitHub Releases |
-| `fix-public-tag <version>` | Fix public remote tag |
+| `./Scripts/msp-release.sh run <version> --only-pods` | CocoaPods only |
+| `./Scripts/msp-release.sh run <version> --only-spm` | SPM only |
+| `./Scripts/msp-release.sh create-github-releases <version>` | Fix missing GitHub Releases |
+| `./Scripts/msp-release.sh fix-public-tag <version>` | Fix public remote tag |
 
 See [Docs/RELEASE.md](Docs/RELEASE.md) for detailed release documentation.
 
@@ -115,6 +143,7 @@ See [Docs/RELEASE.md](Docs/RELEASE.md) for detailed release documentation.
 - **Tests/** - Unit tests
 - **Examples/** - MSPDemoApp
 - **Build/ReleaseArtifacts/** - Build outputs (XCFrameworks, Zips)
+- **Makefile** - Developer workflow shortcuts
 
 ---
 
@@ -124,7 +153,7 @@ Switch between different development modes:
 
 | Mode | Command | Use Case |
 |------|---------|----------|
-| `pods-dev` | `./Scripts/switch-target.sh pods-dev` | Daily development with source files |
+| `pods-dev` | `make open` or `./Scripts/switch-target.sh pods-dev` | Daily development with source files |
 | `pods-release` | `./Scripts/switch-target.sh pods-release` | Pre-release validation with XCFrameworks |
 | `spm-release` | `./Scripts/switch-target.sh spm-release` | SPM distribution testing |
 
@@ -212,6 +241,31 @@ Release mode controls whether post-release verification runs:
 
 # Force full mode on non-production profile
 ./Scripts/msp-release.sh --full run 1.0.0
+```
+
+## Production Release Policy
+
+Production release has two paths with different guardrails:
+
+- `CI/Jenkins` is the default path for production releases.
+- Local production release remains available only as an emergency override.
+
+### CI/Jenkins Production Release
+
+- Supported branches: `develop`, `feature/*`, `release/*`, `hotfix/*`
+- This is the standard path for regular production releases.
+
+### Local Emergency Production Release
+
+- Supported branches: `develop`, `main`, `master`, `hotfix/*`
+- `feature/*` is intentionally not allowed for local production release.
+- You must set `MSP_ALLOW_LOCAL_RELEASE=1`.
+- You must also pass `--force`.
+- Your Git working tree must be clean.
+- `release.md` must exist and contain a `## Changes` section.
+
+```bash
+MSP_ALLOW_LOCAL_RELEASE=1 ./Scripts/msp-release.sh --profile=production run 1.0.0 --force
 ```
 
 ---

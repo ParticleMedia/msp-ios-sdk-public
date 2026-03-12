@@ -43,7 +43,7 @@ EOF
 
     # Copy the actual state.sh for testing, but remove the worktree guard lines
     # since they rely on git rev-parse which won't work in test isolation
-    sed '1,7d' "${REPO_ROOT}/Scripts/release/utils/state.sh" > "${TEST_TMPDIR}/Scripts/release/utils/state.sh"
+    sed '/^#!\/usr\/bin\/env bash/d; /^# --- MSP Worktree Safety Guard/,/^# --- End MSP Worktree Safety Guard/d' "${REPO_ROOT}/Scripts/release/utils/state.sh" > "${TEST_TMPDIR}/Scripts/release/utils/state.sh"
 
     # Add shebang and source the no-op worktree guard
     cat > "${TEST_TMPDIR}/Scripts/release/utils/state_patched.sh" <<EOF

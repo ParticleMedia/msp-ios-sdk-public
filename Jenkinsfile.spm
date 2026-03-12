@@ -11,7 +11,7 @@ pipeline {
     }
 
     environment {
-        DEVELOPER_DIR = '/Applications/Xcode_15.4.app/Contents/Developer'
+        // DEVELOPER_DIR is auto-detected in 'Environment check' stage below
         SLACK_CHANNEL = '#msp-ios-sdk'
         SLACK_CONFIG  = 'Scripts/config/slack.conf'
         LANG = 'en_US.UTF-8'
@@ -22,6 +22,15 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Environment check') {
+            steps {
+                script {
+                    env.DEVELOPER_DIR = sh(script: './Scripts/lib/detect_developer_dir.sh', returnStdout: true).trim()
+                    echo "Auto-detected DEVELOPER_DIR: ${env.DEVELOPER_DIR}"
+                }
             }
         }
 

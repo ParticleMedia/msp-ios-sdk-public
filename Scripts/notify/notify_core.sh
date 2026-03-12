@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 # ============================================================================
 # Notification Core - Unified Notification API
 # ============================================================================
@@ -37,6 +41,7 @@ source "${ROOT_DIR:-.}/Scripts/notify/email_sender.sh" 2>/dev/null || {
 
 notify::send_release_summary() {
     local json="$1"
+    local send_dm="${MSP_NOTIFY_DM:-true}"
     
     if [[ -z "$json" ]]; then
         return 0  # Soft-fail on empty input
@@ -64,7 +69,7 @@ notify::send_release_summary() {
             dm_msg="$(notify::render::render_dm "$json" 2>/dev/null || echo "")"
             channel_msg="$(notify::render::render_channel "$json" 2>/dev/null || echo "")"
             
-            [[ -n "$dm_msg" ]] && notify::slack::send_dm "$dm_msg" 2>/dev/null || true
+            [[ "$send_dm" == "true" ]] && [[ -n "$dm_msg" ]] && notify::slack::send_dm "$dm_msg" 2>/dev/null || true
             [[ -n "$channel_msg" ]] && notify::slack::send_channel "$channel_msg" 2>/dev/null || true
         fi
     else
@@ -72,7 +77,7 @@ notify::send_release_summary() {
         dm_msg="$(notify::render::render_dm "$json" 2>/dev/null || echo "")"
         channel_msg="$(notify::render::render_channel "$json" 2>/dev/null || echo "")"
         
-        [[ -n "$dm_msg" ]] && notify::slack::send_dm "$dm_msg" 2>/dev/null || true
+        [[ "$send_dm" == "true" ]] && [[ -n "$dm_msg" ]] && notify::slack::send_dm "$dm_msg" 2>/dev/null || true
         [[ -n "$channel_msg" ]] && notify::slack::send_channel "$channel_msg" 2>/dev/null || true
     fi
     
@@ -85,4 +90,3 @@ notify::send_release_summary() {
     
     return 0
 }
-

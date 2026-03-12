@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # Only enforce when inside a git repository (safe for temp dirs)
 # shellcheck source=/dev/null
 if git rev-parse --git-dir >/dev/null 2>&1; then
     . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
     msp_enforce_main_repo_or_exit
 fi
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 # ============================================================================
 # Common Functions for Target Switching
 # ============================================================================

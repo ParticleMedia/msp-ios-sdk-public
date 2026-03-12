@@ -14,7 +14,7 @@
 // ============================================================================
 
 pipeline {
-    agent any
+    agent { label 'Mac_Studio' }
 
     options {
         ansiColor('xterm')
@@ -22,15 +22,19 @@ pipeline {
     }
 
     parameters {
-        string(
+        gitParameter(
             name: 'BRANCH',
+            type: 'PT_BRANCH',
             defaultValue: 'develop',
-            description: 'Branch to build from (e.g. develop, main, release/1.0.6).'
+            branchFilter: 'origin/(develop|feature/.*|release/.*|hotfix/.*)',
+            selectedValue: 'DEFAULT',
+            sortMode: 'DESCENDING_SMART',
+            description: 'Branch to release from. Supported: develop, feature/*, release/*, hotfix/*.'
         )
         string(
             name: 'VERSION',
             defaultValue: '',
-            description: 'Release version (e.g. 1.2.3). Required for a new release. Leave blank if resuming.'
+            description: 'Release version (e.g. 1.2.3). Required for a new release. Leave blank when RESUME is checked — the version is automatically restored from the saved state.'
         )
         string(
             name: 'RELEASE_NOTES',
@@ -40,7 +44,7 @@ pipeline {
         booleanParam(
             name: 'RESUME',
             defaultValue: false,
-            description: 'Resume a previously failed release. State is automatically saved from the last failed build.'
+            description: 'Resume a previously failed release. The version is automatically restored from the saved state — leave VERSION blank, any value entered will be ignored.'
         )
         booleanParam(
             name: 'SKIP_PREFLIGHT',
@@ -52,20 +56,66 @@ pipeline {
             defaultValue: false,
             description: 'Run only CocoaPods release (skip SPM).'
         )
+        choice(
+            name: 'RELEASER_EMAIL',
+            choices: [
+                'pengyu.gou@newsbreak.com',
+                'han.xiang@newsbreak.com',
+                'huanzhi.zhang@newsbreak.com',
+                'ling.yang@newsbreak.com',
+                'mingming.luo@newsbreak.com',
+                'shanyu.li@newsbreak.com'
+            ],
+            description: 'Who is triggering this release? Used for Slack DM notifications.'
+        )
     }
 
     environment {
-        DEVELOPER_DIR = '/Applications/Xcode_15.4.app/Contents/Developer'
+        // DEVELOPER_DIR is auto-detected in 'Environment check' stage below
+        // Ensure Homebrew, rbenv, and gem binaries are in PATH (Jenkins doesn't load shell profile)
+        PATH = "/opt/homebrew/bin:/opt/homebrew/shims:/usr/local/bin:${env.HOME}/.rbenv/shims:${env.HOME}/.rbenv/bin:${env.PATH}"
         SLACK_CHANNEL = '#msp-ios-sdk'
         SLACK_CONFIG  = 'Scripts/config/slack.conf'
         LANG = 'en_US.UTF-8'
         LC_ALL = 'en_US.UTF-8'
         CI = 'true'
-        // Persistent directory on the Jenkins agent for release state files
-        MSP_STATE_PERSIST_DIR = "${JENKINS_HOME}/msp-release-state/${JOB_NAME}"
+        // Map Jenkins releaser to release script's author email for Slack DM routing
+        MSP_AUTHOR_EMAIL = "${params.RELEASER_EMAIL ?: 'pengyu.gou@newsbreak.com'}"
+        // Persistent directory on Mac_Studio for release state files.
+        // Must use an absolute path writable by the bjdev user — JENKINS_HOME
+        // resolves to the Linux master path (/var/lib/jenkins) and is not
+        // accessible from the Mac_Studio agent.
+        MSP_STATE_PERSIST_DIR = "/Users/bjdev/msp-release-state/${JOB_NAME}"
     }
 
     stages {
+        stage('Environment check') {
+            steps {
+                script {
+                    // Auto-detect Xcode using shared helper script
+                    env.DEVELOPER_DIR = sh(script: './Scripts/lib/detect_developer_dir.sh', returnStdout: true).trim()
+                    echo "Auto-detected DEVELOPER_DIR: ${env.DEVELOPER_DIR}"
+                }
+                sh '''
+                    echo "=== Environment ==="
+                    echo "DEVELOPER_DIR: $DEVELOPER_DIR"
+                    echo "PATH: $PATH"
+                    echo "Ruby: $(ruby --version 2>/dev/null || echo 'NOT FOUND')"
+                    echo "Bundler: $(which bundle 2>/dev/null || echo 'NOT FOUND')"
+                    echo "CocoaPods: $(which pod 2>/dev/null || echo 'NOT FOUND')"
+                    echo "Xcode: $(xcodebuild -version 2>/dev/null | head -1 || echo 'NOT FOUND')"
+                    echo "gh CLI: $(which gh 2>/dev/null || echo 'NOT FOUND')"
+                    ls -d /Applications/Xcode*.app 2>/dev/null || echo "No Xcode found"
+                    rbenv versions 2>/dev/null || true
+
+                    if ! command -v bundle >/dev/null 2>&1; then
+                        echo "ERROR: bundle not found. Install Ruby 3.1+ via rbenv"
+                        exit 1
+                    fi
+                '''
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout([
@@ -107,6 +157,14 @@ pipeline {
             steps {
                 sh '''
                     set -euo pipefail
+                    tmp_state="$(mktemp -t msp-release-state.XXXXXX)"
+                    cp .msp-release-state.json "$tmp_state"
+                    git reset --hard HEAD
+                    # git clean may exit non-zero if some build artifacts are
+                    # locked by other processes; suppress the error since the
+                    # state file was already saved to $tmp_state above.
+                    git clean -fdx || git clean -fdx || true
+                    mv "$tmp_state" .msp-release-state.json
                     bundle install
                     ./Scripts/workspace/update.sh
                     bundle exec pod install
@@ -119,10 +177,23 @@ pipeline {
                 expression { params.RESUME }
             }
             steps {
-                sh '''
-                    set -euo pipefail
-                    ./Scripts/msp-release.sh --profile=production --no-ansi resume
-                '''
+                sshagent(credentials: ['git key']) {
+                    withCredentials([
+                        string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
+                        string(credentialsId: 'msp-slack-webhook-url', variable: 'SLACK_WEBHOOK_URL'),
+                        string(credentialsId: 'msp-github-token', variable: 'GH_TOKEN')
+                    ]) {
+                        sh '''
+                            set -euo pipefail
+                            git checkout -- . 2>/dev/null || true
+                            # Do NOT pass a version argument here.
+                            # The version is automatically restored from .msp-release-state.json.
+                            # Passing a version manually would cause a mismatch between the version
+                            # and the saved state, leading to incorrect resume behavior.
+                            ./Scripts/msp-release.sh --profile=production --no-ansi resume
+                        '''
+                    }
+                }
             }
         }
 
@@ -146,8 +217,8 @@ pipeline {
             steps {
                 sh '''
                     set -euo pipefail
-                    ./Scripts/workspace/update.sh
-                    bundle exec pod install
+                    CI="" ./Scripts/workspace/update.sh
+                    ./Scripts/ci/install-pods.sh
                 '''
             }
         }
@@ -164,15 +235,34 @@ pipeline {
                     if (params.ONLY_PODS) { args << '--only-pods' }
                     args << 'run' << version
                     def argsStr = args.join(' ')
-                    def envVars = ["VERSION=${version}"]
+                    def branch = params.BRANCH ?: 'develop'
+                    def envVars = ["VERSION=${version}", "BASE_BRANCH=${branch}"]
                     if (params.RELEASE_NOTES?.trim()) {
                         envVars << "RELEASE_NOTES=${params.RELEASE_NOTES.trim()}"
                     }
                     withEnv(envVars) {
-                        sh """
-                            set -euo pipefail
-                            ./Scripts/msp-release.sh ${argsStr}
-                        """
+                        sshagent(credentials: ['git key']) {
+                            withCredentials([
+                                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
+                                string(credentialsId: 'msp-slack-webhook-url', variable: 'SLACK_WEBHOOK_URL'),
+                                string(credentialsId: 'msp-github-token', variable: 'GH_TOKEN')
+                            ]) {
+                                // Reset workspace, generate release.md, commit so preflight sees clean tree
+                                def notes = params.RELEASE_NOTES?.trim() ?: "Release ${version}"
+                                writeFile file: 'release.md', text: "# Release ${version}\n\n## Changes\n\n- ${notes}\n\n## End\n"
+                                sh '''
+                                    set -euo pipefail
+                                    git checkout -- . 2>/dev/null || true
+                                    git clean -fd Pods/ 2>/dev/null || true
+                                    git add release.md
+                                    git commit -m "ci: add release notes" --no-verify
+                                '''
+                                sh """
+                                    set -euo pipefail
+                                    ./Scripts/msp-release.sh ${argsStr}
+                                """
+                            }
+                        }
                     }
                 }
             }
@@ -189,33 +279,62 @@ pipeline {
     }
 
     post {
-        failure {
-            node('') {
-                script {
-                    // Save state file to persistent directory for future resume
-                    sh """
-                        mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
-                        if [ -f .msp-release-state.json ]; then
-                            cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
-                            echo "💾 State file saved for resume"
-                        fi
-                    """
-                    // Also archive as build artifact for manual recovery
-                    archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
-                }
+        aborted {
+            script {
+                // Save state file to persistent directory for future resume after manual abort
+                sh """
+                    mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
+                    if [ -f .msp-release-state.json ]; then
+                        cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                        echo "💾 State file saved after manual abort"
+                    fi
+                """
+                archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
             }
-            slackSend channel: env.SLACK_CHANNEL,
-                      color: 'danger',
-                      message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Use RESUME=true to continue."
+            withCredentials([
+                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
+            ]) {
+                sh '''
+                    set +e
+                    VERSION_TO_REPORT="${VERSION:-}"
+                    if [ -z "$VERSION_TO_REPORT" ] && [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
+                        VERSION_TO_REPORT="$(jq -r '.version // empty' .msp-release-state.json 2>/dev/null || true)"
+                    fi
+                    VERSION_TO_REPORT="${VERSION_TO_REPORT:-unknown}"
+
+                    source ./Scripts/lib/release-common.sh
+                    source ./Scripts/notify/slack.sh
+                    notify_release_failure "MSP iOS SDK" "$VERSION_TO_REPORT" "Release was manually aborted in Jenkins" "Manual Abort" || true
+                '''
+            }
+        }
+        failure {
+            script {
+                // Save state file to persistent directory for future resume.
+                // No node() wrapper — runs in the primary agent workspace to
+                // avoid Jenkins allocating a secondary workspace (@2) where
+                // the state file does not exist.
+                sh """
+                    mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
+                    if [ -f .msp-release-state.json ]; then
+                        cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                        echo "💾 State file saved for resume"
+                    fi
+                """
+                // Also archive as build artifact for manual recovery
+                archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
+            }
+            // TODO: re-enable after pipeline is stable
+            // slackSend channel: env.SLACK_CHANNEL,
+            //           color: 'danger',
+            //           message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Use RESUME=true to continue."
         }
         success {
-            node('') {
-                script {
-                    // Clean up persistent state on success
-                    sh """
-                        rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
-                    """
-                }
+            script {
+                // Clean up persistent state on success
+                sh """
+                    rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                """
             }
             script {
                 def msg = params.RESUME
@@ -223,9 +342,10 @@ pipeline {
                     : params.VERSION?.trim()
                         ? "✅ Release ${params.VERSION} succeeded (${env.BUILD_TAG})"
                         : "✅ Pipeline validation succeeded (${env.BUILD_TAG})"
-                slackSend channel: env.SLACK_CHANNEL,
-                          color: 'good',
-                          message: msg
+                // TODO: re-enable after pipeline is stable
+                // slackSend channel: env.SLACK_CHANNEL,
+                //           color: 'good',
+                //           message: msg
             }
         }
     }

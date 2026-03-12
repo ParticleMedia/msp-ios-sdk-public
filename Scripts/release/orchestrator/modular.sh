@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # Modular Release Orchestrator
 # Orchestrates the complete release process: create branch → CocoaPods → SPM → push
@@ -367,12 +371,17 @@ validate_inputs() {
         RELEASE_BRANCH="release/$VERSION"
     fi
     
-    # Phase 4 TASK 0: Branch validity check for production releases
-    # Use centralized branch validation from validation.sh (DRY principle)
-    # This ensures consistency between safety.sh and modular.sh
+    # Safety checks already validated whether production release is allowed on
+    # the source branch. Here we only compute an effective branch label for
+    # logging and downstream decisions, avoiding duplicate validation noise.
     local current_branch
+    local effective_branch
     current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
-    if [[ -z "$current_branch" ]]; then
+    effective_branch="$current_branch"
+    if [[ "$effective_branch" == "HEAD" && -n "$BASE_BRANCH" ]]; then
+        effective_branch="$BASE_BRANCH"
+    fi
+    if [[ -z "$effective_branch" ]]; then
         log::error "MODULAR" "Could not determine current git branch"
         exit 1
     fi
@@ -380,28 +389,24 @@ validate_inputs() {
     # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
     local dry_run="${DRY_RUN:-true}"
     if [[ "$dry_run" == "false" ]]; then
-        # Local release mode: Allow local execution (defaults to enabled)
-        # MSP_ALLOW_LOCAL_RELEASE defaults to 1 for local development
-        # Will be set to 0 in Jenkins CI environment
-        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-1}" == "1" ]]; then
-            log::info "MODULAR" "[MSP][ORCH] 本地发布模式已启用 (Local release mode enabled)"
-            log::info "MODULAR" "[MSP][ORCH] Branch validation bypassed for local development"
-        # Production mode branch validation (CI only)
-        elif ! validate_release_branch; then
-            log::error "MODULAR" "[MSP][ORCH][ERROR] Branch validation failed"
-            log::error "MODULAR" "Current branch: $current_branch"
-            log::error "MODULAR" "Please switch to a valid branch, or use DRY_RUN=true for dry-run releases"
-            exit 1
+        # Local emergency override is handled by safety.sh before orchestration starts.
+        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+            log::info "MODULAR" "[MSP][ORCH] Local production override detected"
+            log::info "MODULAR" "[MSP][ORCH] Branch allowlist was enforced earlier by safety.sh"
+        else
+            log::info "MODULAR" "[MSP][ORCH] Production mode: branch validation already passed in safety checks"
         fi
 
-        if [[ "$current_branch" =~ ^feature/ ]]; then
-            log::info "MODULAR" "[MSP][ORCH] Production mode: on feature branch '$current_branch'"
+        if [[ "$effective_branch" =~ ^feature/ ]]; then
+            log::info "MODULAR" "[MSP][ORCH] Production mode: on feature branch '$effective_branch'"
             log::info "MODULAR" "[MSP][ORCH] A release branch will be created in Step 1 from this base"
+        elif [[ "$effective_branch" =~ ^hotfix/ ]]; then
+            log::info "MODULAR" "[MSP][ORCH] Production mode: on hotfix branch '$effective_branch'"
         else
-            log::info "MODULAR" "[MSP][ORCH] Production mode: branch validation passed ($current_branch)"
+            log::info "MODULAR" "[MSP][ORCH] Production mode source branch: $effective_branch"
         fi
     else
-        log::info "MODULAR" "[MSP][ORCH] Dry-run mode: no branch restriction (current: $current_branch)"
+        log::info "MODULAR" "[MSP][ORCH] Dry-run mode: no branch restriction (current: $effective_branch)"
     fi
     
     log::info "MODULAR" "Release orchestrator configuration:"
@@ -1138,6 +1143,19 @@ show_comprehensive_release_summary() {
     echo ""
 }
 
+notify_terminal_failure() {
+    local step_name="$1"
+    local error_message="$2"
+
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
+        return 0
+    fi
+
+    if command -v notify_release_failure &>/dev/null; then
+        notify_release_failure "MSP iOS SDK" "$VERSION" "$error_message" "$step_name" || true
+    fi
+}
+
 # ============================================================================
 # Verification Functions (Wrappers)
 # ============================================================================
@@ -1290,14 +1308,11 @@ main() {
         log::info "MODULAR" "[CONFIG] allow_test_publish = $allow_test"
         log::info "MODULAR" "[CONFIG] allow_preflight = $allow_preflight"
         
-        # Block real publish if not allowed
-        # Local release mode: Bypass config-driven branch restrictions
-        # Phase B: Use DRY_RUN instead of RELEASE_TIER
-        # MSP_ALLOW_LOCAL_RELEASE defaults to 1 for local development
-        # Will be set to 0 in Jenkins CI environment
+        # Block real publish if not allowed.
+        # Local production override is validated in safety.sh and bypasses the broader CI branch policy here.
         if [[ "$dry_run" == "false" ]] && ! should_real_publish; then
-            if [[ "${MSP_ALLOW_LOCAL_RELEASE:-1}" == "1" ]]; then
-                log::warn "MODULAR" "[BLOCKED] ⚠️ Config-driven publish check bypassed (local release mode)"
+            if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+                log::warn "MODULAR" "[BLOCKED] ⚠️ Config-driven publish check bypassed (local emergency override)"
             else
             log::error "MODULAR" "[BLOCKED] Real publish not allowed on branch: $current_branch"
             log::error "MODULAR" "[BLOCKED] Check Scripts/config/release.yaml for branch policy"
@@ -1463,6 +1478,7 @@ main() {
             OVERALL_SUCCESS="false"
         else
             step_fail "pre_release_setup" $?
+            notify_terminal_failure "Pre-release Setup" "Pre-release setup failed"
             return 10
         fi
     fi
@@ -1513,6 +1529,7 @@ main() {
                 step_skip "create_release_branch (mode: dry-run soft-fail)"
             else
                 step_fail "create_release_branch" $?
+                notify_terminal_failure "Create Release Branch" "Failed to create release branch"
                 return 11
             fi
         fi
@@ -1546,6 +1563,7 @@ main() {
             # Production mode: hard-fail (exit entire release)
             if [[ "$dry_run" == "false" ]]; then
                 log::error "MODULAR" "[MSP][ORCH] Production mode: CocoaPods release failure - aborting"
+                notify_terminal_failure "CocoaPods Release" "CocoaPods release failed"
                 return 12
             else
                 log::warn "MODULAR" "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
@@ -1708,6 +1726,7 @@ main() {
         else
             step_fail "run_xcframework_verification" $?
             fail_step "run_xcframework_verification" "XCFramework verification failed"
+            notify_terminal_failure "XCFramework Verification" "XCFramework verification failed"
             return 1
         fi
     fi
@@ -1771,9 +1790,6 @@ main() {
             notify::send_release_summary "$NOTIFY_DATA_JSON" || true
         else
             # Fallback to old notification system if new API not available
-            if command -v notify::release_success_dm &>/dev/null; then
-                notify::release_success_dm "$VERSION" || true
-            fi
             if command -v notify::release_success_channel &>/dev/null; then
                 notify::release_success_channel "$VERSION" || true
             fi

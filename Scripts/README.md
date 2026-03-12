@@ -345,6 +345,15 @@ Profiles configure release behavior via `Scripts/config/release.yaml`:
 ./Scripts/msp-release.sh env --show  # inspect effective config
 ```
 
+### Production Release Policy
+
+- `CI/Jenkins` is the default production release path.
+- CI production releases support `develop`, `feature/*`, `release/*`, and `hotfix/*`.
+- Local production release is reserved for emergency override only.
+- Local production release supports `develop`, `main`, `master`, and `hotfix/*`.
+- Local production release requires `MSP_ALLOW_LOCAL_RELEASE=1`.
+- Local production release also requires `--force`, a clean worktree, and a valid `release.md`.
+
 ### Environment Variable Overrides
 
 | Variable | Config Path | Notes |
@@ -559,6 +568,6 @@ Required tools:
 
 ## TODO
 
-- Re-enable post-release verification once SPM local build issues are resolved. Note: `--profile=production` automatically activates full mode (includes verification). Other profiles default to simple mode (skips Phase 4 verification).
-- Re-enable CI-only restriction for production releases when CI pipeline is ready (`Scripts/release/utils/safety.sh`).
-- **[CI Integration]** When Jenkins CI pipeline is ready, set `safety.require_ci: true` in `Scripts/config/release.yaml` production profile.
+- Improve CI verification coverage so more of the post-release verification matrix can run as hard checks.
+- Keep CI as the default production release path while preserving a documented local emergency override flow.
+- Keep branch policy and Jenkins branch filters aligned for `develop`, `feature/*`, `release/*`, and `hotfix/*`.

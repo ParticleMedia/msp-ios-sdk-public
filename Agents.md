@@ -1,7 +1,7 @@
 # AI Agent Shared Context
 
-> **Version**: 4.0
-> **Last Updated**: 2026-02-22
+> **Version**: 4.1
+> **Last Updated**: 2026-03-08
 > **Applies To**: All AI Agents
 
 ## Project Technical Context
@@ -14,7 +14,7 @@
 
 - [ ] Clean working directory (`git status`)
 - [ ] On correct branch
-- [ ] In development mode (`./Scripts/switch-target.sh pods-dev`)
+- [ ] In development mode (`make open` or `./Scripts/switch-target.sh pods-dev`)
 
 ## Domain-Specific Context
 
@@ -42,6 +42,7 @@ Deep content lives in playbooks — discover via `.context/index.json`.
 | `Scripts/tools/` | Automation scripts |
 | `packages/test-cases/` | YAML test case definitions |
 | `packages/mock-data/` | JSON fixture data |
+| `Makefile` | Developer workflow shortcuts (setup, open, test, release, etc.) |
 
 ## Context System
 
@@ -65,4 +66,6 @@ constitution.md (all), ARCHITECTURE.md, README.md — require human approval.
 - N/A (filesystem-based, no database) (ci-self-hosted-migration)
 
 ## Recent Changes
+- duplicate-deps-cleanup: Removed lottie-ios dependency from NovaCore (replaced with UIView animation), moved OMSDK from MSPNovaAdapter to MSPSharedLibraries, fixed MSPSnapKit unexported symbols
+- makefile: Added Makefile with developer workflow targets (setup, open, test, validate, rtt, ci, beta, release, resume, clean)
 - ci-self-hosted-migration: Added Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation) + GitHub Actions, existing Scripts/ infrastructure (step_lifecycle.sh, build_module.sh, etc.)

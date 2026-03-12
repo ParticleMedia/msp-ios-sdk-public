@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # Fix Unicode encoding issues for CocoaPods
 export LANG=en_US.UTF-8
@@ -526,7 +530,7 @@ fi
 if [[ -n "$NOVA_PROJECT" ]]; then
     if [[ ! -d "$ROOT_DIR/Pods" ]]; then
         color_error "❌ ERROR: Pods directory not found"
-        color_error "NovaCore requires Pods dependencies (Kingfisher, MSPSnapKit, Shimmer, lottie-ios, MSPOMSDK)"
+        color_error "NovaCore requires Pods dependencies (Kingfisher, MSPSnapKit, Shimmer, MSPOMSDK)"
         color_error "Please run 'pod install' first, or switch to Pods mode:"
         color_error "  ./Scripts/switch-target.sh pods-dev"
         exit 1

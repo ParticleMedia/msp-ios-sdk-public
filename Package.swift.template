@@ -21,7 +21,7 @@ let package = Package(
     name: "msp-ios-sdk",
     platforms: [
         .iOS(.v15),
-        .macOS(.v10_15)  // Required by Kingfisher and Lottie dependencies
+        .macOS(.v10_15)  // Required by Kingfisher dependency
     ],
     
     // ═══════════════════════════════════════════════════════════════════════════
@@ -44,7 +44,7 @@ let package = Package(
         .library(name: "MSPSharedLibraries", targets: ["MSPSharedLibraries"]),
         .library(name: "MSPiOSCore", targets: ["MSPiOSCore"]),
         .library(name: "NovaCore", targets: ["NovaCore"]),
-        .library(name: "NovaCoreLinker", targets: ["NovaCoreLinker"]),  // NovaCore + Lottie
+        .library(name: "NovaCoreLinker", targets: ["NovaCoreLinker"]),  // NovaCore + Shimmer
         .library(name: "MSPCore", targets: ["MSPCore"]),
         .library(name: "MSPCoreLinker", targets: ["MSPCoreLinker"]),  // MSPCore + SwiftProtobuf
 
@@ -90,12 +90,6 @@ let package = Package(
             exact: "1.28.2"
         ),
         
-        // Lottie - Required by NovaCore (runtime dependency)
-        // MUST match CocoaPods version in Podfile (4.5.2)
-        .package(
-            url: "https://github.com/airbnb/lottie-ios.git",
-            exact: "4.5.2"
-        ),
     ],
     
     // ═══════════════════════════════════════════════════════════════════════════
@@ -133,14 +127,13 @@ let package = Package(
             publicHeadersPath: "include"
         ),
         
-        /// NovaCoreLinker - ensures Lottie and Shimmer are linked with NovaCore
-        /// NovaCore.xcframework has undefined Lottie/Shimmer symbols that need runtime linking
+        /// NovaCoreLinker - ensures Shimmer is linked with NovaCore
+        /// NovaCore.xcframework has undefined Shimmer symbols that need runtime linking
         .target(
             name: "NovaCoreLinker",
             dependencies: [
                 "NovaCore",
                 "Shimmer",
-                .product(name: "Lottie", package: "lottie-ios"),
             ],
             path: "Sources/Common/NovaCoreWrapper"
         ),
@@ -173,7 +166,6 @@ let package = Package(
         // Available XCFrameworks (always present after build):
         //   - Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework ✅
         //   - Build/ReleaseArtifacts/XCFrameworks/Kingfisher.xcframework ✅
-        //   - Build/ReleaseArtifacts/XCFrameworks/Lottie.xcframework ✅
         //   - Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework ✅
         //   - Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework ✅
         //   - Build/ReleaseArtifacts/XCFrameworks/SwiftProtobuf.xcframework ✅
@@ -347,7 +339,7 @@ let package = Package(
         
         /// MSPNovaAdapter - Nova ad format adapter
         /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, MSPSnapKit
-        /// Uses NovaCoreLinker to ensure Lottie is linked with NovaCore
+        /// Uses NovaCoreLinker to ensure Shimmer is linked with NovaCore
         /// OMSDK is embedded in NovaCore binary
         .target(
             name: "MSPNovaAdapter",

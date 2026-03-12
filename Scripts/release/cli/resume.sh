@@ -350,7 +350,7 @@ msp_resume_get_version() {
         if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
             version=$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")
             if [[ -n "$version" && "$version" != "unknown" ]]; then
-                log::info "RELEASE" "📝 Auto-detected version from state file: $version"
+                log::info "RELEASE" "📝 Auto-detected version from state file: $version" >&2
             fi
         fi
     fi

@@ -82,11 +82,20 @@ unified_github_cli_auth_check() {
         local exit_code=$?
         log::error "PODS" "GitHub CLI authentication failed (exit code: $exit_code)"
         log::error "PODS" ""
+        if [[ -n "${GH_TOKEN:-}" || -n "${GITHUB_TOKEN:-}" ]]; then
+            log::error "PODS" "CI token detected via GH_TOKEN/GITHUB_TOKEN, but gh still rejected it"
+            log::error "PODS" "Verify the token is valid and has required scopes for GitHub Releases"
+        else
+            log::error "PODS" "No GH_TOKEN/GITHUB_TOKEN detected in environment"
+            log::error "PODS" "In CI, inject a GitHub PAT as GH_TOKEN instead of relying on machine login state"
+        fi
+        log::error "PODS" ""
         log::error "PODS" "Common solutions:"
-        log::error "PODS" "  1. Re-authenticate: gh auth login"
-        log::error "PODS" "  2. Refresh token: gh auth refresh -h github.com"
-        log::error "PODS" "  3. Check token status: gh auth status"
-        log::error "PODS" "  4. Verify scopes include: 'repo', 'workflow'"
+        log::error "PODS" "  1. CI: inject GH_TOKEN/GITHUB_TOKEN from Jenkins credentials"
+        log::error "PODS" "  2. Local: re-authenticate with gh auth login"
+        log::error "PODS" "  3. Refresh token: gh auth refresh -h github.com"
+        log::error "PODS" "  4. Check token status: gh auth status"
+        log::error "PODS" "  5. Verify scopes include: 'repo', 'workflow'"
 
         rm -f "$auth_check_output"
 

@@ -6,7 +6,7 @@
 #           Published adapters (MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter,
 #                              MSPNovaAdapter, MSPAmazonAdapter, MSPMolocoAdapter, MSPLiftoffAdapter)
 #           Linker targets (MSPCoreLinker, NovaCoreLinker)
-#           SPM-native dependencies (Kingfisher, SwiftProtobuf, Lottie)
+#           SPM-native dependencies (Kingfisher, SwiftProtobuf)
 #           Available third-party binary targets (PrebidMobile, MSPSnapKit)
 #
 # Removes:  Unpublished adapters (Unity, Inmobi, Mobilefuse, Mintegral, Pubmatic)
@@ -105,13 +105,14 @@ STRIP_DEPS.each do |dep|
 end
 
 # ============================================================================
-# Step 7: Remove Shimmer from NovaCoreLinker
+# Step 7: Remove Shimmer and Lottie from NovaCoreLinker
 # ============================================================================
-content.gsub!('ensures Lottie and Shimmer are linked with NovaCore',
-             'ensures Lottie is linked with NovaCore')
-content.gsub!('undefined Lottie/Shimmer symbols',
-             'undefined Lottie symbols')
+content.gsub!(/ensures Lottie (?:and Shimmer )?(?:are|is) linked with NovaCore/,
+             'ensures dependencies are linked with NovaCore')
+content.gsub!(/undefined Lottie(?:\/Shimmer)? symbols/,
+             'undefined symbols')
 content.gsub!(/^                "Shimmer",\n/, '')
+content.gsub!(/^                "Lottie",\n/, '')
 
 # ============================================================================
 # Step 8: Update comment counts

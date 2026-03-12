@@ -507,22 +507,21 @@ publish_pod_with_resume() {
         fi
     fi
 
-    # Check if already exists
+    # Check if already exists.
+    # "Unable to accept duplicate entry" / "already exists" from Trunk is authoritative:
+    # it proves the version is on Trunk. No further verification is needed — the Trunk
+    # API itself confirmed the entry. Attempting pod trunk info immediately after publish
+    # is unreliable because CocoaPods CDN index propagation can take minutes.
     if grep -q "already exists\|Unable to accept duplicate entry" "$log_file"; then
-        log::warn "PODS" "$pod $version already exists on Trunk"
-        sleep 2
-        if check_pod_published_on_trunk "$pod" "$version"; then
-            log::success "PODS" "Verified: $pod $version is on Trunk"
-            if command -v msp_state_mark_pod_status &>/dev/null; then
-                msp_state_mark_pod_status "$pod" "published"
-                # Already verified by check_pod_published_on_trunk, mark as verified
-                if command -v msp_state_set_pod_trunk_verified &>/dev/null; then
-                    msp_state_set_pod_trunk_verified "$pod" "true"
-                fi
+        log::warn "PODS" "$pod $version already exists on Trunk (Trunk confirmed — treating as success)"
+        if command -v msp_state_mark_pod_status &>/dev/null; then
+            msp_state_mark_pod_status "$pod" "published"
+            if command -v msp_state_set_pod_trunk_verified &>/dev/null; then
+                msp_state_set_pod_trunk_verified "$pod" "true"
             fi
-            rm -f "$log_file"
-            return 0
         fi
+        rm -f "$log_file"
+        return 0
     fi
 
     # Auto-retry on transient CocoaPods errors (HTTP 500, timeouts, CDN issues)

@@ -41,7 +41,7 @@ targets:
         embed: false
       - framework: ../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      # Third-party dependencies (Kingfisher, MSPSnapKit, Lottie, Shimmer, SwiftProtobuf)
+      # Third-party dependencies (Kingfisher, MSPSnapKit, Shimmer, SwiftProtobuf)
       # are provided via Pods at application level. Core XCFrameworks use
       # @_implementationOnly imports and do NOT embed these frameworks.
     settings:
@@ -67,7 +67,6 @@ targets:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPKingfisher
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPSnapKit
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/lottie-ios
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/Shimmer
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SwiftProtobuf
 

@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 
 # Create Release Branch Script
 # Creates a release branch from the base branch for version releases
@@ -96,16 +100,21 @@ validate_inputs() {
 
 check_base_branch() {
     log::step "BRANCH" "Checking base branch: $BASE_BRANCH"
-    
+
     if ! git show-ref --verify --quiet "refs/heads/$BASE_BRANCH"; then
-        if [[ "$DRY_RUN" == "true" ]]; then
-            log::warn "BRANCH" "DRY RUN: Base branch '$BASE_BRANCH' does not exist locally (continuing)"
+        # Local branch doesn't exist — check remote (common in Jenkins detached HEAD)
+        if git show-ref --verify --quiet "refs/remotes/origin/$BASE_BRANCH"; then
+            log::info "BRANCH" "Base branch '$BASE_BRANCH' not local but exists on remote — creating local tracking branch"
+            git branch "$BASE_BRANCH" "origin/$BASE_BRANCH"
+        elif [[ "$DRY_RUN" == "true" ]]; then
+            log::warn "BRANCH" "DRY RUN: Base branch '$BASE_BRANCH' does not exist locally or on remote (continuing)"
+            return 0
         else
-            log::error "BRANCH" "Base branch '$BASE_BRANCH' does not exist locally"
+            log::error "BRANCH" "Base branch '$BASE_BRANCH' does not exist locally or on remote"
             exit 1
         fi
     fi
-    
+
     if ! git show-ref --verify --quiet "refs/remotes/origin/$BASE_BRANCH"; then
         if [[ "$DRY_RUN" == "true" ]]; then
             log::warn "BRANCH" "DRY RUN: Base branch '$BASE_BRANCH' does not exist on remote (continuing)"
@@ -114,7 +123,7 @@ check_base_branch() {
             exit 1
         fi
     fi
-    
+
     if [[ "$DRY_RUN" != "true" ]]; then
         log::success "BRANCH" "Base branch '$BASE_BRANCH' exists"
     else
@@ -247,12 +256,12 @@ create_release_branch() {
 
 push_release_branch() {
     log::step "BRANCH" "Pushing release branch to remote"
-    
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log::info "BRANCH" "DRY RUN: Would push branch '$RELEASE_BRANCH' to origin"
         return 0
     fi
-    
+
     # Retry up to 3 times, 3s interval
     local max_push_attempts=3
     local push_attempt=1

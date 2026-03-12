@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# --- MSP Worktree Safety Guard (Patch M, shared) ---
 # shellcheck source=/dev/null
-. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
-msp_enforce_main_repo_or_exit
-# --- End MSP Worktree Safety Guard (Patch L, shared) ---
+_msp_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -n "$_msp_root" ] && [ -f "$_msp_root/Scripts/lib/worktree_guard.sh" ]; then
+  . "$_msp_root/Scripts/lib/worktree_guard.sh"
+  msp_enforce_main_repo_or_exit
+fi
+unset _msp_root
+# --- End MSP Worktree Safety Guard (Patch M, shared) ---
 # ============================================================================
 # Slack Notification Module
 # ============================================================================
@@ -325,6 +329,15 @@ notify_release_success() {
     fi
     
     send_slack_notification "$message" "good" "$title" "$fields"
+
+    # DM to release author via smart routing
+    if command -v notify::dm &>/dev/null; then
+        local dm_text="🚀 ${release_type} Release Successful"
+        dm_text+=$'\n'"Version: ${version}"
+        [[ -n "${pods:-}" ]] && dm_text+=$'\n'"Pods: ${pods}"
+        dm_text+=$'\n'"Duration: ${duration}"
+        notify::dm "" "$dm_text" || log::warn "SLACK" "Release success DM failed"
+    fi
 }
 
 # Send release failure notification
@@ -333,24 +346,31 @@ notify_release_failure() {
     local version="$2"
     local error_message="$3"
     local failed_step="${4:-unknown}"
-    
+
     local message="❌ *${release_type} Release Failed!*"
     local title="Release Error Details"
     local fields=""
-    
+
     # Add version field
     fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
+
     # Add failed step field
     fields+="{\"title\": \"Failed Step\", \"value\": \"$failed_step\", \"short\": true},"
-    
+
     # Add error message field
     fields+="{\"title\": \"Error Message\", \"value\": \"$error_message\", \"short\": false},"
-    
+
     # Add environment field
     fields+="{\"title\": \"Environment\", \"value\": \"$(get_slack_environment_info)\", \"short\": true}"
-    
-    send_slack_notification "$message" "danger" "$title" "$fields"
+
+    # DM only — failure notifications go directly to the release author, not channel
+    if command -v notify::dm &>/dev/null; then
+        local dm_text="❌ ${release_type} Release Failed"
+        dm_text+=$'\n'"Version: ${version}"
+        dm_text+=$'\n'"Failed Step: ${failed_step}"
+        [[ -n "${error_message:-}" ]] && dm_text+=$'\n'"Error: ${error_message}"
+        notify::dm "" "$dm_text" || log::warn "SLACK" "Release failure DM failed"
+    fi
 }
 
 # Send release warning notification
@@ -579,4 +599,3 @@ export -f send_slack_notification
 export -f notify_release_success notify_release_failure notify_release_warning
 export -f notify_release_start notify_pod_release notify_release_summary
 export -f notify_release_success_with_summary test_slack_notification
-

@@ -122,7 +122,7 @@ profiles:
       allow_existing_tag: false
       allow_existing_release: false
       keep_sandbox: false
-      require_ci: false       # TODO: Set to true when Jenkins ready
+      require_ci: false       # CI is the default path; local production is gated by safety.sh emergency override checks
 
     performance:
       parallel_builds: true
@@ -307,8 +307,11 @@ branch_policy:
       allow_real_publish: true
       allow_test_publish: true
       allow_preflight: true
-    # TODO: Change to false when CI pipeline is ready (currently all releases are done locally)
     "feature/.*":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    "hotfix/.*":
       allow_real_publish: true
       allow_test_publish: true
       allow_preflight: true
