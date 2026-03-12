@@ -13,17 +13,10 @@ Best For: Deep analysis, architecture, planning, comprehensive review
 @../constitution.md
 @../AGENTS.md
 
-## Directory-Triggered Context
+## Context & Knowledge
 
-When working in Sources/:
-→ load Sources/AGENTS-SOURCES.md (playbook loading guide)
-
-When working in Scripts/:
-→ load Scripts/AGENTS-SCRIPTS.md (playbook loading guide)
-
-## On-Demand Context
-
-Use `.context/index.json` to discover playbooks by keyword matching against `tags` and `triggers` fields. Load only what the current task requires.
+All context loading rules (directory-triggered playbooks, keyword matching, tools) are in `.claude/rules/context-system.md`.
+Use `.context/index.json` to discover playbooks on demand. Load only what the current task requires.
 
 ## Skills
 

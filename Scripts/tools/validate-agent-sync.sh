@@ -262,12 +262,12 @@ check_markers() {
     fi
 }
 
-check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE"
+check_markers ".cursor/rules/context-system.mdc" "Cursor context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE" "MAKEFILE_TARGETS"
 check_markers ".cursor/rules/skills-sync.mdc" "Cursor skills-sync" "SKILLS_LIST" "SKILL_GUIDES"
 check_markers ".cursor/rules/sources-swift.mdc" "Cursor sources-swift" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_ARCHITECTURE"
 check_markers ".cursor/rules/scripts-directory.mdc" "Cursor scripts-directory" "HARD_RULES_SCRIPT"
-check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "SKILLS_LIST" "SKILL_GUIDES" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE"
-check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE"
+check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "SKILLS_LIST" "SKILL_GUIDES" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE" "MAKEFILE_TARGETS"
+check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE" "MAKEFILE_TARGETS"
 check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST" "SKILL_GUIDES"
 check_markers ".claude/rules/hard-rules.md" "Claude hard-rules" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE"
 check_markers ".agents-shared/skills/README.md" "Skills README" "SKILLS_LIST"
@@ -317,6 +317,7 @@ checks = [
     ("HARD_RULES_ARCHITECTURE", ["claude_hr", "cursor_swift", "codex"]),
     ("DIRECTORY_PLAYBOOKS", ["claude_context", "cursor_context", "codex"]),
     ("TOOLS_AVAILABLE", ["claude_context", "cursor_context", "codex"]),
+    ("MAKEFILE_TARGETS", ["claude_context", "cursor_context", "codex"]),
 ]
 
 for marker, keys in checks:

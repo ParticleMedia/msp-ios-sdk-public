@@ -1,5 +1,18 @@
 {
   "_comment": "SSOT: Developer/agent tools registry. Used by sync-agent-rules.py to generate TOOLS_AVAILABLE sections.",
+  "makefile_targets": [
+    { "name": "make setup", "description": "Install dependencies + configure git hooks" },
+    { "name": "make open", "description": "Switch to pods-dev mode and open Xcode" },
+    { "name": "make test", "description": "Run Swift unit tests (MSPDemoApp scheme)" },
+    { "name": "make validate", "description": "Quick CI validation" },
+    { "name": "make rtt", "description": "Round-trip test (target-switching compatibility)" },
+    { "name": "make ci", "description": "Full CI pipeline" },
+    { "name": "make sync", "description": "Sync agent rules across Claude/Cursor/Codex" },
+    { "name": "make validate-sync", "description": "Validate multi-agent sync consistency" },
+    { "name": "make beta", "description": "Upload DemoApp to TestFlight" },
+    { "name": "make release VERSION=x.y.z NOTES=\"...\"", "description": "Production CocoaPods release" },
+    { "name": "make clean", "description": "Clean DerivedData and Pods" }
+  ],
   "tools": [
     {
       "name": "get-test-template.sh",

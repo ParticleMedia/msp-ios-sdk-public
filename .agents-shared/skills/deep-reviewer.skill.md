@@ -2,6 +2,7 @@
 name: deep-reviewer
 description: Comprehensive code review with constitutional audit, architectural analysis, and design quality assessment
 category: strategic
+quick_reference: "When: Complex PRs, pre-release audit. Steps: Constitutional audit → Architectural review → Design quality → Hard rules check → Output findings with severity."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 recommended_model: opus  # For complex reasoning - user may override

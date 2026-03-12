@@ -263,11 +263,53 @@ When: After adding/modifying context entries or skills. Run: python3 Scripts/too
 
 **Full Skill**: `.agents-shared/skills/agent-sync.skill.md`
 
+### Architect
+
+When: Design decisions, API contracts, new modules. Steps: Analyze requirements → Define protocols/contracts → Map module responsibilities → Constitutional review → Output mini-design doc.
+
+**Full Skill**: `.agents-shared/skills/architect.skill.md`
+
 ### Constitutional Auditor
 
 When: Checking code compliance. Steps: Identify applicable constitution → Check violations → Report with article citations.
 
 **Full Skill**: `.agents-shared/skills/constitutional-auditor.skill.md`
+
+### Context Add
+
+When: After debugging (3+ rounds, root cause found). Run: ./Scripts/context/add-context.sh — prompts for domain, layer, title, and generates ctx-*.md with frontmatter.
+
+**Full Skill**: `.agents-shared/skills/context-add.skill.md`
+
+### Context Init
+
+When: Bootstrapping context system for first time. Run: ./Scripts/context/init-context.sh — scans git history for debugging patterns and generates initial context entries.
+
+**Full Skill**: `.agents-shared/skills/context-init.skill.md`
+
+### Context List
+
+When: Browsing or searching context entries. Steps: Read .context/index.json → Filter by domain/tags → Display matching entries with titles and paths.
+
+**Full Skill**: `.agents-shared/skills/context-list.skill.md`
+
+### Deep Reviewer
+
+When: Complex PRs, pre-release audit. Steps: Constitutional audit → Architectural review → Design quality → Hard rules check → Output findings with severity.
+
+**Full Skill**: `.agents-shared/skills/deep-reviewer.skill.md`
+
+### Document Writer
+
+When: Architecture docs, ADRs, technical guides. Steps: Deep analysis of code/context → Synthesize findings → Structure with clear sections → Include diagrams/tables where helpful.
+
+**Full Skill**: `.agents-shared/skills/document-writer.skill.md`
+
+### Planner
+
+When: Complex features (>5 files). Steps: Read spec → Identify phases → Break into tasks with dependencies → Output plan.md with T-numbered tasks.
+
+**Full Skill**: `.agents-shared/skills/planner.skill.md`
 
 ### Quick Fix
 
@@ -321,6 +363,27 @@ When: Creating unit tests. Steps: (1) Get template via `./Scripts/tools/get-test
 **Total: 7 tools**
 
 <!-- END:GENERATED:TOOLS_AVAILABLE -->
+
+## Makefile Targets
+
+> Auto-generated from `.agents-shared/tools-registry.json`.
+
+<!-- BEGIN:GENERATED:MAKEFILE_TARGETS -->
+| Target | Description |
+|--------|-------------|
+| `make setup` | Install dependencies + configure git hooks |
+| `make open` | Switch to pods-dev mode and open Xcode |
+| `make test` | Run Swift unit tests (MSPDemoApp scheme) |
+| `make validate` | Quick CI validation |
+| `make rtt` | Round-trip test (target-switching compatibility) |
+| `make ci` | Full CI pipeline |
+| `make sync` | Sync agent rules across Claude/Cursor/Codex |
+| `make validate-sync` | Validate multi-agent sync consistency |
+| `make beta` | Upload DemoApp to TestFlight |
+| `make release VERSION=x.y.z NOTES="..."` | Production CocoaPods release |
+| `make clean` | Clean DerivedData and Pods |
+
+<!-- END:GENERATED:MAKEFILE_TARGETS -->
 
 ---
 

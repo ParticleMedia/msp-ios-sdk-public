@@ -75,10 +75,6 @@ constitution.md (all), ARCHITECTURE.md, README.md — require human approval.
 - .claude/CLAUDE.md | .codex/CODEX.md | .cursor/CURSOR.md — Agent directives
 
 ## Active Technologies
-- Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation) + GitHub Actions, existing Scripts/ infrastructure (step_lifecycle.sh, build_module.sh, etc.) (ci-self-hosted-migration)
-- N/A (filesystem-based, no database) (ci-self-hosted-migration)
-
-## Recent Changes
-- duplicate-deps-cleanup: Removed lottie-ios dependency from NovaCore (replaced with UIView animation), moved OMSDK from MSPNovaAdapter to MSPSharedLibraries, fixed MSPSnapKit unexported symbols
-- makefile: Added Makefile with developer workflow targets (setup, open, test, validate, rtt, ci, beta, release, resume, clean)
-- ci-self-hosted-migration: Added Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation) + GitHub Actions, existing Scripts/ infrastructure (step_lifecycle.sh, build_module.sh, etc.)
+- Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation)
+- GitHub Actions, existing Scripts/ infrastructure (step_lifecycle.sh, build_module.sh, etc.)
+- Filesystem-based (no database)

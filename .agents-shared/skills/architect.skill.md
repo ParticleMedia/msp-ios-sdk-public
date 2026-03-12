@@ -2,6 +2,7 @@
 name: architect
 description: A skill for designing major architectural decisions and feature implementations. Produces mini-design documents with API contracts, module responsibilities, and constitutional compliance.
 category: strategic
+quick_reference: "When: Design decisions, API contracts, new modules. Steps: Analyze requirements → Define protocols/contracts → Map module responsibilities → Constitutional review → Output mini-design doc."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 recommended_model: opus  # For complex reasoning - user may override

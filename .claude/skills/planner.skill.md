@@ -2,6 +2,7 @@
 name: planner
 description: Strategic task planning and breakdown for complex, multi-step implementations
 category: strategic
+quick_reference: "When: Complex features (>5 files). Steps: Read spec → Identify phases → Break into tasks with dependencies → Output plan.md with T-numbered tasks."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 recommended_model: opus  # For complex reasoning - user may override

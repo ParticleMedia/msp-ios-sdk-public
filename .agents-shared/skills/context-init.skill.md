@@ -2,6 +2,7 @@
 name: context-init
 description: Initialize context system by extracting experience from git commit history
 category: knowledge-management
+quick_reference: "When: Bootstrapping context system for first time. Run: ./Scripts/context/init-context.sh — scans git history for debugging patterns and generates initial context entries."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Bash, Read]

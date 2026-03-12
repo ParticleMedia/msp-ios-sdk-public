@@ -188,14 +188,14 @@ def generate_directory_playbooks(dir_map, entries):
 
 
 def load_tools_registry():
-    """Load .agents-shared/tools-registry.json."""
+    """Load .agents-shared/tools-registry.json (tools + makefile_targets)."""
     if not TOOLS_REGISTRY_FILE.exists():
         print(f"WARNING: {TOOLS_REGISTRY_FILE} not found, skipping tools sync",
               file=sys.stderr)
-        return []
+        return [], []
     with open(TOOLS_REGISTRY_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
-    return data.get("tools", [])
+    return data.get("tools", []), data.get("makefile_targets", [])
 
 
 def generate_tools_available(tools):
@@ -212,6 +212,22 @@ def generate_tools_available(tools):
 
     lines.append("")
     lines.append(f"**Total: {len(tools)} tools**\n")
+    return "\n".join(lines)
+
+
+def generate_makefile_targets(targets):
+    """Generate a markdown table of Makefile targets."""
+    if not targets:
+        return "_No Makefile targets registered._\n"
+
+    lines = [
+        "| Target | Description |",
+        "|--------|-------------|",
+    ]
+    for t in targets:
+        lines.append(f"| `{t['name']}` | {t['description']} |")
+
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -483,8 +499,8 @@ def main():
     dir_playbooks_map = load_directory_playbooks()
     print(f"Directory playbook mappings: {len(dir_playbooks_map)}")
 
-    tools = load_tools_registry()
-    print(f"Tools: {len(tools)}")
+    tools, make_targets = load_tools_registry()
+    print(f"Tools: {len(tools)}, Makefile targets: {len(make_targets)}")
 
     context_inventory = generate_context_inventory(entries)
     keyword_domain_map = generate_keyword_domain_map(entries, index_data)
@@ -492,6 +508,7 @@ def main():
     skill_guides = generate_skill_guides(skills)
     dir_playbooks = generate_directory_playbooks(dir_playbooks_map, entries)
     tools_available = generate_tools_available(tools)
+    makefile_targets = generate_makefile_targets(make_targets)
 
     changes = 0
 
@@ -500,7 +517,8 @@ def main():
                  {"CONTEXT_INVENTORY": context_inventory,
                   "KEYWORD_DOMAIN_MAP": keyword_domain_map,
                   "DIRECTORY_PLAYBOOKS": dir_playbooks,
-                  "TOOLS_AVAILABLE": tools_available},
+                  "TOOLS_AVAILABLE": tools_available,
+                  "MAKEFILE_TARGETS": makefile_targets},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
 
@@ -534,6 +552,7 @@ def main():
         "SKILL_GUIDES": skill_guides,
         "DIRECTORY_PLAYBOOKS": dir_playbooks,
         "TOOLS_AVAILABLE": tools_available,
+        "MAKEFILE_TARGETS": makefile_targets,
     }
     codex_sections.update(hard_rules)
     if sync_file(SYNC_TARGETS["codex_instructions"], codex_sections,
@@ -545,7 +564,8 @@ def main():
                  {"CONTEXT_INVENTORY": context_inventory,
                   "KEYWORD_DOMAIN_MAP": keyword_domain_map,
                   "DIRECTORY_PLAYBOOKS": dir_playbooks,
-                  "TOOLS_AVAILABLE": tools_available},
+                  "TOOLS_AVAILABLE": tools_available,
+                  "MAKEFILE_TARGETS": makefile_targets},
                  dry_run=args.dry_run, verbose=args.verbose):
         changes += 1
 

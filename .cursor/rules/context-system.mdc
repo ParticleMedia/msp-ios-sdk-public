@@ -164,6 +164,27 @@ When user questions match keywords in the inventory below, READ the matching `.c
 
 <!-- END:GENERATED:TOOLS_AVAILABLE -->
 
+## Makefile Targets
+
+> Auto-generated from `.agents-shared/tools-registry.json`.
+
+<!-- BEGIN:GENERATED:MAKEFILE_TARGETS -->
+| Target | Description |
+|--------|-------------|
+| `make setup` | Install dependencies + configure git hooks |
+| `make open` | Switch to pods-dev mode and open Xcode |
+| `make test` | Run Swift unit tests (MSPDemoApp scheme) |
+| `make validate` | Quick CI validation |
+| `make rtt` | Round-trip test (target-switching compatibility) |
+| `make ci` | Full CI pipeline |
+| `make sync` | Sync agent rules across Claude/Cursor/Codex |
+| `make validate-sync` | Validate multi-agent sync consistency |
+| `make beta` | Upload DemoApp to TestFlight |
+| `make release VERSION=x.y.z NOTES="..."` | Production CocoaPods release |
+| `make clean` | Clean DerivedData and Pods |
+
+<!-- END:GENERATED:MAKEFILE_TARGETS -->
+
 ## Post-Debugging Context Capture
 
 When debugging completes (3+ rounds, root cause found):

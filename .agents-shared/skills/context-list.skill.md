@@ -2,6 +2,7 @@
 name: context-list
 description: List, search, and manage context entries in the knowledge base
 category: knowledge-management
+quick_reference: "When: Browsing or searching context entries. Steps: Read .context/index.json → Filter by domain/tags → Display matching entries with titles and paths."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Bash, Read]

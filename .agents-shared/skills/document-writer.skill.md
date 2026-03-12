@@ -2,6 +2,7 @@
 name: document-writer
 description: Create comprehensive technical documentation with deep analysis and synthesis
 category: strategic
+quick_reference: "When: Architecture docs, ADRs, technical guides. Steps: Deep analysis of code/context → Synthesize findings → Structure with clear sections → Include diagrams/tables where helpful."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 recommended_model: opus  # For complex reasoning - user may override

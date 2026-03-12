@@ -2,6 +2,7 @@
 name: context-add
 description: Manually add a new context entry to preserve valuable debugging experience
 category: knowledge-management
+quick_reference: "When: After debugging (3+ rounds, root cause found). Run: ./Scripts/context/add-context.sh — prompts for domain, layer, title, and generates ctx-*.md with frontmatter."
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Bash, Read, Grep]
