@@ -122,7 +122,7 @@ if [[ "$COCOAPODS_MODULE_AVAILABLE" == "true" ]]; then
         install_options+=("--repo-update")
     fi
 
-    if install_pods "${install_options[@]}"; then
+    if install_pods "${install_options[@]+"${install_options[@]}"}"; then
         echo "✅ pod install completed (via cocoapods.sh module)"
         exit 0
     else

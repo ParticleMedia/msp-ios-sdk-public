@@ -103,6 +103,7 @@ pipeline {
                     echo "Ruby: $(ruby --version 2>/dev/null || echo 'NOT FOUND')"
                     echo "Bundler: $(which bundle 2>/dev/null || echo 'NOT FOUND')"
                     echo "CocoaPods: $(which pod 2>/dev/null || echo 'NOT FOUND')"
+                    echo "XcodeGen: $(xcodegen --version 2>/dev/null || echo 'not yet installed')"
                     echo "Xcode: $(xcodebuild -version 2>/dev/null | head -1 || echo 'NOT FOUND')"
                     echo "gh CLI: $(which gh 2>/dev/null || echo 'NOT FOUND')"
                     ls -d /Applications/Xcode*.app 2>/dev/null || echo "No Xcode found"
@@ -112,6 +113,9 @@ pipeline {
                         echo "ERROR: bundle not found. Install Ruby 3.1+ via rbenv"
                         exit 1
                     fi
+                    echo "Installing/upgrading XcodeGen..."
+                    brew upgrade xcodegen 2>/dev/null || brew install xcodegen
+                    echo "XcodeGen ready: $(xcodegen --version)"
                 '''
             }
         }
@@ -180,7 +184,7 @@ pipeline {
                 sshagent(credentials: ['git key']) {
                     withCredentials([
                         string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
-                        string(credentialsId: 'msp-slack-webhook-url', variable: 'SLACK_WEBHOOK_URL'),
+                        string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL'),
                         string(credentialsId: 'msp-github-token', variable: 'GH_TOKEN')
                     ]) {
                         sh '''
@@ -244,7 +248,7 @@ pipeline {
                         sshagent(credentials: ['git key']) {
                             withCredentials([
                                 string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
-                                string(credentialsId: 'msp-slack-webhook-url', variable: 'SLACK_WEBHOOK_URL'),
+                                string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL'),
                                 string(credentialsId: 'msp-github-token', variable: 'GH_TOKEN')
                             ]) {
                                 // Reset workspace, generate release.md, commit so preflight sees clean tree
