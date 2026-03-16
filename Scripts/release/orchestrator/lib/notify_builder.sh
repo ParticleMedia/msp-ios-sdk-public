@@ -491,10 +491,12 @@ orch_build_notify_json() {
     local local_verify_json="$6"
     local device_verify_json="$7"
     local xcf_verify_json="$8"
+    local release_notes="${9:-}"
 
     local failure_json="{\"occurred\":false}"
-    local timestamp
+    local timestamp release_notes_escaped
     timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    release_notes_escaped="$(echo "$release_notes" | jq -Rs '.')"
 
     cat <<EOF
 {
@@ -502,6 +504,7 @@ orch_build_notify_json() {
   "author": "$author",
   "duration": "$duration",
   "timestamp": "$timestamp",
+  "release_notes": $release_notes_escaped,
   "modules": $modules_json,
   "remote_verify": $remote_verify_json,
   "local_verify": $local_verify_json,

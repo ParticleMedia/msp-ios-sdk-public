@@ -1220,15 +1220,6 @@ main() {
     
     print_section "Starting SPM Release Process for Version: $VERSION"
     
-    # Send Slack notification for cloud distribution start
-    if command -v notify_release_warning &>/dev/null; then
-        if [[ "$DRY_RUN" == "true" ]] || [[ "${DRY_RUN:-false}" == "1" ]]; then
-            notify_release_warning "SPM" "$VERSION" "Starting DRY RUN: Cloud distribution processing for binary targets" "Cloud Distribution (Dry Run)"
-        else
-            notify_release_warning "SPM" "$VERSION" "Starting cloud distribution processing for binary targets" "Cloud Distribution"
-        fi
-    fi
-    
     # Execute sync_thirdparty_pods.sh to ensure XCFrameworks are in place
     log_section "Phase: Sync Third-Party XCFrameworks from Pods"
     if [[ -f "$ROOT_DIR/Scripts/spm/sync_thirdparty_pods.sh" ]]; then

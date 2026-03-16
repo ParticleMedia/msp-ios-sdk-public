@@ -1781,7 +1781,8 @@ main() {
             "$remote_verify_json" \
             "$local_verify_json" \
             "$device_verify_json" \
-            "$xcf_verify_json")
+            "$xcf_verify_json" \
+            "${RELEASE_NOTES:-}")
         export NOTIFY_DATA_JSON="$notify_data"
         
         # Send unified notifications via clean API
