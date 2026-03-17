@@ -1,7 +1,7 @@
 # AI Agent Shared Context
 
-> **Version**: 5.1
-> **Last Updated**: 2026-03-12
+> **Version**: 5.2
+> **Last Updated**: 2026-03-17
 > **Applies To**: All AI Agents
 
 ## Project Technical Context
@@ -44,6 +44,15 @@ Deep content lives in playbooks — discover via `.context/index.json`.
 | `packages/mock-data/` | JSON fixture data |
 | `Makefile` | Developer workflow shortcuts (setup, open, test, release, etc.) |
 
+## Agent Config Architecture
+
+| Agent | Style | Location | Reason |
+|-------|-------|----------|--------|
+| Claude | Modular (rules/ + skills mirror) | `.claude/` | Supports directory-triggered loading and progressive disclosure |
+| Cursor | Directory-triggered modular | `.cursor/` | IDE rule files activate per working directory |
+| Codex | Monolithic (single file) | `.codex/instructions.md` | Codex reads one instruction file; no subdirectory support |
+| Gemini | Monolithic (single file) | `GEMINI.md` | Gemini reads one top-level file; same constraint as Codex |
+
 ## Context System
 
 Knowledge base in `.context/` — discover entries via `.context/index.json`.
@@ -54,7 +63,7 @@ After debugging (3+ rounds, root cause found): suggest `/context.add`.
 
 ## Cross-Agent Sync Protocol
 
-All agents (Claude, Cursor, Codex) share `.context/` and `.agents-shared/skills/`.
+All agents (Claude, Cursor, Codex, Gemini) share `.context/` and `.agents-shared/skills/`.
 When any agent modifies these shared resources, it MUST run the sync chain:
 
 ```bash
@@ -72,7 +81,7 @@ constitution.md (all), ARCHITECTURE.md, README.md — require human approval.
 ## Reference Documents
 
 - constitution.md — Supreme law
-- .claude/CLAUDE.md | .codex/CODEX.md | .cursor/CURSOR.md — Agent directives
+- .claude/CLAUDE.md | .codex/CODEX.md | .cursor/CURSOR.md | GEMINI.md — Agent directives
 
 ## Active Technologies
 - Bash (POSIX-compatible), Ruby (YAML parsing), Python 3 (test case validation)

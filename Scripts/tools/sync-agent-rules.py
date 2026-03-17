@@ -43,6 +43,7 @@ SYNC_TARGETS = {
     "claude_context": PROJECT_ROOT / ".claude" / "rules" / "context-system.md",
     "claude_skills": PROJECT_ROOT / ".claude" / "rules" / "skills-sync.md",
     "claude_hard_rules": PROJECT_ROOT / ".claude" / "rules" / "hard-rules.md",
+    "gemini_config": PROJECT_ROOT / "GEMINI.md",
     "skills_readme": PROJECT_ROOT / ".agents-shared" / "skills" / "README.md",
 }
 
@@ -580,6 +581,21 @@ def main():
         if sync_file(SYNC_TARGETS["claude_hard_rules"], hard_rules,
                      dry_run=args.dry_run, verbose=args.verbose):
             changes += 1
+
+    # Gemini: everything in one file (GEMINI.md)
+    gemini_sections = {
+        "CONTEXT_INVENTORY": context_inventory,
+        "KEYWORD_DOMAIN_MAP": keyword_domain_map,
+        "SKILLS_LIST": skills_table,
+        "SKILL_GUIDES": skill_guides,
+        "DIRECTORY_PLAYBOOKS": dir_playbooks,
+        "TOOLS_AVAILABLE": tools_available,
+        "MAKEFILE_TARGETS": makefile_targets,
+    }
+    gemini_sections.update(hard_rules)
+    if sync_file(SYNC_TARGETS["gemini_config"], gemini_sections,
+                 dry_run=args.dry_run, verbose=args.verbose):
+        changes += 1
 
     # Shared skills README
     if sync_file(SYNC_TARGETS["skills_readme"],

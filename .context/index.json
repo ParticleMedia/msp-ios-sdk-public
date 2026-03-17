@@ -1,15 +1,12 @@
 {
   "version": "2.0",
-  "generated_at": "2026-03-12T07:03:24Z",
+  "generated_at": "2026-03-17T03:01:03Z",
   "generator": "Scripts/tools/generate-context-index.py",
   "entry_count": 20,
   "domains": {
-    "release": {
-      "count": 5,
-      "layers": [
-        "experience",
-        "tech"
-      ]
+    "compatibility": {
+      "count": 0,
+      "layers": []
     },
     "testing": {
       "count": 3,
@@ -17,18 +14,25 @@
         "tech"
       ]
     },
-    "integration": {
-      "count": 2,
+    "ci": {
+      "count": 4,
       "layers": [
         "experience"
+      ]
+    },
+    "release": {
+      "count": 5,
+      "layers": [
+        "experience",
+        "tech"
       ]
     },
     "architecture": {
       "count": 0,
       "layers": []
     },
-    "ci": {
-      "count": 4,
+    "integration": {
+      "count": 2,
       "layers": [
         "experience"
       ]
@@ -39,10 +43,6 @@
         "experience",
         "tech"
       ]
-    },
-    "compatibility": {
-      "count": 0,
-      "layers": []
     }
   },
   "entries": [
@@ -381,7 +381,7 @@
       ],
       "summary": "Swift 5.0 / iOS 15+ 硬规则与软规则，覆盖 optionals、闭包捕获、值类型/引用类型、错误处理、访问控制",
       "status": "active",
-      "updated": "2026-02-22"
+      "updated": "2026-03-17"
     },
     {
       "id": "ctx-sources-002",

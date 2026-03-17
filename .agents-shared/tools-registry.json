@@ -7,7 +7,7 @@
     { "name": "make validate", "description": "Quick CI validation" },
     { "name": "make rtt", "description": "Round-trip test (target-switching compatibility)" },
     { "name": "make ci", "description": "Full CI pipeline" },
-    { "name": "make sync", "description": "Sync agent rules across Claude/Cursor/Codex" },
+    { "name": "make sync", "description": "Sync agent rules across Claude/Cursor/Codex/Gemini" },
     { "name": "make validate-sync", "description": "Validate multi-agent sync consistency" },
     { "name": "make beta", "description": "Upload DemoApp to TestFlight" },
     { "name": "make release VERSION=x.y.z NOTES=\"...\"", "description": "Production CocoaPods release" },
@@ -29,7 +29,7 @@
     {
       "name": "validate-agent-sync.sh",
       "path": "Scripts/tools/validate-agent-sync.sh",
-      "description": "Validate multi-agent consistency (10 checks across Claude/Cursor/Codex)",
+      "description": "Validate multi-agent consistency across Claude/Cursor/Codex/Gemini",
       "usage": "./Scripts/tools/validate-agent-sync.sh"
     },
     {
@@ -53,7 +53,7 @@
     {
       "name": "sync-agent-rules.py",
       "path": "Scripts/tools/sync-agent-rules.py",
-      "description": "Sync all auto-generated sections across Claude/Cursor/Codex agent configs",
+      "description": "Sync all auto-generated sections across Claude/Cursor/Codex/Gemini agent configs",
       "usage": "python3 Scripts/tools/sync-agent-rules.py [--dry-run] [--verbose]"
     }
   ]

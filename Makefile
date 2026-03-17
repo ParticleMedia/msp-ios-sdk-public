@@ -11,7 +11,7 @@
 #   make beta           Upload DemoApp to TestFlight
 #   make release        Production CocoaPods release
 #   make resume         Resume a failed release
-#   make sync           Sync agent rules across Claude/Cursor/Codex
+#   make sync           Sync agent rules across Claude/Cursor/Codex/Gemini
 #   make clean          Clean DerivedData and Pods
 # ============================================================================
 
@@ -36,7 +36,7 @@ help:
 	@echo "  make beta-dry           Archive + export only, no upload"
 	@echo "  make release            Production release (VERSION= NOTES= required)"
 	@echo "  make resume             Resume failed release (VERSION= required)"
-	@echo "  make sync               Sync agent rules across Claude/Cursor/Codex"
+	@echo "  make sync               Sync agent rules across Claude/Cursor/Codex/Gemini"
 	@echo "  make clean              Clean DerivedData and Pods"
 	@echo ""
 	@echo "Examples:"
@@ -130,7 +130,7 @@ endif
 		$(EXTRA_FLAGS)
 
 # --------------------------------------------------------------------------
-# sync — Sync agent rules across Claude/Cursor/Codex
+# sync — Sync agent rules across Claude/Cursor/Codex/Gemini
 # --------------------------------------------------------------------------
 sync:
 	python3 $(SCRIPTS)/tools/generate-context-index.py

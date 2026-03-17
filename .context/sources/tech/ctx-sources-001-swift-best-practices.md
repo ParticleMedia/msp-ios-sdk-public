@@ -8,7 +8,7 @@ triggers: [swift, optional, unwrap, closure, weak self, Result, enum, struct, cl
 summary: "Swift 5.0 / iOS 15+ 硬规则与软规则，覆盖 optionals、闭包捕获、值类型/引用类型、错误处理、访问控制"
 version: "2.0"
 created: 2026-02-22
-updated: 2026-02-22
+updated: 2026-03-17
 source: manual
 status: active
 confidence: high
@@ -210,25 +210,124 @@ class BidManager {
 ```
 **Why**: 暴露内部实现增加耦合面，外部代码依赖本应隐藏的细节，重构困难。
 
-### HR-11: NEVER introduce async/await in this project
-> Source: 项目约束 — Swift 5.0 兼容性（全部异步使用 completion handler）
+### HR-11: PREFER async/await for new code; NEVER mix paradigms in the same call chain
+> Source: SE-0300, SE-0314, WWDC21 Session 10132/10133 — iOS 15+ 支持 async/await（Swift 5.5+），存量代码渐进迁移
+
+**基本原则**：新代码用 async/await；存量 completion handler 不强制改；同一调用链不允许两种范式混用。跨范式必须用显式 bridge 层隔离。
+
+#### 规则 A：单次回调 → withCheckedThrowingContinuation
+
 ```swift
-// ✅ Correct
-func loadBid(adUnitID: String, completion: @escaping (Result<Bid, Error>) -> Void) {
-    networkService.request(endpoint: .bid(adUnitID)) { [weak self] result in
-        guard let self else { return }
-        completion(result.flatMap { data in self.parseBid(data) })
+// ✅ 标准桥接写法
+func loadBid(adUnitID: String) async throws -> Bid {
+    try await withCheckedThrowingContinuation { continuation in
+        legacyLoadBid(adUnitID: adUnitID) { result in
+            continuation.resume(with: result)  // resume with Result<T,E> 最简洁
+        }
     }
 }
 ```
+
 ```swift
-// ❌ Wrong — breaks codebase consistency
-func loadBid(adUnitID: String) async throws -> Bid {
-    let data = try await networkService.request(endpoint: .bid(adUnitID))
-    return try JSONDecoder().decode(Bid.self, from: data)
+// ❌ 同一调用链混用 — async 埋在 callback 里，线程/错误传播不可控
+func loadBid(adUnitID: String, completion: @escaping (Result<Bid, Error>) -> Void) {
+    Task {
+        let bid = try await networkService.fetchBid(adUnitID)
+        completion(.success(bid))
+    }
 }
 ```
-**Why**: 混入 async/await 需在调用边界不断桥接，增加复杂性且破坏一致性。
+
+**覆盖所有代码路径**：每条分支都必须调用 resume，否则 Task 永久挂起泄漏（只有 runtime warning，无 crash）：
+```swift
+// ❌ (nil, nil) 时 continuation 永远挂起
+if let error { continuation.resume(throwing: error) }
+else if let data { continuation.resume(returning: data) }
+
+// ✅
+continuation.resume(returning: data ?? Data())
+```
+
+#### 规则 B：Delegate 单次完成 → 存为 Optional property，resume 后立即 nil
+
+```swift
+class BidSyncController: NSObject {
+    private var activeContinuation: CheckedContinuation<[Bid], Error>?
+
+    func fetchBids() async throws -> [Bid] {
+        try await withCheckedThrowingContinuation { continuation in
+            self.activeContinuation = continuation
+            self.bidManager.startSync()
+        }
+    }
+}
+
+extension BidSyncController: BidManagerDelegate {
+    func bidManager(_ manager: BidManager, didReceive bids: [Bid]) {
+        activeContinuation?.resume(returning: bids)
+        activeContinuation = nil  // 必须立即 nil，防止二次 resume → fatal trap
+    }
+    func bidManager(_ manager: BidManager, didFailWith error: Error) {
+        activeContinuation?.resume(throwing: error)
+        activeContinuation = nil
+    }
+}
+```
+
+#### 规则 C：多值持续回调（delegate 持续触发）→ AsyncStream，不要用 continuation
+
+`withCheckedContinuation` 只包装**单次** suspension point，多次 resume 会 fatal trap。持续事件流用 `AsyncStream`：
+
+```swift
+// ✅ 位置更新、传感器、广告事件等持续流
+static var adEvents: AsyncStream<AdEvent> {
+    AsyncStream { continuation in
+        let monitor = AdEventMonitor()
+        monitor.onEvent = { event in continuation.yield(event) }
+        continuation.onTermination = { _ in monitor.stop() }  // 取消/完成时清理资源
+        monitor.start()
+    }
+}
+
+// 消费侧
+for await event in AdEventMonitor.adEvents {
+    handle(event)
+}
+```
+
+#### 规则 D：需要传播 Task 取消 → withTaskCancellationHandler 包裹 continuation
+
+plain `withCheckedContinuation` 不响应 Task 取消，必须显式桥接：
+
+```swift
+func fetchBid(adUnitID: String) async throws -> Bid {
+    var sessionTask: URLSessionDataTask?
+    return try await withTaskCancellationHandler {
+        sessionTask?.cancel()                     // Task 取消时同步触发
+    } operation: {
+        try await withCheckedThrowingContinuation { continuation in
+            sessionTask = URLSession.shared.dataTask(with: bidURL) { data, _, error in
+                if let error { continuation.resume(throwing: error) }
+                else { continuation.resume(returning: try! parseBid(data!)) }
+            }
+            sessionTask?.resume()
+        }
+    }
+}
+```
+
+#### 规则 E：resume() 线程安全，不需要手动 hop 到主线程
+
+runtime 自动把 task 调度回其原始 executor（包括 `@MainActor`）：
+```swift
+// ❌ 多余的 hop，反而增加一次调度
+DispatchQueue.main.async { continuation.resume(returning: image) }
+
+// ✅ 直接 resume，@MainActor 调用方自动在主线程恢复
+continuation.resume(returning: image)
+```
+
+**Why**: iOS 15+ 完全支持 async/await。混用范式会隐藏线程切换和错误传播问题，double-resume 直接 fatal trap，never-resume 导致 Task 泄漏。`withCheckedContinuation`（Checked 变体）在开发期提供 runtime 检查，性能敏感且正确性验证后才考虑 `withUnsafeContinuation`。
 
 ### HR-12: ALWAYS use [weak self] with Combine `.sink` and `.receive(on:)`
 > Source: [Apple Combine](https://developer.apple.com/documentation/combine) + [Swift ARC](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/)
@@ -328,7 +427,8 @@ func fetchBid(adUnitID: String, completion: @escaping BidCompletion) { /* ... */
 
 | # | Symptom | Root Cause | Fix |
 |---|---------|------------|-----|
-| 1 | AI 生成 `async func` / `await` | 默认 Swift 5.5+ 模式 | 用 `completion: @escaping (Result<T, Error>) -> Void` (HR-11) |
+| 1 | AI 在 callback 内嵌套 `Task { await ... }` | 混用两种并发范式 | 同一调用链选一种：新链用 async/await，存量链保持 completion handler，跨范式用 `withCheckedThrowingContinuation` + 可选 `withTaskCancellationHandler` (HR-11) |
+| 1b | AI 对多值 delegate 用 `withCheckedContinuation` | 误以为可多次 resume | 多值流用 `AsyncStream`；continuation 只包装单次 suspend，二次 resume → fatal trap (HR-11-C) |
 | 2 | AI 用 `!` 强制解包 | 为"简洁"跳过 nil 检查 | `guard let` / `if let` / `??` (HR-1) |
 | 3 | AI 遗漏 Combine `.sink` 中 `[weak self]` | 未考虑订阅生命周期 | 所有 `.sink` 加 `[weak self]` + `guard let self` (HR-12) |
 | 4 | AI 在 ViewModel 中 `import UIKit` | UI/业务逻辑混合 | 只导入 `Foundation` / `Combine` (HR-4) |
@@ -372,7 +472,7 @@ func fetchBid(adUnitID: String, completion: @escaping BidCompletion) { /* ... */
 ## Never Do（放在文件末尾）
 
 1. **NEVER** force-unwrap (`!`) outside unit tests — 线上 crash 零容忍
-2. **NEVER** use async/await — Swift 5.0 completion handler 模式
+2. **PREFER** async/await for new code — 不在同一调用链混用两种范式，跨范式用 `withCheckedContinuation` 显式桥接
 3. **NEVER** import UIKit in ViewModel or Repository — 破坏可测试性
 4. **NEVER** use third-party mocking frameworks — 手写 test doubles only
 5. **NEVER** use SwiftUI — 本项目是 UIKit 项目

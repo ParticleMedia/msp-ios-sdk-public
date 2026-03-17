@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Script: validate-agent-sync.sh
-# Purpose: Validate multi-agent consistency across Claude/Codex/Cursor configs
+# Purpose: Validate multi-agent consistency across Claude/Cursor/Codex/Gemini configs
 # Usage: ./Scripts/tools/validate-agent-sync.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -44,6 +44,7 @@ check_line_count() {
 check_line_count ".claude/CLAUDE.md" 70 "CLAUDE.md"
 check_line_count ".codex/CODEX.md" 80 "CODEX.md"
 check_line_count ".cursor/CURSOR.md" 80 "CURSOR.md"
+check_line_count "GEMINI.md" 500 "GEMINI.md"
 check_line_count "AGENTS.md" 100 "AGENTS.md"
 check_line_count "Sources/AGENTS-SOURCES.md" 25 "AGENTS-SOURCES.md"
 check_line_count "Scripts/AGENTS-SCRIPTS.md" 40 "AGENTS-SCRIPTS.md"
@@ -73,6 +74,7 @@ check_index_ref() {
 check_index_ref ".claude/CLAUDE.md" "CLAUDE.md"
 check_index_ref ".codex/CODEX.md" "CODEX.md"
 check_index_ref ".cursor/CURSOR.md" "CURSOR.md"
+check_index_ref "GEMINI.md" "GEMINI.md"
 
 # --- Check 3: Playbook IDs in loading guides exist in index.json ---
 echo ""
@@ -270,6 +272,7 @@ check_markers ".codex/instructions.md" "Codex instructions" "CONTEXT_INVENTORY" 
 check_markers ".claude/rules/context-system.md" "Claude context-system" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE" "MAKEFILE_TARGETS"
 check_markers ".claude/rules/skills-sync.md" "Claude skills-sync" "SKILLS_LIST" "SKILL_GUIDES"
 check_markers ".claude/rules/hard-rules.md" "Claude hard-rules" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE"
+check_markers "GEMINI.md" "Gemini" "CONTEXT_INVENTORY" "KEYWORD_DOMAIN_MAP" "SKILLS_LIST" "SKILL_GUIDES" "HARD_RULES_SWIFT" "HARD_RULES_UIKIT" "HARD_RULES_NEVERDO" "HARD_RULES_SCRIPT" "HARD_RULES_ARCHITECTURE" "DIRECTORY_PLAYBOOKS" "TOOLS_AVAILABLE" "MAKEFILE_TARGETS"
 check_markers ".agents-shared/skills/README.md" "Skills README" "SKILLS_LIST"
 
 # --- Check 10: Generated sections are identical across agents ---
@@ -286,6 +289,7 @@ files = {
     "claude_context": root / ".claude/rules/context-system.md",
     "cursor_context": root / ".cursor/rules/context-system.mdc",
     "codex": root / ".codex/instructions.md",
+    "gemini": root / "GEMINI.md",
     "claude_skills": root / ".claude/rules/skills-sync.md",
     "cursor_skills": root / ".cursor/rules/skills-sync.mdc",
     "shared_skills_readme": root / ".agents-shared/skills/README.md",
@@ -306,18 +310,18 @@ def extract(path: Path, marker: str) -> str:
     return match.group(1).strip()
 
 checks = [
-    ("CONTEXT_INVENTORY", ["claude_context", "cursor_context", "codex"]),
-    ("KEYWORD_DOMAIN_MAP", ["claude_context", "cursor_context", "codex"]),
-    ("SKILLS_LIST", ["claude_skills", "cursor_skills", "codex", "shared_skills_readme"]),
-    ("SKILL_GUIDES", ["claude_skills", "cursor_skills", "codex"]),
-    ("HARD_RULES_SWIFT", ["claude_hr", "cursor_swift", "codex"]),
-    ("HARD_RULES_UIKIT", ["claude_hr", "cursor_swift", "codex"]),
-    ("HARD_RULES_NEVERDO", ["claude_hr", "cursor_swift", "codex"]),
-    ("HARD_RULES_SCRIPT", ["claude_hr", "cursor_scripts", "codex"]),
-    ("HARD_RULES_ARCHITECTURE", ["claude_hr", "cursor_swift", "codex"]),
-    ("DIRECTORY_PLAYBOOKS", ["claude_context", "cursor_context", "codex"]),
-    ("TOOLS_AVAILABLE", ["claude_context", "cursor_context", "codex"]),
-    ("MAKEFILE_TARGETS", ["claude_context", "cursor_context", "codex"]),
+    ("CONTEXT_INVENTORY", ["claude_context", "cursor_context", "codex", "gemini"]),
+    ("KEYWORD_DOMAIN_MAP", ["claude_context", "cursor_context", "codex", "gemini"]),
+    ("SKILLS_LIST", ["claude_skills", "cursor_skills", "codex", "gemini", "shared_skills_readme"]),
+    ("SKILL_GUIDES", ["claude_skills", "cursor_skills", "codex", "gemini"]),
+    ("HARD_RULES_SWIFT", ["claude_hr", "cursor_swift", "codex", "gemini"]),
+    ("HARD_RULES_UIKIT", ["claude_hr", "cursor_swift", "codex", "gemini"]),
+    ("HARD_RULES_NEVERDO", ["claude_hr", "cursor_swift", "codex", "gemini"]),
+    ("HARD_RULES_SCRIPT", ["claude_hr", "cursor_scripts", "codex", "gemini"]),
+    ("HARD_RULES_ARCHITECTURE", ["claude_hr", "cursor_swift", "codex", "gemini"]),
+    ("DIRECTORY_PLAYBOOKS", ["claude_context", "cursor_context", "codex", "gemini"]),
+    ("TOOLS_AVAILABLE", ["claude_context", "cursor_context", "codex", "gemini"]),
+    ("MAKEFILE_TARGETS", ["claude_context", "cursor_context", "codex", "gemini"]),
 ]
 
 for marker, keys in checks:

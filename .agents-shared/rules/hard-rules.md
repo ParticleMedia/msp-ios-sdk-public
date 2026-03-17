@@ -21,7 +21,7 @@ These rules are NON-NEGOTIABLE. Violation = bug.
 - **HR-S8**: NEVER use singletons in ViewModel/Repository. Use dependency injection.
 - **HR-S9**: ALWAYS handle all `Result`/`Optional` cases explicitly. No silent failures.
 - **HR-S10**: ALWAYS use `private` by default, promote access only as needed.
-- **HR-S11**: NEVER introduce `async`/`await`. Project uses completion handlers only.
+- **HR-S11**: PREFER `async`/`await` for new code (iOS 15+ supported). NEVER mix `async`/`await` and completion handlers in the same call chain without explicit bridging via `withCheckedContinuation`. Do NOT refactor existing completion-handler code unless the entire call chain is being migrated.
 - **HR-S12**: ALWAYS use `[weak self]` with Combine `.sink` and `.receive(on:)`.
 
 ## UIKit Hard Rules
@@ -42,7 +42,7 @@ These rules are NON-NEGOTIABLE. Violation = bug.
 ## AI NEVER-DO List
 
 1. NEVER generate SwiftUI code (`struct ContentView: View`, `@State`, `@StateObject`) — this is a UIKit project
-2. NEVER use `async`/`await` / `@MainActor` / `Task { }` — use completion handlers
+2. PREFER `async`/`await` for new code. NEVER mix `async`/`await` with completion handlers in the same call chain — pick one style per chain. Use `withCheckedContinuation` only as an explicit bridge layer.
 3. NEVER use Storyboards/XIBs (`@IBOutlet`, `@IBAction`) — programmatic UI only
 4. NEVER use third-party mocking frameworks (Mockingbird, Cuckoo) — hand-written test doubles only
 5. NEVER use `Package.swift` / SPM syntax — this project uses CocoaPods
