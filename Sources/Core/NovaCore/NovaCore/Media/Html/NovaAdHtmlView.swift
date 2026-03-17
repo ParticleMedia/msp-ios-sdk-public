@@ -49,8 +49,10 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
 
         super.init(frame: .zero, configuration: config)
+        let scriptMessageHandlerProxy = NovaScriptMessageHandlerProxy(handler: self)
+        self.scriptMessageHandlerProxy = scriptMessageHandlerProxy
         for message in NovaAdHtmlJSMessage.allCases where message != .mraidBridge {
-            userController.add(self, name: message.rawValue)
+            userController.add(scriptMessageHandlerProxy, name: message.rawValue)
         }
         self.navigationDelegate = self
         self.uiDelegate = self
@@ -115,6 +117,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     private var startTime: CFTimeInterval?
     private var userDidClick: Bool = false
 
+    private var scriptMessageHandlerProxy: NovaScriptMessageHandlerProxy?
 
     private lazy var mraidController = MraidController(
         webView: self,
