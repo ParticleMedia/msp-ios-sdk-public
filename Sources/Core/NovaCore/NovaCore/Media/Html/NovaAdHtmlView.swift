@@ -270,7 +270,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.impressionTimeInMs = Int(Date().timeIntervalSince1970 * 1000)
     }
     
-    public func preload(with model: NovaAdHtmlPageModel, completion: @escaping () -> Void) {
+    public func preload(with model: NovaAdHtmlPageModel, completion: @escaping () -> Void, tracingInfo: TracingInfo) {
+        self.tracingInfo = tracingInfo
         preloadCompletionHandler = completion
         preloadState = .pending
         let resource = model.resource

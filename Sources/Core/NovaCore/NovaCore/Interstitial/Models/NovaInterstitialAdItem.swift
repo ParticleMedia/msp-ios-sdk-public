@@ -202,6 +202,6 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         }
         let htmlView = NovaAdHtmlView(supportReportHandling: enableFeedback)
         cachedHtmlView = htmlView
-        htmlView.preload(with: model.currentPage, completion: completion)
+        htmlView.preload(with: model.currentPage, completion: completion, tracingInfo: .init(adUnitId: adUnitId, encryptedToken: encryptedAdToken))
     }
 }
