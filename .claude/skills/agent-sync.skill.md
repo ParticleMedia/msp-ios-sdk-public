@@ -1,9 +1,9 @@
 ---
 name: agent-sync
-description: Synchronize shared resources (context entries, skills) across all agents (Claude, Cursor, Codex) to prevent stale configurations
+description: Synchronize shared resources (context entries, skills) across all agents (Claude, Cursor, Codex, Gemini, OpenCode) to prevent stale configurations
 category: knowledge-management
 shared: true
-applicable_agents: [claude-code, codex, cursor]
+applicable_agents: [claude-code, codex, cursor, gemini, opencode]
 allowed-tools: [Bash, Read, Grep]
 quick_reference: "When: After adding/modifying context entries or skills. Run: python3 Scripts/tools/generate-context-index.py && python3 Scripts/tools/sync-agent-rules.py"
 ---

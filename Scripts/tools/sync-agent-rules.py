@@ -44,6 +44,7 @@ SYNC_TARGETS = {
     "claude_skills": PROJECT_ROOT / ".claude" / "rules" / "skills-sync.md",
     "claude_hard_rules": PROJECT_ROOT / ".claude" / "rules" / "hard-rules.md",
     "gemini_config": PROJECT_ROOT / "GEMINI.md",
+    "opencode_config": PROJECT_ROOT / "OPENCODE.md",
     "skills_readme": PROJECT_ROOT / ".agents-shared" / "skills" / "README.md",
 }
 
@@ -54,8 +55,10 @@ END_MARKER = "<!-- END:GENERATED:{section} -->"
 def load_index_data():
     """Load full .context/index.json and return the parsed dict."""
     if not CONTEXT_INDEX.exists():
-        print(f"WARNING: {CONTEXT_INDEX} not found, skipping context sync",
-              file=sys.stderr)
+        print(
+            f"WARNING: {CONTEXT_INDEX} not found, skipping context sync",
+            file=sys.stderr,
+        )
         return {}
     with open(CONTEXT_INDEX, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -70,8 +73,7 @@ def load_skills_list():
     """Scan .agents-shared/skills/ for *.skill.md files and extract metadata."""
     skills = []
     if not SKILLS_DIR.exists():
-        print(f"WARNING: {SKILLS_DIR} not found, skipping skills sync",
-              file=sys.stderr)
+        print(f"WARNING: {SKILLS_DIR} not found, skipping skills sync", file=sys.stderr)
         return skills
 
     for skill_file in sorted(SKILLS_DIR.glob("*.skill.md")):
@@ -94,13 +96,15 @@ def load_skills_list():
                     elif line.startswith("quick_reference:"):
                         quick_reference = line.split(":", 1)[1].strip().strip("\"'")
 
-        skills.append({
-            "name": name,
-            "file": f"{skill_file.name}",
-            "description": description,
-            "category": category,
-            "quick_reference": quick_reference,
-        })
+        skills.append(
+            {
+                "name": name,
+                "file": f"{skill_file.name}",
+                "description": description,
+                "category": category,
+                "quick_reference": quick_reference,
+            }
+        )
 
     return skills
 
@@ -113,8 +117,10 @@ def load_hard_rules():
       HARD_RULES_SCRIPT, HARD_RULES_ARCHITECTURE
     """
     if not HARD_RULES_FILE.exists():
-        print(f"WARNING: {HARD_RULES_FILE} not found, skipping hard rules sync",
-              file=sys.stderr)
+        print(
+            f"WARNING: {HARD_RULES_FILE} not found, skipping hard rules sync",
+            file=sys.stderr,
+        )
         return {}
 
     content = HARD_RULES_FILE.read_text(encoding="utf-8")
@@ -154,8 +160,10 @@ def load_hard_rules():
 def load_directory_playbooks():
     """Load .agents-shared/directory-playbooks.json mapping."""
     if not DIR_PLAYBOOKS_FILE.exists():
-        print(f"WARNING: {DIR_PLAYBOOKS_FILE} not found, skipping directory playbooks",
-              file=sys.stderr)
+        print(
+            f"WARNING: {DIR_PLAYBOOKS_FILE} not found, skipping directory playbooks",
+            file=sys.stderr,
+        )
         return {}
     with open(DIR_PLAYBOOKS_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -191,8 +199,10 @@ def generate_directory_playbooks(dir_map, entries):
 def load_tools_registry():
     """Load .agents-shared/tools-registry.json (tools + makefile_targets)."""
     if not TOOLS_REGISTRY_FILE.exists():
-        print(f"WARNING: {TOOLS_REGISTRY_FILE} not found, skipping tools sync",
-              file=sys.stderr)
+        print(
+            f"WARNING: {TOOLS_REGISTRY_FILE} not found, skipping tools sync",
+            file=sys.stderr,
+        )
         return [], []
     with open(TOOLS_REGISTRY_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -356,7 +366,13 @@ def generate_skills_table(skills):
     }
 
     lines = []
-    for cat in ["strategic", "analysis", "generation", "knowledge-management", "uncategorized"]:
+    for cat in [
+        "strategic",
+        "analysis",
+        "generation",
+        "knowledge-management",
+        "uncategorized",
+    ]:
         if cat not in categorized:
             continue
 
@@ -366,7 +382,9 @@ def generate_skills_table(skills):
         lines.append("|-------|------|-------------|")
 
         for skill in sorted(categorized[cat], key=lambda s: s["name"]):
-            lines.append(f"| {skill['name']} | `{skill['file']}` | {skill['description']} |")
+            lines.append(
+                f"| {skill['name']} | `{skill['file']}` | {skill['description']} |"
+            )
 
         lines.append("")
 
@@ -381,18 +399,17 @@ def replace_generated_section(content, section_name, new_content):
     begin = BEGIN_MARKER.format(section=section_name)
     end = END_MARKER.format(section=section_name)
 
-    pattern = re.compile(
-        re.escape(begin) + r".*?" + re.escape(end),
-        re.DOTALL
-    )
+    pattern = re.compile(re.escape(begin) + r".*?" + re.escape(end), re.DOTALL)
 
     replacement = f"{begin}\n{new_content}\n{end}"
 
     if pattern.search(content):
         return pattern.sub(replacement, content)
     else:
-        print(f"  WARNING: Markers for [{section_name}] not found, appending",
-              file=sys.stderr)
+        print(
+            f"  WARNING: Markers for [{section_name}] not found, appending",
+            file=sys.stderr,
+        )
         return content + f"\n{replacement}\n"
 
 
@@ -448,6 +465,7 @@ def sync_skills_mirror(dry_run=False, verbose=False):
                 print(f"  WOULD COPY: {name} → .claude/skills/")
             else:
                 import shutil
+
                 shutil.copy2(src, dst)
                 print(f"  COPIED: {name} → .claude/skills/")
             changes += 1
@@ -479,9 +497,15 @@ def sync_skills_mirror(dry_run=False, verbose=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sync agent rule files from shared sources")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would change without writing")
-    parser.add_argument("--verbose", action="store_true", help="Show unchanged files too")
+    parser = argparse.ArgumentParser(
+        description="Sync agent rule files from shared sources"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would change without writing"
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Show unchanged files too"
+    )
     args = parser.parse_args()
 
     print("=== Agent Rules Sync ===")
@@ -514,35 +538,54 @@ def main():
     changes = 0
 
     # Cursor: context + keyword map + directory playbooks + tools
-    if sync_file(SYNC_TARGETS["cursor_context"],
-                 {"CONTEXT_INVENTORY": context_inventory,
-                  "KEYWORD_DOMAIN_MAP": keyword_domain_map,
-                  "DIRECTORY_PLAYBOOKS": dir_playbooks,
-                  "TOOLS_AVAILABLE": tools_available,
-                  "MAKEFILE_TARGETS": makefile_targets},
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["cursor_context"],
+        {
+            "CONTEXT_INVENTORY": context_inventory,
+            "KEYWORD_DOMAIN_MAP": keyword_domain_map,
+            "DIRECTORY_PLAYBOOKS": dir_playbooks,
+            "TOOLS_AVAILABLE": tools_available,
+            "MAKEFILE_TARGETS": makefile_targets,
+        },
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
-    if sync_file(SYNC_TARGETS["cursor_skills"],
-                 {"SKILLS_LIST": skills_table,
-                  "SKILL_GUIDES": skill_guides},
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["cursor_skills"],
+        {"SKILLS_LIST": skills_table, "SKILL_GUIDES": skill_guides},
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
     # Cursor: hard rules (swift/uikit/neverdo in sources-swift, script in scripts-directory)
     cursor_swift_sections = {}
-    for key in ("HARD_RULES_SWIFT", "HARD_RULES_UIKIT", "HARD_RULES_NEVERDO", "HARD_RULES_ARCHITECTURE"):
+    for key in (
+        "HARD_RULES_SWIFT",
+        "HARD_RULES_UIKIT",
+        "HARD_RULES_NEVERDO",
+        "HARD_RULES_ARCHITECTURE",
+    ):
         if key in hard_rules:
             cursor_swift_sections[key] = hard_rules[key]
     if cursor_swift_sections:
-        if sync_file(SYNC_TARGETS["cursor_swift"], cursor_swift_sections,
-                     dry_run=args.dry_run, verbose=args.verbose):
+        if sync_file(
+            SYNC_TARGETS["cursor_swift"],
+            cursor_swift_sections,
+            dry_run=args.dry_run,
+            verbose=args.verbose,
+        ):
             changes += 1
 
     if "HARD_RULES_SCRIPT" in hard_rules:
-        if sync_file(SYNC_TARGETS["cursor_scripts"],
-                     {"HARD_RULES_SCRIPT": hard_rules["HARD_RULES_SCRIPT"]},
-                     dry_run=args.dry_run, verbose=args.verbose):
+        if sync_file(
+            SYNC_TARGETS["cursor_scripts"],
+            {"HARD_RULES_SCRIPT": hard_rules["HARD_RULES_SCRIPT"]},
+            dry_run=args.dry_run,
+            verbose=args.verbose,
+        ):
             changes += 1
 
     # Codex: everything in one file
@@ -556,30 +599,45 @@ def main():
         "MAKEFILE_TARGETS": makefile_targets,
     }
     codex_sections.update(hard_rules)
-    if sync_file(SYNC_TARGETS["codex_instructions"], codex_sections,
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["codex_instructions"],
+        codex_sections,
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
     # Claude: context + keyword map + directory playbooks + tools
-    if sync_file(SYNC_TARGETS["claude_context"],
-                 {"CONTEXT_INVENTORY": context_inventory,
-                  "KEYWORD_DOMAIN_MAP": keyword_domain_map,
-                  "DIRECTORY_PLAYBOOKS": dir_playbooks,
-                  "TOOLS_AVAILABLE": tools_available,
-                  "MAKEFILE_TARGETS": makefile_targets},
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["claude_context"],
+        {
+            "CONTEXT_INVENTORY": context_inventory,
+            "KEYWORD_DOMAIN_MAP": keyword_domain_map,
+            "DIRECTORY_PLAYBOOKS": dir_playbooks,
+            "TOOLS_AVAILABLE": tools_available,
+            "MAKEFILE_TARGETS": makefile_targets,
+        },
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
-    if sync_file(SYNC_TARGETS["claude_skills"],
-                 {"SKILLS_LIST": skills_table,
-                  "SKILL_GUIDES": skill_guides},
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["claude_skills"],
+        {"SKILLS_LIST": skills_table, "SKILL_GUIDES": skill_guides},
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
     # Claude: hard rules (all sections in one file)
     if hard_rules:
-        if sync_file(SYNC_TARGETS["claude_hard_rules"], hard_rules,
-                     dry_run=args.dry_run, verbose=args.verbose):
+        if sync_file(
+            SYNC_TARGETS["claude_hard_rules"],
+            hard_rules,
+            dry_run=args.dry_run,
+            verbose=args.verbose,
+        ):
             changes += 1
 
     # Gemini: everything in one file (GEMINI.md)
@@ -593,14 +651,40 @@ def main():
         "MAKEFILE_TARGETS": makefile_targets,
     }
     gemini_sections.update(hard_rules)
-    if sync_file(SYNC_TARGETS["gemini_config"], gemini_sections,
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["gemini_config"],
+        gemini_sections,
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
+        changes += 1
+
+    # OpenCode: everything in one file (OPENCODE.md)
+    opencode_sections = {
+        "CONTEXT_INVENTORY": context_inventory,
+        "KEYWORD_DOMAIN_MAP": keyword_domain_map,
+        "SKILLS_LIST": skills_table,
+        "SKILL_GUIDES": skill_guides,
+        "DIRECTORY_PLAYBOOKS": dir_playbooks,
+        "TOOLS_AVAILABLE": tools_available,
+        "MAKEFILE_TARGETS": makefile_targets,
+    }
+    opencode_sections.update(hard_rules)
+    if sync_file(
+        SYNC_TARGETS["opencode_config"],
+        opencode_sections,
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
     # Shared skills README
-    if sync_file(SYNC_TARGETS["skills_readme"],
-                 {"SKILLS_LIST": skills_table},
-                 dry_run=args.dry_run, verbose=args.verbose):
+    if sync_file(
+        SYNC_TARGETS["skills_readme"],
+        {"SKILLS_LIST": skills_table},
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+    ):
         changes += 1
 
     # Skills mirror: .agents-shared/skills/ → .claude/skills/
@@ -610,7 +694,9 @@ def main():
         print("  Skills mirror is up to date")
     changes += mirror_changes
 
-    print(f"\nSync complete: {changes} file(s) {'would be ' if args.dry_run else ''}updated")
+    print(
+        f"\nSync complete: {changes} file(s) {'would be ' if args.dry_run else ''}updated"
+    )
 
     return 0
 

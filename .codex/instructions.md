@@ -240,7 +240,7 @@ When user questions match keywords in the entries below, READ the matching file.
 
 | Skill | File | Description |
 |-------|------|-------------|
-| agent-sync | `agent-sync.skill.md` | Synchronize shared resources (context entries, skills) across all agents (Claude, Cursor, Codex) to prevent stale configurations |
+| agent-sync | `agent-sync.skill.md` | Synchronize shared resources (context entries, skills) across all agents (Claude, Cursor, Codex, Gemini, OpenCode) to prevent stale configurations |
 | context-add | `context-add.skill.md` | Manually add a new context entry to preserve valuable debugging experience |
 | context-init | `context-init.skill.md` | Initialize context system by extracting experience from git commit history |
 | context-list | `context-list.skill.md` | List, search, and manage context entries in the knowledge base |
@@ -357,8 +357,8 @@ When: Creating unit tests. Steps: (1) Get template via `./Scripts/tools/get-test
 | `generate-context-index.py` | Generate .context/index.json from context entry frontmatter | `python3 Scripts/tools/generate-context-index.py` |
 | `get-test-template.sh` | Print Quick/Nimble unit test boilerplate template | `./Scripts/tools/get-test-template.sh` |
 | `post-process-protobuf.sh` | Post-process protoc-generated .pb.swift files for XCFramework compatibility | `./Scripts/tools/post-process-protobuf.sh` |
-| `sync-agent-rules.py` | Sync all auto-generated sections across Claude/Cursor/Codex/Gemini agent configs | `python3 Scripts/tools/sync-agent-rules.py [--dry-run] [--verbose]` |
-| `validate-agent-sync.sh` | Validate multi-agent consistency across Claude/Cursor/Codex/Gemini | `./Scripts/tools/validate-agent-sync.sh` |
+| `sync-agent-rules.py` | Sync all auto-generated sections across Claude/Cursor/Codex/Gemini/OpenCode agent configs | `python3 Scripts/tools/sync-agent-rules.py [--dry-run] [--verbose]` |
+| `validate-agent-sync.sh` | Validate multi-agent consistency across Claude/Cursor/Codex/Gemini/OpenCode | `./Scripts/tools/validate-agent-sync.sh` |
 | `validate-script.sh` | Validate a shell script using shellcheck | `./Scripts/tools/validate-script.sh <script-path>` |
 
 **Total: 7 tools**
@@ -378,7 +378,7 @@ When: Creating unit tests. Steps: (1) Get template via `./Scripts/tools/get-test
 | `make validate` | Quick CI validation |
 | `make rtt` | Round-trip test (target-switching compatibility) |
 | `make ci` | Full CI pipeline |
-| `make sync` | Sync agent rules across Claude/Cursor/Codex/Gemini |
+| `make sync` | Sync agent rules across Claude/Cursor/Codex/Gemini/OpenCode |
 | `make validate-sync` | Validate multi-agent sync consistency |
 | `make beta` | Upload DemoApp to TestFlight |
 | `make release VERSION=x.y.z NOTES="..."` | Production CocoaPods release |

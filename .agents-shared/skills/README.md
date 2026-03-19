@@ -52,7 +52,7 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 
 | Skill | File | Description |
 |-------|------|-------------|
-| agent-sync | `agent-sync.skill.md` | Synchronize shared resources (context entries, skills) across all agents (Claude, Cursor, Codex) to prevent stale configurations |
+| agent-sync | `agent-sync.skill.md` | Synchronize shared resources (context entries, skills) across all agents (Claude, Cursor, Codex, Gemini, OpenCode) to prevent stale configurations |
 | context-add | `context-add.skill.md` | Manually add a new context entry to preserve valuable debugging experience |
 | context-init | `context-init.skill.md` | Initialize context system by extracting experience from git commit history |
 | context-list | `context-list.skill.md` | List, search, and manage context entries in the knowledge base |
