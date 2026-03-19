@@ -328,10 +328,21 @@ pipeline {
                 // Also archive as build artifact for manual recovery
                 archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
             }
-            // TODO: re-enable after pipeline is stable
-            // slackSend channel: env.SLACK_CHANNEL,
-            //           color: 'danger',
-            //           message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Use RESUME=true to continue."
+            withCredentials([
+                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
+            ]) {
+                sh '''
+                    set +e
+                    VERSION_TO_REPORT="${VERSION:-}"
+                    if [ -z "$VERSION_TO_REPORT" ] && [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
+                        VERSION_TO_REPORT="$(jq -r '.version // empty' .msp-release-state.json 2>/dev/null || true)"
+                    fi
+                    VERSION_TO_REPORT="${VERSION_TO_REPORT:-unknown}"
+                    source ./Scripts/lib/release-common.sh
+                    source ./Scripts/notify/slack.sh
+                    notify_release_failure "MSP iOS SDK" "$VERSION_TO_REPORT" "Release pipeline failed. Use RESUME=true to continue." "Pipeline Failure" || true
+                '''
+            }
         }
         success {
             script {
@@ -346,10 +357,9 @@ pipeline {
                     : params.VERSION?.trim()
                         ? "✅ Release ${params.VERSION} succeeded (${env.BUILD_TAG})"
                         : "✅ Pipeline validation succeeded (${env.BUILD_TAG})"
-                // TODO: re-enable after pipeline is stable
-                // slackSend channel: env.SLACK_CHANNEL,
-                //           color: 'good',
-                //           message: msg
+                slackSend channel: env.SLACK_CHANNEL,
+                          color: 'good',
+                          message: msg
             }
         }
     }

@@ -25,6 +25,9 @@ import MSPiOSCore
     private var interstitialAdItem: LPMInterstitialAd?
     public weak var interstitialAd: UnityInterstitialAd?
 
+    private var rewardedAdItem: LPMRewardedAd?
+    public weak var rewardedAd: UnityRewardedAd?
+
     private var nativeAdItem: LevelPlayNativeAd?
     public weak var nativeAd: UnityNativeAd?
 
@@ -59,6 +62,16 @@ import MSPiOSCore
                 } else {
                     auctionBidListener.onError(error: "unity native no valid UIViewController")
                 }
+            } else if adFormat == .rewarded {
+                self.loadRewardedAdIfSupported(
+                    bidResponse: bidResponse,
+                    auctionBidListener: auctionBidListener,
+                    adListener: adListener,
+                    context: context,
+                    adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId,
+                    params: params
+                )
             } else {
                 self.bannerView = LPMBannerAdView(adUnitId: bidderPlacementId)
                 self.bannerView?.setDelegate(self)

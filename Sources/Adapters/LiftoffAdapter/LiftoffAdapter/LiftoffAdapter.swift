@@ -22,6 +22,8 @@ import VungleAdsSDK
 
     public weak var interstitialAd: LiftoffInterstitialAd?
 
+    public weak var rewardedAd: LiftoffRewardedAd?
+
     public weak var nativeAd: LiftoffNativeAd?
 
     public var nativeAdView: NativeAdView?
@@ -102,6 +104,16 @@ import VungleAdsSDK
                 self.loadBannerAd(bidderPlacementId, winningBid, adRequest, auctionBidListener)
             case .multi_format:
                 self.loadMultiformatAd(bidderPlacementId, winningBid, adRequest, auctionBidListener)
+            case .rewarded:
+                self.loadRewardedAdIfSupported(
+                    bidResponse: bidResponse,
+                    auctionBidListener: auctionBidListener,
+                    adListener: adListener,
+                    context: context,
+                    adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId,
+                    params: params
+                )
             @unknown default:
                 self.handleAuctionBidError(
                     error: "Failed to load liftoff ad: unknown ad format: \(adFormat)", bidResponse: self.bidResponse)
@@ -132,6 +144,30 @@ import VungleAdsSDK
         }
 
         interstitialAdItem.load(adm)
+    }
+
+    private func loadRewardedAd(
+        _ placementId: String, _ winningBid: Bid, _ viewController: UIViewController?,
+        _ auctionBidListener: AuctionBidListener
+    ) {
+        let placementReferenceId = getPlacementReferenceId(winner: winningBid)
+        guard let placementReferenceId = placementReferenceId else {
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff rewarded ad: placementReferenceId is nil",
+                bidResponse: self.bidResponse)
+            return
+        }
+
+        let rewardedAdItem = VungleRewarded(placementId: placementReferenceId)
+        rewardedAdItem.delegate = self
+
+        guard let adm = winningBid.adm else {
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff rewarded ad: adm is nil", bidResponse: self.bidResponse)
+            return
+        }
+
+        rewardedAdItem.load(adm)
     }
 
     private func loadNativeAd(_ placementId: String, _ winningBid: Bid, _ auctionBidListener: AuctionBidListener) {
@@ -653,5 +689,109 @@ extension LiftoffAdapter: VungleNativeDelegate {
 
     public func nativeAdDidClick(_ native: VungleNative) {
         handleAdClicked(native)
+    }
+}
+
+// MARK: - VungleRewardedDelegate
+
+extension LiftoffAdapter: VungleRewardedDelegate {
+    
+    public func rewardedAdDidLoad(_ rewarded: VungleRewarded) {
+        MSPLogger.shared.info(message: "[Adapter: Liftoff] Successfully loaded Liftoff rewarded ad")
+        
+        DispatchQueue.main.async {
+            guard let adListener = self.adListener,
+                  let auctionBidListener = self.auctionBidListener,
+                  let bidderPlacementId = self.bidderPlacementId else {
+                return
+            }
+            
+            // Create reward from adRequest or use default
+            let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
+            
+            let rewardedAd = LiftoffRewardedAd(
+                adNetworkAdapter: self,
+                reward: reward,
+                vungleRewarded: rewarded
+            )
+            self.rewardedAd = rewardedAd
+            
+            // Set ad info
+            rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.liftoff.rawValue
+            rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = bidderPlacementId
+            if let priceInDollar = self.priceInDollar {
+                rewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
+            }
+            
+            self.handleAdLoaded(
+                ad: rewardedAd,
+                auctionBidListener: auctionBidListener,
+                bidderPlacementId: bidderPlacementId
+            )
+            
+            self.adMetricReporter?.logAdResult(
+                placementId: self.adRequest?.placementId ?? "",
+                ad: rewardedAd,
+                fill: true,
+                isFromCache: false
+            )
+        }
+    }
+    
+    public func rewardedAdDidFailToLoad(_ rewarded: VungleRewarded, error: Error) {
+        MSPLogger.shared.info(
+            message: "[Adapter: Liftoff] Fail to load Liftoff rewarded ad: \(error.localizedDescription)")
+        
+        self.handleAuctionBidError(
+            error: "Failed to load liftoff rewarded ad: \(error.localizedDescription)",
+            bidResponse: self.bidResponse
+        )
+        
+        self.adMetricReporter?.logAdResult(
+            placementId: self.adRequest?.placementId ?? "",
+            ad: nil,
+            fill: false,
+            isFromCache: false
+        )
+        
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(
+                ad: nil,
+                adRequest: adRequest,
+                errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                errorMessage: error.localizedDescription
+            )
+        }
+    }
+    
+    // Note: Other VungleRewardedDelegate methods (impression, click, reward, dismiss, present failure)
+    // are handled directly by LiftoffRewardedAd class through its own delegate conformance
+}
+
+// MARK: - Rewarded Ad Support Override
+
+extension LiftoffAdapter {
+    
+    /// Provide Liftoff/Vungle rewarded ad support
+    public func loadRewardedAdIfSupported(
+        bidResponse: Any,
+        auctionBidListener: AuctionBidListener,
+        adListener: AdListener,
+        context: Any,
+        adRequest: AdRequest,
+        bidderPlacementId: String,
+        params: [String: String]?
+    ) {
+        guard let mBidResponse = bidResponse as? BidResponse,
+              let winningBid = mBidResponse.winningBid else {
+            self.handleAuctionBidError(
+                error: "Failed to load Liftoff rewarded ad: invalid bidResponse",
+                bidResponse: self.bidResponse
+            )
+            return
+        }
+        
+        let rootViewController = adListener.getRootViewController()
+        self.loadRewardedAd(bidderPlacementId, winningBid, rootViewController, auctionBidListener)
     }
 }

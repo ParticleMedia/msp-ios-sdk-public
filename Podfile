@@ -150,6 +150,7 @@ end
 # MSPiOSCore module tests
 target 'MSPiOSCoreTests' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
+  pod 'MSPiOSCore', :path => 'MSPiOSCore.podspec'
   testing_pods
 end
 
@@ -163,6 +164,14 @@ end
 # Adapter module tests
 target 'AdapterTests' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
+  pod 'MSPiOSCore', :path => 'MSPiOSCore.podspec'
+  pod 'MSPGoogleAdsTypes', :path => 'MSPGoogleAdsTypes.podspec'
+  pod 'MSPGoogleAdapter', :path => 'MSPGoogleAdapter.podspec'
+  pod 'MSPFacebookAdapter', :path => 'MSPFacebookAdapter.podspec'
+  pod 'MSPLiftoffAdapter', :path => 'MSPLiftoffAdapter.podspec'
+  pod 'MintegralAdapter', :path => 'MintegralAdapter.podspec'
+  pod 'MobilefuseAdapter', :path => 'MobilefuseAdapter.podspec'
+  pod 'MSPMolocoAdapter', :path => 'MSPMolocoAdapter.podspec'
   testing_pods
 end
 

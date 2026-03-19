@@ -44,7 +44,5 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
         interstitialAdItem != nil
     }
 
-    public override func dismiss(animated: Bool) {
-        interstitialAdItem?.dismiss(animated: animated)
-    }
+
 }

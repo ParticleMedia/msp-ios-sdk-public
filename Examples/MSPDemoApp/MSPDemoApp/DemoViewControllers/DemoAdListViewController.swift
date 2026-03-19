@@ -248,8 +248,14 @@ private class AdPositionListener: AdListener {
         print("[AdList] Ad impression at position \(position)")
     }
 
-    func onAdDismissed(ad: InterstitialAd) {}
+    func onAdDismissed(ad: MSPAd) {
+        print("[AdList] Ad dismissed at position \(position)")
+    }
 
+    func onAdRewardReceived(ad: MSPAd) {
+        print("[AdList] Reward received at position \(position)")
+    }
+    
     func onError(msg: String, loadInfo: [String: Any]) {
         onError(msg: msg)
     }

@@ -50,6 +50,9 @@ public enum AdType: String {
     case mintegralNative
 
     case clientBiddingBanner
+
+    case googleRewarded
+    case facebookRewarded
 }
 
 class DemoAdViewController: UIViewController {
@@ -113,6 +116,8 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-launch-fullscreen-mintegral"
         case .mintegralNative:
             return "demo-ios-foryou-large-mintegral"
+        case .googleRewarded, .facebookRewarded:
+            return "demo-ios-rewarded"
         case .googleBannerC2S:
             return "demo-ios-article-top-google-c2s"
         case .googleNativeC2S:
@@ -132,8 +137,10 @@ class DemoAdViewController: UIViewController {
             .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo, .novaInterstitialHighEngagement,
             .novaInterstitialEndCard:
             return "msp_nova"
-        case .facebookNative, .facebookInterstitial:
+        case .facebookNative, .facebookInterstitial, .facebookRewarded:
             return "msp_fb"
+        case .googleRewarded:
+            return "msp_google"
         default:
             return nil
         }
@@ -153,6 +160,8 @@ class DemoAdViewController: UIViewController {
             .novaInterstitialHighEngagement, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,
             .pubmaticInterstitial, .mobilefuseInterstitial, .mintegralInterstitial, .novaInterstitialEndCard:
             return .interstitial
+        case .googleRewarded, .facebookRewarded:
+            return .rewarded
         }
     }()
 
@@ -234,11 +243,15 @@ extension DemoAdViewController: AdListener {
         self
     }
 
-    func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
+    func onAdDismissed(ad: MSPAd) {
         print("ad event: on ad dismissed")
     }
 
-    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
+    func onAdRewardReceived(ad: MSPAd) {
+        print("ad event: reward received")
+    }
+    
+    func onAdLoaded(placementId: String, loadInfo: [String : Any]) {
         if let ad = self.adLoader?.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
         }
@@ -304,6 +317,12 @@ extension DemoAdViewController: AdListener {
         {
             DispatchQueue.main.async {
                 interstitialAd.show()
+            }
+        } else if ad is RewardedAd,
+            let rewardedAd = ad as? RewardedAd
+        {
+            DispatchQueue.main.async {
+                rewardedAd.show(rootViewController: self)
             }
         }
     }

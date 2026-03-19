@@ -32,6 +32,19 @@ import MSPiOSCore
         context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?,
         params: [String: String]?
     ) {
+        let adFormat = bidderFormat ?? adRequest.adFormat
+        if adFormat == .rewarded {
+            loadRewardedAdIfSupported(
+                bidResponse: bidResponse,
+                auctionBidListener: auctionBidListener,
+                adListener: adListener,
+                context: context,
+                adRequest: adRequest,
+                bidderPlacementId: bidderPlacementId,
+                params: params
+            )
+            return
+        }
         self.adListener = adListener
         self.auctionBidListener = auctionBidListener
         self.bidderPlacementId = bidderPlacementId

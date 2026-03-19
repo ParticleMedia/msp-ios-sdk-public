@@ -32,4 +32,44 @@ public protocol AdNetworkAdapter: AnyObject {
     func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?)
 
     func getSDKVersion() -> String
+    
+    /// Loads a rewarded ad if the adapter supports it, otherwise provides a default rejection.
+    /// Override this method in adapters that support rewarded ads.
+    /// - Parameters:
+    ///   - bidResponse: The bid response containing ad data
+    ///   - auctionBidListener: Listener for auction bid events
+    ///   - adListener: Listener for ad events
+    ///   - context: Additional context for ad loading
+    ///   - adRequest: The ad request configuration
+    ///   - bidderPlacementId: The placement ID for this bidder
+    ///   - params: Additional parameters for ad loading
+    func loadRewardedAdIfSupported(
+        bidResponse: Any,
+        auctionBidListener: AuctionBidListener,
+        adListener: AdListener,
+        context: Any,
+        adRequest: AdRequest,
+        bidderPlacementId: String,
+        params: [String: String]?
+    )
+}
+
+// MARK: - Rewarded Ad Support
+
+public extension AdNetworkAdapter {
+    /// Default implementation for adapters that don't support rewarded ads
+    func loadRewardedAdIfSupported(
+        bidResponse: Any,
+        auctionBidListener: AuctionBidListener,
+        adListener: AdListener,
+        context: Any,
+        adRequest: AdRequest,
+        bidderPlacementId: String,
+        params: [String: String]?
+    ) {
+        // Default implementation: adapter doesn't support rewarded ads
+        auctionBidListener.onError(
+            error: "\(type(of: self)) does not support the rewarded ad format."
+        )
+    }
 }

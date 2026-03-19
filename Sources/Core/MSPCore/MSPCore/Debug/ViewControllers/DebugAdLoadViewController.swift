@@ -139,6 +139,8 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
                         self.navigationController?.pushViewController(adVC, animated: true)
                     case .interstitial(let interstitialAd):
                         interstitialAd.show(rootViewController: self)
+                    case .rewarded(let rewardedAd):
+                        rewardedAd.show(rootViewController: self)
                     }
                 }
             }

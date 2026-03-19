@@ -22,8 +22,14 @@ private enum Strings {
     static let adUnitId = "[DebugAdLoadViewModel] Ad unit id: "
     static let creativeId = "[DebugAdLoadViewModel] Creative id: "
     static let interstitialDismissed = "[DebugAdLoadViewModel] Interstitial ad dismissed: "
+    static let rewardReceived = "[DebugAdLoadViewModel] Reward received: "
+    static let loadRequested = "[DebugAdLoadViewModel] Load requested: "
+    static let selectedOptions = "[DebugAdLoadViewModel] Selected options: "
+    static let scopedMode = "[DebugAdLoadViewModel] Scoped network mode: "
+    static let notifyLoss = "[DebugAdLoadViewModel] notifyLoss: "
     static let adImpression = "[DebugAdLoadViewModel] Ad impression: "
     static let adClick = "[DebugAdLoadViewModel] Ad click: "
+    static let rewardToast = "✓ Reward received"
 }
 
 struct ToastSignal {
@@ -36,6 +42,7 @@ enum DebugAdPresentationSignal {
     case native(nativeAd: NativeAd)
     case banner(bannerAd: BannerAd)
     case interstitial(interstitialAd: InterstitialAd)
+    case rewarded(rewardedAd: RewardedAd)
 }
 
 class DebugAdLoadViewModel: AdListener {
@@ -49,9 +56,11 @@ class DebugAdLoadViewModel: AdListener {
 
     private let debugSectionsRepository: DebugSectionsRepository
     private let placementsRepository: PlacementsRepository
-    private let loadAdRepository: LoadAdRepository
+    private let auctionLoadAdRepository: LoadAdRepository
+    private let scopedLoadAdRepository: LoadAdRepository
     private(set) var ad: MSPAd?
     private weak var debugAdLoadViewController: DebugAdLoadViewController?
+    private var rewardReceivedBeforeDismiss = false
 
     // Toast signal publisher
     private let toastSignalSubject = PassthroughSubject<ToastSignal, Never>()
@@ -67,13 +76,15 @@ class DebugAdLoadViewModel: AdListener {
     init(
         debugSectionsRepository: DebugSectionsRepository = TestDebugSectionsService(),
         placementsRepository: PlacementsRepository = AdConfigPlacementsService(),
-        loadAdRepository: LoadAdRepository = TestLoadAdService()
+        auctionLoadAdRepository: LoadAdRepository = TestLoadAdService(),
+        scopedLoadAdRepository: LoadAdRepository = ScopedNetworkLoadAdService()
     ) {
         self.debugSectionsRepository = debugSectionsRepository
         self.placementsRepository = placementsRepository
         self.placements = placementsRepository.fetchPlacementIDs()
         self.originalSectionData = debugSectionsRepository.fetchDebugSections(placements: self.placements)
-        self.loadAdRepository = loadAdRepository
+        self.auctionLoadAdRepository = auctionLoadAdRepository
+        self.scopedLoadAdRepository = scopedLoadAdRepository
         self.sections = createSectionViewModels()
         setDefaultSelections()
         updateSectionVisibility()
@@ -151,16 +162,68 @@ class DebugAdLoadViewModel: AdListener {
     }
 
     private func updateSectionVisibility() {
+        updateDynamicSectionOptions()
+
         // Update visibility for all sections based on their showCondition
         for (index, section) in sections.enumerated() where index < originalSectionData.count {
-            let shouldShow = shouldShowSection(originalSectionData[index])
-            // Never hide placement section
-            if originalSectionData[index].id != SectionIds.placement {
-                section.visible = shouldShow
-            } else {
-                section.visible = true  // Always show placement section
+            let sectionData = originalSectionData[index]
+            if sectionData.id == SectionIds.placement {
+                section.visible = true
+                continue
             }
+
+            section.visible = shouldShowSection(sectionData)
         }
+    }
+
+    private func updateDynamicSectionOptions() {
+        let loadMode = currentLoadMode()
+        updateAdNetworkOptions(for: loadMode)
+        updateAdFormatOptions(for: loadMode)
+    }
+
+    private func updateAdNetworkOptions(for loadMode: DebugLoadMode) {
+        guard let section = sectionViewModel(for: SectionIds.adNetwork) else {
+            return
+        }
+
+        let options: [DebugOption]
+        switch loadMode {
+        case .mspAuction:
+            var allOptions: [DebugOption] = [DebugAllNetworksOption()]
+            allOptions.append(contentsOf: AdNetwork.allCases.filter { $0.isVisible })
+            options = allOptions
+        case .scopedNetwork:
+            options = AdNetwork.allCases.filter { $0.isVisible && $0.supportsDebugScopedC2S }
+        }
+
+        section.replaceOptions(options)
+    }
+
+    private func updateAdFormatOptions(for loadMode: DebugLoadMode) {
+        guard let section = sectionViewModel(for: SectionIds.adFormat) else {
+            return
+        }
+
+        let options: [DebugOption]
+        switch loadMode {
+        case .mspAuction:
+            options = AdFormat.allCases.filter { $0.isVisible }
+        case .scopedNetwork:
+            options = AdFormat.allCases.filter { $0.isVisible && $0.supportsDebugScopedC2S }
+        }
+
+        section.replaceOptions(options)
+    }
+
+    private func currentLoadMode() -> DebugLoadMode {
+        sectionViewModel(for: SectionIds.mode)?
+            .selectedCell()?
+            .debugOption as? DebugLoadMode ?? .mspAuction
+    }
+
+    private func sectionViewModel(for sectionId: String) -> DebugAdLoadSectionViewModel? {
+        sections.first(where: { $0.id == sectionId })
     }
 
     // Get test parameters from selected options
@@ -212,21 +275,74 @@ class DebugAdLoadViewModel: AdListener {
     func loadAd() {
         // Get selected placement option
         let selectedOptions = getSelectedOptions()
-        guard let placementOption = selectedOptions.values.compactMap({ $0 as? PlacementOption }).first else {
-            toastSignalSubject.send(ToastSignal(message: "You must choose a placement", style: .error, duration: nil))
-            return
-        }
+        let loadMode = selectedOptions.values.compactMap { $0 as? DebugLoadMode }.first ?? .mspAuction
+        let placementOption = selectedOptions.values.compactMap { $0 as? PlacementOption }.first
+        let selectedNetwork = selectedOptions.values.compactMap { $0 as? AdNetwork }.first
 
         let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
         let testParams = getTestParameters()
+        let selectedOptionSummary = selectedOptions.map { key, value in
+            "\(key)=\(value.id)"
+        }.sorted().joined(separator: ", ")
+        let resolvedPlacementId: String
+        let loadRepository: LoadAdRepository
+        var customParams: [String: Any]?
+
+        switch loadMode {
+        case .mspAuction:
+            guard let placementOption else {
+                toastSignalSubject.send(
+                    ToastSignal(message: "You must choose a placement", style: .error, duration: nil))
+                return
+            }
+            resolvedPlacementId = placementOption.placementId
+            loadRepository = auctionLoadAdRepository
+        case .scopedNetwork:
+            if adFormat == .rewarded {
+                guard let placementOption else {
+                    toastSignalSubject.send(
+                        ToastSignal(message: "Rewarded is S2S only. Choose a rewarded placement.", style: .error, duration: nil))
+                    return
+                }
+                resolvedPlacementId = placementOption.placementId
+                loadRepository = auctionLoadAdRepository
+                MSPLogger.shared.info(
+                    message:
+                        Strings.scopedMode
+                        + "rewarded is S2S only. placementId=\(resolvedPlacementId), selectedNetwork=\(selectedNetwork?.rawValue ?? "nil")")
+                break
+            }
+            guard let selectedNetwork else {
+                toastSignalSubject.send(
+                    ToastSignal(message: "Scoped Network mode requires a network", style: .error, duration: nil))
+                return
+            }
+            resolvedPlacementId = "__scoped__\(selectedNetwork.rawValue)__\(adFormat.id)"
+            loadRepository = scopedLoadAdRepository
+            customParams = ["debug_selected_network": selectedNetwork.rawValue]
+            MSPLogger.shared.info(
+                message:
+                    Strings.scopedMode
+                    + "network=\(selectedNetwork.rawValue), adFormat=\(adFormat), placeholderPlacementId=\(resolvedPlacementId)")
+        }
+
+        MSPLogger.shared.info(
+            message:
+                Strings.loadRequested
+                + "placementId=\(resolvedPlacementId), adFormat=\(adFormat), mode=\(loadMode.id), testParams=\(testParams)")
+        MSPLogger.shared.info(
+            message:
+                Strings.selectedOptions
+                + "placementId=\(resolvedPlacementId), options=[\(selectedOptionSummary)]")
         toastSignalSubject.send(ToastSignal(message: Strings.loading, style: .loading, duration: nil))
-        loadAdRepository.loadAd(
-            placementId: placementOption.placementId,
+        loadRepository.loadAd(
+            placementId: resolvedPlacementId,
             adFormat: adFormat,
             testParams: testParams,
             adListener: self,
             customParams: buildCustomParams()
         )
+        rewardReceivedBeforeDismiss = false
     }
 
     /// Builds custom params from visible toggle items in the Custom Params section.
@@ -246,48 +362,58 @@ class DebugAdLoadViewModel: AdListener {
 
     // MARK: - AdListener
     func onError(msg: String, loadInfo: [String: Any]) {
-        print(Strings.adError + msg)
+        MSPLogger.shared.error(message: Strings.adError + "\(msg), loadInfo=\(loadInfo)")
         tryNotifyLoss(loadInfo: loadInfo, loadSuccess: false, ad: nil)
         toastSignalSubject.send(ToastSignal(message: msg, style: .error, duration: nil))
     }
     func onAdImpression(ad: MSPAd) {
-        print(Strings.adImpression + "\(ad)")
+        MSPLogger.shared.info(message: Strings.adImpression + "\(ad)")
     }
     func onAdClick(ad: MSPAd) {
-        print(Strings.adClick + "\(ad)")
+        MSPLogger.shared.info(message: Strings.adClick + "\(ad)")
     }
     func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
-        guard let ad = loadAdRepository.getAd(placementId: placementId) else {
-            print(Strings.noAdFound + placementId)
+        guard let ad = getLoadedAd(placementId: placementId) else {
+            MSPLogger.shared.error(message: Strings.noAdFound + placementId)
             toastSignalSubject.send(ToastSignal(message: Strings.noAdFoundForPlacementId, style: .error, duration: nil))
             return
         }
         self.ad = ad
         tryNotifyLoss(loadInfo: loadInfo, loadSuccess: true, ad: ad)
-        print(Strings.adLoaded + placementId)
+        MSPLogger.shared.info(message: Strings.adLoaded + "\(placementId), loadInfo=\(loadInfo)")
         toastSignalSubject.send(ToastSignal(message: Strings.adLoadedSuccessfully, style: .success, duration: 2.0))
         if let price = ad.adInfo[MSPConstants.AD_INFO_PRICE] as? Double {
-            print(Strings.adPrice + "\(price)")
+            MSPLogger.shared.info(message: Strings.adPrice + "\(price)")
         }
         if let adNetworkName = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
-            print(Strings.adNetwork + adNetworkName)
+            MSPLogger.shared.info(message: Strings.adNetwork + adNetworkName)
         }
         if let adUnitId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] {
-            print(Strings.adUnitId + "\(adUnitId)")
+            MSPLogger.shared.info(message: Strings.adUnitId + "\(adUnitId)")
         }
         if let creativeId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] {
-            print(Strings.creativeId + "\(creativeId)")
+            MSPLogger.shared.info(message: Strings.creativeId + "\(creativeId)")
         }
         if let nativeAd = ad as? NativeAd {
             adPresentationSubject.send(.native(nativeAd: nativeAd))
         } else if let bannerAd = ad as? BannerAd {
             adPresentationSubject.send(.banner(bannerAd: bannerAd))
+        } else if let rewardedAd = ad as? RewardedAd {
+            adPresentationSubject.send(.rewarded(rewardedAd: rewardedAd))
         } else if let interstitialAd = ad as? InterstitialAd {
             adPresentationSubject.send(.interstitial(interstitialAd: interstitialAd))
         }
     }
-    func onAdDismissed(ad: InterstitialAd) {
-        print(Strings.interstitialDismissed + "\(ad)")
+    func onAdDismissed(ad: MSPAd) {
+        MSPLogger.shared.info(
+            message: Strings.interstitialDismissed + "\(ad), rewardReceivedBeforeDismiss=\(rewardReceivedBeforeDismiss)")
+        let message = rewardReceivedBeforeDismiss ? "Ad closed: reward before dismiss" : "Ad closed: reward missing"
+        toastSignalSubject.send(ToastSignal(message: message, style: .success, duration: 2.0))
+    }
+    func onAdRewardReceived(ad: MSPAd) {
+        rewardReceivedBeforeDismiss = true
+        MSPLogger.shared.info(message: Strings.rewardReceived + "\(ad)")
+        toastSignalSubject.send(ToastSignal(message: Strings.rewardToast, style: .success, duration: 2.0))
     }
     func getRootViewController() -> UIViewController? {
         debugAdLoadViewController
@@ -310,8 +436,16 @@ class DebugAdLoadViewModel: AdListener {
     private func tryNotifyLoss(loadInfo: [String: Any], loadSuccess: Bool, ad: MSPAd?) {
         let requestId = loadInfo["request_id"] as? String
         let statusString = loadSuccess ? "succeeded" : "failed"
-        print("notifyLoss: ad load \(statusString), requestId = \(requestId ?? "no valid requestId")")
+        MSPLogger.shared.info(
+            message: Strings.notifyLoss + "ad load \(statusString), requestId=\(requestId ?? "no valid requestId")")
         MSP.shared.notifyLoss(
             winnerBidderName: "demo_app_test", winnerPrice: 0.1, ad: ad, requestId: ad != nil ? nil : requestId)
+    }
+
+    private func getLoadedAd(placementId: String) -> MSPAd? {
+        if let ad = scopedLoadAdRepository.getAd(placementId: placementId) {
+            return ad
+        }
+        return auctionLoadAdRepository.getAd(placementId: placementId)
     }
 }

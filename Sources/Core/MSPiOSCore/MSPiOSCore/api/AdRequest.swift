@@ -16,6 +16,8 @@ public class AdRequest {
     public var placementId: String
     public var adFormat: AdFormat
     public var testParams: [String: Any]
+    /// Optional reward metadata forwarded to supported server-side rewarded ad networks.
+    public var reward: Reward?
 
     public var requestId = UUID().uuidString
 
@@ -33,6 +35,7 @@ public class AdRequest {
         self.placementId = placementId
         self.adFormat = adFormat
         self.testParams = testParams
+        self.reward = nil
     }
 }
 

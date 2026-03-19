@@ -26,6 +26,9 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
     private var interstitialAdItem: MolocoInterstitial?
     public weak var interstitialAd: MolocoInterstitialAd?
 
+    private var rewardedAdItem: (any MolocoRewardedInterstitial)?
+    public weak var rewardedAd: MolocoRewardedAd?
+
     private var nativeAdItem: MolocoNativeAd?
     public weak var nativeAd: MoNativeAd?
 
@@ -101,6 +104,16 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
                 self.loadBannerAd(bidderPlacementId, winningBid, rootViewController, adRequest, auctionBidListener)
             case .multi_format:
                 self.loadMultiformatAd(bidderPlacementId, winningBid, rootViewController, adRequest, auctionBidListener)
+            case .rewarded:
+                self.loadRewardedAdIfSupported(
+                    bidResponse: bidResponse,
+                    auctionBidListener: auctionBidListener,
+                    adListener: adListener,
+                    context: context,
+                    adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId,
+                    params: params
+                )
             @unknown default:
                 self.handleAuctionBidError(
                     error: "Failed to load moloco ad: unknown ad format: \(adFormat)", bidResponse: bidResponse)
@@ -137,6 +150,38 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         }
 
         interstitialAdItem.load(bidResponse: adm)
+    }
+
+    @MainActor
+    private func loadRewardedAd(
+        _ placementId: String, _ winningBid: Bid, _ viewController: UIViewController?,
+        _ auctionBidListener: AuctionBidListener
+    ) {
+        let adUnitId = getOriginalAdUnitId(winner: winningBid)
+        
+        guard let adUnitId = adUnitId else {
+            self.handleAuctionBidError(
+                error: "Failed to load moloco rewarded ad: adUnitId is nil", bidResponse: self.bidResponse)
+            return
+        }
+
+        self.rewardedAdItem = Moloco.shared.createRewarded(params: .init(adUnit: adUnitId, mediation: ""))
+
+        guard let rewardedAdItem = self.rewardedAdItem else {
+            self.handleAuctionBidError(
+                error: "Failed to load moloco rewarded ad: invalid configuration", bidResponse: self.bidResponse)
+            return
+        }
+
+        rewardedAdItem.rewardedDelegate = self
+
+        guard let adm = winningBid.adm else {
+            self.handleAuctionBidError(
+                error: "Failed to load moloco rewarded ad: adm is nil", bidResponse: self.bidResponse)
+            return
+        }
+
+        rewardedAdItem.load(bidResponse: adm)
     }
 
     @MainActor
@@ -464,6 +509,8 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
             didLoadInterstitialAd(molocoInterstitialAd)
         case let molocoBannerAd as MolocoBannerAdView:
             didLoadBannerAd(molocoBannerAd)
+        case let molocoRewardedAd as any MolocoRewardedInterstitial:
+            didLoadRewardedAd(molocoRewardedAd)
         default:
             MSPLogger.shared.info(message: "[Adapter: Moloco] unknown loaded moloco ad type")
         }
@@ -549,6 +596,35 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
         }
     }
 
+    private func didLoadRewardedAd(_ ad: any MolocoRewardedInterstitial) {
+        DispatchQueue.main.async {
+            guard let adRequest = self.adRequest,
+                let auctionBidListener = self.auctionBidListener
+            else {
+                return
+            }
+
+            MSPLogger.shared.info(message: "[Adapter: Moloco] successfully loaded Moloco rewarded ad")
+
+            let reward = adRequest.reward ?? Reward(type: "reward", amount: 1)
+            let rewardedAd = MolocoRewardedAd(
+                adNetworkAdapter: self,
+                reward: reward,
+                rewardedAdItem: ad,
+                rootViewController: self.adListener?.getRootViewController(),
+                adListener: self.adListener
+            )
+            self.rewardedAd = rewardedAd
+
+            self.performHandleAdLoaded(
+                mspAd: rewardedAd,
+                creativeId: ad.creativeId,
+                placementId: adRequest.placementId,
+                auctionBidListener: auctionBidListener
+            )
+        }
+    }
+
     private func performHandleAdLoaded(
         mspAd: MSPAd, creativeId: NSString??, placementId: String, auctionBidListener: AuctionBidListener
     ) {
@@ -615,6 +691,8 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
                 self.interstitialAd
             case is MolocoBannerAdView:
                 self.bannerAd
+            case is any MolocoRewardedInterstitial:
+                self.rewardedAd
             default:
                 nil
             }
@@ -674,6 +752,35 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
     }
 }
 
+// MARK: - Rewarded Ad Support Override
+
+extension MolocoAdapter {
+    @MainActor
+    /// Provide Moloco rewarded ad support
+    public func loadRewardedAdIfSupported(
+        bidResponse: Any,
+        auctionBidListener: AuctionBidListener,
+        adListener: AdListener,
+        context: Any,
+        adRequest: AdRequest,
+        bidderPlacementId: String,
+        params: [String: String]?
+    ) {
+        guard let mBidResponse = bidResponse as? BidResponse,
+            let winningBid = mBidResponse.winningBid
+        else {
+            self.handleAuctionBidError(
+                error: "Failed to load Moloco rewarded ad: invalid bidResponse",
+                bidResponse: nil
+            )
+            return
+        }
+        
+        let rootViewController = adListener.getRootViewController()
+        self.loadRewardedAd(bidderPlacementId, winningBid, rootViewController, auctionBidListener)
+    }
+}
+
 extension MolocoAdapter: MolocoNativeAdDelegate {
     public func didHandleClick(ad: any MolocoAd) {
         handleAdClicked(ad: ad)
@@ -688,4 +795,17 @@ extension MolocoAdapter: MolocoInterstitialDelegate {
 }
 
 extension MolocoAdapter: MolocoBannerDelegate {
+}
+
+// MARK: - MolocoRewardedInterstitialDelegate
+
+extension MolocoAdapter: MolocoRewardedDelegate {
+    public func userRewarded(ad: any MolocoAd) {
+    }
+
+    public func rewardedVideoStarted(ad: any MolocoAd) {
+    }
+
+    public func rewardedVideoCompleted(ad: any MolocoAd) {
+    }
 }

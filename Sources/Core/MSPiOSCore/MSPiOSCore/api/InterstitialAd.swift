@@ -24,18 +24,19 @@ extension InterstitialAdReportHandling {
 }
 
 open class InterstitialAd: MSPAd {
+    @MainActor
     open func show() {
         fatalError("Subclass must override show() method")
     }
 
+    @MainActor
     open func show(rootViewController: UIViewController?) {
         show()
     }
 
+    @MainActor
     open func show(rootViewController: UIViewController?, interstitialAdReportHandling: InterstitialAdReportHandling?) {
         show(rootViewController: rootViewController)
     }
 
-    open func dismiss(animated: Bool) {
-    }
 }

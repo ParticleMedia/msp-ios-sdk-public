@@ -152,6 +152,14 @@ class ViewController: UIViewController {
             self?.openDemoAdPage(adType: .prebidInterstitial)
         }
 
+        let rewardedButton = makeButton(title: "Rewarded Ad")
+        let rewardedMenuItems = [
+            UIAction(title: "Google", handler: { [weak self] _ in self?.openDemoAdPage(adType: .googleRewarded) }),
+            UIAction(title: "Facebook", handler: { [weak self] _ in self?.openDemoAdPage(adType: .facebookRewarded) }),
+        ]
+        rewardedButton.menu = UIMenu(title: "Choose network", children: rewardedMenuItems)
+        rewardedButton.showsMenuAsPrimaryAction = true
+
         let adListButton = UIButton(type: .system)
         adListButton.setTitle("Ad List (Reuse Test)", for: .normal)
         adListButton.backgroundColor = .systemPurple
@@ -174,7 +182,7 @@ class ViewController: UIViewController {
 
         let standardButtons: [UIButton] = [
             button1, button2, button3, button4, button5, button6, button7, button8,
-            button9, button10, button11, button12, button13,
+            button9, button10, button11, button12, button13, rewardedButton,
         ]
         standardButtons.forEach { contentStack.addArrangedSubview($0) }
         contentStack.addArrangedSubview(adListButton)

@@ -111,6 +111,16 @@ import UIKit
                 self.interstitialRenderingAdUnit = interstitialRenderingAdUnit
                 interstitialRenderingAdUnit.delegate = self
                 interstitialRenderingAdUnit.handleBidResponse(response: mBidResponse)
+            } else if adRequest.adFormat == .rewarded {
+                self.loadRewardedAdIfSupported(
+                    bidResponse: bidResponse,
+                    auctionBidListener: auctionBidListener,
+                    adListener: adListener,
+                    context: context,
+                    adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId,
+                    params: params
+                )
             } else {
                 var bannerView = BannerView(
                     frame: CGRect(origin: .zero, size: adSize),

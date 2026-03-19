@@ -27,6 +27,9 @@ import PrebidMobile
     private var interstitialAdItem: IMInterstitial?
     public weak var interstitialAd: InmobiInterstitialAd?
 
+    private var rewardedAdItem: IMInterstitial?
+    public weak var rewardedAd: InmobiRewardedAd?
+
     private var nativeAdItem: IMNative?
     public weak var nativeAd: InmobiNativeAd?
 
@@ -65,6 +68,16 @@ import PrebidMobile
                 self.nativeAdItem = IMNative(placementId: numPlacementId)
                 self.nativeAdItem?.delegate = self
                 self.nativeAdItem?.load()
+            } else if adFormat == .rewarded {
+                self.loadRewardedAdIfSupported(
+                    bidResponse: bidResponse,
+                    auctionBidListener: auctionBidListener,
+                    adListener: adListener,
+                    context: context,
+                    adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId,
+                    params: params
+                )
             } else {
                 let adSize = CGSize(width: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50)
                 self.bannerView = IMBanner(

@@ -28,6 +28,9 @@ import PrebidMobile
     private var interstitialAdItem: MFInterstitialAd?
     public weak var interstitialAd: MobilefuseInterstitialAd?
 
+    private var rewardedAdItem: MFRewardedAd?
+    public weak var rewardedAd: MobilefuseRewardedAd?
+
     private var nativeAdItem: MFNativeAd?
     public weak var nativeAd: MobilefuseNativeAd?
 
@@ -69,6 +72,16 @@ import PrebidMobile
                     self.nativeAdItem?.testMode = true
                 }
                 self.nativeAdItem?.load()
+            } else if adFormat == .rewarded {
+                self.loadRewardedAdIfSupported(
+                    bidResponse: bidResponse,
+                    auctionBidListener: auctionBidListener,
+                    adListener: adListener,
+                    context: context,
+                    adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId,
+                    params: params
+                )
             } else {
                 self.bannerView = MFBannerAd(
                     placementId: bidderPlacementId, with: self.getMFBannerAdSize(adRequest: adRequest))
@@ -245,6 +258,28 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 self.handleAdLoaded(
                     ad: interstitialAd, auctionBidListener: auctionBidListener,
                     bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
+            } else if ad is MFRewardedAd,
+                let rewardedAdItem = self.rewardedAdItem
+            {
+                MSPLogger.shared.info(message: "[Adapter: Mobilefuse] successfully loaded Mobilefuse Rewarded ad")
+                
+                // Create reward from adRequest or use default
+                let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
+                
+                let rewardedAd = MobilefuseRewardedAd(
+                    adNetworkAdapter: self,
+                    reward: reward,
+                    mfRewardedAd: rewardedAdItem
+                )
+                self.rewardedAd = rewardedAd
+                
+                rewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mobilefuse.rawValue
+                rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                
+                self.handleAdLoaded(
+                    ad: rewardedAd, auctionBidListener: auctionBidListener,
+                    bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFNativeAd,
                 let nativeAdItem = self.nativeAdItem
             {
@@ -349,6 +384,33 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
             {
                 self.adListener?.onAdDismissed(ad: interstitialAd)
             }
+        }
+    }
+}
+
+// MARK: - Rewarded Ad Support Override
+
+extension MobilefuseAdapter {
+    
+    /// Provide MobileFuse rewarded ad support
+    public func loadRewardedAdIfSupported(
+        bidResponse: Any,
+        auctionBidListener: AuctionBidListener,
+        adListener: AdListener,
+        context: Any,
+        adRequest: AdRequest,
+        bidderPlacementId: String,
+        params: [String: String]?
+    ) {
+        DispatchQueue.main.async {
+            self.rewardedAdItem = MFRewardedAd(placementId: bidderPlacementId)
+            self.rewardedAdItem?.register(self)
+            
+            if (adRequest.testParams["mobilefuse"] as? String) == "true" {
+                self.rewardedAdItem?.testMode = true
+            }
+            
+            self.rewardedAdItem?.load()
         }
     }
 }

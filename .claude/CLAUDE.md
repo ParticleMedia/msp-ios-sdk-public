@@ -42,3 +42,10 @@ See `.claude/skills/` — progressive loading built-in (metadata at startup, ful
 ## Output Format
 
 See .agents-shared/protocols/output-format.protocol.md
+
+## Active Technologies
+- Swift 5.0+ + MSPiOSCore, MSPCore, MSPGoogleAdapter (GADRewardedAd), MSPFacebookAdapter (FBRewardedVideoAd) (001-rewarded-ads)
+- N/A (in-memory `AdCache`, same as Interstitial) (001-rewarded-ads)
+
+## Recent Changes
+- 001-rewarded-ads: Added Swift 5.0+ + MSPiOSCore, MSPCore, MSPGoogleAdapter (GADRewardedAd), MSPFacebookAdapter (FBRewardedVideoAd)

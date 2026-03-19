@@ -79,10 +79,13 @@ public class MSPAuction: Auction {
 
     private func finishOnceOnBiddingQueue(_ block: () -> Void) {
         dispatchPrecondition(condition: .onQueue(biddingDispatchQueue))
-        if completionCalled {
-            return
+        taskLock.lock()
+        let alreadyCalled = completionCalled
+        if !alreadyCalled {
+            completionCalled = true
         }
-        completionCalled = true
+        taskLock.unlock()
+        guard !alreadyCalled else { return }
         block()
     }
 

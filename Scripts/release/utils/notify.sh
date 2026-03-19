@@ -439,11 +439,11 @@ notify::dm() {
     # Check for DM override
     if [[ -n "${MSP_SLACK_DM_OVERRIDE:-}" ]]; then
         target_user="$MSP_SLACK_DM_OVERRIDE"
-    elif [[ -z "$user" ]]; then
-        # Try to resolve from module (if called from module_success)
-        target_user="$(notify::resolve_user "" 2>/dev/null || echo "")"
     else
-        target_user="$user"
+        # Always resolve via email_map / module_owner so that module names
+        # (e.g. "Adapters") are converted to real Slack user IDs instead of
+        # being sent verbatim to the API, which causes user_not_found errors.
+        target_user="$(notify::resolve_user "$user" 2>/dev/null || echo "")"
     fi
     
     [[ -z "$target_user" ]] && return 0
@@ -719,12 +719,14 @@ notify::send_release_summary() {
         message="$message"$'\n\n'"Verification:"$'\n'"$REMOTE_VERIFY_STATUS"
     fi
 
-    # Send to channel (non-blocking)
-    notify::channel "$message" 2>/dev/null || {
-        log::warn "NOTIFY" "Channel notification failed (continuing release)"
-    }
+    # Send to channel only on success (non-blocking)
+    if [[ "$status" == "success" ]]; then
+        notify::channel "$message" 2>/dev/null || {
+            log::warn "NOTIFY" "Channel notification failed (continuing release)"
+        }
+    fi
 
-    # Send DM (non-blocking)
+    # Send DM on all outcomes (non-blocking)
     notify::dm "" "$message" 2>/dev/null || {
         log::warn "NOTIFY" "DM notification failed (continuing release)"
     }

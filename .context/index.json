@@ -1,12 +1,14 @@
 {
   "version": "2.0",
-  "generated_at": "2026-03-17T03:01:03Z",
+  "generated_at": "2026-03-19T06:19:24Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 20,
+  "entry_count": 21,
   "domains": {
-    "compatibility": {
-      "count": 0,
-      "layers": []
+    "ci": {
+      "count": 4,
+      "layers": [
+        "experience"
+      ]
     },
     "testing": {
       "count": 3,
@@ -14,8 +16,15 @@
         "tech"
       ]
     },
-    "ci": {
-      "count": 4,
+    "sources": {
+      "count": 7,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
+    "integration": {
+      "count": 2,
       "layers": [
         "experience"
       ]
@@ -31,18 +40,9 @@
       "count": 0,
       "layers": []
     },
-    "integration": {
-      "count": 2,
-      "layers": [
-        "experience"
-      ]
-    },
-    "sources": {
-      "count": 6,
-      "layers": [
-        "experience",
-        "tech"
-      ]
+    "compatibility": {
+      "count": 0,
+      "layers": []
     }
   },
   "entries": [
@@ -350,6 +350,37 @@
       "summary": "protoc 生成的 .pb.swift 默认使用 import SwiftProtobuf，会泄漏到 .swiftinterface，导致消费方 CI 构建失败。需后处理为 @_implementationOnly import。",
       "status": "active",
       "updated": "2026-02-26"
+    },
+    {
+      "id": "ctx-sources-007",
+      "path": ".context/sources/experience/ctx-sources-007-fb-rewarded-weak-ref-and-auction-race.md",
+      "title": "Facebook Rewarded 广告加载成功但 auction 超时 — weak var 提前释放 + 竞态条件",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "facebook",
+        "rewarded",
+        "weak-reference",
+        "arc",
+        "race-condition",
+        "concurrent-queue",
+        "auction",
+        "timeout",
+        "facebook-rewarded-ad",
+        "msp-auction"
+      ],
+      "triggers": [
+        "Adapter: Facebook] successfully loaded Facebook Rewarded ad",
+        "Auction: Load Ad] time out. No winning bid",
+        "facebookRewardedAd=false",
+        "GUARD FAILED in rewardedVideoAdDidLoad",
+        "rewarded ad loaded but not displayed",
+        "FB rewarded timeout",
+        "auction timeout rewarded"
+      ],
+      "summary": "FB Rewarded loaded but auction timeout: weak var released by ARC + concurrent queue race on completionCalled",
+      "status": "active",
+      "updated": "2026-03-19"
     },
     {
       "id": "ctx-sources-001",

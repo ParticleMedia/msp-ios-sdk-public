@@ -33,4 +33,13 @@ extension AdNetwork: DebugOption {
         @unknown default: return false
         }
     }
+
+    var supportsDebugScopedC2S: Bool {
+        switch self {
+        case .google:
+            return true
+        default:
+            return false
+        }
+    }
 }

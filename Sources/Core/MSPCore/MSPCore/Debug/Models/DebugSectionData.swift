@@ -5,9 +5,12 @@ import MSPiOSCore
 struct DebugSectionData: DebugSection {
     // UIConfig for section titles and IDs
     enum SectionTitles {
+        static let mode = "Load Mode"
         static let placement = "Placement"
         static let adNetwork = "Ad Network"
         static let adFormat = "Ad Format"
+        static let rewardType = "Reward Type"
+        static let rewardAmount = "Reward Amount"
         static let creativeType = "Creative Type (Nova only)"
         static let layout = "Layout (Nova interstitial only)"
         static let highEngagement = "High Engagement (Nova interstitial only)"
@@ -15,9 +18,12 @@ struct DebugSectionData: DebugSection {
     }
 
     enum SectionIds {
+        static let mode = "mode"
         static let placement = "placement"
         static let adNetwork = "adNetwork"
         static let adFormat = "adFormat"
+        static let rewardType = "rewardType"
+        static let rewardAmount = "rewardAmount"
         static let creativeType = "creativeType"
         static let layout = "layout"
         static let highEngagement = "highEngagement"
@@ -45,11 +51,40 @@ struct DebugSectionData: DebugSection {
     }
 }
 
+enum DebugLoadMode: CaseIterable, DebugOption {
+    case mspAuction
+    case scopedNetwork
+
+    var id: String {
+        switch self {
+        case .mspAuction:
+            return "mspAuction"
+        case .scopedNetwork:
+            return "scopedNetwork"
+        }
+    }
+
+    var displayTitle: String {
+        switch self {
+        case .mspAuction:
+            return "MSP Auction"
+        case .scopedNetwork:
+            return "Direct Network (C2S)"
+        }
+    }
+
+    var isVisible: Bool { true }
+}
+
 // Factory methods for creating debug section data
 extension DebugSectionData {
+    static func modeSection() -> DebugSectionData {
+        DebugSectionData(id: SectionIds.mode, title: SectionTitles.mode, options: DebugLoadMode.allCases)
+    }
+
     static func adNetworkSection() -> DebugSectionData {
-        let options = AdNetwork.allCases
-            .filter { $0.isVisible }
+        var options: [DebugOption] = [DebugAllNetworksOption()]
+        options.append(contentsOf: AdNetwork.allCases.filter { $0.isVisible })
         return DebugSectionData(id: SectionIds.adNetwork, title: SectionTitles.adNetwork, options: options)
     }
 
@@ -66,7 +101,27 @@ extension DebugSectionData {
             id: SectionIds.creativeType,
             title: SectionTitles.creativeType,
             options: options,
-            showCondition: [AdNetwork.nova.rawValue]
+            showCondition: [AdNetwork.nova.rawValue, DebugLoadMode.mspAuction.id]
+        )
+    }
+
+    static func rewardTypeSection() -> DebugSectionData {
+        let options = RewardTypeOption.allCases.filter { $0.isVisible }
+        return DebugSectionData(
+            id: SectionIds.rewardType,
+            title: SectionTitles.rewardType,
+            options: options,
+            showCondition: [AdFormat.rewarded.id]
+        )
+    }
+
+    static func rewardAmountSection() -> DebugSectionData {
+        let options = RewardAmountOption.allCases.filter { $0.isVisible }
+        return DebugSectionData(
+            id: SectionIds.rewardAmount,
+            title: SectionTitles.rewardAmount,
+            options: options,
+            showCondition: [AdFormat.rewarded.id]
         )
     }
 
@@ -77,7 +132,7 @@ extension DebugSectionData {
             id: SectionIds.layout,
             title: SectionTitles.layout,
             options: options,
-            showCondition: [AdNetwork.nova.rawValue, AdFormat.interstitial.id]
+            showCondition: [AdNetwork.nova.rawValue, AdFormat.interstitial.id, DebugLoadMode.mspAuction.id]
         )
     }
 
@@ -90,7 +145,7 @@ extension DebugSectionData {
             id: SectionIds.highEngagement,
             title: SectionTitles.highEngagement,
             options: options,
-            showCondition: [AdNetwork.nova.rawValue, AdFormat.interstitial.id]
+            showCondition: [AdNetwork.nova.rawValue, AdFormat.interstitial.id, DebugLoadMode.mspAuction.id]
         )
     }
 
@@ -111,7 +166,8 @@ extension DebugSectionData {
         return DebugSectionData(
             id: SectionIds.placement,
             title: SectionTitles.placement,
-            options: options
+            options: options,
+            showCondition: [DebugLoadMode.mspAuction.id]
         )
     }
 }

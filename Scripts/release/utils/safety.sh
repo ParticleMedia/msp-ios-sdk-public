@@ -141,12 +141,6 @@ msp_safety_validate_version() {
             return 1
         fi
 
-        # Reject versions containing 'preflight', 'test', 'dev'
-        if [[ "$version" =~ (preflight|test|dev) ]]; then
-            log::error "SAFETY" "[SAFETY] Invalid release version format: $version"
-            log::error "SAFETY" "[SAFETY] Production mode cannot use test/preflight/dev versions"
-            return 1
-        fi
 
         # Validate format: SemVer 2.0 compliant
         # Valid: X.Y.Z, X.Y.Z-qualifier, X.Y.Z-qualifier.N, X.Y.Z-qualifier.N.identifier

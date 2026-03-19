@@ -11,6 +11,7 @@ import MSPiOSCore
 public class MSPAdLoader: NSObject {
     weak var adListener: AdListener?
     var adRequest: AdRequest?
+    var rewardedAdapterRolloutPolicy: any RewardedAdapterRolloutPolicy = ClientRewardedAdapterRolloutPolicy()
 
     var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
@@ -36,7 +37,7 @@ public class MSPAdLoader: NSObject {
         }
 
         if let placement = getPlacement(placementId: placementId) {
-            let adConfigBidders = getBidders(placement: placement)
+            let adConfigBidders = getBidders(placement: placement, adRequest: adRequest)
             if adConfigBidders.isEmpty {
                 bidders = getDefaultBidders(adRequest: adRequest)
             } else {
@@ -76,12 +77,21 @@ public class MSPAdLoader: NSObject {
         return bidders
     }
 
-    public func getBidders(placement: Placement) -> [MSPiOSCore.Bidder] {
+    public func getBidders(placement: Placement, adRequest: AdRequest? = nil) -> [MSPiOSCore.Bidder] {
         var bidders: [MSPiOSCore.Bidder] = []
 
         if let bidderInfoList = placement.bidders {
             for bidderInfo in bidderInfoList {
-                if let bidder = getBidder(bidderInfo: bidderInfo) {
+                MSPLogger.shared.info(
+                    message:
+                        "[MSPAdLoader] Inspect bidder. placementId=\(placement.placementId), requestFormat=\(adRequest.map { String(describing: $0.adFormat) } ?? "nil"), bidderName=\(bidderInfo.name), bidderPlacementId=\(bidderInfo.bidderPlacementId), rawBidderFormat=\(bidderInfo.bidderFormat ?? "nil")")
+                if shouldFilterRewardedBidder(named: bidderInfo.name, adRequest: adRequest, placementId: placement.placementId) {
+                    MSPLogger.shared.info(
+                        message:
+                            "[Rewarded Gate] filter bidder \(bidderInfo.name) for placement \(placement.placementId)")
+                    continue
+                }
+                if let bidder = getBidder(bidderInfo: bidderInfo, requestFormat: adRequest?.adFormat) {
                     bidder.params = bidderInfo.params
                     bidders.append(bidder)
                 }
@@ -91,7 +101,14 @@ public class MSPAdLoader: NSObject {
         return bidders
     }
 
-    public func getBidder(bidderInfo: BidderInfo) -> MSPiOSCore.Bidder? {
+    private func shouldFilterRewardedBidder(named bidderName: String, adRequest: AdRequest?, placementId: String) -> Bool {
+        guard adRequest?.adFormat == .rewarded else {
+            return false
+        }
+        return !rewardedAdapterRolloutPolicy.isEnabled(networkName: bidderName, placementId: placementId)
+    }
+
+    public func getBidder(bidderInfo: BidderInfo, requestFormat: AdFormat? = nil) -> MSPiOSCore.Bidder? {
         var bidderFormat: AdFormat?
         switch bidderInfo.bidderFormat {
         case "banner":
@@ -102,9 +119,15 @@ public class MSPAdLoader: NSObject {
             bidderFormat = .interstitial
         case "multi_format":
             bidderFormat = .multi_format
+        case "rewarded":
+            bidderFormat = .rewarded
         default:
             bidderFormat = nil
         }
+
+        MSPLogger.shared.info(
+            message:
+                "[MSPAdLoader] Resolved bidder format. bidderName=\(bidderInfo.name), bidderPlacementId=\(bidderInfo.bidderPlacementId), rawBidderFormat=\(bidderInfo.bidderFormat ?? "nil"), resolvedBidderFormat=\(bidderFormat.map { String(describing: $0) } ?? "nil"), requestFormat=\(requestFormat.map { String(describing: $0) } ?? "nil")")
 
         switch bidderInfo.name {
         case "msp":

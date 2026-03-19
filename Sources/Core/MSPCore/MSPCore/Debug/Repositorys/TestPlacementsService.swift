@@ -5,6 +5,6 @@ class TestPlacementsService: PlacementsRepository {
     /// Returns a predefined list of hardcoded placement IDs for testing
     /// - Returns: Array of placement ID strings
     func fetchPlacementIDs() -> [String] {
-        ["test-interstitial-1", "test-banner-2", "test-native-3"]
+        mergeRewardedDebugPlacements(with: ["test-interstitial-1", "test-banner-2", "test-native-3"])
     }
 }

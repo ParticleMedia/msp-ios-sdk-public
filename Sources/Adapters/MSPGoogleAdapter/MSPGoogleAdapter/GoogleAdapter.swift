@@ -96,8 +96,8 @@ import PrebidMobile
     public weak var adListener: AdListener?
     public var priceInDollar: Double?
 
-    private var adRequest: AdRequest?
-    private var bidResponse: BidResponse?
+    var adRequest: AdRequest?
+    var bidResponse: BidResponse?
 
     public weak var auctionBidListener: AuctionBidListener?
     public var bidderPlacementId: String?
@@ -105,9 +105,10 @@ import PrebidMobile
     private weak var bannerAd: BannerAd?
     private weak var nativeAd: MSPiOSCore.NativeAd?
     private weak var interstitialAd: MSPiOSCore.InterstitialAd?
+    private weak var rewardedAd: GoogleRewardedAd?
     public var adUnitId: String?
 
-    private var adMetricReporter: AdMetricReporter?
+    var adMetricReporter: AdMetricReporter?
 
     public func loadAdCreative(
         bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any,
@@ -124,7 +125,6 @@ import PrebidMobile
             {
                 // server-to-server load ad
                 self.bidResponse = mBidResponse
-
 
                 guard let adString = mBidResponse.winningBid?.bid.adm,
                     let rawBidDict = self.SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
@@ -146,7 +146,11 @@ import PrebidMobile
 
                 switch adType {
                 case "banner":
-                    if adRequest.adFormat == .interstitial {
+                    if adRequest.adFormat == .rewarded {
+                        self.loadGoogleAd(
+                            adFormat: .rewarded, adUnitId: adUnitId, priceInDollar: priceInDollar,
+                            adRequest: adRequest, adString: adString)
+                    } else if adRequest.adFormat == .interstitial {
                         self.loadGoogleAd(
                             adFormat: .interstitial, adUnitId: adUnitId, priceInDollar: priceInDollar,
                             adRequest: adRequest, adString: adString)
@@ -161,8 +165,23 @@ import PrebidMobile
                         adFormat: .native, adUnitId: adUnitId, priceInDollar: priceInDollar, adRequest: adRequest,
                         adString: adString)
 
+                case "video":
+                    if adRequest.adFormat == .rewarded {
+                        self.loadGoogleAd(
+                            adFormat: .rewarded, adUnitId: adUnitId, priceInDollar: priceInDollar,
+                            adRequest: adRequest, adString: adString)
+                    } else if adRequest.adFormat == .interstitial {
+                        self.loadGoogleAd(
+                            adFormat: .interstitial, adUnitId: adUnitId, priceInDollar: priceInDollar,
+                            adRequest: adRequest, adString: adString)
+                    } else {
+                        self.handleAuctionBidError(
+                            error: "adType=video but adFormat=\(adRequest.adFormat) is unsupported",
+                            bidResponse: mBidResponse)
+                    }
+
                 default:
-                    self.handleAuctionBidError(error: "unknown adType", bidResponse: mBidResponse)
+                    self.handleAuctionBidError(error: "unknown adType: \(adType ?? "nil")", bidResponse: mBidResponse)
                 }
             } else {
                 // client-to-server load ad
@@ -176,6 +195,9 @@ import PrebidMobile
                 self.adUnitId = bidderPlacementId
 
                 let adFormat = bidderFormat ?? adRequest.adFormat
+                MSPLogger.shared.info(
+                    message:
+                        "[Adapter: Google] Resolve client-to-server ad format. placementId=\(adRequest.placementId), bidderPlacementId=\(bidderPlacementId), requestFormat=\(String(describing: adRequest.adFormat)), bidderFormat=\(bidderFormat.map { String(describing: $0) } ?? "nil"), resolvedFormat=\(String(describing: adFormat)), price=\(priceInDollar)")
 
                 self.loadGoogleAd(
                     adFormat: adFormat, adUnitId: bidderPlacementId, priceInDollar: priceInDollar, adRequest: adRequest,
@@ -188,8 +210,14 @@ import PrebidMobile
         adFormat: MSPiOSCore.AdFormat, adUnitId: String, priceInDollar: Double, adRequest: MSPiOSCore.AdRequest,
         adString: String?
     ) {
+        MSPLogger.shared.info(
+            message:
+                "[Adapter: Google] Enter loadGoogleAd. placementId=\(adRequest.placementId), bidderPlacementId=\(self.bidderPlacementId ?? adRequest.placementId), adUnitId=\(adUnitId), resolvedFormat=\(String(describing: adFormat)), requestHasAdString=\(adString != nil)")
         switch adFormat {
         case .banner:
+            MSPLogger.shared.info(
+                message:
+                    "[Adapter: Google] Routing request to Banner load. placementId=\(adRequest.placementId), bidderPlacementId=\(self.bidderPlacementId ?? adRequest.placementId), adUnitId=\(adUnitId)")
 
             self.priceInDollar = priceInDollar
             let gadBannerView = MSPGAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
@@ -203,6 +231,9 @@ import PrebidMobile
             gadBannerView.load(request)
 
         case .native, .multi_format:
+            MSPLogger.shared.info(
+                message:
+                    "[Adapter: Google] Routing request to Native/Multi-Format load. placementId=\(adRequest.placementId), bidderPlacementId=\(self.bidderPlacementId ?? adRequest.placementId), adUnitId=\(adUnitId), resolvedFormat=\(String(describing: adFormat))")
 
             self.priceInDollar = priceInDollar
 
@@ -227,6 +258,9 @@ import PrebidMobile
 
 
         case .interstitial:
+            MSPLogger.shared.info(
+                message:
+                    "[Adapter: Google] Routing request to Interstitial load. placementId=\(adRequest.placementId), bidderPlacementId=\(self.bidderPlacementId ?? adRequest.placementId), adUnitId=\(adUnitId)")
             let request = MSPGADRequest()
             MSPGADRequestSetAdString(request, adString: adString)
             MSPGADInterstitialAdLoad(adUnitID: adUnitId, request: request) { [weak self] ad, error in
@@ -282,9 +316,117 @@ import PrebidMobile
                     }
                 }
             }
+        case .rewarded:
+            MSPLogger.shared.info(
+                message: "[Adapter: Google] Start loading Google Rewarded ad. placementId=\(adRequest.placementId), bidderPlacementId=\(self.bidderPlacementId ?? adRequest.placementId), adUnitId=\(adUnitId), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), reward=\(adRequest.reward?.type ?? "nil"):\(adRequest.reward?.amount.description ?? "nil")")
+            let request = MSPGADRequest()
+            MSPGADRequestSetAdString(request, adString: adString)
+            MSPGADRewardedAdLoad(adUnitID: adUnitId, request: request) { [weak self] ad, error in
+                guard let self else { return }
+
+                if let error {
+                    MSPLogger.shared.error(
+                        message: "[Adapter: Google] Fail to load Google Rewarded ad. placementId=\(adRequest.placementId), adUnitId=\(adUnitId), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), error=\(error.localizedDescription)")
+                    self.handleAuctionBidError(error: error.localizedDescription, bidResponse: self.bidResponse)
+                    self.adMetricReporter?.logAdResult(
+                        placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
+                    self.adMetricReporter?.logAdResponse(
+                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                        errorMessage: error.localizedDescription)
+                    return
+                }
+
+                guard let ad else {
+                    MSPLogger.shared.error(
+                        message: "[Adapter: Google] Rewarded load returned nil ad without error. placementId=\(adRequest.placementId), adUnitId=\(adUnitId), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+                    self.handleAuctionBidError(error: "missing rewarded ad", bidResponse: self.bidResponse)
+                    self.adMetricReporter?.logAdResult(
+                        placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
+                    return
+                }
+
+                // SSV options are set on the ad object after load (not on the request).
+                if let options = Self.serverSideVerificationOptions(for: adRequest.reward) {
+                    MSPLogger.shared.info(
+                        message: "[Adapter: Google] Applying rewarded SSV options. placementId=\(adRequest.placementId), reward=\(adRequest.reward?.type ?? "nil"):\(adRequest.reward?.amount.description ?? "nil")")
+                    MSPGADRewardedAdSetServerSideVerificationOptions(ad, options: options)
+                } else {
+                    MSPLogger.shared.info(
+                        message: "[Adapter: Google] Rewarded load has no SSV options. placementId=\(adRequest.placementId)")
+                }
+                self.handleLoadedRewardedAd(ad, priceInDollar: priceInDollar, adRequest: adRequest)
+            }
         @unknown default:
             self.handleAuctionBidError(error: "unknown ad format", bidResponse: self.bidResponse)
         }
+    }
+
+    static func customRewardString(for reward: Reward) -> String {
+        "\(reward.type):\(reward.amount)"
+    }
+
+    static func serverSideVerificationOptions(for reward: Reward?) -> MSPGADServerSideVerificationOptions? {
+        guard let reward else { return nil }
+        let options = MSPGADServerSideVerificationOptions()
+        MSPGADServerSideVerificationOptionsSetCustomRewardString(
+            options,
+            customRewardString: customRewardString(for: reward)
+        )
+        return options
+    }
+
+    private func handleLoadedRewardedAd(
+        _ ad: MSPGADRewardedAd,
+        priceInDollar: Double,
+        adRequest: MSPiOSCore.AdRequest
+    ) {
+        MSPLogger.shared.info(
+            message: "[Adapter: Google] successfully loaded Google Rewarded ad. placementId=\(adRequest.placementId), adUnitId=\(self.adUnitId), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), reward=\(adRequest.reward?.type ?? "nil"):\(adRequest.reward?.amount.description ?? "nil")")
+
+        DispatchQueue.main.async {
+            self.priceInDollar = priceInDollar
+            let reward = self.resolveReward(for: ad, adRequest: adRequest)
+            let googleRewardedAd = GoogleRewardedAd(
+                adNetworkAdapter: self,
+                reward: reward,
+                rewardedAdItem: ad,
+                rootViewController: self.adListener?.getRootViewController(),
+                adListener: self.adListener
+            )
+            ad.fullScreenContentDelegate = self
+            self.rewardedAd = googleRewardedAd
+            googleRewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+            googleRewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
+            googleRewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            googleRewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+            if let requestId = self.bidResponse?.rawResponse?.requestID {
+                googleRewardedAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+            }
+
+            if let adRequest = self.adRequest,
+                let auctionBidListener = self.auctionBidListener
+            {
+                self.handleAdLoaded(
+                    ad: googleRewardedAd,
+                    auctionBidListener: auctionBidListener,
+                    bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId
+                )
+                self.adMetricReporter?.logAdResult(
+                    placementId: adRequest.placementId, ad: googleRewardedAd, fill: true, isFromCache: false)
+            }
+        }
+    }
+
+    private func resolveReward(for ad: MSPGADRewardedAd, adRequest: AdRequest) -> Reward {
+        if let requestReward = adRequest.reward {
+            return requestReward
+        }
+
+        if let networkReward = MSPGADRewardedAdReward(ad) {
+            return Reward(type: networkReward.type, amount: MSPGADAdRewardAmount(networkReward))
+        }
+
+        return Reward(type: "", amount: 0)
     }
 
     public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
@@ -327,7 +469,7 @@ import PrebidMobile
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest,
-                let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
+                let ad = ((self.bannerAd ?? self.nativeAd) ?? self.interstitialAd) ?? self.rewardedAd
             {
                 self.adMetricReporter?.logAdHide(
                     ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot,
@@ -339,7 +481,7 @@ import PrebidMobile
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest,
-                let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
+                let ad = ((self.bannerAd ?? self.nativeAd) ?? self.interstitialAd) ?? self.rewardedAd
             {
                 self.adMetricReporter?.logAdReport(
                     ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description,
@@ -544,7 +686,15 @@ extension GoogleAdapter: MSPGADNativeAdDelegate {
 extension GoogleAdapter: MSPGADFullScreenContentDelegate {
     public func adDidRecordImpression(_ ad: MSPGADFullScreenPresentingAd) {
         DispatchQueue.main.async {
-            if let interstitialAd = self.interstitialAd {
+            if let rewardedAd = self.rewardedAd {
+                MSPLogger.shared.info(
+                    message: "[Adapter: Google] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+                if let adRequest = self.adRequest {
+                    self.adMetricReporter?.logAdImpression(
+                        ad: rewardedAd, adRequest: adRequest, bidResponse: self.bidResponse)
+                }
+                rewardedAd.markDisplayed()
+            } else if let interstitialAd = self.interstitialAd {
                 if let adRequest = self.adRequest {
                     self.adMetricReporter?.logAdImpression(
                         ad: interstitialAd, adRequest: adRequest, bidResponse: self.bidResponse)
@@ -555,15 +705,34 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
     }
 
     public func adDidRecordClick(_ ad: MSPGADFullScreenPresentingAd) {
-        if let interstitialAd = self.interstitialAd {
+        if let rewardedAd = self.rewardedAd {
+            MSPLogger.shared.info(
+                message: "[Adapter: Google] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+            rewardedAd.markClicked()
+            self.sendClickAdEvent(ad: rewardedAd)
+        } else if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
             self.sendClickAdEvent(ad: interstitialAd)
         }
     }
 
     public func adDidDismissFullScreenContent(_ ad: any MSPGADFullScreenPresentingAd) {
-        if let interstitialAd = self.interstitialAd {
+        if let rewardedAd = self.rewardedAd {
+            MSPLogger.shared.info(
+                message: "[Adapter: Google] Rewarded dismiss callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+            rewardedAd.markDismissed()
+        } else if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
+        }
+    }
+
+    public func ad(_ ad: any MSPGADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        if let rewardedAd = self.rewardedAd {
+            MSPLogger.shared.error(
+                message: "[Adapter: Google] Rewarded failed to present. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), error=\(error.localizedDescription)")
+            rewardedAd.handlePresentError(error)
+        } else {
+            self.adListener?.onError(msg: error.localizedDescription, loadInfo: [:])
         }
     }
 }

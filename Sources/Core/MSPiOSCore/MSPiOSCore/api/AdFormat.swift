@@ -12,4 +12,6 @@ public enum AdFormat: CaseIterable {
     case native
     case multi_format
     case interstitial
+    /// Full-screen ad that can grant a reward after completion.
+    case rewarded
 }

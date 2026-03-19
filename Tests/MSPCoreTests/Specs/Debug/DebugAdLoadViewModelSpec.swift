@@ -31,7 +31,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     expect(placementsRepository.fetchCallCount).to(equal(1))
@@ -49,7 +50,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     expect(sut.sections.first?.selectedIndex()).to(equal(0))
@@ -62,7 +64,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     expect(sectionsRepository.lastFetchedPlacements).to(equal([]))
@@ -81,7 +84,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     selectOption(
@@ -113,7 +117,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     let nonNovaOptionId = firstOptionId(
@@ -154,7 +159,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     selectOption(
@@ -178,7 +184,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     selectOption(
@@ -213,7 +220,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     selectOption(
@@ -250,7 +258,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     selectOption(
@@ -284,7 +293,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     let sut = DebugAdLoadViewModel(
                         debugSectionsRepository: sectionsRepository,
                         placementsRepository: placementsRepository,
-                        loadAdRepository: loadAdRepository
+                        auctionLoadAdRepository: loadAdRepository,
+                        scopedLoadAdRepository: loadAdRepository
                     )
 
                     let interstitialAd = InterstitialAd(adNetworkAdapter: DummyAdNetworkAdapter())

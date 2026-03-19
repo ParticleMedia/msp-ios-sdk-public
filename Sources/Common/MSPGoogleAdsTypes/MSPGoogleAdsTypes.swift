@@ -18,6 +18,8 @@
     // Ad Types
     public typealias MSPGADNativeAd = GADNativeAd
     public typealias MSPGADInterstitialAd = GADInterstitialAd
+    public typealias MSPGADRewardedAd = GADRewardedAd
+    public typealias MSPGADAdReward = GADAdReward
     public typealias MSPGAMBannerView = GAMBannerView
 
     // Request Types
@@ -26,6 +28,7 @@
     public typealias MSPGADAdLoaderAdType = GADAdLoaderAdType
     public typealias MSPGADVideoOptions = GADVideoOptions
     public typealias MSPGADExtras = GADExtras
+    public typealias MSPGADServerSideVerificationOptions = GADServerSideVerificationOptions
 
     // Size Types
     public typealias MSPGADAdSize = GADAdSize
@@ -52,6 +55,8 @@
     // Ad Types
     public typealias MSPGADNativeAd = GoogleMobileAds.NativeAd
     public typealias MSPGADInterstitialAd = GoogleMobileAds.InterstitialAd
+    public typealias MSPGADRewardedAd = GoogleMobileAds.RewardedAd
+    public typealias MSPGADAdReward = GoogleMobileAds.AdReward
     public typealias MSPGAMBannerView = GoogleMobileAds.AdManagerBannerView
 
     // Request Types
@@ -60,6 +65,7 @@
     public typealias MSPGADAdLoaderAdType = GoogleMobileAds.AdLoaderAdType
     public typealias MSPGADVideoOptions = GoogleMobileAds.VideoOptions
     public typealias MSPGADExtras = GoogleMobileAds.Extras
+    public typealias MSPGADServerSideVerificationOptions = GoogleMobileAds.ServerSideVerificationOptions
 
     // Size Types
     public typealias MSPGADAdSize = GoogleMobileAds.AdSize
@@ -100,6 +106,12 @@
         adUnitID: String, request: MSPGADRequest, completion: @escaping (MSPGADInterstitialAd?, Error?) -> Void
     ) {
         GADInterstitialAd.load(withAdUnitID: adUnitID, request: request, completionHandler: completion)
+    }
+
+    public func MSPGADRewardedAdLoad(
+        adUnitID: String, request: MSPGADRequest, completion: @escaping (MSPGADRewardedAd?, Error?) -> Void
+    ) {
+        GADRewardedAd.load(withAdUnitID: adUnitID, request: request, completionHandler: completion)
     }
 
     // AdSize constants
@@ -150,6 +162,34 @@
         // SPM version: GADInterstitialAd.present(fromRootViewController:)
         ad.present(fromRootViewController: vc)
     }
+
+    public func MSPGADRewardedAdPresent(
+        _ ad: MSPGADRewardedAd?, from rootViewController: UIViewController?,
+        userDidEarnRewardHandler: @escaping () -> Void
+    ) {
+        guard let ad = ad, let vc = rootViewController else { return }
+        ad.present(fromRootViewController: vc, userDidEarnRewardHandler: userDidEarnRewardHandler)
+    }
+
+    public func MSPGADRewardedAdSetServerSideVerificationOptions(
+        _ ad: MSPGADRewardedAd?, options: MSPGADServerSideVerificationOptions?
+    ) {
+        ad?.serverSideVerificationOptions = options
+    }
+
+    public func MSPGADRewardedAdReward(_ ad: MSPGADRewardedAd?) -> MSPGADAdReward? {
+        ad?.adReward
+    }
+
+    public func MSPGADAdRewardAmount(_ reward: MSPGADAdReward) -> Int {
+        reward.amount.intValue
+    }
+
+    public func MSPGADServerSideVerificationOptionsSetCustomRewardString(
+        _ options: MSPGADServerSideVerificationOptions, customRewardString: String
+    ) {
+        options.customRewardText = customRewardString
+    }
 #else
     public func MSPGADMobileAdsStart(completionHandler: ((Error?) -> Void)?) {
         if let completionHandler = completionHandler {
@@ -170,6 +210,12 @@
         adUnitID: String, request: MSPGADRequest, completion: @escaping (MSPGADInterstitialAd?, Error?) -> Void
     ) {
         InterstitialAd.load(with: adUnitID, request: request, completionHandler: completion)
+    }
+
+    public func MSPGADRewardedAdLoad(
+        adUnitID: String, request: MSPGADRequest, completion: @escaping (MSPGADRewardedAd?, Error?) -> Void
+    ) {
+        RewardedAd.load(with: adUnitID, request: request, completionHandler: completion)
     }
 
     // AdSize constants
@@ -215,5 +261,33 @@
         guard let ad = ad else { return }
         // CocoaPods version: GoogleMobileAds.InterstitialAd.present(from:)
         ad.present(from: rootViewController)
+    }
+
+    public func MSPGADRewardedAdPresent(
+        _ ad: MSPGADRewardedAd?, from rootViewController: UIViewController?,
+        userDidEarnRewardHandler: @escaping () -> Void
+    ) {
+        guard let ad = ad else { return }
+        ad.present(from: rootViewController, userDidEarnRewardHandler: userDidEarnRewardHandler)
+    }
+
+    public func MSPGADRewardedAdSetServerSideVerificationOptions(
+        _ ad: MSPGADRewardedAd?, options: MSPGADServerSideVerificationOptions?
+    ) {
+        ad?.serverSideVerificationOptions = options
+    }
+
+    public func MSPGADRewardedAdReward(_ ad: MSPGADRewardedAd?) -> MSPGADAdReward? {
+        ad?.adReward
+    }
+
+    public func MSPGADAdRewardAmount(_ reward: MSPGADAdReward) -> Int {
+        reward.amount.intValue
+    }
+
+    public func MSPGADServerSideVerificationOptionsSetCustomRewardString(
+        _ options: MSPGADServerSideVerificationOptions, customRewardString: String
+    ) {
+        options.customRewardText = customRewardString
     }
 #endif

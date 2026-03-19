@@ -23,7 +23,10 @@ public protocol AdListener: AnyObject {
     func onAdLoaded(placementId: String)
     func onAdLoaded(placementId: String, loadInfo: [String: Any])
 
-    func onAdDismissed(ad: InterstitialAd)
+    func onAdDismissed(ad: MSPAd)
+    /// Called when the user earns the reward for a rewarded ad.
+    /// This callback is emitted at most once per ad instance.
+    func onAdRewardReceived(ad: MSPAd)
 
     func getRootViewController() -> UIViewController?
 }
@@ -42,5 +45,8 @@ public extension AdListener {
 
     func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
         onAdLoaded(placementId: placementId)
+    }
+
+    func onAdRewardReceived(ad: MSPAd) {
     }
 }

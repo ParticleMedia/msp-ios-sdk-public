@@ -37,6 +37,8 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
                 googleAdFormat = GoogleMobileAds.AdFormat.native
             case .interstitial:
                 googleAdFormat = GoogleMobileAds.AdFormat.interstitial
+            case .rewarded:
+                googleAdFormat = GoogleMobileAds.AdFormat.rewarded
             default:
                 googleAdFormat = GoogleMobileAds.AdFormat.native
             }

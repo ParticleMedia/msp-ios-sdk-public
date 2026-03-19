@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+
         let mspInitParameters = InitializationParametersImp(
             prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
             sourceApp: "0000000000",  // Your App's numeric ID on App Store

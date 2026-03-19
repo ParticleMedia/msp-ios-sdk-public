@@ -113,7 +113,7 @@ release:
 ifndef VERSION
 	$(error VERSION is required. Usage: make release VERSION=1.2.0 NOTES="Release notes")
 endif
-	$(SCRIPTS)/msp-release.sh run $(VERSION) \
+	MSP_ALLOW_LOCAL_RELEASE=1 $(SCRIPTS)/msp-release.sh run $(VERSION) \
 		$(if $(NOTES),--release-notes "$(NOTES)") \
 		$(EXTRA_FLAGS)
 

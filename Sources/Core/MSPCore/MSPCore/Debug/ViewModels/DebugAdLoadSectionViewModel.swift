@@ -77,4 +77,19 @@ class DebugAdLoadSectionViewModel {
     func selectedCell() -> DebugRadioCellViewModel? {
         cellViewModels.first(where: { $0.isSelected })
     }
+
+    func replaceOptions(_ options: [DebugOption], preferredSelectedId: String? = nil) {
+        let selectedId = preferredSelectedId ?? selectedCell()?.id
+        cellViewModels = options.map { option in
+            DebugRadioCellViewModel(debugOption: option, isSelected: option.id == selectedId)
+        }
+
+        if cellViewModels.isEmpty {
+            return
+        }
+
+        if cellViewModels.contains(where: { $0.isSelected }) == false {
+            cellViewModels[0].setSelected(true)
+        }
+    }
 }

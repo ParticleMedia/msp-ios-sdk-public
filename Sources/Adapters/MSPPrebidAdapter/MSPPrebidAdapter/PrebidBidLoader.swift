@@ -81,6 +81,7 @@ public class PrebidBidLoader: BidLoader {
             guard let self = self else { return }
 
             if let error = error {
+                MSPLogger.shared.error(message: "[PrebidBidLoader] Bid request failed. placementId=\(self.configId ?? "nil"), error=\(error.localizedDescription)")
                 bidListener?.onError(msg: error.localizedDescription, loadInfo: [:])
                 return
             }
@@ -88,13 +89,18 @@ public class PrebidBidLoader: BidLoader {
             if let bidResponse = bidResponse {
                 guard let seat = bidResponse.winningBidSeat else {
                     let errorMessage = "no fill"
+                    MSPLogger.shared.info(message: "[PrebidBidLoader] No winning bid (no fill). placementId=\(self.configId ?? "nil"), requestId=\(bidResponse.rawResponse?.requestID ?? "nil")")
                     bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                     adMetricReporter?.logAdResponse(
                         ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
                     return
                 }
 
+                let price = bidResponse.winningBid?.price ?? 0
+                MSPLogger.shared.info(message: "[PrebidBidLoader] Winning bid received. placementId=\(self.configId ?? "nil"), seat=\(seat), price=\(price), adFormat=\(adRequest.adFormat), requestId=\(bidResponse.rawResponse?.requestID ?? "nil")")
+
                 if self.bidListener == nil {
+                    MSPLogger.shared.error(message: "[PrebidBidLoader] bidListener is nil — cannot route bid. placementId=\(self.configId ?? "nil"), seat=\(seat)")
                 }
                 if seat == "msp_google" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.google)
@@ -107,10 +113,12 @@ public class PrebidBidLoader: BidLoader {
                 } else if seat == "vungle" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.liftoff)
                 } else {
+                    MSPLogger.shared.info(message: "[PrebidBidLoader] Unknown seat '\(seat)', routing to prebid adapter. placementId=\(self.configId ?? "nil")")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
             } else {
                 let errorMessage = "missing response"
+                MSPLogger.shared.error(message: "[PrebidBidLoader] Missing response. placementId=\(self.configId ?? "nil")")
                 bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                 adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
@@ -126,8 +134,9 @@ public class PrebidBidLoader: BidLoader {
         prebidBannerAdSize: CGSize,
         adRequest: AdRequest
     ) -> AdUnitConfig {
+        let usesSizedAdUnit = !(adRequest.adFormat == .interstitial || adRequest.adFormat == .rewarded)
         let adUnitConfig =
-            adRequest.adFormat == .interstitial
+            usesSizedAdUnit == false
             ? AdUnitConfig(configId: configId) : AdUnitConfig(configId: configId, size: prebidBannerAdSize)
         if adRequest.adFormat == .banner {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
@@ -144,6 +153,10 @@ public class PrebidBidLoader: BidLoader {
             adUnitConfig.adConfiguration.adFormats = [.display]
             adUnitConfig.adConfiguration.isInterstitialAd = true
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
+        } else if adRequest.adFormat == .rewarded {
+            adUnitConfig.adConfiguration.adFormats = [.video]
+            adUnitConfig.adConfiguration.isOptIn = true
+            adUnitConfig.adConfiguration.videoParameters = buildRewardedVideoParameters()
         }
 
         var userExt = Targeting.shared.userExt ?? [String: AnyHashable]()
@@ -193,6 +206,15 @@ public class PrebidBidLoader: BidLoader {
         }
 
         return adUnitConfig
+    }
+
+    private func buildRewardedVideoParameters() -> VideoParameters {
+        let parameters = VideoParameters()
+        parameters.mimes = ["video/mp4"]
+        parameters.protocols = [.VAST_2_0, .VAST_3_0, .VAST_4_0]
+        parameters.playbackMethod = [.AutoPlaySoundOn, .AutoPlaySoundOff]
+        parameters.placement = .Interstitial
+        return parameters
     }
 
     private func toJSONString(_ dict: [String: Any]) -> String? {
