@@ -10,6 +10,7 @@ class TestDebugSectionsService: DebugSectionsRepository {
             DebugSectionData.creativeTypeSection(),
             DebugSectionData.layoutSection(),
             DebugSectionData.highEngagementSection(),
+            DebugSectionData.customParamsSection(),
         ]
     }
 }

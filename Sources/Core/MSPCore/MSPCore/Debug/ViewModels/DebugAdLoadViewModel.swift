@@ -225,8 +225,23 @@ class DebugAdLoadViewModel: AdListener {
             adFormat: adFormat,
             testParams: testParams,
             adListener: self,
-            customParams: nil
+            customParams: buildCustomParams()
         )
+    }
+
+    /// Builds custom params from visible toggle items in the Custom Params section.
+    /// Returns nil when the section is not visible (non-Nova network), preserving service defaults.
+    private func buildCustomParams() -> [String: Any]? {
+        guard let customParamsSection = sections.first(where: { $0.id == SectionIds.customParams }),
+            customParamsSection.visible
+        else {
+            return nil
+        }
+        var params: [String: Any] = [:]
+        for toggleVM in customParamsSection.toggleCellViewModels where toggleVM.id == MSPConstants.USE_NOVA_SANDBOX {
+            params[MSPConstants.USE_NOVA_SANDBOX] = toggleVM.isOn ? "true" : "false"
+        }
+        return params
     }
 
     // MARK: - AdListener

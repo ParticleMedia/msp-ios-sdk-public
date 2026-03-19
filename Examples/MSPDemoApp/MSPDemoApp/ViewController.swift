@@ -1,7 +1,7 @@
 import AppTrackingTransparency
 import MSPCore
-import MSPiOSCore
 import MSPSnapKit
+import MSPiOSCore
 import UIKit
 
 class ViewController: UIViewController {
@@ -16,6 +16,10 @@ class ViewController: UIViewController {
     private let bottomPadding: CGFloat = 24
 
     private weak var demoScrollView: UIScrollView?
+    private var useNovaSandbox = false
+    private var isCustomParamsExpanded = false
+    private weak var customParamsButton: UIButton?
+    private weak var customParamsContainer: UIView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,12 +75,24 @@ class ViewController: UIViewController {
 
         let button6 = makeButton(title: "Nova Interstitial View")
         let novaInterstitialMenuItems = [
-            UIAction(title: "Horizontal Image", handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialHorizontalImage) }),
-            UIAction(title: "Vertical Image", handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialVerticalImage) }),
-            UIAction(title: "Horizontal Video", handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialHorizontalVideo) }),
-            UIAction(title: "Vertical Video", handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialVerticalVideo) }),
-            UIAction(title: "High Engagement", handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialHighEngagement) }),
-            UIAction(title: "End Card 2 Parts", handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialEndCard) }),
+            UIAction(
+                title: "Horizontal Image",
+                handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialHorizontalImage) }),
+            UIAction(
+                title: "Vertical Image",
+                handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialVerticalImage) }),
+            UIAction(
+                title: "Horizontal Video",
+                handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialHorizontalVideo) }),
+            UIAction(
+                title: "Vertical Video",
+                handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialVerticalVideo) }),
+            UIAction(
+                title: "High Engagement",
+                handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialHighEngagement) }),
+            UIAction(
+                title: "End Card 2 Parts",
+                handler: { [weak self] _ in self?.openDemoAdPage(adType: .novaInterstitialEndCard) }),
         ]
         button6.menu = UIMenu(title: "Choose an option", children: novaInterstitialMenuItems)
         button6.showsMenuAsPrimaryAction = true
@@ -94,7 +110,8 @@ class ViewController: UIViewController {
             UIAction(title: "Unity", handler: { [weak self] _ in self?.openDemoAdPage(adType: .unityBanner) }),
             UIAction(title: "Pubmatic", handler: { [weak self] _ in self?.openDemoAdPage(adType: .pubmaticBanner) }),
             UIAction(title: "Inmobi", handler: { [weak self] _ in self?.openDemoAdPage(adType: .inmobiBanner) }),
-            UIAction(title: "Mobilefuse", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mobilefuseBanner) }),
+            UIAction(
+                title: "Mobilefuse", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mobilefuseBanner) }),
             UIAction(title: "Mintegral", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mintegralBanner) }),
         ]
         button9.menu = UIMenu(title: "Choose an option", children: bannerMenuItems)
@@ -103,10 +120,14 @@ class ViewController: UIViewController {
         let button10 = makeButton(title: "C2S Bidders Interstitial View")
         let interstitialMenuItems = [
             UIAction(title: "Unity", handler: { [weak self] _ in self?.openDemoAdPage(adType: .unityInterstitial) }),
-            UIAction(title: "Pubmatic", handler: { [weak self] _ in self?.openDemoAdPage(adType: .pubmaticInterstitial) }),
+            UIAction(
+                title: "Pubmatic", handler: { [weak self] _ in self?.openDemoAdPage(adType: .pubmaticInterstitial) }),
             UIAction(title: "Inmobi", handler: { [weak self] _ in self?.openDemoAdPage(adType: .inmobiInterstitial) }),
-            UIAction(title: "Mobilefuse", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mobilefuseInterstitial) }),
-            UIAction(title: "Mintegral", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mintegralInterstitial) }),
+            UIAction(
+                title: "Mobilefuse", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mobilefuseInterstitial) }
+            ),
+            UIAction(
+                title: "Mintegral", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mintegralInterstitial) }),
         ]
         button10.menu = UIMenu(title: "Choose an option", children: interstitialMenuItems)
         button10.showsMenuAsPrimaryAction = true
@@ -116,7 +137,8 @@ class ViewController: UIViewController {
             UIAction(title: "Unity", handler: { [weak self] _ in self?.openDemoAdPage(adType: .unityNative) }),
             UIAction(title: "Pubmatic", handler: { [weak self] _ in self?.openDemoAdPage(adType: .pubmaticNative) }),
             UIAction(title: "Inmobi", handler: { [weak self] _ in self?.openDemoAdPage(adType: .inmobiNative) }),
-            UIAction(title: "Mobilefuse", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mobilefuseNative) }),
+            UIAction(
+                title: "Mobilefuse", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mobilefuseNative) }),
             UIAction(title: "Mintegral", handler: { [weak self] _ in self?.openDemoAdPage(adType: .mintegralNative) }),
         ]
         button11.menu = UIMenu(title: "Choose an option", children: nativeMenuItems)
@@ -135,10 +157,11 @@ class ViewController: UIViewController {
         adListButton.backgroundColor = .systemPurple
         adListButton.setTitleColor(.white, for: .normal)
         adListButton.layer.cornerRadius = 8
-        adListButton.addAction(UIAction { [weak self] _ in
-            let vc = DemoAdListViewController()
-            self?.navigationController?.pushViewController(vc, animated: true)
-        }, for: .touchUpInside)
+        adListButton.addAction(
+            UIAction { [weak self] _ in
+                let vc = DemoAdListViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }, for: .touchUpInside)
         adListButton.snp.makeConstraints { make in make.height.equalTo(50) }
 
         let debugButton = UIButton(type: .system)
@@ -155,6 +178,45 @@ class ViewController: UIViewController {
         ]
         standardButtons.forEach { contentStack.addArrangedSubview($0) }
         contentStack.addArrangedSubview(adListButton)
+
+        let customParamsButton = UIButton(type: .system)
+        customParamsButton.setTitle("Custom Params  ▶", for: .normal)
+        customParamsButton.backgroundColor = .systemTeal
+        customParamsButton.setTitleColor(.white, for: .normal)
+        customParamsButton.layer.cornerRadius = 8
+        customParamsButton.addAction(
+            UIAction { [weak self] _ in
+                self?.toggleCustomParams()
+            }, for: .touchUpInside)
+        customParamsButton.snp.makeConstraints { make in make.height.equalTo(50) }
+        self.customParamsButton = customParamsButton
+        contentStack.addArrangedSubview(customParamsButton)
+
+        let customParamsContainer = UIView()
+        customParamsContainer.backgroundColor = .secondarySystemBackground
+        customParamsContainer.layer.cornerRadius = 8
+        customParamsContainer.isHidden = true
+
+        let sandboxLabel = UILabel()
+        sandboxLabel.text = "Nova Sandbox"
+        sandboxLabel.translatesAutoresizingMaskIntoConstraints = false
+        let sandboxToggle = UISwitch()
+        sandboxToggle.isOn = useNovaSandbox
+        sandboxToggle.translatesAutoresizingMaskIntoConstraints = false
+        sandboxToggle.addTarget(self, action: #selector(novaSandboxToggleChanged(_:)), for: .valueChanged)
+
+        customParamsContainer.addSubview(sandboxLabel)
+        customParamsContainer.addSubview(sandboxToggle)
+        NSLayoutConstraint.activate([
+            customParamsContainer.heightAnchor.constraint(equalToConstant: 50),
+            sandboxLabel.leadingAnchor.constraint(equalTo: customParamsContainer.leadingAnchor, constant: 16),
+            sandboxLabel.centerYAnchor.constraint(equalTo: customParamsContainer.centerYAnchor),
+            sandboxToggle.trailingAnchor.constraint(equalTo: customParamsContainer.trailingAnchor, constant: -16),
+            sandboxToggle.centerYAnchor.constraint(equalTo: customParamsContainer.centerYAnchor),
+        ])
+        self.customParamsContainer = customParamsContainer
+        contentStack.addArrangedSubview(customParamsContainer)
+
         contentStack.addArrangedSubview(debugButton)
 
         scrollView.snp.makeConstraints { make in
@@ -190,7 +252,24 @@ class ViewController: UIViewController {
     }
 
     func openDemoAdPage(adType: AdType) {
-        let demoAdVC = DemoAdViewController(adType: adType)
+        let demoAdVC = DemoAdViewController(adType: adType, customParams: buildCustomParams())
         navigationController?.pushViewController(demoAdVC, animated: true)
+    }
+
+    private func buildCustomParams() -> [String: Any] {
+        [MSPConstants.USE_NOVA_SANDBOX: useNovaSandbox ? "true" : "false"]
+    }
+
+    private func toggleCustomParams() {
+        isCustomParamsExpanded.toggle()
+        customParamsButton?.setTitle(
+            "Custom Params  \(isCustomParamsExpanded ? "▼" : "▶")", for: .normal)
+        UIView.animate(withDuration: 0.25) {
+            self.customParamsContainer?.isHidden = !self.isCustomParamsExpanded
+        }
+    }
+
+    @objc private func novaSandboxToggleChanged(_ sender: UISwitch) {
+        useNovaSandbox = sender.isOn
     }
 }

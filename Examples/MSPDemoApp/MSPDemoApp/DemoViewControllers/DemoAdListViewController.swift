@@ -231,7 +231,7 @@ private class AdPositionListener: AdListener {
             self.controller?.handleAdLoaded(position: self.position, placementId: placementId)
         }
     }
-    
+
     func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
         onAdLoaded(placementId: placementId)
     }
@@ -249,7 +249,7 @@ private class AdPositionListener: AdListener {
     }
 
     func onAdDismissed(ad: InterstitialAd) {}
-    
+
     func onError(msg: String, loadInfo: [String: Any]) {
         onError(msg: msg)
     }

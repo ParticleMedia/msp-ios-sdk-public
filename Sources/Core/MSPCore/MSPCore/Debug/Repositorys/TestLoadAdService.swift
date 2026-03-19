@@ -11,13 +11,16 @@ class TestLoadAdService: LoadAdRepository {
         adListener: AdListener,
         customParams: [String: Any]? = nil
     ) {
-        var newCustomParams: [String: Any] = [:]
-        if let customParams {
-            newCustomParams = customParams
-        } else {
-            newCustomParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = [
+        // Start with debug defaults; caller-supplied params take precedence.
+        var newCustomParams: [String: Any] = [
+            MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS: [
                 "https://www.google.com", "https://newsbreak.com",
             ]
+        ]
+        if let customParams {
+            for (key, value) in customParams {
+                newCustomParams[key] = value
+            }
         }
 
         var newTestParams = testParams

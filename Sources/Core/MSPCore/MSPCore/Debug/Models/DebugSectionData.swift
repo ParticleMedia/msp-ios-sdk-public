@@ -11,6 +11,7 @@ struct DebugSectionData: DebugSection {
         static let creativeType = "Creative Type (Nova only)"
         static let layout = "Layout (Nova interstitial only)"
         static let highEngagement = "High Engagement (Nova interstitial only)"
+        static let customParams = "Custom Params (Nova only)"
     }
 
     enum SectionIds {
@@ -20,18 +21,27 @@ struct DebugSectionData: DebugSection {
         static let creativeType = "creativeType"
         static let layout = "layout"
         static let highEngagement = "highEngagement"
+        static let customParams = "customParams"
     }
 
     let id: String
     let title: String
     let options: [DebugOption]
     let showCondition: Set<String>?
+    let toggleItems: [DebugToggleItem]
 
-    init(id: String, title: String, options: [DebugOption], showCondition: Set<String>? = nil) {
+    init(
+        id: String,
+        title: String,
+        options: [DebugOption],
+        showCondition: Set<String>? = nil,
+        toggleItems: [DebugToggleItem] = []
+    ) {
         self.id = id
         self.title = title
         self.options = options
         self.showCondition = showCondition
+        self.toggleItems = toggleItems
     }
 }
 
@@ -81,6 +91,16 @@ extension DebugSectionData {
             title: SectionTitles.highEngagement,
             options: options,
             showCondition: [AdNetwork.nova.rawValue, AdFormat.interstitial.id]
+        )
+    }
+
+    static func customParamsSection() -> DebugSectionData {
+        DebugSectionData(
+            id: SectionIds.customParams,
+            title: SectionTitles.customParams,
+            options: [],
+            showCondition: [AdNetwork.nova.rawValue],
+            toggleItems: [DebugToggleItem(id: "use_nova_sandbox", title: "Nova Sandbox")]
         )
     }
 

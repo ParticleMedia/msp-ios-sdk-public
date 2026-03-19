@@ -121,14 +121,16 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-launch-fullscreen-google-c2s"
         }
     }()
-    
+
     private lazy var testAdNetworkString: String? = {
         switch adType {
         case .prebidBanner, .prebidInterstitial:
             return "pubmatic"
         case .googleBanner, .googleNative, .googleInterstitial:
             return "msp_google"
-        case .novaNative, .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage, .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .novaInterstitialEndCard:
+        case .novaNative, .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage,
+            .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo, .novaInterstitialHighEngagement,
+            .novaInterstitialEndCard:
             return "msp_nova"
         case .facebookNative, .facebookInterstitial:
             return "msp_fb"
@@ -154,8 +156,11 @@ class DemoAdViewController: UIViewController {
         }
     }()
 
-    init(adType: AdType) {
+    private let customParams: [String: Any]
+
+    init(adType: AdType, customParams: [String: Any] = [:]) {
         self.adType = adType
+        self.customParams = customParams
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -169,14 +174,19 @@ class DemoAdViewController: UIViewController {
 
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
-        var customParams: [String: Any] = [:]
-        
+
+        // Start from caller-supplied params; add local defaults that are not already set.
+        var mergedCustomParams = customParams
+        mergedCustomParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = [
+            "https://www.google.com", "https://newsbreak.com",
+        ]
+
         var testParams: [String: Any] = [:]
         if let testAdNetworkString = testAdNetworkString {
             testParams["test_ad"] = true
             testParams["ad_network"] = testAdNetworkString
         }
-        
+
         switch adType {
         case .novaInterstitialHorizontalImage:
             testParams["creative_type"] = "image"
@@ -201,11 +211,9 @@ class DemoAdViewController: UIViewController {
         default:
             break
         }
-        
-        customParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = ["https://www.google.com", "https://newsbreak.com"]
-        
+
         let adRequest = AdRequest(
-            customParams: customParams,
+            customParams: mergedCustomParams,
             geo: nil,
             context: nil,
             adaptiveBannerSize: AdSize(
@@ -229,8 +237,8 @@ extension DemoAdViewController: AdListener {
     func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
         print("ad event: on ad dismissed")
     }
-    
-    func onAdLoaded(placementId: String, loadInfo: [String : Any]) {
+
+    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
         if let ad = self.adLoader?.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
         }
@@ -299,7 +307,7 @@ extension DemoAdViewController: AdListener {
             }
         }
     }
-    
+
     func onError(msg: String, loadInfo: [String: Any]) {
         onError(msg: msg)
     }

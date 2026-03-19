@@ -21,6 +21,7 @@ private enum UIConfig {
     static let loadAdTitle = "Load Ad"
     static let destroyTitle = "Destroy!"
     static let radioCellReuseId = "RadioCell"
+    static let toggleCellReuseId = "ToggleCell"
 }
 
 class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -63,6 +64,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: UIConfig.radioCellReuseId)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: UIConfig.toggleCellReuseId)
         tableView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(UIConfig.tableBottomInset)
@@ -183,6 +185,21 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let sectionVM = visibleSections[indexPath.section]
+
+        if sectionVM.isToggleCell(at: indexPath.row) {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: UIConfig.toggleCellReuseId, for: indexPath)
+            guard let toggleVM = sectionVM.toggleCellViewModel(at: indexPath.row) else { return cell }
+            cell.textLabel?.text = toggleVM.title
+            cell.selectionStyle = .none
+            let toggle = UISwitch()
+            toggle.isOn = toggleVM.isOn
+            toggle.addTarget(self, action: #selector(toggleValueChanged(_:)), for: .valueChanged)
+            cell.accessoryView = toggle
+            return cell
+        }
+
         let cellVM = visibleSections[indexPath.section].cellViewModel(at: indexPath.row)!
         let cell = tableView.dequeueReusableCell(withIdentifier: UIConfig.radioCellReuseId, for: indexPath)
         cell.textLabel?.text = cellVM.title
@@ -195,10 +212,29 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let sectionIdx = indexPath.section
         let rowIdx = indexPath.row
+        // Toggle cells handle their own interaction via UISwitch; skip radio selection logic.
+        guard !visibleSections[sectionIdx].isToggleCell(at: rowIdx) else {
+            tableView.deselectRow(at: indexPath, animated: true)
+            return
+        }
         guard let realSectionIdx = viewModel.sections.firstIndex(where: { $0 === visibleSections[sectionIdx] }) else {
             return
         }
         viewModel.selectOption(section: realSectionIdx, row: rowIdx)
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    @objc private func toggleValueChanged(_ sender: UISwitch) {
+        // Walk the view hierarchy to find the enclosing UITableViewCell.
+        var view: UIView? = sender
+        while let current = view, !(current is UITableViewCell) {
+            view = current.superview
+        }
+        guard let cell = view as? UITableViewCell,
+            let indexPath = tableView.indexPath(for: cell)
+        else { return }
+        visibleSections[indexPath.section]
+            .toggleCellViewModel(at: indexPath.row)?
+            .setOn(sender.isOn)
     }
 }

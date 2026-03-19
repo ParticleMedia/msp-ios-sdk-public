@@ -8,6 +8,7 @@
 public struct MSPConstants {
     public static let GOOGLE_AD_MULTI_CONTENT_URLS = "google_ads_multi_content_urls"
     public static let USER_ID = "user_id"
+    public static let USE_NOVA_SANDBOX = "use_nova_sandbox"
 
     // User defaults key used to store NB user id.
     public static let USER_DEFAULTS_KEY_MSP_USER_ID = "msp_user_id"

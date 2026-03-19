@@ -166,12 +166,11 @@ public class PrebidBidLoader: BidLoader {
             }
         }
 
-
         let testParams = adRequest.testParams
         let testKey = "test"
         adUnitConfig.removeContextData(for: testKey)
         if let testParamsJSON = toJSONString(testParams) {
-            adUnitConfig.addContextData(key: testKey, value: testParamsJSON ?? "")
+            adUnitConfig.addContextData(key: testKey, value: testParamsJSON)
         }
 
         if let gadQueryInfo = bidTokens.googleQueryInfo {
