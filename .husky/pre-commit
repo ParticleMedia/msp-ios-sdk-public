@@ -113,6 +113,12 @@ if ! is_version_compatible "$CURRENT_VERSION"; then
     exit 1
 fi
 
+# Skip formatting during merge commits to avoid reformatting other people's code
+if git rev-parse --verify MERGE_HEAD > /dev/null 2>&1; then
+    printf "${YELLOW}⚠️  Merge commit detected. Skipping auto-formatting.${NC}\n"
+    exit 0
+fi
+
 # Get list of staged Swift files
 staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.swift$' || true)
 
