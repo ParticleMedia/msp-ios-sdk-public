@@ -22,7 +22,10 @@
 [[ -n "${_CONFIG_LOADER_EXT_SOURCED:-}" ]] && return 0
 readonly _CONFIG_LOADER_EXT_SOURCED=1
 
-set -euo pipefail
+# NOTE: Do NOT use `set -euo pipefail` here.
+# This file is sourced (not executed) by other scripts, so setting shell
+# options here would override the caller's error-handling mode — breaking
+# post-action scripts that intentionally use `set +e`.
 
 # ============================================================================
 # Configuration Paths
