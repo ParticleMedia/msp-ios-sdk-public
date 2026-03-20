@@ -123,7 +123,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
 
     func didFailToLoad(errorMessage: String?) {
         
-        let isActive = UIApplication.shared.applicationState == .active ? 1 : 0
+        let isActive = (UIApplication.shared.applicationState == .active && self.onTop && self.novaIsPartiallyVisibleOnScreen) ? 1 : 0
         let concatErrorMessage = "error:\(isActive):\(errorMessage ?? "")"
         self.actionHelper = self.actionHelper
             .logNovaSkipEvent(with: .error(concatErrorMessage), duration: CACurrentMediaTime() - self.startTime)
