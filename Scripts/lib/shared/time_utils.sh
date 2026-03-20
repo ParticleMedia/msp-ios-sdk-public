@@ -21,7 +21,10 @@
 #   - None (self-contained)
 # ============================================================================
 
-set -euo pipefail
+# NOTE: Do NOT use `set -euo pipefail` here.
+# This file is sourced (not executed) by other scripts, so setting shell
+# options here would override the caller's error-handling mode — breaking
+# post-action scripts that intentionally use `set +e`.
 
 # Guard against multiple sourcing
 [[ -n "${_TIME_UTILS_SOURCED:-}" ]] && return 0
