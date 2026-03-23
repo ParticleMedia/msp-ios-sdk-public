@@ -44,7 +44,6 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
             MSPLogger.shared.error(
                 tag: Constants.logTag,
                 message: "[Adapter: Google] Root view controller is required for Google rewarded ad")
-            adListener?.onError(msg: "Root view controller is required for Google rewarded ad", loadInfo: [:])
             return
         }
 
@@ -80,6 +79,5 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
         MSPLogger.shared.error(
             tag: Constants.logTag,
             message: "[Adapter: Google] Failed to present rewarded ad. error=\(error.localizedDescription)")
-        adListener?.onError(msg: error.localizedDescription, loadInfo: [:])
     }
 }

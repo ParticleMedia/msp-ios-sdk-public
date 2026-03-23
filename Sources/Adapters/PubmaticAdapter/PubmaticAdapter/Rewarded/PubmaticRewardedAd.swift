@@ -57,12 +57,16 @@ public final class PubmaticRewardedAd: MSPiOSCore.RewardedAd {
     /// - Parameter rootViewController: The view controller from which to present
     public override func show(rootViewController: UIViewController?) {
         guard let pobRewardedAd = pobRewardedAd else {
-            adListener?.onError(msg: "POBRewardedAd instance is nil", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: PubMatic] POBRewardedAd instance is nil")
             return
         }
-        
+
         guard let viewController = rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for PubMatic rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: PubMatic] Root view controller is required for PubMatic rewarded ad")
             return
         }
         
@@ -94,7 +98,9 @@ public final class PubmaticRewardedAd: MSPiOSCore.RewardedAd {
     
     /// Called by delegate handler when the rewarded ad fails to show
     internal func handleShowFailure(error: Error) {
-        adListener?.onError(msg: "PubMatic rewarded ad failed to show: \(error.localizedDescription)", loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: PubMatic] Rewarded ad failed to show: \(error.localizedDescription)")
     }
 }
 

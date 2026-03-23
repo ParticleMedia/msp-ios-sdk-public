@@ -40,9 +40,6 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
             MSPLogger.shared.error(
                 tag: Constants.logTag,
                 message: "[Adapter: Facebook] Failed to show rewarded ad because root view controller is missing")
-            adListener?.onError(
-                msg: "FacebookRewardedAd.show() called without a root view controller",
-                loadInfo: [:])
             return
         }
         MSPLogger.shared.info(

@@ -39,7 +39,9 @@ public final class MintegralRewardedAd: MSPiOSCore.RewardedAd {
 
     public override func show(rootViewController: UIViewController?) {
         guard let viewController = rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for Mintegral rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: Mintegral] Root view controller is required for Mintegral rewarded ad")
             return
         }
 
@@ -68,7 +70,9 @@ public final class MintegralRewardedAd: MSPiOSCore.RewardedAd {
     }
 
     internal func handleShowFailure(_ error: Error) {
-        adListener?.onError(msg: "Mintegral rewarded ad failed to show: \(error.localizedDescription)", loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: Mintegral] Rewarded ad failed to show: \(error.localizedDescription)")
     }
 }
 

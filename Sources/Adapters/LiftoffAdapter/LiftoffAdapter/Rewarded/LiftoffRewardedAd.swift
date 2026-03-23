@@ -29,7 +29,9 @@ public final class LiftoffRewardedAd: MSPiOSCore.RewardedAd {
 
     public override func show(rootViewController: UIViewController?) {
         guard let viewController = rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for Liftoff rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: Liftoff] Root view controller is required for Liftoff rewarded ad")
             return
         }
 
@@ -53,7 +55,9 @@ public final class LiftoffRewardedAd: MSPiOSCore.RewardedAd {
     }
 
     internal func handlePresentFailure(_ error: Error) {
-        adListener?.onError(msg: "Liftoff rewarded ad failed to present: \(error.localizedDescription)", loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: Liftoff] Rewarded ad failed to present: \(error.localizedDescription)")
     }
 }
 

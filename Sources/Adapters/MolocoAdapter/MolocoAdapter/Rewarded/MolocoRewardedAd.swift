@@ -56,12 +56,16 @@ public final class MolocoRewardedAd: MSPiOSCore.RewardedAd {
     @MainActor
     public override func show(rootViewController: UIViewController?) {
         guard let molocoRewarded = molocoRewarded else {
-            adListener?.onError(msg: "Moloco rewarded ad instance is nil", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: Moloco] Rewarded ad instance is nil")
             return
         }
 
         guard let viewController = rootViewController ?? self.rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for Moloco rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: Moloco] Root view controller is required for Moloco rewarded ad")
             return
         }
 
@@ -89,7 +93,9 @@ extension MolocoRewardedAd: MolocoRewardedDelegate {
 
     public func failToShow(ad: any MolocoAd, with error: (any Error)?) {
         let message = error?.localizedDescription ?? "Moloco rewarded ad failed to show"
-        adListener?.onError(msg: message, loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: Moloco] Rewarded ad failed to show: \(message)")
     }
 
     public func didHide(ad: any MolocoAd) {

@@ -52,12 +52,16 @@ public final class InmobiRewardedAd: MSPiOSCore.RewardedAd {
     /// - Parameter rootViewController: The view controller from which to present
     public override func show(rootViewController: UIViewController?) {
         guard let imInterstitial = imInterstitial else {
-            adListener?.onError(msg: "IMInterstitial instance is nil", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: InMobi] IMInterstitial instance is nil")
             return
         }
-        
+
         guard let viewController = rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for InMobi rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: InMobi] Root view controller is required for InMobi rewarded ad")
             return
         }
         
@@ -111,7 +115,9 @@ extension InmobiRewardedAd: IMInterstitialDelegate {
     ///   - interstitial: The IMInterstitial instance
     ///   - error: The error that occurred
     public func interstitial(_ interstitial: IMInterstitial, didFailToPresentWithError error: IMRequestStatus) {
-        adListener?.onError(msg: "InMobi rewarded ad failed to present: \(error.description)", loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: InMobi] Rewarded ad failed to present: \(error.description)")
     }
     
     /// Called when the interstitial ad fails to load

@@ -57,12 +57,16 @@ public final class MobilefuseRewardedAd: MSPiOSCore.RewardedAd {
     /// - Parameter rootViewController: The view controller from which to present
     public override func show(rootViewController: UIViewController?) {
         guard let mfRewardedAd = mfRewardedAd else {
-            adListener?.onError(msg: "MFRewardedAd instance is nil", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: MobileFuse] MFRewardedAd instance is nil")
             return
         }
-        
+
         guard let viewController = rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for MobileFuse rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: MobileFuse] Root view controller is required for MobileFuse rewarded ad")
             return
         }
         
@@ -97,7 +101,9 @@ public final class MobilefuseRewardedAd: MSPiOSCore.RewardedAd {
     
     /// Called by delegate handler when an error occurs with the rewarded ad
     internal func handleAdError(reason: String) {
-        adListener?.onError(msg: "MobileFuse rewarded ad error: \(reason)", loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: MobileFuse] Rewarded ad error: \(reason)")
     }
 }
 

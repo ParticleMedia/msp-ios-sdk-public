@@ -57,12 +57,16 @@ public final class UnityRewardedAd: MSPiOSCore.RewardedAd {
     /// - Parameter rootViewController: The view controller from which to present
     public override func show(rootViewController: UIViewController?) {
         guard let lpmRewardedAd = lpmRewardedAd else {
-            adListener?.onError(msg: "LPMRewardedAd instance is nil", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: Unity] LPMRewardedAd instance is nil")
             return
         }
-        
+
         guard let viewController = rootViewController else {
-            adListener?.onError(msg: "Root view controller is required for Unity rewarded ad", loadInfo: [:])
+            MSPLogger.shared.error(
+                tag: "Rewarded",
+                message: "[Adapter: Unity] Root view controller is required for Unity rewarded ad")
             return
         }
         
@@ -94,7 +98,9 @@ public final class UnityRewardedAd: MSPiOSCore.RewardedAd {
     
     /// Called by delegate handler when the rewarded ad fails to display
     internal func handleDisplayFailure(error: Error) {
-        adListener?.onError(msg: "Unity rewarded ad failed to display: \(error.localizedDescription)", loadInfo: [:])
+        MSPLogger.shared.error(
+            tag: "Rewarded",
+            message: "[Adapter: Unity] Rewarded ad failed to display: \(error.localizedDescription)")
     }
 }
 
