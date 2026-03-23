@@ -298,7 +298,7 @@ pipeline {
             withCredentials([
                 string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
             ]) {
-                sh '''
+                sh '''#!/bin/bash
                     set +e
                     VERSION_TO_REPORT="${VERSION:-}"
                     if [ -z "$VERSION_TO_REPORT" ] && [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
@@ -331,7 +331,7 @@ pipeline {
             withCredentials([
                 string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
             ]) {
-                sh '''
+                sh '''#!/bin/bash
                     set +e
                     VERSION_TO_REPORT="${VERSION:-}"
                     if [ -z "$VERSION_TO_REPORT" ] && [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
@@ -354,7 +354,7 @@ pipeline {
             withCredentials([
                 string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
             ]) {
-                sh '''
+                sh '''#!/bin/bash
                     set +e
                     VERSION_TO_REPORT="${VERSION:-}"
                     if [ -z "$VERSION_TO_REPORT" ] && [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
