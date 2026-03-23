@@ -732,7 +732,8 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
                 message: "[Adapter: Google] Rewarded failed to present. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), error=\(error.localizedDescription)")
             rewardedAd.handlePresentError(error)
         } else {
-            self.adListener?.onError(msg: error.localizedDescription, loadInfo: [:])
+            MSPLogger.shared.error(
+                message: "[Adapter: Google] Interstitial failed to present. error=\(error.localizedDescription)")
         }
     }
 }
