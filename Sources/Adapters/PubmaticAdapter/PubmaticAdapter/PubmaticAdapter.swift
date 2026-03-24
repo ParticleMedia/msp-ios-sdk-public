@@ -134,8 +134,8 @@ import PrebidMobile
     public func destroyAd() {
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAdItem
         else { return }
@@ -473,7 +473,6 @@ extension PubmaticAdapter: POBBidEventDelegate {
 // MARK: - Rewarded Ad Support Override
 
 extension PubmaticAdapter {
-    
     /// Provide PubMatic rewarded ad support
     public func loadRewardedAdIfSupported(
         bidResponse: Any,
@@ -487,13 +486,13 @@ extension PubmaticAdapter {
         DispatchQueue.main.async {
             let publisherId = params?["pubmaticPublisherId"] as? String ?? ""
             var profileId = NSNumber(value: 0)
-            
+
             if let profileIdString = params?["pubmaticProfileId"] as? String,
                 let profileIdInt = Int(profileIdString)
             {
                 profileId = NSNumber(value: profileIdInt)
             }
-            
+
             self.rewardedAdItem = POBRewardedAd(
                 publisherId: publisherId,
                 profileId: profileId,
@@ -507,40 +506,40 @@ extension PubmaticAdapter {
 // MARK: - POBRewardedAdDelegate
 
 extension PubmaticAdapter: POBRewardedAdDelegate {
-    
     public func rewardedAdDidReceive(_ rewardedAd: POBRewardedAd) {
         MSPLogger.shared.info(message: "[Adapter: PubMatic] Successfully loaded PubMatic rewarded ad")
-        
+
         DispatchQueue.main.async {
             guard let adListener = self.adListener,
-                  let auctionBidListener = self.auctionBidListener,
-                  let bidderPlacementId = self.bidderPlacementId else {
+                let auctionBidListener = self.auctionBidListener,
+                let bidderPlacementId = self.bidderPlacementId
+            else {
                 return
             }
-            
+
             // Create reward from adRequest or use default
             let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
-            
+
             let rewardedAd = PubmaticRewardedAd(
                 adNetworkAdapter: self,
                 reward: reward,
                 pobRewardedAd: rewardedAd
             )
             self.rewardedAd = rewardedAd
-            
+
             // Set ad info
             rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.pubmatic.rawValue
             rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = bidderPlacementId
             if let priceInDollar = self.priceInDollar {
                 rewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            
+
             self.handleAdLoaded(
                 ad: rewardedAd,
                 auctionBidListener: auctionBidListener,
                 bidderPlacementId: bidderPlacementId
             )
-            
+
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "",
                 ad: rewardedAd,
@@ -549,20 +548,20 @@ extension PubmaticAdapter: POBRewardedAdDelegate {
             )
         }
     }
-    
+
     public func rewardedAdDidFailToReceive(_ rewardedAd: POBRewardedAd, error: Error) {
         MSPLogger.shared.info(
             message: "[Adapter: PubMatic] Fail to load PubMatic rewarded ad: \(error.localizedDescription)")
-        
+
         self.auctionBidListener?.onError(error: "Failed to load pubmatic rewarded ad: \(error.localizedDescription)")
-        
+
         self.adMetricReporter?.logAdResult(
             placementId: self.adRequest?.placementId ?? "",
             ad: nil,
             fill: false,
             isFromCache: false
         )
-        
+
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil,

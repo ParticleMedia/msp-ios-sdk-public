@@ -180,6 +180,7 @@ class DebugAdLoadViewModel: AdListener {
         let loadMode = currentLoadMode()
         updateAdNetworkOptions(for: loadMode)
         updateAdFormatOptions(for: loadMode)
+        updateH5TemplateGroupOptions(for: currentCreativeType())
     }
 
     private func updateAdNetworkOptions(for loadMode: DebugLoadMode) {
@@ -216,10 +217,33 @@ class DebugAdLoadViewModel: AdListener {
         section.replaceOptions(options)
     }
 
+    private func updateH5TemplateGroupOptions(for creativeType: NovaCreativeType?) {
+        guard
+            let chipGroupVM = sectionViewModel(for: SectionIds.customParams)?
+                .chipGroupCellViewModels.first(where: { $0.id == "h5_template_group" })
+        else { return }
+
+        let options: [DebugChipGroupItem.ChipOption]
+        switch creativeType {
+        case .playableVideo:
+            options = DebugSectionData.H5TemplateGroupOptions.playableVideo
+        default:
+            options = DebugSectionData.H5TemplateGroupOptions.imageVideo
+        }
+
+        chipGroupVM.replaceOptions(options)
+    }
+
     private func currentLoadMode() -> DebugLoadMode {
         sectionViewModel(for: SectionIds.mode)?
             .selectedCell()?
             .debugOption as? DebugLoadMode ?? .mspAuction
+    }
+
+    private func currentCreativeType() -> NovaCreativeType? {
+        sectionViewModel(for: SectionIds.creativeType)?
+            .selectedCell()?
+            .debugOption as? NovaCreativeType
     }
 
     private func sectionViewModel(for sectionId: String) -> DebugAdLoadSectionViewModel? {
@@ -227,36 +251,55 @@ class DebugAdLoadViewModel: AdListener {
     }
 
     // Get test parameters from selected options
-    func getTestParameters() -> [String: String] {
-        var testParamsDict: [String: Any] = [:]
-        for (index, section) in sections.enumerated() {
-            if let selectedCell = section.selectedCell(),
-                index < originalSectionData.count
-            {
-                let originalOptions = originalSectionData[index].options
-                if let selectedOption = originalOptions.first(where: { $0.id == selectedCell.id }) {
-                    if let testParamOption = selectedOption as? TestParamPresentable {
-                        for (key, value) in testParamOption.keyValuePairs {
-                            // Try to convert "true"/"false" to Bool, otherwise keep as String
-                            if value == "true" {
-                                testParamsDict[key] = true
-                            } else if value == "false" {
-                                testParamsDict[key] = false
-                            } else {
-                                testParamsDict[key] = value
-                            }
-                        }
-                    }
-                }
+    func getTestParameters() -> [String: Any] {
+        let baseParams = collectFlatParams()
+        let toggleValues = collectToggleValues()
+        let chipValues = collectChipValues()
+
+        if let network = currentAdNetwork() {
+            return network.assembleTestParams(
+                baseParams: baseParams, toggleValues: toggleValues, chipValues: chipValues)
+        }
+        return baseParams
+    }
+
+    private func collectFlatParams() -> [String: Any] {
+        var params: [String: Any] = ["test_ad": true]
+        for section in sections {
+            guard let selected = section.selectedCell(),
+                let presentable = selected.debugOption as? TestParamPresentable
+            else { continue }
+            for (key, value) in presentable.keyValuePairs {
+                params[key] = value
             }
         }
-        testParamsDict["test_ad"] = true
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: testParamsDict, options: []),
-            let jsonString = String(data: jsonData, encoding: .utf8)
-        else {
-            return [:]
+        return params
+    }
+
+    private func collectToggleValues() -> [String: Bool] {
+        var result: [String: Bool] = [:]
+        for section in sections {
+            for toggle in section.toggleCellViewModels {
+                result[toggle.id] = toggle.isOn
+            }
         }
-        return ["test": jsonString]
+        return result
+    }
+
+    private func collectChipValues() -> [String: String?] {
+        var result: [String: String?] = [:]
+        for section in sections {
+            for chip in section.chipGroupCellViewModels {
+                result[chip.id] = chip.selectedId
+            }
+        }
+        return result
+    }
+
+    private func currentAdNetwork() -> AdNetwork? {
+        sectionViewModel(for: SectionIds.adNetwork)?
+            .selectedCell()?
+            .debugOption as? AdNetwork
     }
 
     func getSelectedOptions() -> [String: DebugOption] {
@@ -280,7 +323,7 @@ class DebugAdLoadViewModel: AdListener {
         let selectedNetwork = selectedOptions.values.compactMap { $0 as? AdNetwork }.first
 
         let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
-        let testParams = getTestParameters()
+        let testParams: [String: Any] = getTestParameters()
         let selectedOptionSummary = selectedOptions.map { key, value in
             "\(key)=\(value.id)"
         }.sorted().joined(separator: ", ")
@@ -301,7 +344,9 @@ class DebugAdLoadViewModel: AdListener {
             if adFormat == .rewarded {
                 guard let placementOption else {
                     toastSignalSubject.send(
-                        ToastSignal(message: "Rewarded is S2S only. Choose a rewarded placement.", style: .error, duration: nil))
+                        ToastSignal(
+                            message: "Rewarded is S2S only. Choose a rewarded placement.", style: .error, duration: nil)
+                    )
                     return
                 }
                 resolvedPlacementId = placementOption.placementId
@@ -309,7 +354,8 @@ class DebugAdLoadViewModel: AdListener {
                 MSPLogger.shared.info(
                     message:
                         Strings.scopedMode
-                        + "rewarded is S2S only. placementId=\(resolvedPlacementId), selectedNetwork=\(selectedNetwork?.rawValue ?? "nil")")
+                        + "rewarded is S2S only. placementId=\(resolvedPlacementId), selectedNetwork=\(selectedNetwork?.rawValue ?? "nil")"
+                )
                 break
             }
             guard let selectedNetwork else {
@@ -323,13 +369,15 @@ class DebugAdLoadViewModel: AdListener {
             MSPLogger.shared.info(
                 message:
                     Strings.scopedMode
-                    + "network=\(selectedNetwork.rawValue), adFormat=\(adFormat), placeholderPlacementId=\(resolvedPlacementId)")
+                    + "network=\(selectedNetwork.rawValue), adFormat=\(adFormat), placeholderPlacementId=\(resolvedPlacementId)"
+            )
         }
 
         MSPLogger.shared.info(
             message:
                 Strings.loadRequested
-                + "placementId=\(resolvedPlacementId), adFormat=\(adFormat), mode=\(loadMode.id), testParams=\(testParams)")
+                + "placementId=\(resolvedPlacementId), adFormat=\(adFormat), mode=\(loadMode.id), testParams=\(testParams)"
+        )
         MSPLogger.shared.info(
             message:
                 Strings.selectedOptions
@@ -406,7 +454,8 @@ class DebugAdLoadViewModel: AdListener {
     }
     func onAdDismissed(ad: MSPAd) {
         MSPLogger.shared.info(
-            message: Strings.interstitialDismissed + "\(ad), rewardReceivedBeforeDismiss=\(rewardReceivedBeforeDismiss)")
+            message: Strings.interstitialDismissed + "\(ad), rewardReceivedBeforeDismiss=\(rewardReceivedBeforeDismiss)"
+        )
         let message = rewardReceivedBeforeDismiss ? "Ad closed: reward before dismiss" : "Ad closed: reward missing"
         toastSignalSubject.send(ToastSignal(message: message, style: .success, duration: 2.0))
     }

@@ -695,40 +695,40 @@ extension LiftoffAdapter: VungleNativeDelegate {
 // MARK: - VungleRewardedDelegate
 
 extension LiftoffAdapter: VungleRewardedDelegate {
-    
     public func rewardedAdDidLoad(_ rewarded: VungleRewarded) {
         MSPLogger.shared.info(message: "[Adapter: Liftoff] Successfully loaded Liftoff rewarded ad")
-        
+
         DispatchQueue.main.async {
             guard let adListener = self.adListener,
-                  let auctionBidListener = self.auctionBidListener,
-                  let bidderPlacementId = self.bidderPlacementId else {
+                let auctionBidListener = self.auctionBidListener,
+                let bidderPlacementId = self.bidderPlacementId
+            else {
                 return
             }
-            
+
             // Create reward from adRequest or use default
             let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
-            
+
             let rewardedAd = LiftoffRewardedAd(
                 adNetworkAdapter: self,
                 reward: reward,
                 vungleRewarded: rewarded
             )
             self.rewardedAd = rewardedAd
-            
+
             // Set ad info
             rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.liftoff.rawValue
             rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = bidderPlacementId
             if let priceInDollar = self.priceInDollar {
                 rewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            
+
             self.handleAdLoaded(
                 ad: rewardedAd,
                 auctionBidListener: auctionBidListener,
                 bidderPlacementId: bidderPlacementId
             )
-            
+
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "",
                 ad: rewardedAd,
@@ -737,23 +737,23 @@ extension LiftoffAdapter: VungleRewardedDelegate {
             )
         }
     }
-    
+
     public func rewardedAdDidFailToLoad(_ rewarded: VungleRewarded, error: Error) {
         MSPLogger.shared.info(
             message: "[Adapter: Liftoff] Fail to load Liftoff rewarded ad: \(error.localizedDescription)")
-        
+
         self.handleAuctionBidError(
             error: "Failed to load liftoff rewarded ad: \(error.localizedDescription)",
             bidResponse: self.bidResponse
         )
-        
+
         self.adMetricReporter?.logAdResult(
             placementId: self.adRequest?.placementId ?? "",
             ad: nil,
             fill: false,
             isFromCache: false
         )
-        
+
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil,
@@ -763,7 +763,7 @@ extension LiftoffAdapter: VungleRewardedDelegate {
             )
         }
     }
-    
+
     // Note: Other VungleRewardedDelegate methods (impression, click, reward, dismiss, present failure)
     // are handled directly by LiftoffRewardedAd class through its own delegate conformance
 }
@@ -771,7 +771,6 @@ extension LiftoffAdapter: VungleRewardedDelegate {
 // MARK: - Rewarded Ad Support Override
 
 extension LiftoffAdapter {
-    
     /// Provide Liftoff/Vungle rewarded ad support
     public func loadRewardedAdIfSupported(
         bidResponse: Any,
@@ -783,14 +782,15 @@ extension LiftoffAdapter {
         params: [String: String]?
     ) {
         guard let mBidResponse = bidResponse as? BidResponse,
-              let winningBid = mBidResponse.winningBid else {
+            let winningBid = mBidResponse.winningBid
+        else {
             self.handleAuctionBidError(
                 error: "Failed to load Liftoff rewarded ad: invalid bidResponse",
                 bidResponse: self.bidResponse
             )
             return
         }
-        
+
         let rootViewController = adListener.getRootViewController()
         self.loadRewardedAd(bidderPlacementId, winningBid, rootViewController, auctionBidListener)
     }

@@ -1,8 +1,8 @@
+import MSPGoogleAdsTypes
 import Nimble
 import Quick
 import UIKit
 
-import MSPGoogleAdsTypes
 @testable import MSPGoogleAdapter
 @testable import MSPiOSCore
 

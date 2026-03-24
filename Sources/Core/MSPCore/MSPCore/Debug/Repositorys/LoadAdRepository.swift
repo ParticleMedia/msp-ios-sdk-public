@@ -5,7 +5,7 @@ protocol LoadAdRepository {
     func loadAd(
         placementId: String,
         adFormat: AdFormat,
-        testParams: [String: String],
+        testParams: [String: Any],
         adListener: AdListener,
         customParams: [String: Any]?
     )

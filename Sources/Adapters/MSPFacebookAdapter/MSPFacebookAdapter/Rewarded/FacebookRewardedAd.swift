@@ -44,7 +44,9 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
         }
         MSPLogger.shared.info(
             tag: Constants.logTag,
-            message: "[Adapter: Facebook] Showing rewarded ad. hasAdItem=\(rewardedVideoAdItem != nil), reward=\(reward.type):\(reward.amount)")
+            message:
+                "[Adapter: Facebook] Showing rewarded ad. hasAdItem=\(rewardedVideoAdItem != nil), reward=\(reward.type):\(reward.amount)"
+        )
         Self.presenter(rewardedVideoAdItem, presentingViewController)
     }
 
@@ -53,7 +55,8 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
     }
 
     func markDisplayed() {
-        MSPLogger.shared.info(tag: Constants.logTag, message: "[Adapter: Facebook] Rewarded ad impression callback received")
+        MSPLogger.shared.info(
+            tag: Constants.logTag, message: "[Adapter: Facebook] Rewarded ad impression callback received")
         lifecycleController.markDisplayed()
     }
 
@@ -65,12 +68,15 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
     func markRewardEarned() {
         MSPLogger.shared.info(
             tag: Constants.logTag,
-            message: "[Adapter: Facebook] Reward callback received from Facebook SDK. reward=\(reward.type):\(reward.amount)")
+            message:
+                "[Adapter: Facebook] Reward callback received from Facebook SDK. reward=\(reward.type):\(reward.amount)"
+        )
         lifecycleController.markRewardEarned()
     }
 
     func markDismissed() {
-        MSPLogger.shared.info(tag: Constants.logTag, message: "[Adapter: Facebook] Rewarded ad dismiss callback received")
+        MSPLogger.shared.info(
+            tag: Constants.logTag, message: "[Adapter: Facebook] Rewarded ad dismiss callback received")
         lifecycleController.markDismissed()
     }
 }

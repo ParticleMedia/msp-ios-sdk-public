@@ -158,7 +158,7 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         _ auctionBidListener: AuctionBidListener
     ) {
         let adUnitId = getOriginalAdUnitId(winner: winningBid)
-        
+
         guard let adUnitId = adUnitId else {
             self.handleAuctionBidError(
                 error: "Failed to load moloco rewarded ad: adUnitId is nil", bidResponse: self.bidResponse)
@@ -775,7 +775,7 @@ extension MolocoAdapter {
             )
             return
         }
-        
+
         let rootViewController = adListener.getRootViewController()
         self.loadRewardedAd(bidderPlacementId, winningBid, rootViewController, auctionBidListener)
     }

@@ -16,4 +16,13 @@ enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
             return false
         }
     }
+
+    var testParamsValue: String {
+        switch self {
+        case .horizontal, .horizontalCancelTopRight:
+            return "horizontal"
+        case .vertical, .verticalCancelTopRight, .endCard:
+            return "vertical"
+        }
+    }
 }

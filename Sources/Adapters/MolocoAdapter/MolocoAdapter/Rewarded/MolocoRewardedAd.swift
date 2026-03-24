@@ -5,13 +5,13 @@
 //  Created by MSP SDK on 2026-03-12.
 //
 
-import Foundation
-import MolocoSDK
-import MSPiOSCore
-import UIKit
-
 /// Moloco implementation of rewarded ads.
 /// Wraps MolocoRewardedInterstitial SDK and manages reward lifecycle through RewardedLifecycleController.
+import Foundation
+import MSPiOSCore
+import MolocoSDK
+import UIKit
+
 public final class MolocoRewardedAd: MSPiOSCore.RewardedAd {
     // MARK: - Properties
 

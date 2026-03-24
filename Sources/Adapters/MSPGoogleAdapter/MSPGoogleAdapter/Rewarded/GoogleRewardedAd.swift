@@ -38,7 +38,9 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
         let presentingViewController = rootViewController ?? self.rootViewController
         MSPLogger.shared.info(
             tag: Constants.logTag,
-            message: "[Adapter: Google] Showing rewarded ad. hasAdItem=\(rewardedAdItem != nil), hasRootViewController=\(presentingViewController != nil), reward=\(reward.type):\(reward.amount)")
+            message:
+                "[Adapter: Google] Showing rewarded ad. hasAdItem=\(rewardedAdItem != nil), hasRootViewController=\(presentingViewController != nil), reward=\(reward.type):\(reward.amount)"
+        )
 
         guard let presentingViewController else {
             MSPLogger.shared.error(
@@ -51,7 +53,9 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
             guard let self else { return }
             MSPLogger.shared.info(
                 tag: Constants.logTag,
-                message: "[Adapter: Google] Reward callback received from Google SDK. reward=\(self.reward.type):\(self.reward.amount)")
+                message:
+                    "[Adapter: Google] Reward callback received from Google SDK. reward=\(self.reward.type):\(self.reward.amount)"
+            )
             self.lifecycleController.markRewardEarned()
         }
     }
@@ -61,7 +65,8 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
     }
 
     func markDisplayed() {
-        MSPLogger.shared.info(tag: Constants.logTag, message: "[Adapter: Google] Rewarded ad impression callback received")
+        MSPLogger.shared.info(
+            tag: Constants.logTag, message: "[Adapter: Google] Rewarded ad impression callback received")
         lifecycleController.markDisplayed()
     }
 

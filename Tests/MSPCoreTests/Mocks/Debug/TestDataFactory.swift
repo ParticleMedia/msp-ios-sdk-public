@@ -23,6 +23,7 @@ enum TestDataFactory {
 
     static func createProductionLikeSections(placements: [String]) -> [DebugSection] {
         [
+            DebugSectionData.modeSection(),
             DebugSectionData.placementSection(placements: placements),
             DebugSectionData.adNetworkSection(),
             DebugSectionData.adFormatSection(),

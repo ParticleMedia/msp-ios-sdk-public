@@ -10,7 +10,7 @@ class MockLoadAdRepository: LoadAdRepository {
     var loadAdCallCount = 0
     var lastLoadedPlacementId: String?
     var lastLoadedAdFormat: AdFormat?
-    var lastLoadedTestParams: [String: String]?
+    var lastLoadedTestParams: [String: Any]?
     var lastAdListener: AdListener?
 
     var shouldSucceed = true
@@ -21,7 +21,7 @@ class MockLoadAdRepository: LoadAdRepository {
     func loadAd(
         placementId: String,
         adFormat: AdFormat,
-        testParams: [String: String],
+        testParams: [String: Any],
         adListener: AdListener,
         customParams: [String: Any]?
     ) {

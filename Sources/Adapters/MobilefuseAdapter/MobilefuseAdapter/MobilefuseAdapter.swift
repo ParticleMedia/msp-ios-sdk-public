@@ -105,8 +105,8 @@ import PrebidMobile
     public func destroyAd() {
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAdItem
         else { return }
@@ -262,21 +262,21 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 let rewardedAdItem = self.rewardedAdItem
             {
                 MSPLogger.shared.info(message: "[Adapter: Mobilefuse] successfully loaded Mobilefuse Rewarded ad")
-                
+
                 // Create reward from adRequest or use default
                 let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
-                
+
                 let rewardedAd = MobilefuseRewardedAd(
                     adNetworkAdapter: self,
                     reward: reward,
                     mfRewardedAd: rewardedAdItem
                 )
                 self.rewardedAd = rewardedAd
-                
+
                 rewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
                 rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mobilefuse.rawValue
                 rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
-                
+
                 self.handleAdLoaded(
                     ad: rewardedAd, auctionBidListener: auctionBidListener,
                     bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
@@ -391,7 +391,6 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
 // MARK: - Rewarded Ad Support Override
 
 extension MobilefuseAdapter {
-    
     /// Provide MobileFuse rewarded ad support
     public func loadRewardedAdIfSupported(
         bidResponse: Any,
@@ -405,11 +404,11 @@ extension MobilefuseAdapter {
         DispatchQueue.main.async {
             self.rewardedAdItem = MFRewardedAd(placementId: bidderPlacementId)
             self.rewardedAdItem?.register(self)
-            
+
             if (adRequest.testParams["mobilefuse"] as? String) == "true" {
                 self.rewardedAdItem?.testMode = true
             }
-            
+
             self.rewardedAdItem?.load()
         }
     }

@@ -127,25 +127,6 @@ class DemoAdViewController: UIViewController {
         }
     }()
 
-    private lazy var testAdNetworkString: String? = {
-        switch adType {
-        case .prebidBanner, .prebidInterstitial:
-            return "pubmatic"
-        case .googleBanner, .googleNative, .googleInterstitial:
-            return "msp_google"
-        case .novaNative, .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage,
-            .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo, .novaInterstitialHighEngagement,
-            .novaInterstitialEndCard:
-            return "msp_nova"
-        case .facebookNative, .facebookInterstitial, .facebookRewarded:
-            return "msp_fb"
-        case .googleRewarded:
-            return "msp_google"
-        default:
-            return nil
-        }
-    }()
-
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
         case .prebidBanner, .googleBanner, .googleBannerC2S, .unityBanner, .inmobiBanner, .pubmaticBanner,
@@ -166,10 +147,12 @@ class DemoAdViewController: UIViewController {
     }()
 
     private let customParams: [String: Any]
+    private let testParams: TestParams
 
-    init(adType: AdType, customParams: [String: Any] = [:]) {
+    init(adType: AdType, customParams: [String: Any] = [:], testParams: TestParams = TestParams()) {
         self.adType = adType
         self.customParams = customParams
+        self.testParams = testParams
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -190,36 +173,7 @@ class DemoAdViewController: UIViewController {
             "https://www.google.com", "https://newsbreak.com",
         ]
 
-        var testParams: [String: Any] = [:]
-        if let testAdNetworkString = testAdNetworkString {
-            testParams["test_ad"] = true
-            testParams["ad_network"] = testAdNetworkString
-        }
-
-        switch adType {
-        case .novaInterstitialHorizontalImage:
-            testParams["creative_type"] = "image"
-            testParams["is_vertical"] = false
-        case .novaInterstitialVerticalImage:
-            testParams["creative_type"] = "image"
-            testParams["is_vertical"] = true
-        case .novaInterstitialHorizontalVideo:
-            testParams["creative_type"] = "video"
-            testParams["is_vertical"] = false
-        case .novaInterstitialVerticalVideo:
-            testParams["creative_type"] = "video"
-            testParams["is_vertical"] = true
-        case .novaInterstitialHighEngagement:
-            testParams["creative_type"] = "video"
-            testParams["is_vertical"] = false
-            testParams["layout"] = "cancel_top_right"
-        case .novaInterstitialEndCard:
-            testParams["creative_type"] = "video"
-            testParams["is_vertical"] = true
-            testParams["layout"] = "end_card_2_part"
-        default:
-            break
-        }
+        let testParams = self.testParams.toDictionary()
 
         let adRequest = AdRequest(
             customParams: mergedCustomParams,
@@ -250,8 +204,8 @@ extension DemoAdViewController: AdListener {
     func onAdRewardReceived(ad: MSPAd) {
         print("ad event: reward received")
     }
-    
-    func onAdLoaded(placementId: String, loadInfo: [String : Any]) {
+
+    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
         if let ad = self.adLoader?.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
         }

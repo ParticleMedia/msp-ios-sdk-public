@@ -22,6 +22,7 @@ private enum UIConfig {
     static let destroyTitle = "Destroy!"
     static let radioCellReuseId = "RadioCell"
     static let toggleCellReuseId = "ToggleCell"
+    static let chipGroupCellReuseId = "ChipGroupCell"
 }
 
 class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -65,6 +66,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: UIConfig.radioCellReuseId)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: UIConfig.toggleCellReuseId)
+        tableView.register(DebugChipGroupCell.self, forCellReuseIdentifier: UIConfig.chipGroupCellReuseId)
         tableView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(UIConfig.tableBottomInset)
@@ -189,6 +191,20 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let sectionVM = visibleSections[indexPath.section]
 
+        if sectionVM.isChipGroupCell(at: indexPath.row) {
+            guard
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: UIConfig.chipGroupCellReuseId, for: indexPath) as? DebugChipGroupCell
+            else { return UITableViewCell() }
+            guard let chipVM = sectionVM.chipGroupCellViewModel(at: indexPath.row) else { return cell }
+            cell.configure(with: chipVM)
+            cell.onChipTapped = { [weak self, weak chipVM] tappedId in
+                chipVM?.selectOption(id: tappedId)
+                self?.tableView.reloadRows(at: [indexPath], with: .none)
+            }
+            return cell
+        }
+
         if sectionVM.isToggleCell(at: indexPath.row) {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: UIConfig.toggleCellReuseId, for: indexPath)
@@ -214,6 +230,11 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let sectionIdx = indexPath.section
         let rowIdx = indexPath.row
+        // Chip-group cells handle their own interaction via onChipTapped; skip radio selection logic.
+        guard !visibleSections[sectionIdx].isChipGroupCell(at: rowIdx) else {
+            tableView.deselectRow(at: indexPath, animated: true)
+            return
+        }
         // Toggle cells handle their own interaction via UISwitch; skip radio selection logic.
         guard !visibleSections[sectionIdx].isToggleCell(at: rowIdx) else {
             tableView.deselectRow(at: indexPath, animated: true)

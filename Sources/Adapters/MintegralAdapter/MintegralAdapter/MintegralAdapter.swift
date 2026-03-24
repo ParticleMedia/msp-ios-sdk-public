@@ -63,7 +63,7 @@ import PrebidMobile
             } else {
                 self.priceInDollar = 0.0
             }
-            
+
             let adFormat = bidderFormat ?? adRequest.adFormat
             self.adUnitId = params?["mintegralAdUnitAd"] as? String
             if adFormat == .interstitial {
@@ -105,8 +105,8 @@ import PrebidMobile
     public func destroyAd() {
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
                 let nativeAdItem = self.nativeAdItem
@@ -306,7 +306,7 @@ import PrebidMobile
                 auctionBidListener.onError(error: "Failed to load mintegral rewarded ad: adUnitId is nil")
                 return
             }
-            
+
             self.mintegralRewardAdManager = MTGBidRewardAdManager.sharedInstance()
 
             if let bidResponse = self.mtgBidResponse {
@@ -546,20 +546,20 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
 // MARK: - MTGRewardAdLoadDelegate
 
 extension MintegralAdapter: MTGRewardAdLoadDelegate {
-    
     public func onVideoAdLoadSuccess(_ placementId: String!, unitId: String!) {
         MSPLogger.shared.info(message: "[Adapter: Mintegral] Successfully loaded Mintegral rewarded ad")
-        
+
         DispatchQueue.main.async {
             guard let auctionBidListener = self.auctionBidListener,
-                  let bidderPlacementId = self.bidderPlacementId,
-                  let rewardedManager = self.mintegralRewardAdManager,
-                  let resolvedUnitId = unitId ?? self.adUnitId else {
+                let bidderPlacementId = self.bidderPlacementId,
+                let rewardedManager = self.mintegralRewardAdManager,
+                let resolvedUnitId = unitId ?? self.adUnitId
+            else {
                 return
             }
-            
+
             let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
-            
+
             let rewardedAd = MintegralRewardedAd(
                 adNetworkAdapter: self,
                 reward: reward,
@@ -568,20 +568,20 @@ extension MintegralAdapter: MTGRewardAdLoadDelegate {
                 mtgRewardAdManager: rewardedManager
             )
             self.rewardedAd = rewardedAd
-            
+
             // Set ad info
             rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mintegral.rawValue
             rewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = bidderPlacementId
             if let priceInDollar = self.priceInDollar {
                 rewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            
+
             self.handleAdLoaded(
                 ad: rewardedAd,
                 auctionBidListener: auctionBidListener,
                 bidderPlacementId: bidderPlacementId
             )
-            
+
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "",
                 ad: rewardedAd,
@@ -590,21 +590,21 @@ extension MintegralAdapter: MTGRewardAdLoadDelegate {
             )
         }
     }
-    
+
     public func onVideoAdLoadFailed(_ placementId: String!, unitId: String!, error: Error!) {
         let errorMessage = error?.localizedDescription ?? "Unknown error"
         MSPLogger.shared.info(
             message: "[Adapter: Mintegral] Fail to load Mintegral rewarded ad: \(errorMessage)")
-        
+
         self.auctionBidListener?.onError(error: "Failed to load mintegral rewarded ad: \(errorMessage)")
-        
+
         self.adMetricReporter?.logAdResult(
             placementId: self.adRequest?.placementId ?? "",
             ad: nil,
             fill: false,
             isFromCache: false
         )
-        
+
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil,
@@ -619,7 +619,6 @@ extension MintegralAdapter: MTGRewardAdLoadDelegate {
 // MARK: - Rewarded Ad Support Override
 
 extension MintegralAdapter {
-    
     /// Provide Mintegral rewarded ad support
     public func loadRewardedAdIfSupported(
         bidResponse: Any,

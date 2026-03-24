@@ -9,7 +9,7 @@ class TestLoadAdService: LoadAdRepository {
     func loadAd(
         placementId: String,
         adFormat: AdFormat,
-        testParams: [String: String],
+        testParams: [String: Any],
         adListener: AdListener,
         customParams: [String: Any]? = nil
     ) {
@@ -40,7 +40,7 @@ class TestLoadAdService: LoadAdRepository {
             testParams: newTestParams
         )
         if adFormat == .rewarded,
-            let reward = buildReward(from: newTestParams["test"])
+            let reward = buildReward(from: testParams)
         {
             adRequest.reward = reward
         }
@@ -55,12 +55,9 @@ class TestLoadAdService: LoadAdRepository {
         adLoader.getAd(placementId: placementId)
     }
 
-    private func buildReward(from testParamPayload: String?) -> Reward? {
-        guard let testParamPayload,
-            let data = testParamPayload.data(using: .utf8),
-            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-            let type = json["reward_type"] as? String,
-            let amountString = json["reward_amount"] as? String,
+    private func buildReward(from testParams: [String: Any]) -> Reward? {
+        guard let type = testParams["reward_type"] as? String,
+            let amountString = testParams["reward_amount"] as? String,
             let amount = Int(amountString)
         else {
             return nil
@@ -87,7 +84,7 @@ class ScopedNetworkLoadAdService: LoadAdRepository {
     func loadAd(
         placementId: String,
         adFormat: AdFormat,
-        testParams: [String: String],
+        testParams: [String: Any],
         adListener: AdListener,
         customParams: [String: Any]? = nil
     ) {
@@ -117,7 +114,7 @@ class ScopedNetworkLoadAdService: LoadAdRepository {
         resolvedTestParams["mobilefuse"] = "true"
         if let testAdNetwork = scopedPlacement.testAdNetwork {
             resolvedTestParams["test"] = testPayload(
-                overriding: testParams["test"],
+                overriding: testParams["test"] as? String,
                 adNetwork: testAdNetwork
             )
         }
@@ -135,14 +132,15 @@ class ScopedNetworkLoadAdService: LoadAdRepository {
             testParams: resolvedTestParams
         )
         if adFormat == .rewarded,
-            let reward = buildReward(from: resolvedTestParams["test"])
+            let reward = buildReward(from: resolvedTestParams["test"] as? String)
         {
             adRequest.reward = reward
         }
 
         MSPLogger.shared.info(
             message:
-                "[ScopedNetworkLoadAdService] resolved placementId=\(scopedPlacement.placementId), network=\(network.displayTitle), adFormat=\(adFormat)")
+                "[ScopedNetworkLoadAdService] resolved placementId=\(scopedPlacement.placementId), network=\(network.displayTitle), adFormat=\(adFormat)"
+        )
 
         adLoader.loadAd(
             placementId: scopedPlacement.placementId,

@@ -20,8 +20,8 @@ public protocol AdNetworkAdapter: AnyObject {
 
     func destroyAd()
 
-@MainActor
- func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any)
+    @MainActor
+    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any)
 
     func setAdMetricReporter(adMetricReporter: AdMetricReporter)
 
@@ -32,7 +32,7 @@ public protocol AdNetworkAdapter: AnyObject {
     func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?)
 
     func getSDKVersion() -> String
-    
+
     /// Loads a rewarded ad if the adapter supports it, otherwise provides a default rejection.
     /// Override this method in adapters that support rewarded ads.
     /// - Parameters:

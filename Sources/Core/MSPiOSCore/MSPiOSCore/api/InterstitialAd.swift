@@ -38,5 +38,4 @@ open class InterstitialAd: MSPAd {
     open func show(rootViewController: UIViewController?, interstitialAdReportHandling: InterstitialAdReportHandling?) {
         show(rootViewController: rootViewController)
     }
-
 }

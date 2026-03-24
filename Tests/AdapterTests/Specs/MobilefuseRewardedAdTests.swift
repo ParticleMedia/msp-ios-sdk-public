@@ -1,8 +1,9 @@
-import Quick
-import Nimble
 import MobileFuseSDK
-@testable import MobilefuseAdapter
+import Nimble
+import Quick
+
 @testable import MSPiOSCore
+@testable import MobilefuseAdapter
 
 class MobilefuseRewardedAdTests: QuickSpec {
     override class func spec() {
@@ -45,12 +46,12 @@ class MobilefuseRewardedAdTests: QuickSpec {
                     it("should call MFRewardedAd.show()") {
                         // Arrange
                         let mockViewController = UIViewController()
-                        
+
                         // Act
                         MainActor.assumeIsolated {
                             sut.show(rootViewController: mockViewController)
                         }
-                        
+
                         // Assert
                         expect(mockMFRewardedAd.showCalled).to(beTrue())
                     }
@@ -63,17 +64,17 @@ class MobilefuseRewardedAdTests: QuickSpec {
                     it("should fire onAdRewardReceived once") {
                         // Act
                         sut.handleRewardEarned()
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
                         expect(mockAdListener.lastRewardedAd).to(be(sut))
                     }
-                    
+
                     it("should be idempotent - calling twice fires callback once only") {
                         // Act
                         sut.handleRewardEarned()
                         sut.handleRewardEarned()
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
                     }
@@ -86,24 +87,24 @@ class MobilefuseRewardedAdTests: QuickSpec {
                     it("should NOT call onAdRewardReceived") {
                         // Act
                         sut.handleAdClosed()
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(0))
                         expect(mockAdListener.onAdDismissedCallCount).to(equal(1))
                     }
                 }
-                
+
                 context("when reward fires before dismiss") {
                     it("should fire reward callback before dismiss callback") {
                         // Arrange
                         var callbackOrder: [String] = []
                         mockAdListener.onRewardCallback = { callbackOrder.append("reward") }
                         mockAdListener.onDismissCallback = { callbackOrder.append("dismiss") }
-                        
+
                         // Act
                         sut.handleRewardEarned()
                         sut.handleAdClosed()
-                        
+
                         // Assert
                         expect(callbackOrder).to(equal(["reward", "dismiss"]))
                     }
@@ -115,23 +116,23 @@ class MobilefuseRewardedAdTests: QuickSpec {
                 it("should handle impression tracking") {
                     // Act
                     sut.handleAdRendered()
-                    
+
                     // Assert
                     expect(mockAdListener.onAdImpressionCallCount).to(equal(1))
                 }
-                
+
                 it("should handle click tracking") {
                     // Act
                     sut.handleAdClicked()
-                    
+
                     // Assert
                     expect(mockAdListener.onAdClickCallCount).to(equal(1))
                 }
-                
+
                 it("should handle error") {
                     // Act
                     sut.handleAdError(reason: "Test error")
-                    
+
                     // Assert
                     expect(mockAdListener.onErrorCallCount).to(equal(1))
                     expect(mockAdListener.lastErrorMessage).to(contain("Test error"))

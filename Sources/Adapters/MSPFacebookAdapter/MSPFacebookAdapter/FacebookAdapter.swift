@@ -177,7 +177,9 @@ import UIKit
                     return
                 }
                 MSPLogger.shared.info(
-                    message: "[Adapter: Facebook] Loading Rewarded ad. placementId=\(adRequest.placementId), fbPlacementId=\(placementId), requestId=\(mBidResponse.rawResponse?.requestID ?? "nil")")
+                    message:
+                        "[Adapter: Facebook] Loading Rewarded ad. placementId=\(adRequest.placementId), fbPlacementId=\(placementId), requestId=\(mBidResponse.rawResponse?.requestID ?? "nil")"
+                )
                 let rewardedVideoAdItem = FBRewardedVideoAd(placementID: placementId)
                 self.rewardedVideoAdItem = rewardedVideoAdItem
                 let reward = adRequest.reward ?? Reward(type: "", amount: 0)
@@ -201,7 +203,8 @@ import UIKit
                 switch adType {
                 case "banner":
                     guard let placementId = self.getFBPlacementId(from: adString) else {
-                        self.handleAuctionBidError(error: "Missing FB payload or placementId", bidResponse: mBidResponse)
+                        self.handleAuctionBidError(
+                            error: "Missing FB payload or placementId", bidResponse: mBidResponse)
                         return
                     }
                     self.nativeAdItem = FBNativeAd(placementID: placementId)
@@ -209,7 +212,8 @@ import UIKit
                     self.nativeAdItem?.loadAd(withBidPayload: adString)
                 case "native":
                     guard let placementId = self.getFBPlacementId(from: adString) else {
-                        self.handleAuctionBidError(error: "Missing FB payload or placementId", bidResponse: mBidResponse)
+                        self.handleAuctionBidError(
+                            error: "Missing FB payload or placementId", bidResponse: mBidResponse)
                         return
                     }
                     self.nativeAdItem = FBNativeAd(placementID: placementId)
@@ -507,12 +511,17 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
     public func rewardedVideoAdDidLoad(_ rewardedVideoAd: FBRewardedVideoAd) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(
-                message: "[Adapter: Facebook] successfully loaded Facebook Rewarded ad. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), reward=\(self.adRequest?.reward?.type ?? "nil"):\(self.adRequest?.reward?.amount.description ?? "nil")")
+                message:
+                    "[Adapter: Facebook] successfully loaded Facebook Rewarded ad. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), reward=\(self.adRequest?.reward?.type ?? "nil"):\(self.adRequest?.reward?.amount.description ?? "nil")"
+            )
             guard let facebookRewardedAd = self.facebookRewardedAd,
                 let adRequest = self.adRequest,
                 let auctionBidListener = self.auctionBidListener
             else {
-                MSPLogger.shared.error(message: "[Adapter: Facebook] GUARD FAILED in rewardedVideoAdDidLoad — facebookRewardedAd=\(self.facebookRewardedAd != nil), adRequest=\(self.adRequest != nil), auctionBidListener=\(self.auctionBidListener != nil)")
+                MSPLogger.shared.error(
+                    message:
+                        "[Adapter: Facebook] GUARD FAILED in rewardedVideoAdDidLoad — facebookRewardedAd=\(self.facebookRewardedAd != nil), adRequest=\(self.adRequest != nil), auctionBidListener=\(self.auctionBidListener != nil)"
+                )
                 return
             }
 
@@ -540,7 +549,9 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
     public func rewardedVideoAd(_ rewardedVideoAd: FBRewardedVideoAd, didFailWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.error(
-                message: "[Adapter: Facebook] Fail to load Facebook Rewarded ad. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), error=\(error.localizedDescription)")
+                message:
+                    "[Adapter: Facebook] Fail to load Facebook Rewarded ad. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil"), error=\(error.localizedDescription)"
+            )
             self.handleAuctionBidError(error: error.localizedDescription, bidResponse: self.bidResponse)
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
@@ -550,7 +561,9 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
     public func rewardedVideoAdWillLogImpression(_ rewardedVideoAd: FBRewardedVideoAd) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(
-                message: "[Adapter: Facebook] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+                message:
+                    "[Adapter: Facebook] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
+            )
             guard let facebookRewardedAd = self.facebookRewardedAd else { return }
             if let adRequest = self.adRequest, let bidResponse = self.bidResponse {
                 self.adMetricReporter?.logAdImpression(
@@ -563,7 +576,9 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
     public func rewardedVideoAdDidClick(_ rewardedVideoAd: FBRewardedVideoAd) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(
-                message: "[Adapter: Facebook] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+                message:
+                    "[Adapter: Facebook] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
+            )
             guard let facebookRewardedAd = self.facebookRewardedAd else { return }
             facebookRewardedAd.markClicked()
             self.sendClickAdEvent(ad: facebookRewardedAd)
@@ -573,7 +588,9 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
     public func rewardedVideoAdVideoComplete(_ rewardedVideoAd: FBRewardedVideoAd) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(
-                message: "[Adapter: Facebook] Rewarded completion callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+                message:
+                    "[Adapter: Facebook] Rewarded completion callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
+            )
             self.facebookRewardedAd?.markRewardEarned()
         }
     }
@@ -581,7 +598,9 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
     public func rewardedVideoAdDidClose(_ rewardedVideoAd: FBRewardedVideoAd) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(
-                message: "[Adapter: Facebook] Rewarded close callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")")
+                message:
+                    "[Adapter: Facebook] Rewarded close callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
+            )
             self.facebookRewardedAd?.markDismissed()
         }
     }

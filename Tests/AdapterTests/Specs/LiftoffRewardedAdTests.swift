@@ -1,6 +1,7 @@
-import Quick
 import Nimble
+import Quick
 import VungleAdsSDK
+
 @testable import MSPLiftoffAdapter
 @testable import MSPiOSCore
 
@@ -56,22 +57,20 @@ class LiftoffRewardedAdTests: QuickSpec {
                 context("when rewardedAdDidRewardUser is called") {
                     it("should fire onAdRewardReceived once") {
                         // Arrange
-                        
                         // Act
                         sut.handleReward()
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
                         expect(mockAdListener.lastRewardedAd).to(be(sut))
                     }
-                    
+
                     it("should be idempotent - calling twice fires callback once only") {
                         // Arrange
-                        
                         // Act
                         sut.handleReward()
                         sut.handleReward()
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
                     }
@@ -83,27 +82,26 @@ class LiftoffRewardedAdTests: QuickSpec {
                 context("when rewardedAdDidClose is called without prior reward") {
                     it("should NOT call onAdRewardReceived") {
                         // Arrange
-                        
                         // Act
                         sut.handleDismiss()
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(0))
                         expect(mockAdListener.onAdDismissedCallCount).to(equal(1))
                     }
                 }
-                
+
                 context("when reward fires before dismiss") {
                     it("should fire reward callback before dismiss callback") {
                         // Arrange
                         var callbackOrder: [String] = []
                         mockAdListener.onRewardCallback = { callbackOrder.append("reward") }
                         mockAdListener.onDismissCallback = { callbackOrder.append("dismiss") }
-                        
+
                         // Act
                         sut.handleReward()
                         sut.handleDismiss()
-                        
+
                         // Assert
                         expect(callbackOrder).to(equal(["reward", "dismiss"]))
                     }
@@ -115,26 +113,26 @@ class LiftoffRewardedAdTests: QuickSpec {
                 it("should handle impression tracking") {
                     // Act
                     sut.handleImpression()
-                    
+
                     // Assert
                     expect(mockAdListener.onAdImpressionCallCount).to(equal(1))
                 }
-                
+
                 it("should handle click tracking") {
                     // Act
                     sut.handleClick()
-                    
+
                     // Assert
                     expect(mockAdListener.onAdClickCallCount).to(equal(1))
                 }
-                
+
                 it("should handle presentation failure") {
                     // Arrange
                     let testError = NSError(domain: "VungleTest", code: 123, userInfo: nil)
-                    
+
                     // Act
                     sut.handlePresentFailure(testError)
-                    
+
                     // Assert
                     expect(mockAdListener.onErrorCallCount).to(equal(1))
                     expect(mockAdListener.lastErrorMessage).to(contain("123"))
@@ -184,6 +182,6 @@ class MockAdListener: AdListener {
     func onAdLoaded(placementId: String, loadInfo: [String: Any]) {}
 
     func getRootViewController() -> UIViewController? {
-        return UIViewController()
+        UIViewController()
     }
 }

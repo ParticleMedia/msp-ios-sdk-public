@@ -255,7 +255,7 @@ private class AdPositionListener: AdListener {
     func onAdRewardReceived(ad: MSPAd) {
         print("[AdList] Reward received at position \(position)")
     }
-    
+
     func onError(msg: String, loadInfo: [String: Any]) {
         onError(msg: msg)
     }

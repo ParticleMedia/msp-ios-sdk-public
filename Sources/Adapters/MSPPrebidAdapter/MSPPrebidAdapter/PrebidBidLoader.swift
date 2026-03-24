@@ -81,7 +81,10 @@ public class PrebidBidLoader: BidLoader {
             guard let self = self else { return }
 
             if let error = error {
-                MSPLogger.shared.error(message: "[PrebidBidLoader] Bid request failed. placementId=\(self.configId ?? "nil"), error=\(error.localizedDescription)")
+                MSPLogger.shared.error(
+                    message:
+                        "[PrebidBidLoader] Bid request failed. placementId=\(self.configId ?? "nil"), error=\(error.localizedDescription)"
+                )
                 bidListener?.onError(msg: error.localizedDescription, loadInfo: [:])
                 return
             }
@@ -89,7 +92,10 @@ public class PrebidBidLoader: BidLoader {
             if let bidResponse = bidResponse {
                 guard let seat = bidResponse.winningBidSeat else {
                     let errorMessage = "no fill"
-                    MSPLogger.shared.info(message: "[PrebidBidLoader] No winning bid (no fill). placementId=\(self.configId ?? "nil"), requestId=\(bidResponse.rawResponse?.requestID ?? "nil")")
+                    MSPLogger.shared.info(
+                        message:
+                            "[PrebidBidLoader] No winning bid (no fill). placementId=\(self.configId ?? "nil"), requestId=\(bidResponse.rawResponse?.requestID ?? "nil")"
+                    )
                     bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                     adMetricReporter?.logAdResponse(
                         ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
@@ -97,10 +103,16 @@ public class PrebidBidLoader: BidLoader {
                 }
 
                 let price = bidResponse.winningBid?.price ?? 0
-                MSPLogger.shared.info(message: "[PrebidBidLoader] Winning bid received. placementId=\(self.configId ?? "nil"), seat=\(seat), price=\(price), adFormat=\(adRequest.adFormat), requestId=\(bidResponse.rawResponse?.requestID ?? "nil")")
+                MSPLogger.shared.info(
+                    message:
+                        "[PrebidBidLoader] Winning bid received. placementId=\(self.configId ?? "nil"), seat=\(seat), price=\(price), adFormat=\(adRequest.adFormat), requestId=\(bidResponse.rawResponse?.requestID ?? "nil")"
+                )
 
                 if self.bidListener == nil {
-                    MSPLogger.shared.error(message: "[PrebidBidLoader] bidListener is nil — cannot route bid. placementId=\(self.configId ?? "nil"), seat=\(seat)")
+                    MSPLogger.shared.error(
+                        message:
+                            "[PrebidBidLoader] bidListener is nil — cannot route bid. placementId=\(self.configId ?? "nil"), seat=\(seat)"
+                    )
                 }
                 if seat == "msp_google" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.google)
@@ -113,12 +125,16 @@ public class PrebidBidLoader: BidLoader {
                 } else if seat == "vungle" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.liftoff)
                 } else {
-                    MSPLogger.shared.info(message: "[PrebidBidLoader] Unknown seat '\(seat)', routing to prebid adapter. placementId=\(self.configId ?? "nil")")
+                    MSPLogger.shared.info(
+                        message:
+                            "[PrebidBidLoader] Unknown seat '\(seat)', routing to prebid adapter. placementId=\(self.configId ?? "nil")"
+                    )
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
             } else {
                 let errorMessage = "missing response"
-                MSPLogger.shared.error(message: "[PrebidBidLoader] Missing response. placementId=\(self.configId ?? "nil")")
+                MSPLogger.shared.error(
+                    message: "[PrebidBidLoader] Missing response. placementId=\(self.configId ?? "nil")")
                 bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                 adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
@@ -179,11 +195,23 @@ public class PrebidBidLoader: BidLoader {
             }
         }
 
-        let testParams = adRequest.testParams
-        let testKey = "test"
-        adUnitConfig.removeContextData(for: testKey)
-        if let testParamsJSON = toJSONString(testParams) {
-            adUnitConfig.addContextData(key: testKey, value: testParamsJSON)
+        var testParams = adRequest.testParams
+        let inNovaTestMode =
+            testParams["test_ad"] as? Bool == true
+            && testParams["ad_network"] as? String == "msp_nova"
+        if inNovaTestMode,
+            let debugItem = testParams[MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM] as? [String: Any],
+            let debugItemJSON = toJSONString(debugItem)
+        {
+            adUnitConfig.removeContextData(for: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM)
+            adUnitConfig.addContextData(key: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM, value: debugItemJSON)
+        } else {
+            testParams.removeValue(forKey: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM)
+            if let testParamsJSON = toJSONString(testParams) {
+                let testKey = "test"
+                adUnitConfig.removeContextData(for: testKey)
+                adUnitConfig.addContextData(key: testKey, value: testParamsJSON)
+            }
         }
 
         if let gadQueryInfo = bidTokens.googleQueryInfo {

@@ -27,19 +27,22 @@ public final class RewardedLifecycleController {
     public func markDisplayed() {
         dispatchPrecondition(condition: .onQueue(.main))
         guard let ad else {
-            MSPLogger.shared.error(tag: Constants.logTag, message: "Rewarded impression dropped because ad is already released")
+            MSPLogger.shared.error(
+                tag: Constants.logTag, message: "Rewarded impression dropped because ad is already released")
             return
         }
         MSPLogger.shared.info(
             tag: Constants.logTag,
-            message: "Rewarded ad impression recorded. requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")
+            message:
+                "Rewarded ad impression recorded. requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")
         adListener?.onAdImpression(ad: ad)
     }
 
     public func markClicked() {
         dispatchPrecondition(condition: .onQueue(.main))
         guard let ad else {
-            MSPLogger.shared.error(tag: Constants.logTag, message: "Rewarded click dropped because ad is already released")
+            MSPLogger.shared.error(
+                tag: Constants.logTag, message: "Rewarded click dropped because ad is already released")
             return
         }
         MSPLogger.shared.info(
@@ -55,15 +58,19 @@ public final class RewardedLifecycleController {
             return
         }
         guard let ad else {
-            MSPLogger.shared.error(tag: Constants.logTag, message: "Reward callback dropped because ad is already released")
+            MSPLogger.shared.error(
+                tag: Constants.logTag, message: "Reward callback dropped because ad is already released")
             return
         }
         hasEarnedReward = true
         MSPLogger.shared.info(
             tag: Constants.logTag,
-            message: "Rewarded ad reward earned. reward=\(ad.reward.type):\(ad.reward.amount), requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")
+            message:
+                "Rewarded ad reward earned. reward=\(ad.reward.type):\(ad.reward.amount), requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")"
+        )
         if adListener == nil {
-            MSPLogger.shared.error(tag: Constants.logTag, message: "Reward callback cannot be forwarded because listener is nil")
+            MSPLogger.shared.error(
+                tag: Constants.logTag, message: "Reward callback cannot be forwarded because listener is nil")
             return
         }
         MSPLogger.shared.info(tag: Constants.logTag, message: "Dispatching rewarded callback to listener")
@@ -77,14 +84,17 @@ public final class RewardedLifecycleController {
             return
         }
         guard let ad else {
-            MSPLogger.shared.error(tag: Constants.logTag, message: "Rewarded dismiss dropped because ad is already released")
+            MSPLogger.shared.error(
+                tag: Constants.logTag, message: "Rewarded dismiss dropped because ad is already released")
             return
         }
         hasDismissed = true
         let order = hasEarnedReward ? "after_reward" : "before_reward"
         MSPLogger.shared.info(
             tag: Constants.logTag,
-            message: "Rewarded ad dismissed. order=\(order), requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")
+            message:
+                "Rewarded ad dismissed. order=\(order), requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")"
+        )
         adListener?.onAdDismissed(ad: ad)
     }
 }

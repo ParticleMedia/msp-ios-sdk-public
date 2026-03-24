@@ -1,8 +1,8 @@
+import FBAudienceNetwork
 import Nimble
 import Quick
 import UIKit
 
-import FBAudienceNetwork
 @testable import MSPFacebookAdapter
 @testable import MSPiOSCore
 

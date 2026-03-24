@@ -84,8 +84,11 @@ public class MSPAdLoader: NSObject {
             for bidderInfo in bidderInfoList {
                 MSPLogger.shared.info(
                     message:
-                        "[MSPAdLoader] Inspect bidder. placementId=\(placement.placementId), requestFormat=\(adRequest.map { String(describing: $0.adFormat) } ?? "nil"), bidderName=\(bidderInfo.name), bidderPlacementId=\(bidderInfo.bidderPlacementId), rawBidderFormat=\(bidderInfo.bidderFormat ?? "nil")")
-                if shouldFilterRewardedBidder(named: bidderInfo.name, adRequest: adRequest, placementId: placement.placementId) {
+                        "[MSPAdLoader] Inspect bidder. placementId=\(placement.placementId), requestFormat=\(adRequest.map { String(describing: $0.adFormat) } ?? "nil"), bidderName=\(bidderInfo.name), bidderPlacementId=\(bidderInfo.bidderPlacementId), rawBidderFormat=\(bidderInfo.bidderFormat ?? "nil")"
+                )
+                if shouldFilterRewardedBidder(
+                    named: bidderInfo.name, adRequest: adRequest, placementId: placement.placementId)
+                {
                     MSPLogger.shared.info(
                         message:
                             "[Rewarded Gate] filter bidder \(bidderInfo.name) for placement \(placement.placementId)")
@@ -101,7 +104,9 @@ public class MSPAdLoader: NSObject {
         return bidders
     }
 
-    private func shouldFilterRewardedBidder(named bidderName: String, adRequest: AdRequest?, placementId: String) -> Bool {
+    private func shouldFilterRewardedBidder(named bidderName: String, adRequest: AdRequest?, placementId: String)
+        -> Bool
+    {
         guard adRequest?.adFormat == .rewarded else {
             return false
         }
@@ -127,7 +132,8 @@ public class MSPAdLoader: NSObject {
 
         MSPLogger.shared.info(
             message:
-                "[MSPAdLoader] Resolved bidder format. bidderName=\(bidderInfo.name), bidderPlacementId=\(bidderInfo.bidderPlacementId), rawBidderFormat=\(bidderInfo.bidderFormat ?? "nil"), resolvedBidderFormat=\(bidderFormat.map { String(describing: $0) } ?? "nil"), requestFormat=\(requestFormat.map { String(describing: $0) } ?? "nil")")
+                "[MSPAdLoader] Resolved bidder format. bidderName=\(bidderInfo.name), bidderPlacementId=\(bidderInfo.bidderPlacementId), rawBidderFormat=\(bidderInfo.bidderFormat ?? "nil"), resolvedBidderFormat=\(bidderFormat.map { String(describing: $0) } ?? "nil"), requestFormat=\(requestFormat.map { String(describing: $0) } ?? "nil")"
+        )
 
         switch bidderInfo.name {
         case "msp":

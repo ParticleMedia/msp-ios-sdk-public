@@ -17,6 +17,9 @@ class ViewController: UIViewController {
 
     private weak var demoScrollView: UIScrollView?
     private var useNovaSandbox = false
+    private var enableH5Format = true
+    private var h5TemplateGroup: String?
+    private var h5TemplateGroupChips: [String: UIButton] = [:]
     private var isCustomParamsExpanded = false
     private weak var customParamsButton: UIButton?
     private weak var customParamsContainer: UIView?
@@ -187,43 +190,7 @@ class ViewController: UIViewController {
         standardButtons.forEach { contentStack.addArrangedSubview($0) }
         contentStack.addArrangedSubview(adListButton)
 
-        let customParamsButton = UIButton(type: .system)
-        customParamsButton.setTitle("Custom Params  ▶", for: .normal)
-        customParamsButton.backgroundColor = .systemTeal
-        customParamsButton.setTitleColor(.white, for: .normal)
-        customParamsButton.layer.cornerRadius = 8
-        customParamsButton.addAction(
-            UIAction { [weak self] _ in
-                self?.toggleCustomParams()
-            }, for: .touchUpInside)
-        customParamsButton.snp.makeConstraints { make in make.height.equalTo(50) }
-        self.customParamsButton = customParamsButton
-        contentStack.addArrangedSubview(customParamsButton)
-
-        let customParamsContainer = UIView()
-        customParamsContainer.backgroundColor = .secondarySystemBackground
-        customParamsContainer.layer.cornerRadius = 8
-        customParamsContainer.isHidden = true
-
-        let sandboxLabel = UILabel()
-        sandboxLabel.text = "Nova Sandbox"
-        sandboxLabel.translatesAutoresizingMaskIntoConstraints = false
-        let sandboxToggle = UISwitch()
-        sandboxToggle.isOn = useNovaSandbox
-        sandboxToggle.translatesAutoresizingMaskIntoConstraints = false
-        sandboxToggle.addTarget(self, action: #selector(novaSandboxToggleChanged(_:)), for: .valueChanged)
-
-        customParamsContainer.addSubview(sandboxLabel)
-        customParamsContainer.addSubview(sandboxToggle)
-        NSLayoutConstraint.activate([
-            customParamsContainer.heightAnchor.constraint(equalToConstant: 50),
-            sandboxLabel.leadingAnchor.constraint(equalTo: customParamsContainer.leadingAnchor, constant: 16),
-            sandboxLabel.centerYAnchor.constraint(equalTo: customParamsContainer.centerYAnchor),
-            sandboxToggle.trailingAnchor.constraint(equalTo: customParamsContainer.trailingAnchor, constant: -16),
-            sandboxToggle.centerYAnchor.constraint(equalTo: customParamsContainer.centerYAnchor),
-        ])
-        self.customParamsContainer = customParamsContainer
-        contentStack.addArrangedSubview(customParamsContainer)
+        setupCustomParamsSection(in: contentStack)
 
         contentStack.addArrangedSubview(debugButton)
 
@@ -245,6 +212,85 @@ class ViewController: UIViewController {
         demoScrollView?.flashScrollIndicators()
     }
 
+    private func setupCustomParamsSection(in contentStack: UIStackView) {
+        let button = UIButton(type: .system)
+        button.setTitle("Custom Params  ▶", for: .normal)
+        button.backgroundColor = .systemTeal
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.addAction(UIAction { [weak self] _ in self?.toggleCustomParams() }, for: .touchUpInside)
+        button.snp.makeConstraints { make in make.height.equalTo(50) }
+        customParamsButton = button
+        contentStack.addArrangedSubview(button)
+
+        let container = UIView()
+        container.backgroundColor = .secondarySystemBackground
+        container.layer.cornerRadius = 8
+        container.isHidden = true
+
+        let sandboxLabel = UILabel()
+        sandboxLabel.text = "Nova Sandbox"
+        let sandboxToggle = UISwitch()
+        sandboxToggle.isOn = useNovaSandbox
+        sandboxToggle.addTarget(self, action: #selector(novaSandboxToggleChanged(_:)), for: .valueChanged)
+        container.addSubview(sandboxLabel)
+        container.addSubview(sandboxToggle)
+
+        let h5Label = UILabel()
+        h5Label.text = "Enable H5 Format"
+        let h5Toggle = UISwitch()
+        h5Toggle.isOn = enableH5Format
+        h5Toggle.addTarget(self, action: #selector(enableH5FormatToggleChanged(_:)), for: .valueChanged)
+        container.addSubview(h5Label)
+        container.addSubview(h5Toggle)
+
+        sandboxLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview()
+            make.height.equalTo(50)
+        }
+        sandboxToggle.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.centerY.equalTo(sandboxLabel)
+        }
+        h5Label.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(50)
+            make.height.equalTo(50)
+        }
+        h5Toggle.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.centerY.equalTo(h5Label)
+        }
+
+        let groupLabel = UILabel()
+        groupLabel.text = "H5 Template Group"
+        let chipStack = UIStackView()
+        chipStack.axis = .horizontal
+        chipStack.spacing = 8
+        chipStack.alignment = .center
+        for value in ["t1", "t2g1", "t2g2", "t2g3"] {
+            let chip = makeChipButton(title: value, value: value)
+            chipStack.addArrangedSubview(chip)
+            h5TemplateGroupChips[value] = chip
+        }
+        container.addSubview(groupLabel)
+        container.addSubview(chipStack)
+
+        groupLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(100)
+        }
+        chipStack.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalTo(groupLabel.snp.bottom).offset(8)
+            make.bottom.equalToSuperview().inset(12)
+        }
+
+        customParamsContainer = container
+        contentStack.addArrangedSubview(container)
+    }
+
     private func makeButton(title: String, action: (() -> Void)? = nil) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
@@ -260,7 +306,11 @@ class ViewController: UIViewController {
     }
 
     func openDemoAdPage(adType: AdType) {
-        let demoAdVC = DemoAdViewController(adType: adType, customParams: buildCustomParams())
+        let demoAdVC = DemoAdViewController(
+            adType: adType,
+            customParams: buildCustomParams(),
+            testParams: buildTestParams(for: adType)
+        )
         navigationController?.pushViewController(demoAdVC, animated: true)
     }
 
@@ -268,16 +318,138 @@ class ViewController: UIViewController {
         [MSPConstants.USE_NOVA_SANDBOX: useNovaSandbox ? "true" : "false"]
     }
 
+    private func buildTestParams(for adType: AdType) -> TestParams {
+        TestParams(
+            testAd: getTestAd(for: adType),
+            adNetwork: getAdNetwork(for: adType),
+            creativeType: getCreativeType(for: adType),
+            creativeLayout: getCreativeLayout(for: adType),
+            enableH5Format: enableH5Format,
+            h5TemplateGroup: h5TemplateGroup
+        )
+    }
+
+    private func getTestAd(for adType: AdType) -> Bool {
+        switch adType {
+        case .prebidBanner, .prebidInterstitial,
+            .googleBanner, .googleNative, .googleInterstitial,
+            .facebookNative, .facebookInterstitial,
+            .novaNative, .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage,
+            .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo,
+            .novaInterstitialHighEngagement, .novaInterstitialEndCard,
+            .googleRewarded, .facebookRewarded:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func getAdNetwork(for adType: AdType) -> String? {
+        switch adType {
+        case .prebidBanner, .prebidInterstitial:
+            return "pubmatic"
+        case .googleBanner, .googleNative, .googleInterstitial, .googleRewarded:
+            return "msp_google"
+        case .facebookNative, .facebookInterstitial, .facebookRewarded:
+            return "msp_fb"
+        case .novaNative, .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage,
+            .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo,
+            .novaInterstitialHighEngagement, .novaInterstitialEndCard:
+            return "msp_nova"
+        default:
+            return nil
+        }
+    }
+
+    private func getCreativeType(for adType: AdType) -> String {
+        switch adType {
+        case .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage:
+            return "image"
+        default:
+            return "video"
+        }
+    }
+
+    private func getCreativeLayout(for adType: AdType) -> String? {
+        switch adType {
+        case .novaInterstitialHorizontalImage, .novaInterstitialHorizontalVideo, .novaInterstitialHighEngagement:
+            return "horizontal"
+        case .novaInterstitialVerticalImage, .novaInterstitialVerticalVideo,
+            .novaInterstitialEndCard, .novaNative:
+            return "vertical"
+        default:
+            return nil
+        }
+    }
+
     private func toggleCustomParams() {
         isCustomParamsExpanded.toggle()
         customParamsButton?.setTitle(
             "Custom Params  \(isCustomParamsExpanded ? "▼" : "▶")", for: .normal)
-        UIView.animate(withDuration: 0.25) {
-            self.customParamsContainer?.isHidden = !self.isCustomParamsExpanded
+        if isCustomParamsExpanded {
+            customParamsContainer?.alpha = 0
+            UIView.animate(withDuration: 0.25) {
+                self.customParamsContainer?.isHidden = false
+            } completion: { _ in
+                UIView.animate(withDuration: 0.2) {
+                    self.customParamsContainer?.alpha = 1
+                }
+            }
+        } else {
+            UIView.animate(withDuration: 0.2) {
+                self.customParamsContainer?.alpha = 0
+            } completion: { _ in
+                self.customParamsContainer?.isHidden = true
+                self.customParamsContainer?.alpha = 1
+            }
         }
     }
 
     @objc private func novaSandboxToggleChanged(_ sender: UISwitch) {
         useNovaSandbox = sender.isOn
+    }
+
+    @objc private func enableH5FormatToggleChanged(_ sender: UISwitch) {
+        enableH5Format = sender.isOn
+    }
+
+    private func makeChipButton(title: String, value: String) -> UIButton {
+        var config = UIButton.Configuration.plain()
+        config.title = title
+        config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12)
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
+            var updated = attrs
+            updated.font = .systemFont(ofSize: 13)
+            return updated
+        }
+        let button = UIButton(configuration: config)
+        button.layer.cornerRadius = 14
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.systemTeal.cgColor
+        button.accessibilityIdentifier = value
+        button.addTarget(self, action: #selector(h5TemplateGroupChipTapped(_:)), for: .touchUpInside)
+        updateChipAppearance(button, isSelected: false)
+        return button
+    }
+
+    private func updateChipAppearance(_ chip: UIButton, isSelected: Bool) {
+        var config = chip.configuration
+        config?.background.backgroundColor = isSelected ? .systemTeal : .clear
+        config?.baseForegroundColor = isSelected ? .white : .systemTeal
+        chip.configuration = config
+    }
+
+    @objc private func h5TemplateGroupChipTapped(_ sender: UIButton) {
+        guard let value = sender.accessibilityIdentifier else { return }
+        if h5TemplateGroup == value {
+            h5TemplateGroup = nil
+            updateChipAppearance(sender, isSelected: false)
+        } else {
+            if let old = h5TemplateGroup, let oldChip = h5TemplateGroupChips[old] {
+                updateChipAppearance(oldChip, isSelected: false)
+            }
+            h5TemplateGroup = value
+            updateChipAppearance(sender, isSelected: true)
+        }
     }
 }

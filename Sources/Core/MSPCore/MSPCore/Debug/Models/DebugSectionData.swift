@@ -35,19 +35,22 @@ struct DebugSectionData: DebugSection {
     let options: [DebugOption]
     let showCondition: Set<String>?
     let toggleItems: [DebugToggleItem]
+    let chipGroupItems: [DebugChipGroupItem]
 
     init(
         id: String,
         title: String,
         options: [DebugOption],
         showCondition: Set<String>? = nil,
-        toggleItems: [DebugToggleItem] = []
+        toggleItems: [DebugToggleItem] = [],
+        chipGroupItems: [DebugChipGroupItem] = []
     ) {
         self.id = id
         self.title = title
         self.options = options
         self.showCondition = showCondition
         self.toggleItems = toggleItems
+        self.chipGroupItems = chipGroupItems
     }
 }
 
@@ -149,13 +152,35 @@ extension DebugSectionData {
         )
     }
 
+    enum H5TemplateGroupOptions {
+        static let imageVideo: [DebugChipGroupItem.ChipOption] = [
+            .init(id: "t1", title: "t1"),
+            .init(id: "t2g1", title: "t2g1"),
+            .init(id: "t2g2", title: "t2g2"),
+            .init(id: "t2g3", title: "t2g3"),
+        ]
+        static let playableVideo: [DebugChipGroupItem.ChipOption] = [
+            .init(id: "t3g1", title: "t3g1")
+        ]
+    }
+
     static func customParamsSection() -> DebugSectionData {
         DebugSectionData(
             id: SectionIds.customParams,
             title: SectionTitles.customParams,
             options: [],
             showCondition: [AdNetwork.nova.rawValue],
-            toggleItems: [DebugToggleItem(id: "use_nova_sandbox", title: "Nova Sandbox")]
+            toggleItems: [
+                DebugToggleItem(id: MSPConstants.USE_NOVA_SANDBOX, title: "Nova Sandbox"),
+                DebugToggleItem(id: "enable_h5_format", title: "Enable H5 Format"),
+            ],
+            chipGroupItems: [
+                DebugChipGroupItem(
+                    id: "h5_template_group",
+                    title: "H5 Template Group",
+                    options: H5TemplateGroupOptions.imageVideo
+                )
+            ]
         )
     }
 

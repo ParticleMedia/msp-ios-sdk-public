@@ -5,30 +5,28 @@
 //  Created by MSP SDK on 2026-03-12.
 //
 
-import Foundation
-import UIKit
-import MSPiOSCore
-import InMobiSDK
-
 /// InMobi implementation of rewarded ads.
 /// Wraps IMInterstitial SDK (shared class) and manages reward lifecycle through RewardedLifecycleController.
+import Foundation
+import InMobiSDK
+import MSPiOSCore
+import UIKit
+
 public final class InmobiRewardedAd: MSPiOSCore.RewardedAd {
-    
     // MARK: - Properties
-    
     /// The IMInterstitial instance for ad presentation (InMobi uses same class for interstitial and rewarded)
     private let imInterstitial: IMInterstitial?
-    
+
     /// Weak reference to root view controller for presentation
     private weak var rootViewController: UIViewController?
-    
+
     /// Internal lifecycle controller for managing reward/dismiss state
     private lazy var lifecycleController: RewardedLifecycleController = {
         RewardedLifecycleController(adListener: adListener, ad: self)
     }()
-    
+
     // MARK: - Initialization
-    
+
     /// Initialize with IMInterstitial instance and reward configuration
     /// - Parameters:
     ///   - reward: The reward configuration for this ad
@@ -37,11 +35,11 @@ public final class InmobiRewardedAd: MSPiOSCore.RewardedAd {
     public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward, imInterstitial: IMInterstitial?) {
         self.imInterstitial = imInterstitial
         super.init(adNetworkAdapter: adNetworkAdapter, reward: reward)
-        
+
         // Set delegate to receive IMInterstitial callbacks
         imInterstitial?.delegate = self
     }
-    
+
     // MARK: - RewardedAd Override Methods
 
     public override func isValid() -> Bool {
@@ -64,52 +62,50 @@ public final class InmobiRewardedAd: MSPiOSCore.RewardedAd {
                 message: "[Adapter: InMobi] Root view controller is required for InMobi rewarded ad")
             return
         }
-        
+
         self.rootViewController = viewController
         imInterstitial.show(from: viewController)
     }
-    
 }
 
 // MARK: - IMInterstitialDelegate
 
 extension InmobiRewardedAd: IMInterstitialDelegate {
-    
     /// Called when the interstitial ad loads successfully
     /// - Parameter interstitial: The IMInterstitial instance
     public func interstitialDidFinishLoading(_ interstitial: IMInterstitial) {
         // Load success is handled in the adapter's loadAdCreative method
         // This callback is for internal SDK state management
     }
-    
+
     /// Called when the interstitial ad is presented
     /// - Parameter interstitial: The IMInterstitial instance
     public func interstitialDidPresent(_ interstitial: IMInterstitial) {
         lifecycleController.markDisplayed()
     }
-    
+
     /// Called when the interstitial ad receives interaction
     /// - Parameters:
     ///   - interstitial: The IMInterstitial instance
     ///   - params: Interaction parameters
-    public func interstitial(_ interstitial: IMInterstitial, didReceiveWith params: [String : Any]?) {
+    public func interstitial(_ interstitial: IMInterstitial, didReceiveWith params: [String: Any]?) {
         lifecycleController.markClicked()
     }
-    
+
     /// Called when the user completes the reward action (InMobi specific for rewarded placements)
     /// - Parameters:
     ///   - interstitial: The IMInterstitial instance
     ///   - rewards: The reward information
-    public func interstitial(_ interstitial: IMInterstitial, rewardActionCompletedWithRewards rewards: [String : Any]) {
+    public func interstitial(_ interstitial: IMInterstitial, rewardActionCompletedWithRewards rewards: [String: Any]) {
         lifecycleController.markRewardEarned()
     }
-    
+
     /// Called when the interstitial ad is dismissed
     /// - Parameter interstitial: The IMInterstitial instance
     public func interstitialDidDismiss(_ interstitial: IMInterstitial) {
         lifecycleController.markDismissed()
     }
-    
+
     /// Called when the interstitial ad fails to present
     /// - Parameters:
     ///   - interstitial: The IMInterstitial instance
@@ -119,7 +115,7 @@ extension InmobiRewardedAd: IMInterstitialDelegate {
             tag: "Rewarded",
             message: "[Adapter: InMobi] Rewarded ad failed to present: \(error.description)")
     }
-    
+
     /// Called when the interstitial ad fails to load
     /// - Parameters:
     ///   - interstitial: The IMInterstitial instance

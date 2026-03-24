@@ -10,6 +10,8 @@ public struct MSPConstants {
     public static let USER_ID = "user_id"
     public static let USE_NOVA_SANDBOX = "use_nova_sandbox"
 
+    public static let TEST_PARAM_KEY_DEBUG_ITEM = "debug_item"
+
     // User defaults key used to store NB user id.
     public static let USER_DEFAULTS_KEY_MSP_USER_ID = "msp_user_id"
     /* User defaults key used to store msp id fetched from id server.

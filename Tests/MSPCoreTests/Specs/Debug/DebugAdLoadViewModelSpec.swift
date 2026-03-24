@@ -205,7 +205,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     )
 
                     let params = decodeTestParams(from: sut.getTestParameters())
-                    expect(params["creative_type"] as? String).to(equal("image"))
+                    let debugItem = params[MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM] as? [String: Any]
+                    expect(debugItem).toNot(beNil())
+                    expect(debugItem?["creative_type"] as? String).to(equal("IMAGE"))
                 }
             }
 
@@ -336,14 +338,6 @@ private func firstOptionId(in viewModel: DebugAdLoadViewModel, sectionId: String
     return section.cellViewModels.first(where: { $0.id != excludedId })?.id
 }
 
-private func decodeTestParams(from params: [String: String]) -> [String: Any] {
-    guard let jsonString = params["test"],
-        let data = jsonString.data(using: .utf8),
-        let object = try? JSONSerialization.jsonObject(with: data, options: []),
-        let dict = object as? [String: Any]
-    else {
-        return [:]
-    }
-    return dict
+private func decodeTestParams(from params: [String: Any]) -> [String: Any] {
+    params
 }
-

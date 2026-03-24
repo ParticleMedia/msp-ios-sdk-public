@@ -1,9 +1,10 @@
-import Quick
-import Nimble
 import MTGSDK
 import MTGSDKReward
-@testable import MintegralAdapter
+import Nimble
+import Quick
+
 @testable import MSPiOSCore
+@testable import MintegralAdapter
 
 class MintegralRewardedAdTests: QuickSpec {
     override class func spec() {
@@ -48,12 +49,12 @@ class MintegralRewardedAdTests: QuickSpec {
                     it("should call MTGRewardAdManager showVideo API") {
                         // Arrange
                         let mockViewController = UIViewController()
-                        
+
                         // Act
                         MainActor.assumeIsolated {
                             sut.show(rootViewController: mockViewController)
                         }
-                        
+
                         // Assert
                         expect(mockMTGRewardAdManager.showCalled).to(beTrue())
                         expect(mockMTGRewardAdManager.showViewController).to(be(mockViewController))
@@ -69,36 +70,34 @@ class MintegralRewardedAdTests: QuickSpec {
                         var callbackOrder: [String] = []
                         mockAdListener.onRewardCallback = { callbackOrder.append("reward") }
                         mockAdListener.onDismissCallback = { callbackOrder.append("dismiss") }
-                        
+
                         // Act
                         sut.handleDismiss(converted: true)
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
                         expect(mockAdListener.onAdDismissedCallCount).to(equal(1))
                         expect(callbackOrder).to(equal(["reward", "dismiss"]))
                     }
-                    
+
                     it("should be idempotent - calling twice fires callbacks once only") {
                         // Arrange
-                        
                         // Act
                         sut.handleDismiss(converted: true)
                         sut.handleDismiss(converted: true)
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
                         expect(mockAdListener.onAdDismissedCallCount).to(equal(1))
                     }
                 }
-                
+
                 context("when onVideoAdDismissed is called with converted=false") {
                     it("should NOT call onAdRewardReceived") {
                         // Arrange
-                        
                         // Act
                         sut.handleDismiss(converted: false)
-                        
+
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(0))
                         expect(mockAdListener.onAdDismissedCallCount).to(equal(1))
@@ -111,26 +110,26 @@ class MintegralRewardedAdTests: QuickSpec {
                 it("should handle impression tracking") {
                     // Act
                     sut.handleImpression()
-                    
+
                     // Assert
                     expect(mockAdListener.onAdImpressionCallCount).to(equal(1))
                 }
-                
+
                 it("should handle click tracking") {
                     // Act
                     sut.handleClick()
-                    
+
                     // Assert
                     expect(mockAdListener.onAdClickCallCount).to(equal(1))
                 }
-                
+
                 it("should handle presentation failure") {
                     // Arrange
                     let testError = NSError(domain: "MintegralTest", code: 789, userInfo: nil)
-                    
+
                     // Act
                     sut.handleShowFailure(testError)
-                    
+
                     // Assert
                     expect(mockAdListener.onErrorCallCount).to(equal(1))
                     expect(mockAdListener.lastErrorMessage).to(contain("789"))

@@ -11,8 +11,11 @@ protocol DebugSection {
     var showCondition: Set<String>? { get }
     /// Toggle (on/off switch) items within this section. Defaults to empty.
     var toggleItems: [DebugToggleItem] { get }
+    /// Single-select chip group items within this section. Defaults to empty.
+    var chipGroupItems: [DebugChipGroupItem] { get }
 }
 
 extension DebugSection {
     var toggleItems: [DebugToggleItem] { [] }
+    var chipGroupItems: [DebugChipGroupItem] { [] }
 }

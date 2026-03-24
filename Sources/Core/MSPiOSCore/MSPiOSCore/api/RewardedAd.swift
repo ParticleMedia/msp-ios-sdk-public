@@ -3,10 +3,10 @@
 //  MSPiOSCore
 //
 
+/// Represents a loaded rewarded ad that can be presented full-screen.
 import Foundation
 import UIKit
 
-/// Represents a loaded rewarded ad that can be presented full-screen.
 open class RewardedAd: MSPAd {
     /// The reward associated with this ad instance.
     public let reward: Reward

@@ -96,7 +96,7 @@ import MSPiOSCore
         context: Any?
     ) {
         if let params = initParams.getParameters(),
-           let appKey = params[InitializationParametersCustomKeys.UNITY_APP_KEY] as? String
+            let appKey = params[InitializationParametersCustomKeys.UNITY_APP_KEY] as? String
         {
             let requestBuilder = LPMInitRequestBuilder(appKey: appKey)
                 .withLegacyAdFormats([IS_REWARDED_VIDEO, IS_NATIVE_AD])
@@ -119,8 +119,8 @@ import MSPiOSCore
     public func destroyAd() {
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAdItem
         else { return }

@@ -6,6 +6,7 @@ extension NovaCreativeType: TestParamPresentable {
         switch self {
         case .nativeImage: return [("creative_type", "image")]
         case .nativeVideo: return [("creative_type", "video")]
+        case .playableVideo: return [("creative_type", "playable_video")]
         case .businessProfile, .fullImage, .sponsoredContent, .html:
             // don't need to implement for now, maybe need attention in the future
             return []

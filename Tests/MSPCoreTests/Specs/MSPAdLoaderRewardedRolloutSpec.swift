@@ -29,20 +29,28 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                     placementId: "rewarded-placement",
                     auctionTimeout: 8000,
                     bidders: [
-                        BidderInfo(name: AdNetwork.google.rawValue, bidderPlacementId: "google-placement", bidderFormat: "rewarded", params: nil),
-                        BidderInfo(name: "msp", bidderPlacementId: "msp-placement", bidderFormat: "rewarded", params: nil),
-                        BidderInfo(name: AdNetwork.facebook.rawValue, bidderPlacementId: "facebook-placement", bidderFormat: "rewarded", params: nil),
-                        BidderInfo(name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement", bidderFormat: "rewarded", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.google.rawValue, bidderPlacementId: "google-placement",
+                            bidderFormat: "rewarded", params: nil),
+                        BidderInfo(
+                            name: "msp", bidderPlacementId: "msp-placement", bidderFormat: "rewarded", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.facebook.rawValue, bidderPlacementId: "facebook-placement",
+                            bidderFormat: "rewarded", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement",
+                            bidderFormat: "rewarded", params: nil),
                     ]
                 )
                 let adRequest = makeAdRequest(format: .rewarded)
 
                 let bidders = sut.getBidders(placement: placement, adRequest: adRequest)
 
-                expect(bidders.map(\.name)).to(equal([
-                    AdNetwork.google.rawValue,
-                    AdNetwork.facebook.rawValue,
-                ]))
+                expect(bidders.map(\.name)).to(
+                    equal([
+                        AdNetwork.google.rawValue,
+                        AdNetwork.facebook.rawValue,
+                    ]))
             }
 
             it("does not filter non-rewarded requests") {
@@ -50,20 +58,26 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                     placementId: "interstitial-placement",
                     auctionTimeout: 8000,
                     bidders: [
-                        BidderInfo(name: AdNetwork.google.rawValue, bidderPlacementId: "google-placement", bidderFormat: "interstitial", params: nil),
-                        BidderInfo(name: "msp", bidderPlacementId: "msp-placement", bidderFormat: "interstitial", params: nil),
-                        BidderInfo(name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement", bidderFormat: "interstitial", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.google.rawValue, bidderPlacementId: "google-placement",
+                            bidderFormat: "interstitial", params: nil),
+                        BidderInfo(
+                            name: "msp", bidderPlacementId: "msp-placement", bidderFormat: "interstitial", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement",
+                            bidderFormat: "interstitial", params: nil),
                     ]
                 )
                 let adRequest = makeAdRequest(format: .interstitial)
 
                 let bidders = sut.getBidders(placement: placement, adRequest: adRequest)
 
-                expect(bidders.map(\.name)).to(equal([
-                    AdNetwork.google.rawValue,
-                    "msp",
-                    AdNetwork.moloco.rawValue,
-                ]))
+                expect(bidders.map(\.name)).to(
+                    equal([
+                        AdNetwork.google.rawValue,
+                        "msp",
+                        AdNetwork.moloco.rawValue,
+                    ]))
             }
 
             it("supports replacing the rollout policy") {
@@ -74,8 +88,12 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                     placementId: "custom-rollout-placement",
                     auctionTimeout: 8000,
                     bidders: [
-                        BidderInfo(name: AdNetwork.facebook.rawValue, bidderPlacementId: "facebook-placement", bidderFormat: "rewarded", params: nil),
-                        BidderInfo(name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement", bidderFormat: "rewarded", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.facebook.rawValue, bidderPlacementId: "facebook-placement",
+                            bidderFormat: "rewarded", params: nil),
+                        BidderInfo(
+                            name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement",
+                            bidderFormat: "rewarded", params: nil),
                     ]
                 )
                 let adRequest = makeAdRequest(format: .rewarded)

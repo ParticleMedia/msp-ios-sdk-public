@@ -43,6 +43,4 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
     public override func isValid() -> Bool {
         interstitialAdItem != nil
     }
-
-
 }
