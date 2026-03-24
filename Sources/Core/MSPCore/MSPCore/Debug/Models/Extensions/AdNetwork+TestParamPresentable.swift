@@ -8,7 +8,8 @@ extension AdNetwork: TestParamPresentable {
         case .google: return [("ad_network", "msp_google")]
         case .facebook: return [("ad_network", "msp_fb")]
         case .pubmatic: return [("ad_network", "pubmatic")]
-        case .moloco: return [("ad_network", "msp_moloco")]
+        case .moloco: return [("ad_network", "msp_moloco_native")]
+        case .liftoff: return [("ad_network", "vungle")]
         case .inmobi, .mintegral, .mobilefuse, .prebid, .unity, .amazon:
             // don't need to implement for now, maybe need attention in the future
             return []
