@@ -1,28 +1,29 @@
 {
   "version": "2.0",
-  "generated_at": "2026-03-19T10:03:45Z",
+  "generated_at": "2026-03-24T03:27:23Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 21,
+  "entry_count": 22,
   "domains": {
-    "release": {
-      "count": 5,
-      "layers": [
-        "experience",
-        "tech"
-      ]
-    },
-    "sources": {
-      "count": 7,
-      "layers": [
-        "experience",
-        "tech"
-      ]
-    },
     "integration": {
       "count": 2,
       "layers": [
         "experience"
       ]
+    },
+    "compatibility": {
+      "count": 0,
+      "layers": []
+    },
+    "sources": {
+      "count": 8,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
+    "architecture": {
+      "count": 0,
+      "layers": []
     },
     "ci": {
       "count": 4,
@@ -30,19 +31,18 @@
         "experience"
       ]
     },
+    "release": {
+      "count": 5,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
     "testing": {
       "count": 3,
       "layers": [
         "tech"
       ]
-    },
-    "compatibility": {
-      "count": 0,
-      "layers": []
-    },
-    "architecture": {
-      "count": 0,
-      "layers": []
     }
   },
   "entries": [
@@ -381,6 +381,34 @@
       "summary": "FB Rewarded loaded but auction timeout: weak var released by ARC + concurrent queue race on completionCalled",
       "status": "active",
       "updated": "2026-03-19"
+    },
+    {
+      "id": "ctx-sources-008",
+      "path": ".context/sources/experience/ctx-sources-008-rewarded-onError-misuse.md",
+      "title": "Rewarded Ad adapter 在 show 阶段错误调用 adListener.onError — 语义混淆",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "rewarded",
+        "ad-listener",
+        "on-error",
+        "show-phase",
+        "auction",
+        "adapter",
+        "lifecycle",
+        "callback-semantics"
+      ],
+      "triggers": [
+        "adListener?.onError in show()",
+        "rewarded ad onError called incorrectly",
+        "show failure triggers auction error callback",
+        "onError semantics rewarded",
+        "adListener onError show phase",
+        "rewarded ad present error callback"
+      ],
+      "summary": "Rewarded adapters incorrectly called adListener.onError in show phase; should only fire on auction/load failure.",
+      "status": "active",
+      "updated": "2026-03-24"
     },
     {
       "id": "ctx-sources-001",

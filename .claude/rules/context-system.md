@@ -63,6 +63,7 @@ When user questions match keywords in the inventory below, READ the matching `.c
 |----|-------|------|-------------|
 | ctx-sources-006 | Protobuf 生成文件缺少 @_implementationOnly 导致 CI 构建失败 | `.context/sources/experience/ctx-sources-006-protobuf-implementationonly.md` | cannot load underlying module for 'SwiftProtobuf', failed to build module 'MSPCore' for importation, import SwiftProtobuf, swiftinterface leak, protobuf 生成文件, pb.swift, ... |
 | ctx-sources-007 | Facebook Rewarded 广告加载成功但 auction 超时 — weak var 提前释放 + 竞态条件 | `.context/sources/experience/ctx-sources-007-fb-rewarded-weak-ref-and-auction-race.md` | Adapter: Facebook] successfully loaded Facebook Rewarded ad, Auction: Load Ad] time out. No winning bid, facebookRewardedAd=false, GUARD FAILED in rewardedVideoAdDidLoad, rewarded ad loaded but not displayed, FB rewarded timeout, ... |
+| ctx-sources-008 | Rewarded Ad adapter 在 show 阶段错误调用 adListener.onError — 语义混淆 | `.context/sources/experience/ctx-sources-008-rewarded-onError-misuse.md` | adListener?.onError in show(), rewarded ad onError called incorrectly, show failure triggers auction error callback, onError semantics rewarded, adListener onError show phase, rewarded ad present error callback |
 
 ### Sources / Tech Layer
 
@@ -82,7 +83,7 @@ When user questions match keywords in the inventory below, READ the matching `.c
 | ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` | BDD, behavior, Given, When, Then, describe, ... |
 | ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` | bugfix, regression, fix, bug, hotfix, regression_for, ... |
 
-**Total: 21 entries**
+**Total: 22 entries**
 
 <!-- END:GENERATED:CONTEXT_INVENTORY -->
 
