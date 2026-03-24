@@ -86,6 +86,7 @@ class NovaAdCarouselCell: UICollectionViewCell {
             return outgoing
         }
         let button = UIButton(configuration: configuration)
+        button.maximumContentSizeCategory = .large
         button.layer.borderWidth = 1.0
         button.layer.cornerRadius = 4.0
         button.layer.borderColor = NovaColorPalettes.Blue.tint500.cgColor

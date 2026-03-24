@@ -261,6 +261,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
             return outgoing
         }
         let button = UIButton(configuration: configuration)
+        button.maximumContentSizeCategory = .large
         button.adClickArea = .badge
         return button
     }()

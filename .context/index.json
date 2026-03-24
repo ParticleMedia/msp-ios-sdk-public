@@ -1,29 +1,28 @@
 {
   "version": "2.0",
-  "generated_at": "2026-03-24T03:27:23Z",
+  "generated_at": "2026-03-24T08:36:59Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 22,
+  "entry_count": 23,
   "domains": {
-    "integration": {
-      "count": 2,
-      "layers": [
-        "experience"
-      ]
+    "architecture": {
+      "count": 0,
+      "layers": []
     },
     "compatibility": {
       "count": 0,
       "layers": []
     },
-    "sources": {
-      "count": 8,
+    "testing": {
+      "count": 3,
       "layers": [
-        "experience",
         "tech"
       ]
     },
-    "architecture": {
-      "count": 0,
-      "layers": []
+    "integration": {
+      "count": 2,
+      "layers": [
+        "experience"
+      ]
     },
     "ci": {
       "count": 4,
@@ -38,9 +37,10 @@
         "tech"
       ]
     },
-    "testing": {
-      "count": 3,
+    "sources": {
+      "count": 9,
       "layers": [
+        "experience",
         "tech"
       ]
     }
@@ -407,6 +407,41 @@
         "rewarded ad present error callback"
       ],
       "summary": "Rewarded adapters incorrectly called adListener.onError in show phase; should only fire on auction/load failure.",
+      "status": "active",
+      "updated": "2026-03-24"
+    },
+    {
+      "id": "ctx-sources-009",
+      "path": ".context/sources/experience/ctx-sources-009-dynamic-type-button-overflow.md",
+      "title": "UIButton.Configuration 默认支持 Dynamic Type 导致广告 UI 文字溢出",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "dynamic-type",
+        "accessibility",
+        "uibutton",
+        "uibutton-configuration",
+        "font-scaling",
+        "carousel",
+        "interstitial",
+        "overflow",
+        "cta",
+        "title-text-attributes-transformer"
+      ],
+      "triggers": [
+        "button text overflow",
+        "font too large in ad view",
+        "Dynamic Type scaling",
+        "accessibility large text",
+        "UIButton.Configuration font",
+        "titleTextAttributesTransformer",
+        "CTA button text clipped",
+        "maximumContentSizeCategory",
+        "carousel shop now button",
+        "广告字体变大",
+        "辅助功能字体"
+      ],
+      "summary": "UIButton.Configuration 默认支持 Dynamic Type，用户开启辅助功能大字体后广告 UI 中的按钮文字会被放大导致溢出截断。需要设置 maximumContentSizeCategory 限制缩放。",
       "status": "active",
       "updated": "2026-03-24"
     },
