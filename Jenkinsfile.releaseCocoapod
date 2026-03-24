@@ -296,7 +296,8 @@ pipeline {
                 archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
             }
             withCredentials([
-                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
+                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
+                string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL')
             ]) {
                 sh '''#!/bin/bash
                     set +e
@@ -329,7 +330,8 @@ pipeline {
                 archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
             }
             withCredentials([
-                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
+                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
+                string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL')
             ]) {
                 sh '''#!/bin/bash
                     set +e
@@ -352,7 +354,8 @@ pipeline {
                 """
             }
             withCredentials([
-                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN')
+                string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
+                string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL')
             ]) {
                 sh '''#!/bin/bash
                     set +e
