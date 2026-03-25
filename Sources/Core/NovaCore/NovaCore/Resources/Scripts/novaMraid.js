@@ -166,7 +166,6 @@
     function initializeSensors() {
         determineOrientation();
         measurePosition();
-        requestLocationIfNeeded();
     }
 
     window.addEventListener('resize', measurePosition);
