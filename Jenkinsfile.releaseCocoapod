@@ -370,7 +370,10 @@ pipeline {
                     if [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
                         STARTED_AT="$(jq -r '.timestamps.started_at // empty' .msp-release-state.json 2>/dev/null || true)"
                         if [ -n "$STARTED_AT" ]; then
-                            START_EPOCH=$(date -j -f "%Y-%m-%d %H:%M:%S" "$STARTED_AT" "+%s" 2>/dev/null || date -d "$STARTED_AT" "+%s" 2>/dev/null || echo "")
+                            # State file uses ISO 8601 format: 2026-03-26T10:30:00Z
+                            # Strip trailing 'Z' and replace 'T' with space for macOS date parsing
+                            STARTED_AT_CLEAN="$(echo "$STARTED_AT" | sed 's/T/ /; s/Z$//')"
+                            START_EPOCH=$(date -j -f "%Y-%m-%d %H:%M:%S" "$STARTED_AT_CLEAN" "+%s" 2>/dev/null || date -d "$STARTED_AT" "+%s" 2>/dev/null || echo "")
                             END_EPOCH=$(date "+%s" 2>/dev/null || echo "")
                             if [ -n "$START_EPOCH" ] && [ -n "$END_EPOCH" ]; then
                                 DURATION_SECS=$((END_EPOCH - START_EPOCH))
