@@ -181,7 +181,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         reportHandling: NovaInterstitialAdReportHandling
     ) {
         dispatchPrecondition(condition: .onQueue(.main))
-        let viewController = NovaInterstitialAdViewController(interstitialAd: self, reportHandling: reportHandling)
+        let orientationMask = rootViewController.view.window?.windowScene?.interfaceOrientation.orientationMask
+        let viewController = NovaInterstitialAdViewController(interstitialAd: self, reportHandling: reportHandling, orientationMask: orientationMask)
         self.viewController = viewController
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .crossDissolve

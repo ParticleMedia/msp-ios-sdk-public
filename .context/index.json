@@ -1,14 +1,27 @@
 {
   "version": "2.0",
-  "generated_at": "2026-03-24T08:36:59Z",
+  "generated_at": "2026-04-14T07:09:07Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 23,
+  "entry_count": 25,
   "domains": {
-    "architecture": {
+    "compatibility": {
       "count": 0,
       "layers": []
     },
-    "compatibility": {
+    "integration": {
+      "count": 2,
+      "layers": [
+        "experience"
+      ]
+    },
+    "sources": {
+      "count": 11,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
+    "architecture": {
       "count": 0,
       "layers": []
     },
@@ -16,12 +29,6 @@
       "count": 3,
       "layers": [
         "tech"
-      ]
-    },
-    "integration": {
-      "count": 2,
-      "layers": [
-        "experience"
       ]
     },
     "ci": {
@@ -32,13 +39,6 @@
     },
     "release": {
       "count": 5,
-      "layers": [
-        "experience",
-        "tech"
-      ]
-    },
-    "sources": {
-      "count": 9,
       "layers": [
         "experience",
         "tech"
@@ -446,6 +446,39 @@
       "updated": "2026-03-24"
     },
     {
+      "id": "ctx-sources-011",
+      "path": ".context/sources/experience/ctx-sources-011-ipados26-orientation-lock.md",
+      "title": "iPadOS 26 方向锁定失效 — UIRequiresFullScreen 废弃与 prefersInterfaceOrientationLocked 迁移",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "orientation",
+        "ipad",
+        "ipados-26",
+        "uirequiresfullscreen",
+        "prefers-orientation-locked",
+        "request-geometry-update",
+        "should-autorotate",
+        "interstitial",
+        "fullscreen",
+        "wwdc-2025"
+      ],
+      "triggers": [
+        "iPad orientation lock not working",
+        "iPadOS 26 orientation",
+        "UIRequiresFullScreen deprecated",
+        "prefersInterfaceOrientationLocked",
+        "requestGeometryUpdate not working iPad",
+        "shouldAutorotate deprecated",
+        "iPad H5 ad rotation",
+        "iPad 方向锁定",
+        "orientation lock iPad"
+      ],
+      "summary": "iPadOS 26 废弃 UIRequiresFullScreen，需用 prefersInterfaceOrientationLocked 替代，保留 iOS 15-25 fallback。",
+      "status": "active",
+      "updated": "2026-03-24"
+    },
+    {
       "id": "ctx-sources-001",
       "path": ".context/sources/tech/ctx-sources-001-swift-best-practices.md",
       "title": "Swift 最佳实践 (AI-First)",
@@ -598,6 +631,40 @@
       "summary": "Swift 代码注释硬规则与软规则，覆盖 DocC 文档注释、内联注释、MARK 组织、TODO/FIXME 规范、AI 过度注释防治",
       "status": "active",
       "updated": "2026-02-23"
+    },
+    {
+      "id": "ctx-sources-010",
+      "path": ".context/sources/tech/ctx-sources-010-s2s-adapter-loading-pattern.md",
+      "title": "S2S Adapter 广告加载模式 — 两阶段流程与 mspAd 弱引用陷阱",
+      "domain": "sources",
+      "layer": "tech",
+      "tags": [
+        "adapter",
+        "s2s",
+        "server-to-server",
+        "bidding",
+        "msp-ad",
+        "weak-reference",
+        "arc",
+        "handle-ad-loaded",
+        "rewarded",
+        "interstitial",
+        "native",
+        "banner"
+      ],
+      "triggers": [
+        "S2S adapter",
+        "server-to-server",
+        "loadAdCreative",
+        "handleAdLoaded",
+        "mspAd weak",
+        "ad load callback",
+        "新增 adapter",
+        "adapter 加载流程"
+      ],
+      "summary": "S2S adapter 广告加载的两阶段流程说明，以及 mspAd 是弱引用、必须在回调中通过 handleAdLoaded 设置的关键约束",
+      "status": "active",
+      "updated": "2026-03-24"
     },
     {
       "id": "ctx-testing-001",

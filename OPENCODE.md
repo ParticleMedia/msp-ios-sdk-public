@@ -187,6 +187,7 @@ When keywords in a user question match the triggers below, use your file-reading
 | ctx-sources-007 | Facebook Rewarded 广告加载成功但 auction 超时 — weak var 提前释放 + 竞态条件 | `.context/sources/experience/ctx-sources-007-fb-rewarded-weak-ref-and-auction-race.md` | Adapter: Facebook] successfully loaded Facebook Rewarded ad, Auction: Load Ad] time out. No winning bid, facebookRewardedAd=false, GUARD FAILED in rewardedVideoAdDidLoad, rewarded ad loaded but not displayed, FB rewarded timeout, ... |
 | ctx-sources-008 | Rewarded Ad adapter 在 show 阶段错误调用 adListener.onError — 语义混淆 | `.context/sources/experience/ctx-sources-008-rewarded-onError-misuse.md` | adListener?.onError in show(), rewarded ad onError called incorrectly, show failure triggers auction error callback, onError semantics rewarded, adListener onError show phase, rewarded ad present error callback |
 | ctx-sources-009 | UIButton.Configuration 默认支持 Dynamic Type 导致广告 UI 文字溢出 | `.context/sources/experience/ctx-sources-009-dynamic-type-button-overflow.md` | button text overflow, font too large in ad view, Dynamic Type scaling, accessibility large text, UIButton.Configuration font, titleTextAttributesTransformer, ... |
+| ctx-sources-011 | iPadOS 26 方向锁定失效 — UIRequiresFullScreen 废弃与 prefersInterfaceOrientationLocked 迁移 | `.context/sources/experience/ctx-sources-011-ipados26-orientation-lock.md` | iPad orientation lock not working, iPadOS 26 orientation, UIRequiresFullScreen deprecated, prefersInterfaceOrientationLocked, requestGeometryUpdate not working iPad, shouldAutorotate deprecated, ... |
 
 ### Sources / Tech Layer
 
@@ -197,6 +198,7 @@ When keywords in a user question match the triggers below, use your file-reading
 | ctx-sources-003 | MVVM-Repository 架构指南 (AI-First) | `.context/sources/tech/ctx-sources-003-mvvm-repo.md` | ViewModel, Repository, DataSource, MVVM, dependency injection, protocol, ... |
 | ctx-sources-004 | 脚本最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-004-script-best-practices.md` | script, bash, shell, python, sh, automation, ... |
 | ctx-sources-005 | Code Comment 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-005-code-comment-best-practices.md` | comment, 注释, documentation, DocC, ///, MARK, ... |
+| ctx-sources-010 | S2S Adapter 广告加载模式 — 两阶段流程与 mspAd 弱引用陷阱 | `.context/sources/tech/ctx-sources-010-s2s-adapter-loading-pattern.md` | S2S adapter, server-to-server, loadAdCreative, handleAdLoaded, mspAd weak, ad load callback, ... |
 
 ### Testing / Tech Layer
 
@@ -206,7 +208,7 @@ When keywords in a user question match the triggers below, use your file-reading
 | ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` | BDD, behavior, Given, When, Then, describe, ... |
 | ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` | bugfix, regression, fix, bug, hotfix, regression_for, ... |
 
-**Total: 23 entries**
+**Total: 25 entries**
 
 <!-- END:GENERATED:CONTEXT_INVENTORY -->
 

@@ -72,9 +72,10 @@ public extension NovaInterstitialAdReportHandling {
 class NovaInterstitialAdViewController: UIViewController {
     // MARK: Lifecycle
 
-    init(interstitialAd: NovaInterstitialAdItem, reportHandling: (any NovaInterstitialAdReportHandling)) {
+    init(interstitialAd: NovaInterstitialAdItem, reportHandling: (any NovaInterstitialAdReportHandling), orientationMask: UIInterfaceOrientationMask? = nil) {
         self.interstitialAd = interstitialAd
         self.reportHandling = reportHandling
+        self.lockedOrientationMask = orientationMask
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -90,34 +91,35 @@ class NovaInterstitialAdViewController: UIViewController {
         .darkContent
     }
 
+    // iOS 15-25: system consults this to determine allowed orientations.
+    // iOS 26+: still called but orientation lock is handled by prefersInterfaceOrientationLocked.
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-
-        guard UIDevice.current.userInterfaceIdiom == .pad || self.interstitialAd.creativeType == .html else {
-            return .portrait
+        if case .html = interstitialAd.creativeType, UIDevice.current.userInterfaceIdiom == .pad {
+            // Avoid accessing self.view — may trigger premature loadView() before viewDidLoad.
+            // lockedOrientationMask is set in init, so the viewIfLoaded fallback rarely executes.
+            if let locked = lockedOrientationMask {
+                return locked
+            }
+            return viewIfLoaded?.window?.windowScene?.interfaceOrientation.orientationMask ?? .portrait
         }
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [.portrait, .landscapeLeft, .landscapeRight, .portraitUpsideDown]
         }
         let scene = UIApplication.shared.connectedScenes
-                .compactMap { $0 as? UIWindowScene }
-                .first { $0.activationState == .foregroundActive }
-
-        guard let orientation = scene?.interfaceOrientation else {
-            return .portrait
-        }
-
-        switch orientation {
-        case .portrait: return .portrait
-        case .portraitUpsideDown: return .portraitUpsideDown
-        case .landscapeLeft: return .landscapeLeft
-        case .landscapeRight: return .landscapeRight
-        default: return .portrait
-        }
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+        return scene?.interfaceOrientation.orientationMask ?? .portrait
     }
 
+    @available(iOS 26.0, *)
+    override var prefersInterfaceOrientationLocked: Bool {
+        isOrientationLockActive
+    }
+
+    // iOS 15: primary rotation control. iOS 16+: deprecated but still consulted on iOS 15.
     override var shouldAutorotate: Bool {
         if case .html = self.interstitialAd.creativeType {
-            // disable rotation on H5 Ad
+            // Disable rotation on H5 Ad.
             return false
         } else {
             // Allow rotation on iPad, disable on iPhone
@@ -133,6 +135,12 @@ class NovaInterstitialAdViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if case .html = interstitialAd.creativeType, UIDevice.current.userInterfaceIdiom == .pad,
+           lockedOrientationMask == nil {
+            lockedOrientationMask = view.window?.windowScene?.interfaceOrientation.orientationMask
+            DebugLogger.ui.info("iPad H5 orientation captured in viewWillAppear: \(String(describing: self.lockedOrientationMask), privacy: .public)")
+        }
 
         adView?.willAppear()
     }
@@ -166,12 +174,15 @@ class NovaInterstitialAdViewController: UIViewController {
             selector: #selector(handleApplicationWillEnterForeground(_:)),
             name: UIApplication.willEnterForegroundNotification,
             object: nil)
+
+        activateOrientationLock()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // Will disappear - protocol method handles the specifics
+        deactivateOrientationLock()
+
         adView?.willDisappear()
     }
 
@@ -190,21 +201,77 @@ class NovaInterstitialAdViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
+        if case .html = interstitialAd.creativeType, UIDevice.current.userInterfaceIdiom == .pad {
+            DebugLogger.ui.info("iPad H5 rotation detected (\(size.width, privacy: .public)x\(size.height, privacy: .public)), re-locking orientation")
+            activateOrientationLock()
+        }
+
         // TODO: lsy, check out if this logic works
         guard self.adView as? NovaInterstitialAdNormalView != nil,
-              UIDevice.current.userInterfaceIdiom == .pad,
-              self.interstitialAd.creativeType != .html
+              UIDevice.current.userInterfaceIdiom == .pad
         else {
             return
         }
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
-            self?.adView?.setupSubviews()
+            self?.adView?.setNeedsLayout()
+            self?.adView?.layoutIfNeeded()
         })
     }
 
+    // MARK: - Orientation Lock (version-branching encapsulated here)
+
+    private func activateOrientationLock() {
+        guard case .html = interstitialAd.creativeType,
+              UIDevice.current.userInterfaceIdiom == .pad else { return }
+
+        if #available(iOS 26.0, *) {
+            isOrientationLockActive = true
+            setNeedsUpdateOfPrefersInterfaceOrientationLocked()
+            DebugLogger.ui.info("iPad H5 orientation locked via prefersInterfaceOrientationLocked (iOS 26+)")
+        } else if #available(iOS 16.0, *) {
+            warnIfFullScreenNotRequired()
+            let target = lockedOrientationMask ?? .portrait
+            DebugLogger.ui.info("iPad H5 requesting geometry lock to \(target.rawValue, privacy: .public) (iOS 16-25)")
+            view.window?.windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: target))
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+        // iOS 15: shouldAutorotate + supportedInterfaceOrientations handle locking automatically.
+    }
+
+    private func deactivateOrientationLock() {
+        guard case .html = interstitialAd.creativeType,
+              UIDevice.current.userInterfaceIdiom == .pad else { return }
+
+        if #available(iOS 26.0, *) {
+            isOrientationLockActive = false
+            setNeedsUpdateOfPrefersInterfaceOrientationLocked()
+            DebugLogger.ui.info("iPad H5 orientation unlocked (iOS 26+)")
+        } else if #available(iOS 16.0, *) {
+            DebugLogger.ui.info("iPad H5 orientation unlocked, restoring .all")
+            view.window?.windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .all))
+            setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+        // iOS 15: no explicit unlock needed — shouldAutorotate/supportedInterfaceOrientations
+        // are tied to this VC's lifecycle and stop applying once the VC is dismissed.
+    }
+
+    /// Logs a warning once if the host app has not set `UIRequiresFullScreen = YES` in its Info.plist.
+    /// Without this setting, iPad orientation locking via `requestGeometryUpdate` is silently ignored by the system.
+    private func warnIfFullScreenNotRequired() {
+        guard !Self.didWarnFullScreen else { return }
+        let requiresFullScreen = Bundle.main.object(forInfoDictionaryKey: "UIRequiresFullScreen") as? Bool ?? false
+        if !requiresFullScreen {
+            Self.didWarnFullScreen = true
+            DebugLogger.ui.warning("UIRequiresFullScreen is not set to YES in the host app's Info.plist. iPad H5 ad orientation locking will not work without this setting.")
+        }
+    }
+
+    private static var didWarnFullScreen = false
+
     @objc func handleApplicationWillEnterForeground(_ aNoticiation: Notification) {
-        dismiss(animated: false) {
+        dismiss(animated: false) { [weak self] in
+            guard let self else { return }
             self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
         }
     }
@@ -214,6 +281,11 @@ class NovaInterstitialAdViewController: UIViewController {
     private let interstitialAd: NovaInterstitialAdItem
     private let reportHandling: any NovaInterstitialAdReportHandling
     private var didAppear: Bool = false
+    /// Orientation captured in viewWillAppear; used to lock iPad H5 ads to presentation orientation.
+    private var lockedOrientationMask: UIInterfaceOrientationMask?
+
+    /// Whether orientation should be locked (iPadOS 26+ API).
+    private var isOrientationLockActive: Bool = false
 
     private var adView: NovaInterstitialAdViewProtocol?
 
@@ -242,5 +314,19 @@ private extension NovaInterstitialAdViewController {
         }
 
         self.adView = adView
+    }
+}
+
+// MARK: - UIInterfaceOrientation helpers
+
+internal extension UIInterfaceOrientation {
+    var orientationMask: UIInterfaceOrientationMask {
+        switch self {
+        case .portrait: return .portrait
+        case .portraitUpsideDown: return .portraitUpsideDown
+        case .landscapeLeft: return .landscapeLeft
+        case .landscapeRight: return .landscapeRight
+        default: return .portrait
+        }
     }
 }
