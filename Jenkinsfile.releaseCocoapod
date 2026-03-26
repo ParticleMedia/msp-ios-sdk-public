@@ -347,12 +347,6 @@ pipeline {
             }
         }
         success {
-            script {
-                // Clean up persistent state on success
-                sh """
-                    rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
-                """
-            }
             withCredentials([
                 string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
                 string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL')
@@ -364,10 +358,37 @@ pipeline {
                         VERSION_TO_REPORT="$(jq -r '.version // empty' .msp-release-state.json 2>/dev/null || true)"
                     fi
                     VERSION_TO_REPORT="${VERSION_TO_REPORT:-unknown}"
+
+                    # Extract released pods from state file
+                    PODS_TO_REPORT=""
+                    if [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
+                        PODS_TO_REPORT="$(jq -r '.pods // {} | keys | join(", ")' .msp-release-state.json 2>/dev/null || true)"
+                    fi
+
+                    # Calculate duration from state file timestamps
+                    DURATION_TO_REPORT="unknown"
+                    if [ -f .msp-release-state.json ] && command -v jq >/dev/null 2>&1; then
+                        STARTED_AT="$(jq -r '.timestamps.started_at // empty' .msp-release-state.json 2>/dev/null || true)"
+                        if [ -n "$STARTED_AT" ]; then
+                            START_EPOCH=$(date -j -f "%Y-%m-%d %H:%M:%S" "$STARTED_AT" "+%s" 2>/dev/null || date -d "$STARTED_AT" "+%s" 2>/dev/null || echo "")
+                            END_EPOCH=$(date "+%s" 2>/dev/null || echo "")
+                            if [ -n "$START_EPOCH" ] && [ -n "$END_EPOCH" ]; then
+                                DURATION_SECS=$((END_EPOCH - START_EPOCH))
+                                DURATION_TO_REPORT="$((DURATION_SECS / 60))m $((DURATION_SECS % 60))s"
+                            fi
+                        fi
+                    fi
+
                     source ./Scripts/lib/release-common.sh
                     source ./Scripts/notify/slack.sh
-                    notify_release_success "MSP iOS SDK" "$VERSION_TO_REPORT" || true
+                    notify_release_success "MSP iOS SDK" "$VERSION_TO_REPORT" "$PODS_TO_REPORT" "$DURATION_TO_REPORT" "${RELEASE_NOTES:-}" || true
                 '''
+            }
+            script {
+                // Clean up persistent state on success (after notification)
+                sh """
+                    rm -f "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
+                """
             }
         }
     }
