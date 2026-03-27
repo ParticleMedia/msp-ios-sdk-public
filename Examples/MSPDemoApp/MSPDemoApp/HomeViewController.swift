@@ -3,7 +3,7 @@ import MSPSnapKit
 import MSPiOSCore
 import UIKit
 
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
 
     private enum MenuItem: String, CaseIterable {
         case banner = "Banner"
@@ -20,7 +20,32 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
         setupProfileTitleView()
+        setupInfoButton()
         setupTableView()
+    }
+
+    // MARK: - Info Button
+
+    private func setupInfoButton() {
+        let btn = UIBarButtonItem(
+            image: UIImage(systemName: "info.circle")?
+                .withRenderingMode(.alwaysTemplate),
+            style: .plain,
+            target: self,
+            action: #selector(infoTapped)
+        )
+        btn.tintColor = .secondaryLabel
+        navigationItem.rightBarButtonItem = btn
+    }
+
+    @objc private func infoTapped() {
+        let vc = UINavigationController(rootViewController: AppInfoSheetViewController())
+        vc.modalPresentationStyle = .pageSheet
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+        present(vc, animated: true)
     }
 
     // MARK: - Profile Switcher
@@ -59,13 +84,13 @@ class HomeViewController: UIViewController {
         let profile = AppProfile.profiles[index]
         let alert = UIAlertController(
             title: "Switch Profile",
-            message: "Switch to \"\(profile.appName)\"? MSP SDK will be reinitialized.",
+            message: "Switch to \"\(profile.appName)\"? The app will close — please relaunch to apply the new profile.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Switch", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "Switch & Close", style: .destructive) { _ in
             AppProfile.selectedIndex = index
-            (UIApplication.shared.delegate as? AppDelegate)?.reinitializeApp(with: profile)
+            exit(0)
         })
         present(alert, animated: true)
     }

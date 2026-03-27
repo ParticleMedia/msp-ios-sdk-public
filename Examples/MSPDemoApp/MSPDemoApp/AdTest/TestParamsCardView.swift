@@ -5,6 +5,8 @@ final class TestParamsCardView: UIView {
 
     // MARK: - State (read by VC at ad load time)
 
+    private(set) var bannerSize = CGSize(width: 320, height: 50)
+
     private(set) var novaSandbox = false
     private(set) var testAd = false
     private(set) var adNetwork: String?
@@ -51,6 +53,14 @@ final class TestParamsCardView: UIView {
 
         outerStack.addArrangedSubview(buildHeaderRow())
 
+        if format == .banner {
+            let sizeDiv = UIView()
+            sizeDiv.backgroundColor = .separator
+            sizeDiv.snp.makeConstraints { make in make.height.equalTo(0.5) }
+            outerStack.addArrangedSubview(sizeDiv)
+            outerStack.addArrangedSubview(buildBannerSizeSection())
+        }
+
         let div = UIView()
         div.backgroundColor = .separator
         div.snp.makeConstraints { make in make.height.equalTo(0.5) }
@@ -71,8 +81,8 @@ final class TestParamsCardView: UIView {
 
         let toggle = UISwitch()
         toggle.isOn = false
-        toggle.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
+        toggle.addAction(UIAction { [weak self] action in
+            guard let self, let toggle = action.sender as? UISwitch else { return }
             self.innerStack?.isHidden = !toggle.isOn
             self.divider?.isHidden = !toggle.isOn
         }, for: .valueChanged)
@@ -170,7 +180,10 @@ final class TestParamsCardView: UIView {
         row.addArrangedSubview(spacer)
         let h5Toggle = UISwitch()
         h5Toggle.isOn = enableH5Format
-        h5Toggle.addAction(UIAction { [weak self] _ in self?.enableH5Format = h5Toggle.isOn }, for: .valueChanged)
+        h5Toggle.addAction(UIAction { [weak self] action in
+            guard let self, let toggle = action.sender as? UISwitch else { return }
+            self.enableH5Format = toggle.isOn
+        }, for: .valueChanged)
         row.addArrangedSubview(h5Toggle)
         stack.addArrangedSubview(row)
 
@@ -195,6 +208,31 @@ final class TestParamsCardView: UIView {
     }
 
     // MARK: - Helpers
+
+    private func buildBannerSizeSection() -> UIView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+        stack.layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+        stack.isLayoutMarginsRelativeArrangement = true
+
+        stack.addArrangedSubview(fieldLabel("Ad Size"))
+
+        // "×" is U+00D7 MULTIPLICATION SIGN (not ASCII "x") — display only, not used as a key
+        let sizeOptions = ["320×50", "300×250", "320×480"]
+        let sizeMap: [String: CGSize] = [
+            "320×50": CGSize(width: 320, height: 50),
+            "300×250": CGSize(width: 300, height: 250),
+            "320×480": CGSize(width: 320, height: 480),
+        ]
+        stack.addArrangedSubview(
+            ChipFlowView(options: sizeOptions, selected: "320×50") { [weak self] selected in
+                guard let self, let selected else { return }
+                self.bannerSize = sizeMap[selected] ?? CGSize(width: 320, height: 50)
+            }
+        )
+        return stack
+    }
 
     private func buildCheckbox(onChange: @escaping (Bool) -> Void) -> UIButton {
         var config = UIButton.Configuration.plain()

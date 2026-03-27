@@ -21,67 +21,23 @@ enum AdFormat: String {
     }
 }
 
-// MARK: - AdState
-
-private enum AdState {
-    case idle
-    case loading
-    case loaded(MSPAd)
-    case showing(MSPAd)
-    case error(String)
-
-    var statusText: String {
-        switch self {
-        case .idle: return ""
-        case .loading: return "Loading ad..."
-        case .loaded(let ad):
-            let network = (ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String) ?? "unknown"
-            return "Ad loaded: \(network)"
-        case .showing(let ad):
-            let network = (ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String) ?? "unknown"
-            return "Ad showing: \(network)"
-        case .error(let msg):
-            return "Error: \(msg)"
-        }
-    }
-
-    var isLoaded: Bool {
-        if case .loaded = self { return true }
-        return false
-    }
-}
-
 // MARK: - AdTestViewController
 
-class AdTestViewController: UIViewController {
+final class AdTestViewController: UIViewController {
 
     // MARK: - Init
 
     init(format: AdFormat, placements: [String]? = nil) {
-        self.format = format
-        let list = placements ?? []
-        self.placements = list
-        self.selectedPlacement = list.first ?? ""
+        self.viewModel = AdTestViewModel(format: format, placements: placements ?? [])
         super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError() }
 
-    // MARK: - Config
+    // MARK: - ViewModel
 
-    private let format: AdFormat
-    private let placements: [String]
-
-    // MARK: - State
-
-    private var state: AdState = .idle {
-        didSet { updateUI() }
-    }
-
-    private var selectedPlacement: String
-    private var adLoader: MSPAdLoader?
-    private weak var currentNativeAdView: NativeAdView?
+    private let viewModel: AdTestViewModel
 
     // MARK: - UI refs
 
@@ -90,16 +46,47 @@ class AdTestViewController: UIViewController {
     private weak var statusLabel: UILabel?
     private weak var adContainerView: UIView?
     private weak var bottomBar: AdTestBottomBar?
+    private weak var currentNativeAdView: NativeAdView?
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = format.rawValue + " Ad"
+        title = viewModel.format.rawValue + " Ad"
         view.backgroundColor = .systemGroupedBackground
         setupBottomBar()
         setupScrollContent()
-        updateUI()
+        bindViewModel()
+        applyState(viewModel.state)
+    }
+
+    // MARK: - Binding
+
+    private func bindViewModel() {
+        viewModel.onStateChange = { [weak self] state in
+            DispatchQueue.main.async { self?.applyState(state) }
+        }
+    }
+
+    private func applyState(_ state: AdState) {
+        let statusText = state.statusText
+        statusLabel?.text = statusText
+        statusLabel?.isHidden = statusText.isEmpty
+
+        switch state {
+        case .idle, .error:
+            bottomBar?.configure(
+                loadShowTitle: "Load Ad",
+                loadShowEnabled: !viewModel.selectedPlacement.isEmpty,
+                destroyEnabled: false
+            )
+        case .loading:
+            bottomBar?.configure(loadShowTitle: "Load Ad", loadShowEnabled: false, destroyEnabled: false)
+        case .loaded:
+            bottomBar?.configure(loadShowTitle: "Show Ad", loadShowEnabled: true, destroyEnabled: true)
+        case .showing:
+            bottomBar?.configure(loadShowTitle: "Show Ad", loadShowEnabled: false, destroyEnabled: true)
+        }
     }
 
     // MARK: - Layout
@@ -148,10 +135,9 @@ class AdTestViewController: UIViewController {
         sectionLabel.textColor = .secondaryLabel
         contentStack.addArrangedSubview(sectionLabel)
 
-        let placementBtn = buildPlacementButton()
-        contentStack.addArrangedSubview(placementBtn)
+        contentStack.addArrangedSubview(buildPlacementButton())
 
-        let card = TestParamsCardView(format: format)
+        let card = TestParamsCardView(format: viewModel.format)
         testParamsCard = card
         contentStack.addArrangedSubview(card)
 
@@ -174,7 +160,8 @@ class AdTestViewController: UIViewController {
         container.layer.cornerRadius = 10
 
         let label = UILabel()
-        label.text = selectedPlacement.isEmpty ? "(no placements)" : selectedPlacement
+        let placement = viewModel.selectedPlacement
+        label.text = placement.isEmpty ? "(no placements)" : placement
         label.font = .systemFont(ofSize: 17)
         label.textColor = .label
         label.numberOfLines = 0
@@ -201,66 +188,26 @@ class AdTestViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-12)
         }
 
-        if !placements.isEmpty {
+        if !viewModel.placements.isEmpty {
             let btn = UIButton(type: .custom)
             btn.addAction(UIAction { [weak self] _ in
                 self?.presentPlacementPicker()
             }, for: .touchUpInside)
             container.addSubview(btn)
-            btn.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
+            btn.snp.makeConstraints { make in make.edges.equalToSuperview() }
         }
 
         return container
     }
 
-    private func presentPlacementPicker() {
-        let picker = PlacementPickerViewController(
-            options: placements,
-            selected: selectedPlacement
-        ) { [weak self] placement in
-            guard let self else { return }
-            self.selectedPlacement = placement
-            self.placementLabel?.text = placement
-            self.updateUI()
-        }
-        present(UINavigationController(rootViewController: picker), animated: true)
-    }
-
-    // MARK: - State updates
-
-    private func updateUI() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-
-            let statusText = self.state.statusText
-            self.statusLabel?.text = statusText
-            self.statusLabel?.isHidden = statusText.isEmpty
-
-            switch self.state {
-            case .idle, .error:
-                self.bottomBar?.configure(loadShowTitle: "Load Ad", loadShowEnabled: !self.selectedPlacement.isEmpty, destroyEnabled: false)
-            case .loading:
-                self.bottomBar?.configure(loadShowTitle: "Load Ad", loadShowEnabled: false, destroyEnabled: false)
-            case .loaded:
-                self.bottomBar?.configure(loadShowTitle: "Show Ad", loadShowEnabled: true, destroyEnabled: true)
-            case .showing:
-                self.bottomBar?.configure(loadShowTitle: "Show Ad", loadShowEnabled: false, destroyEnabled: true)
-            }
-        }
-    }
-
     // MARK: - Ad actions
 
     private func handleLoadShowTapped() {
-        state.isLoaded ? showAd() : loadAd()
+        viewModel.state.isLoaded ? showAd() : loadAd()
     }
 
     private func loadAd() {
-        state = .loading
         guard let card = testParamsCard else { return }
-
         let params = TestParams(
             testAd: card.testAd,
             adNetwork: card.adNetwork,
@@ -269,37 +216,25 @@ class AdTestViewController: UIViewController {
             enableH5Format: card.enableH5Format,
             h5TemplateGroup: card.h5TemplateGroup
         )
-        let customParams: [String: Any] = [
-            MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS: ["https://www.google.com", "https://newsbreak.com"],
-            MSPConstants.USE_NOVA_SANDBOX: card.novaSandbox ? "true" : "false",
-        ]
-        let loader = MSPAdLoader()
-        adLoader = loader
-
-        let adRequest = AdRequest(
-            customParams: customParams,
-            geo: nil,
-            context: nil,
-            adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-            adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-            placementId: selectedPlacement,
-            adFormat: format.mspFormat,
-            testParams: params.toDictionary()
+        viewModel.loadAd(
+            bannerSize: card.bannerSize,
+            novaSandbox: card.novaSandbox,
+            params: params,
+            adListener: self
         )
-        loader.loadAd(placementId: selectedPlacement, adListener: self, adRequest: adRequest)
     }
 
     private func showAd() {
-        guard case .loaded(let ad) = state else { return }
-        state = .showing(ad)
+        guard let ad = viewModel.state.currentAd else { return }
+        viewModel.handleAdShowing(ad: ad)
 
         if let bannerAd = ad as? BannerAd {
             let adView = bannerAd.adView
             adContainerView?.addSubview(adView)
             adView.snp.makeConstraints { make in
                 make.top.centerX.equalToSuperview()
-                make.width.equalTo(320)
-                make.height.equalTo(50)
+                make.width.equalTo(viewModel.loadedBannerSize.width)
+                make.height.equalTo(viewModel.loadedBannerSize.height)
                 make.bottom.equalToSuperview()
             }
         } else if let nativeAd = ad as? NativeAd {
@@ -308,8 +243,7 @@ class AdTestViewController: UIViewController {
             currentNativeAdView = nativeView
             adContainerView?.addSubview(nativeView)
             nativeView.snp.makeConstraints { make in
-                make.top.leading.trailing.equalToSuperview()
-                make.bottom.equalToSuperview()
+                make.top.leading.trailing.bottom.equalToSuperview()
             }
         } else if let interstitialAd = ad as? InterstitialAd {
             interstitialAd.show()
@@ -319,10 +253,23 @@ class AdTestViewController: UIViewController {
     }
 
     private func destroyAd() {
-        adLoader = nil
         adContainerView?.subviews.forEach { $0.removeFromSuperview() }
         currentNativeAdView = nil
-        state = .idle
+        viewModel.destroyAd()
+    }
+
+    // MARK: - Placement picker
+
+    private func presentPlacementPicker() {
+        let picker = PlacementPickerViewController(
+            options: viewModel.placements,
+            selected: viewModel.selectedPlacement
+        ) { [weak self] placement in
+            guard let self else { return }
+            self.viewModel.selectPlacement(placement)
+            self.placementLabel?.text = placement
+        }
+        present(UINavigationController(rootViewController: picker), animated: true)
     }
 }
 
@@ -333,34 +280,30 @@ extension AdTestViewController: AdListener {
 
     func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            guard let ad = self.adLoader?.getAd(placementId: placementId) else {
-                self.state = .error("getAd returned nil for \(placementId)")
-                return
-            }
-            self.state = .loaded(ad)
+            self?.viewModel.handleAdLoaded(placementId: placementId)
         }
     }
 
     func onAdLoaded(ad: MSPAd) {
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            if case .loading = self.state { self.state = .loaded(ad) }
+            self?.viewModel.handleAdLoaded(ad: ad)
         }
     }
 
     func onAdDismissed(ad: MSPAd) {
-        DispatchQueue.main.async { [weak self] in self?.state = .idle }
+        DispatchQueue.main.async { [weak self] in self?.viewModel.handleAdDismissed() }
     }
 
     func onAdRewardReceived(ad: MSPAd) { print("[AdTest] Reward received") }
     func onAdClick(ad: MSPAd) { print("[AdTest] Ad clicked") }
     func onAdImpression(ad: MSPAd) { print("[AdTest] Ad impression") }
+
     func onError(msg: String, loadInfo: [String: Any]) {
-        DispatchQueue.main.async { [weak self] in self?.state = .error(msg) }
+        DispatchQueue.main.async { [weak self] in self?.viewModel.handleAdError(msg) }
     }
+
     func onError(msg: String) {
-        DispatchQueue.main.async { [weak self] in self?.state = .error(msg) }
+        DispatchQueue.main.async { [weak self] in self?.viewModel.handleAdError(msg) }
     }
 }
 

@@ -46,7 +46,10 @@ final class ChipFlowView: UIView {
         if newHeight != computedHeight {
             computedHeight = newHeight
             invalidateIntrinsicContentSize()
-            superview?.setNeedsLayout()
+            // Notify the superview via setNeedsLayout on self rather than calling
+            // superview?.setNeedsLayout() directly, which can cause layout loops in
+            // nested stack views.
+            setNeedsLayout()
         }
     }
 
@@ -102,8 +105,10 @@ final class ChipFlowView: UIView {
 
     private func applyStyle(_ btn: UIButton, isSelected: Bool) {
         var config = btn.configuration
-        config?.background.backgroundColor = isSelected ? .systemBlue : .tertiarySystemGroupedBackground
-        config?.baseForegroundColor = isSelected ? .white : .label
+        config?.background.backgroundColor = isSelected ? .systemFill : .clear
+        config?.baseForegroundColor = .label
         btn.configuration = config
+        btn.layer.borderWidth = isSelected ? 0 : 1
+        btn.layer.borderColor = UIColor.separator.cgColor
     }
 }

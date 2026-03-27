@@ -2,7 +2,7 @@ import Foundation
 import MSPiOSCore
 
 struct TestParams {
-    static let adNetworks = ["msp_fb", "msp_google", "msp_nova", "vungle", "msp_moloco"]
+    static let adNetworks = ["msp_fb", "msp_google", "msp_nova", "vungle", "msp_moloco_native"]
     static let creativeTypes = ["video", "image", "playable_video"]
     static let creativeLayouts = ["vertical", "horizontal"]
     static let h5TemplateGroupsImageVideo = ["t1", "t2g1", "t2g2", "t2g3"]
@@ -21,7 +21,7 @@ struct TestParams {
         creativeType: String = "video",
         creativeLayout: String? = "vertical",
         enableH5Format: Bool = true,
-        h5TemplateGroup: String? = "h5g3"
+        h5TemplateGroup: String? = "t2g2"
     ) {
         self.testAd = testAd
         self.adNetwork = adNetwork
