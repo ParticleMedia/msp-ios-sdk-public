@@ -1,7 +1,13 @@
 import Foundation
 import MSPiOSCore
 
-class TestParams {
+struct TestParams {
+    static let adNetworks = ["msp_fb", "msp_google", "msp_nova", "vungle", "msp_moloco"]
+    static let creativeTypes = ["video", "image", "playable_video"]
+    static let creativeLayouts = ["vertical", "horizontal"]
+    static let h5TemplateGroupsImageVideo = ["t1", "t2g1", "t2g2", "t2g3"]
+    static let h5TemplateGroupsPlayableVideo = ["t3g1"]
+
     private let testAd: Bool
     private let adNetwork: String?
     private let creativeType: String
