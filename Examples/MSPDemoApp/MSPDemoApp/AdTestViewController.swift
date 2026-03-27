@@ -1,5 +1,6 @@
 import MSPCore
 import MSPiOSCore
+import MSPSnapKit
 import UIKit
 
 // MARK: - AdFormat
@@ -105,43 +106,41 @@ class AdTestViewController: UIViewController {
 
     private func setupBottomBar() {
         let bar = AdTestBottomBar()
-        bar.translatesAutoresizingMaskIntoConstraints = false
         bar.onLoadShow = { [weak self] in self?.handleLoadShowTapped() }
         bar.onDestroy = { [weak self] in self?.destroyAd() }
         view.addSubview(bar)
         bottomBar = bar
 
-        NSLayoutConstraint.activate([
-            bar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            bar.heightAnchor.constraint(equalToConstant: 72),
-        ])
+        bar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(72)
+        }
     }
 
     private func setupScrollContent() {
+        guard let bottomBar else { return }
         let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceVertical = true
         view.addSubview(scrollView)
 
         let contentStack = UIStackView()
         contentStack.axis = .vertical
         contentStack.spacing = 16
-        contentStack.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentStack)
 
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: bottomBar.topAnchor),
-            contentStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16),
-            contentStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            contentStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
-            contentStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
-            contentStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
-        ])
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(bottomBar.snp.top)
+        }
+        contentStack.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-16)
+            make.width.equalTo(scrollView).offset(-32)
+        }
 
         let sectionLabel = UILabel()
         sectionLabel.text = "Placement"
@@ -179,7 +178,6 @@ class AdTestViewController: UIViewController {
         label.font = .systemFont(ofSize: 17)
         label.textColor = .label
         label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
         placementLabel = label
 
         let arrow = UIImageView(image: UIImage(
@@ -187,34 +185,31 @@ class AdTestViewController: UIViewController {
             withConfiguration: UIImage.SymbolConfiguration(pointSize: 9)
         ))
         arrow.tintColor = .label
-        arrow.translatesAutoresizingMaskIntoConstraints = false
         arrow.setContentHuggingPriority(.required, for: .horizontal)
         arrow.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         container.addSubview(label)
         container.addSubview(arrow)
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 12),
-            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
-            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12),
-            label.trailingAnchor.constraint(equalTo: arrow.leadingAnchor, constant: -8),
-            arrow.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            arrow.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
-        ])
+        label.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(12)
+            make.bottom.equalToSuperview().offset(-12)
+            make.trailing.equalTo(arrow.snp.leading).offset(-8)
+        }
+        arrow.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-12)
+        }
 
         if !placements.isEmpty {
             let btn = UIButton(type: .custom)
-            btn.translatesAutoresizingMaskIntoConstraints = false
             btn.addAction(UIAction { [weak self] _ in
                 self?.presentPlacementPicker()
             }, for: .touchUpInside)
             container.addSubview(btn)
-            NSLayoutConstraint.activate([
-                btn.topAnchor.constraint(equalTo: container.topAnchor),
-                btn.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-                btn.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-                btn.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            ])
+            btn.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
         }
 
         return container
@@ -300,29 +295,22 @@ class AdTestViewController: UIViewController {
 
         if let bannerAd = ad as? BannerAd {
             let adView = bannerAd.adView
-            adView.translatesAutoresizingMaskIntoConstraints = false
             adContainerView?.addSubview(adView)
-            guard let container = adContainerView else { return }
-            NSLayoutConstraint.activate([
-                adView.topAnchor.constraint(equalTo: container.topAnchor),
-                adView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-                adView.widthAnchor.constraint(equalToConstant: 320),
-                adView.heightAnchor.constraint(equalToConstant: 50),
-                container.bottomAnchor.constraint(equalTo: adView.bottomAnchor),
-            ])
+            adView.snp.makeConstraints { make in
+                make.top.centerX.equalToSuperview()
+                make.width.equalTo(320)
+                make.height.equalTo(50)
+                make.bottom.equalToSuperview()
+            }
         } else if let nativeAd = ad as? NativeAd {
             let container = DemoNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
             let nativeView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: container)
             currentNativeAdView = nativeView
-            nativeView.translatesAutoresizingMaskIntoConstraints = false
             adContainerView?.addSubview(nativeView)
-            guard let adContainer = adContainerView else { return }
-            NSLayoutConstraint.activate([
-                nativeView.topAnchor.constraint(equalTo: adContainer.topAnchor),
-                nativeView.leadingAnchor.constraint(equalTo: adContainer.leadingAnchor),
-                nativeView.trailingAnchor.constraint(equalTo: adContainer.trailingAnchor),
-                adContainer.bottomAnchor.constraint(equalTo: nativeView.bottomAnchor),
-            ])
+            nativeView.snp.makeConstraints { make in
+                make.top.leading.trailing.equalToSuperview()
+                make.bottom.equalToSuperview()
+            }
         } else if let interstitialAd = ad as? InterstitialAd {
             interstitialAd.show()
         } else if let rewardedAd = ad as? RewardedAd {

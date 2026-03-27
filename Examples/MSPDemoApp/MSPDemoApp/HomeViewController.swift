@@ -1,4 +1,5 @@
 import MSPCore
+import MSPSnapKit
 import MSPiOSCore
 import UIKit
 
@@ -73,7 +74,6 @@ class HomeViewController: UIViewController {
 
     private func setupTableView() {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -81,12 +81,10 @@ class HomeViewController: UIViewController {
         view.addSubview(tableView)
         self.tableView = tableView
 
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
     }
 }
 

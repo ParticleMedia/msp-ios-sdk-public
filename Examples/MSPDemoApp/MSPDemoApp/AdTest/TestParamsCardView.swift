@@ -1,3 +1,4 @@
+import MSPSnapKit
 import UIKit
 
 final class TestParamsCardView: UIView {
@@ -43,20 +44,16 @@ final class TestParamsCardView: UIView {
         let outerStack = UIStackView()
         outerStack.axis = .vertical
         outerStack.spacing = 0
-        outerStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(outerStack)
-        NSLayoutConstraint.activate([
-            outerStack.topAnchor.constraint(equalTo: topAnchor),
-            outerStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            outerStack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            outerStack.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
+        outerStack.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         outerStack.addArrangedSubview(buildHeaderRow())
 
         let div = UIView()
         div.backgroundColor = .separator
-        div.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
+        div.snp.makeConstraints { make in make.height.equalTo(0.5) }
         div.isHidden = true
         divider = div
         outerStack.addArrangedSubview(div)
@@ -218,7 +215,7 @@ final class TestParamsCardView: UIView {
         return btn
     }
 
-    private static func fieldLabel(_ text: String) -> UILabel {
+    private func fieldLabel(_ text: String) -> UILabel {
         let l = UILabel()
         l.text = text
         l.font = .systemFont(ofSize: 13, weight: .semibold)

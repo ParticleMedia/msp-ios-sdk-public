@@ -1,3 +1,4 @@
+import MSPSnapKit
 import UIKit
 
 final class AdTestBottomBar: UIView {
@@ -37,32 +38,27 @@ final class AdTestBottomBar: UIView {
     private func setupLayout() {
         let topLine = UIView()
         topLine.backgroundColor = .separator
-        topLine.translatesAutoresizingMaskIntoConstraints = false
 
-        loadShowButton.translatesAutoresizingMaskIntoConstraints = false
         loadShowButton.addAction(UIAction { [weak self] _ in self?.onLoadShow?() }, for: .touchUpInside)
-
-        destroyButton.translatesAutoresizingMaskIntoConstraints = false
         destroyButton.addAction(UIAction { [weak self] _ in self?.onDestroy?() }, for: .touchUpInside)
 
         let btnStack = UIStackView(arrangedSubviews: [loadShowButton, destroyButton])
         btnStack.axis = .horizontal
         btnStack.spacing = 12
         btnStack.distribution = .fillEqually
-        btnStack.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(topLine)
         addSubview(btnStack)
 
-        NSLayoutConstraint.activate([
-            topLine.topAnchor.constraint(equalTo: topAnchor),
-            topLine.leadingAnchor.constraint(equalTo: leadingAnchor),
-            topLine.trailingAnchor.constraint(equalTo: trailingAnchor),
-            topLine.heightAnchor.constraint(equalToConstant: 0.5),
-            btnStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            btnStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            btnStack.centerYAnchor.constraint(equalTo: centerYAnchor),
-            btnStack.heightAnchor.constraint(equalToConstant: 48),
-        ])
+        topLine.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(0.5)
+        }
+        btnStack.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(48)
+        }
     }
 }
