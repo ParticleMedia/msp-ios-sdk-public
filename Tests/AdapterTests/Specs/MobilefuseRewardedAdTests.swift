@@ -12,17 +12,29 @@ class MobilefuseRewardedAdTests: QuickSpec {
             var mockAdListener: MockAdListener!
             var mockMFRewardedAd: MockMFRewardedAd!
             var testReward: Reward!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
 
             beforeEach {
                 mockAdListener = MockAdListener()
                 testReward = Reward(type: "coins", amount: 10)
                 mockMFRewardedAd = MockMFRewardedAd(placementId: "test-placement")
+                metricReporter = SpyAdMetricReporter()
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(
+                    customParams: [:], geo: nil, context: nil,
+                    adaptiveBannerSize: nil, adSize: nil,
+                    placementId: "test", adFormat: .rewarded
+                )
+                adapter.adMetricReporter = metricReporter
                 sut = MobilefuseRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: testReward,
                     mfRewardedAd: mockMFRewardedAd
                 )
                 sut.adListener = mockAdListener
+                adapter.mspAd = sut
+                adapter.adListener = mockAdListener
             }
 
             afterEach {
@@ -30,6 +42,8 @@ class MobilefuseRewardedAdTests: QuickSpec {
                 mockAdListener = nil
                 mockMFRewardedAd = nil
                 testReward = nil
+                adapter.mspAd = nil
+                adapter = nil
             }
 
             // MARK: - Initialization
@@ -118,7 +132,7 @@ class MobilefuseRewardedAdTests: QuickSpec {
                     sut.handleAdRendered()
 
                     // Assert
-                    expect(mockAdListener.onAdImpressionCallCount).to(equal(1))
+                    expect(mockAdListener.onAdImpressionCallCount).toEventually(equal(1))
                 }
 
                 it("should handle click tracking") {
@@ -126,16 +140,31 @@ class MobilefuseRewardedAdTests: QuickSpec {
                     sut.handleAdClicked()
 
                     // Assert
-                    expect(mockAdListener.onAdClickCallCount).to(equal(1))
+                    expect(mockAdListener.onAdClickCallCount).toEventually(equal(1))
                 }
 
-                it("should handle error") {
+                it("logs error without calling onError") {
                     // Act
                     sut.handleAdError(reason: "Test error")
 
+                    // Assert — show-phase errors are logged only, never forwarded to the listener
+                    expect(mockAdListener.onErrorCallCount).to(equal(0))
+                }
+
+                it("sends MES impression event on handleAdRendered") {
+                    // Act
+                    sut.handleAdRendered()
+
                     // Assert
-                    expect(mockAdListener.onErrorCallCount).to(equal(1))
-                    expect(mockAdListener.lastErrorMessage).to(contain("Test error"))
+                    expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+                }
+
+                it("sends MES click event on handleAdClicked") {
+                    // Act
+                    sut.handleAdClicked()
+
+                    // Assert
+                    expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
                 }
             }
         }

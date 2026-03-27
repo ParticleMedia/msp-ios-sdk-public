@@ -13,19 +13,27 @@ class MintegralRewardedAdTests: QuickSpec {
             var mockAdListener: MockAdListener!
             var mockMTGRewardAdManager: MockMTGRewardAdManager!
             var testReward: Reward!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
 
             beforeEach {
                 mockAdListener = MockAdListener()
                 testReward = Reward(type: "coins", amount: 10)
                 mockMTGRewardAdManager = MockMTGRewardAdManager()
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(customParams: [:], geo: nil, context: nil, adaptiveBannerSize: nil, adSize: nil, placementId: "test", adFormat: .rewarded)
+                metricReporter = SpyAdMetricReporter()
+                adapter.adMetricReporter = metricReporter
                 sut = MintegralRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: testReward,
                     placementId: "test-placement",
                     unitId: "test-unit",
                     mtgRewardAdManager: mockMTGRewardAdManager
                 )
                 sut.adListener = mockAdListener
+                adapter.mspAd = sut
+                adapter.adListener = mockAdListener
             }
 
             afterEach {
@@ -33,6 +41,8 @@ class MintegralRewardedAdTests: QuickSpec {
                 mockAdListener = nil
                 mockMTGRewardAdManager = nil
                 testReward = nil
+                adapter = nil
+                metricReporter = nil
             }
 
             // MARK: - Initialization
@@ -112,7 +122,7 @@ class MintegralRewardedAdTests: QuickSpec {
                     sut.handleImpression()
 
                     // Assert
-                    expect(mockAdListener.onAdImpressionCallCount).to(equal(1))
+                    expect(mockAdListener.onAdImpressionCallCount).toEventually(equal(1))
                 }
 
                 it("should handle click tracking") {
@@ -120,19 +130,34 @@ class MintegralRewardedAdTests: QuickSpec {
                     sut.handleClick()
 
                     // Assert
-                    expect(mockAdListener.onAdClickCallCount).to(equal(1))
+                    expect(mockAdListener.onAdClickCallCount).toEventually(equal(1))
                 }
 
-                it("should handle presentation failure") {
+                it("logs presentation failure without calling onError") {
                     // Arrange
                     let testError = NSError(domain: "MintegralTest", code: 789, userInfo: nil)
 
                     // Act
                     sut.handleShowFailure(testError)
 
+                    // Assert — show-phase errors are logged only, never forwarded to the listener
+                    expect(mockAdListener.onErrorCallCount).to(equal(0))
+                }
+
+                it("sends MES impression event on handleImpression") {
+                    // Act
+                    sut.handleImpression()
+
                     // Assert
-                    expect(mockAdListener.onErrorCallCount).to(equal(1))
-                    expect(mockAdListener.lastErrorMessage).to(contain("789"))
+                    expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+                }
+
+                it("sends MES click event on handleClick") {
+                    // Act
+                    sut.handleClick()
+
+                    // Assert
+                    expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
                 }
             }
         }

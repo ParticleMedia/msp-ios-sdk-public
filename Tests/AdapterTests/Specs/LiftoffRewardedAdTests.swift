@@ -12,17 +12,25 @@ class LiftoffRewardedAdTests: QuickSpec {
             var mockAdListener: MockAdListener!
             var vungleRewarded: VungleRewarded!
             var testReward: Reward!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
 
             beforeEach {
                 mockAdListener = MockAdListener()
                 testReward = Reward(type: "coins", amount: 10)
                 vungleRewarded = VungleRewarded(placementId: "test-placement")
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(customParams: [:], geo: nil, context: nil, adaptiveBannerSize: nil, adSize: nil, placementId: "test", adFormat: .rewarded)
+                metricReporter = SpyAdMetricReporter()
+                adapter.adMetricReporter = metricReporter
                 sut = LiftoffRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: testReward,
                     vungleRewarded: vungleRewarded
                 )
                 sut.adListener = mockAdListener
+                adapter.mspAd = sut
+                adapter.adListener = mockAdListener
             }
 
             afterEach {
@@ -30,6 +38,8 @@ class LiftoffRewardedAdTests: QuickSpec {
                 mockAdListener = nil
                 vungleRewarded = nil
                 testReward = nil
+                adapter = nil
+                metricReporter = nil
             }
 
             // MARK: - Initialization
@@ -43,11 +53,11 @@ class LiftoffRewardedAdTests: QuickSpec {
             // MARK: - Show Functionality
             describe("show") {
                 context("when called without root view controller") {
-                    it("should report an error") {
+                    it("logs the error without calling onError") {
                         sut.show(rootViewController: nil)
 
-                        expect(mockAdListener.onErrorCallCount).to(equal(1))
-                        expect(mockAdListener.lastErrorMessage).to(contain("Root view controller is required"))
+                        // show-phase errors are logged only, never forwarded to listener
+                        expect(mockAdListener.onErrorCallCount).to(equal(0))
                     }
                 }
             }
@@ -115,7 +125,7 @@ class LiftoffRewardedAdTests: QuickSpec {
                     sut.handleImpression()
 
                     // Assert
-                    expect(mockAdListener.onAdImpressionCallCount).to(equal(1))
+                    expect(mockAdListener.onAdImpressionCallCount).toEventually(equal(1))
                 }
 
                 it("should handle click tracking") {
@@ -123,19 +133,34 @@ class LiftoffRewardedAdTests: QuickSpec {
                     sut.handleClick()
 
                     // Assert
-                    expect(mockAdListener.onAdClickCallCount).to(equal(1))
+                    expect(mockAdListener.onAdClickCallCount).toEventually(equal(1))
                 }
 
-                it("should handle presentation failure") {
+                it("logs presentation failure without calling onError") {
                     // Arrange
                     let testError = NSError(domain: "VungleTest", code: 123, userInfo: nil)
 
                     // Act
                     sut.handlePresentFailure(testError)
 
+                    // Assert — show-phase errors are logged only, never forwarded to the listener
+                    expect(mockAdListener.onErrorCallCount).to(equal(0))
+                }
+
+                it("sends MES impression event on handleImpression") {
+                    // Act
+                    sut.handleImpression()
+
                     // Assert
-                    expect(mockAdListener.onErrorCallCount).to(equal(1))
-                    expect(mockAdListener.lastErrorMessage).to(contain("123"))
+                    expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+                }
+
+                it("sends MES click event on handleClick") {
+                    // Act
+                    sut.handleClick()
+
+                    // Assert
+                    expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
                 }
             }
         }

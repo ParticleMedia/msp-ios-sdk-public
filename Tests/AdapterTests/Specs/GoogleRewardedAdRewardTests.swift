@@ -34,8 +34,9 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                     rewardHandler()
                 }
 
+                let rootVC = UIViewController()
                 MainActor.assumeIsolated {
-                    sut.show(rootViewController: nil)
+                    sut.show(rootViewController: rootVC)
                 }
 
                 expect(listener.rewardedAds).to(haveCount(1))
@@ -47,8 +48,9 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                     rewardHandler()
                 }
 
+                let rootVC = UIViewController()
                 MainActor.assumeIsolated {
-                    sut.show(rootViewController: nil)
+                    sut.show(rootViewController: rootVC)
                 }
 
                 expect(listener.rewardedAds).to(haveCount(1))
@@ -65,8 +67,9 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                     rewardHandler()
                 }
 
+                let rootVC = UIViewController()
                 MainActor.assumeIsolated {
-                    sut.show(rootViewController: nil)
+                    sut.show(rootViewController: rootVC)
                 }
                 sut.markDismissed()
 

@@ -24,7 +24,7 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                 MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict = originalManagers
             }
 
-            it("keeps only google and facebook for rewarded by default") {
+            it("filters rewarded bidders to the rollout allowlist") {
                 let placement = Placement(
                     placementId: "rewarded-placement",
                     auctionTimeout: 8000,
@@ -46,11 +46,9 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
 
                 let bidders = sut.getBidders(placement: placement, adRequest: adRequest)
 
-                expect(bidders.map(\.name)).to(
-                    equal([
-                        AdNetwork.google.rawValue,
-                        AdNetwork.facebook.rawValue,
-                    ]))
+                // Facebook passes the rollout allowlist but has no direct-adapter getBidder
+                // implementation, so only google produces a non-nil Bidder.
+                expect(bidders.map(\.name)).to(equal([AdNetwork.google.rawValue]))
             }
 
             it("does not filter non-rewarded requests") {

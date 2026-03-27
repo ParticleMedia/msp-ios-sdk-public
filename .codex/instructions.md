@@ -165,6 +165,7 @@ When user questions match keywords in the entries below, READ the matching file.
 | ctx-sources-008 | Rewarded Ad adapter 在 show 阶段错误调用 adListener.onError — 语义混淆 | `.context/sources/experience/ctx-sources-008-rewarded-onError-misuse.md` | adListener?.onError in show(), rewarded ad onError called incorrectly, show failure triggers auction error callback, onError semantics rewarded, adListener onError show phase, rewarded ad present error callback |
 | ctx-sources-009 | UIButton.Configuration 默认支持 Dynamic Type 导致广告 UI 文字溢出 | `.context/sources/experience/ctx-sources-009-dynamic-type-button-overflow.md` | button text overflow, font too large in ad view, Dynamic Type scaling, accessibility large text, UIButton.Configuration font, titleTextAttributesTransformer, ... |
 | ctx-sources-011 | iPadOS 26 方向锁定失效 — UIRequiresFullScreen 废弃与 prefersInterfaceOrientationLocked 迁移 | `.context/sources/experience/ctx-sources-011-ipados26-orientation-lock.md` | iPad orientation lock not working, iPadOS 26 orientation, UIRequiresFullScreen deprecated, prefersInterfaceOrientationLocked, requestGeometryUpdate not working iPad, shouldAutorotate deprecated, ... |
+| ctx-sources-012 | 广告 MES impression/click 上报缺失 — adapter 未调用基类 handleAdImpression/handleAdClicked | `.context/sources/experience/ctx-sources-012-rewarded-mes-event-missing.md` | MES missing, impression not reported, click not reported, logAdImpression not called, logAdClick not called, MES event dropped, ... |
 
 ### Sources / Tech Layer
 
@@ -185,7 +186,7 @@ When user questions match keywords in the entries below, READ the matching file.
 | ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` | BDD, behavior, Given, When, Then, describe, ... |
 | ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` | bugfix, regression, fix, bug, hotfix, regression_for, ... |
 
-**Total: 25 entries**
+**Total: 26 entries**
 
 <!-- END:GENERATED:CONTEXT_INVENTORY -->
 

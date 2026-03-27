@@ -12,17 +12,29 @@ final class MolocoRewardedAdTests: QuickSpec {
             var sut: MolocoRewardedAd!
             var listener: RewardedAdListenerSpy!
             var rewardedItem: MockMolocoRewardedInterstitial!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
 
             beforeEach {
                 listener = RewardedAdListenerSpy()
                 rewardedItem = MockMolocoRewardedInterstitial()
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(
+                    customParams: [:], geo: nil, context: nil,
+                    adaptiveBannerSize: nil, adSize: nil,
+                    placementId: "test", adFormat: .rewarded
+                )
+                metricReporter = SpyAdMetricReporter()
+                adapter.adMetricReporter = metricReporter
                 sut = MolocoRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: Reward(type: "coins", amount: 10),
                     rewardedAdItem: rewardedItem,
                     rootViewController: UIViewController(),
                     adListener: listener
                 )
+                adapter.mspAd = sut
+                adapter.adListener = listener
             }
 
             it("shows via the Moloco rewarded item") {
@@ -39,13 +51,25 @@ final class MolocoRewardedAdTests: QuickSpec {
             it("records impression on didShow") {
                 sut.didShow(ad: rewardedItem)
 
-                expect(listener.impressedAds).to(haveCount(1))
+                expect(listener.impressedAds).toEventually(haveCount(1))
             }
 
             it("records click on didClick") {
                 sut.didClick(on: rewardedItem)
 
-                expect(listener.clickedAds).to(haveCount(1))
+                expect(listener.clickedAds).toEventually(haveCount(1))
+            }
+
+            it("sends MES impression event on didShow") {
+                sut.didShow(ad: rewardedItem)
+
+                expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+            }
+
+            it("sends MES click event on didClick") {
+                sut.didClick(on: rewardedItem)
+
+                expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
             }
 
             it("fires reward once when userRewarded is called twice") {
@@ -69,13 +93,12 @@ final class MolocoRewardedAdTests: QuickSpec {
                 expect(listener.callSequence).to(equal(["reward", "dismiss"]))
             }
 
-            it("forwards present failure to the listener") {
+            it("logs present failure without calling onError") {
                 let error = NSError(domain: "MolocoTest", code: 456, userInfo: nil)
 
                 sut.failToShow(ad: rewardedItem, with: error)
 
-                expect(listener.errors).to(haveCount(1))
-                expect(listener.errors.first).to(contain("MolocoTest"))
+                expect(listener.errors).to(beEmpty())
             }
         }
     }

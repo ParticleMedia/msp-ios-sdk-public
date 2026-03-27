@@ -1,33 +1,13 @@
 {
   "version": "2.0",
-  "generated_at": "2026-04-14T07:09:07Z",
+  "generated_at": "2026-04-14T07:11:48Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 25,
+  "entry_count": 26,
   "domains": {
-    "compatibility": {
-      "count": 0,
-      "layers": []
-    },
-    "integration": {
-      "count": 2,
-      "layers": [
-        "experience"
-      ]
-    },
-    "sources": {
-      "count": 11,
+    "release": {
+      "count": 5,
       "layers": [
         "experience",
-        "tech"
-      ]
-    },
-    "architecture": {
-      "count": 0,
-      "layers": []
-    },
-    "testing": {
-      "count": 3,
-      "layers": [
         "tech"
       ]
     },
@@ -37,10 +17,30 @@
         "experience"
       ]
     },
-    "release": {
-      "count": 5,
+    "sources": {
+      "count": 12,
       "layers": [
         "experience",
+        "tech"
+      ]
+    },
+    "integration": {
+      "count": 2,
+      "layers": [
+        "experience"
+      ]
+    },
+    "compatibility": {
+      "count": 0,
+      "layers": []
+    },
+    "architecture": {
+      "count": 0,
+      "layers": []
+    },
+    "testing": {
+      "count": 3,
+      "layers": [
         "tech"
       ]
     }
@@ -477,6 +477,46 @@
       "summary": "iPadOS 26 废弃 UIRequiresFullScreen，需用 prefersInterfaceOrientationLocked 替代，保留 iOS 15-25 fallback。",
       "status": "active",
       "updated": "2026-03-24"
+    },
+    {
+      "id": "ctx-sources-012",
+      "path": ".context/sources/experience/ctx-sources-012-rewarded-mes-event-missing.md",
+      "title": "广告 MES impression/click 上报缺失 — adapter 未调用基类 handleAdImpression/handleAdClicked",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "mes",
+        "impression",
+        "click",
+        "revenue",
+        "rewarded",
+        "interstitial",
+        "native",
+        "banner",
+        "adapter",
+        "ad-metric-reporter",
+        "handle-ad-impression",
+        "handle-ad-clicked",
+        "lifecycle",
+        "critical"
+      ],
+      "triggers": [
+        "MES missing",
+        "impression not reported",
+        "click not reported",
+        "logAdImpression not called",
+        "logAdClick not called",
+        "MES event dropped",
+        "revenue missing ad",
+        "handleAdImpression not called",
+        "handleAdClicked not called",
+        "adMetricReporter missing",
+        "rewarded MES missing",
+        "RewardedLifecycleController markDisplayed"
+      ],
+      "summary": "Calling adListener directly instead of handleAdImpression/handleAdClicked silently drops MES events — P0 revenue risk.",
+      "status": "active",
+      "updated": "2026-03-27"
     },
     {
       "id": "ctx-sources-001",

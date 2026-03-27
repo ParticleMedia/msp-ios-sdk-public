@@ -14,16 +14,28 @@ final class GoogleRewardedAdTests: QuickSpec {
             var presentedViewController: UIViewController?
             var presentCallCount: Int!
             var originalPresenter: ((MSPGADRewardedAd?, UIViewController?, @escaping () -> Void) -> Void)!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
 
             beforeEach {
                 listener = RewardedAdListenerSpy()
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(
+                    customParams: [:], geo: nil, context: nil,
+                    adaptiveBannerSize: nil, adSize: nil,
+                    placementId: "test", adFormat: .rewarded
+                )
+                metricReporter = SpyAdMetricReporter()
+                adapter.adMetricReporter = metricReporter
                 sut = GoogleRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: Reward(type: "coins", amount: 10),
                     rewardedAdItem: nil,
                     rootViewController: UIViewController(),
                     adListener: listener
                 )
+                adapter.mspAd = sut
+                adapter.adListener = listener
                 presentedViewController = nil
                 presentCallCount = 0
                 originalPresenter = GoogleRewardedAd.presenter
@@ -35,6 +47,7 @@ final class GoogleRewardedAdTests: QuickSpec {
 
             afterEach {
                 GoogleRewardedAd.presenter = originalPresenter
+                adapter.mspAd = nil
             }
 
             it("calls the rewarded presenter from show") {
@@ -51,7 +64,19 @@ final class GoogleRewardedAdTests: QuickSpec {
             it("records impression when marked displayed") {
                 sut.markDisplayed()
 
-                expect(listener.impressedAds).to(haveCount(1))
+                expect(listener.impressedAds).toEventually(haveCount(1))
+            }
+
+            it("sends MES impression event when marked displayed") {
+                sut.markDisplayed()
+
+                expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+            }
+
+            it("sends MES click event when marked clicked") {
+                sut.markClicked()
+
+                expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
             }
 
             it("records dismissal when marked dismissed") {

@@ -2,6 +2,31 @@ import UIKit
 
 @testable import MSPiOSCore
 
+final class SpyAdMetricReporter: AdMetricReporter {
+    var logAdImpressionCallCount = 0
+    var logAdClickCallCount = 0
+
+    func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        logAdImpressionCallCount += 1
+    }
+
+    func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        logAdClickCallCount += 1
+    }
+
+    func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?) {}
+    func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {}
+    func logAdHide(
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, reason: String,
+        adScreenShot: Data?, fullScreenShot: Data?
+    ) {}
+    func logAdReport(
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, reason: String, description: String?,
+        adScreenShot: Data?, fullScreenShot: Data?
+    ) {}
+    func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}
+}
+
 final class RewardedAdListenerSpy: AdListener {
     var impressedAds: [MSPAd] = []
     var clickedAds: [MSPAd] = []
@@ -50,7 +75,8 @@ final class RewardedAdListenerSpy: AdListener {
 }
 
 final class RewardedAdNetworkAdapterStub: AdNetworkAdapter {
-    func loadAdCreative(
+    @MainActor
+    override func loadAdCreative(
         bidResponse: Any,
         auctionBidListener: AuctionBidListener,
         adListener: AdListener,
@@ -62,34 +88,25 @@ final class RewardedAdNetworkAdapterStub: AdNetworkAdapter {
     ) {
     }
 
-    func initialize(
+    override func initialize(
         initParams: InitializationParameters,
         adapterInitListener: AdapterInitListener,
         context: Any?
     ) {
     }
 
-    func destroyAd() {
+    override func destroyAd() {
     }
 
     @MainActor
-    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
+    override func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
     }
 
-    func setAdMetricReporter(adMetricReporter: AdMetricReporter) {
-    }
-
-    func getAdNetwork() -> AdNetwork {
+    override func getAdNetwork() -> AdNetwork {
         .unknown
     }
 
-    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
-    }
-
-    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
-    }
-
-    func getSDKVersion() -> String {
+    override func getSDKVersion() -> String {
         ""
     }
 }

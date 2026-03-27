@@ -11,19 +11,31 @@ final class FacebookRewardedAdTests: QuickSpec {
         describe("FacebookRewardedAd") {
             var sut: FacebookRewardedAd!
             var listener: RewardedAdListenerSpy!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
             var presentedViewController: UIViewController?
             var presentCallCount: Int!
             var originalPresenter: ((FBRewardedVideoAd?, UIViewController) -> Void)!
 
             beforeEach {
                 listener = RewardedAdListenerSpy()
+                metricReporter = SpyAdMetricReporter()
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(
+                    customParams: [:], geo: nil, context: nil,
+                    adaptiveBannerSize: nil, adSize: nil,
+                    placementId: "test", adFormat: .rewarded
+                )
+                adapter.adMetricReporter = metricReporter
                 sut = FacebookRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: Reward(type: "coins", amount: 10),
                     rewardedVideoAdItem: nil,
                     rootViewController: UIViewController(),
                     adListener: listener
                 )
+                adapter.mspAd = sut
+                adapter.adListener = listener
                 presentedViewController = nil
                 presentCallCount = 0
                 originalPresenter = FacebookRewardedAd.presenter
@@ -35,6 +47,7 @@ final class FacebookRewardedAdTests: QuickSpec {
 
             afterEach {
                 FacebookRewardedAd.presenter = originalPresenter
+                adapter.mspAd = nil
             }
 
             it("calls the rewarded presenter from show") {
@@ -71,6 +84,18 @@ final class FacebookRewardedAdTests: QuickSpec {
                 sut.markRewardEarned()
 
                 expect(listener.rewardedAds).to(haveCount(1))
+            }
+
+            it("sends MES impression event when markDisplayed is called") {
+                sut.markDisplayed()
+
+                expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+            }
+
+            it("sends MES click event when markClicked is called") {
+                sut.markClicked()
+
+                expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
             }
         }
     }
