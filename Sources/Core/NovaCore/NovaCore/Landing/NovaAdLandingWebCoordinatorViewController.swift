@@ -32,10 +32,6 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
         case partOfScreen(height: Double, landingVideoContext: LandingVideoContext)
     }
 
-    private enum Constants {
-        static let statusBarHeight = UIApplication.novaSafeAreaInsets.top
-    }
-
     private let detentStyle: NestedVCDetentStyle
     private var containerViewController: NovaAdLandingWebContainerViewController? = nil
     private var nestedLandingWebViewController: NovaAdLandingWebContentViewController? = nil
@@ -194,7 +190,8 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
         view.addSubview(statusBarView)
         statusBarView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
-            make.height.equalTo(Constants.statusBarHeight)
+            // Pin to safe area so height matches real status bar (novaSafeAreaInsets can be 0 on iPad at setup).
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         switch detentStyle {
         case .fullscreen:
@@ -250,19 +247,20 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
             videoView?.play(with: .continueFromLast)
             UIView.animate(withDuration: 0.3) { [weak self] in
                 guard let self else { return }
-                self.videoViewTopConstraint?.update(offset: Constants.statusBarHeight)
+                let topInset = self.view.safeAreaInsets.top
+                self.videoViewTopConstraint?.update(offset: topInset)
                 self.videoViewLeadingConstraint?.update(offset: 0)
                 self.videoViewWidthConstraint?.update(offset: self.view.frame.width)
                 self.videoViewHeightConstraint?.update(
-                    offset: self.view.frame.height - Constants.statusBarHeight - height)
+                    offset: self.view.frame.height - topInset - height)
                 self.view.layoutIfNeeded()
-            } completion: { _ in
-                self.videoView?.toggleAllSubviewVisibilityAndRecover(after: 3.0)
+            } completion: { [weak self] _ in
+                self?.videoView?.toggleAllSubviewVisibilityAndRecover(after: 3.0)
             }
 
-            UIView.animate(withDuration: 0.3, delay: 0.3) {
-                self.containerVCBottom?.update(offset: 0)
-                self.view.layoutIfNeeded()
+            UIView.animate(withDuration: 0.3, delay: 0.3) { [weak self] in
+                self?.containerVCBottom?.update(offset: 0)
+                self?.view.layoutIfNeeded()
             }
         }
     }

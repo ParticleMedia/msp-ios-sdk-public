@@ -142,14 +142,22 @@ class NovaAdLandingWebContentViewController: UIViewController {
 
         self.view.addSubviews([naviView, webView, loadingView, progressView, bottomView])
 
-        let navigationBarHeight: CGFloat =
-            self.navigationModel?.navigationBarHeight ?? (UIApplication.novaSafeAreaInsets.top + 44 + 1)
+        // Toolbar row + bottom divider in `NovaWebViewNavigationView`.
+        let navToolbarHeight: CGFloat = 44 + 1
         NSLayoutConstraint.activate([
             naviView.topAnchor.constraint(equalTo: view.topAnchor),
             naviView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             naviView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            naviView.heightAnchor.constraint(equalToConstant: navigationBarHeight),
         ])
+        if let fixedBarHeight = navigationModel?.navigationBarHeight {
+            naviView.heightAnchor.constraint(equalToConstant: CGFloat(fixedBarHeight)).isActive = true
+        } else {
+            // Safe area is applied by the system when ready; height = topInset + toolbar (no key-window guesswork).
+            naviView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor,
+                constant: navToolbarHeight
+            ).isActive = true
+        }
 
         webView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -159,13 +167,13 @@ class NovaAdLandingWebContentViewController: UIViewController {
         ])
 
         NSLayoutConstraint.activate([
-            progressView.topAnchor.constraint(equalTo: view.topAnchor, constant: navigationBarHeight),
+            progressView.topAnchor.constraint(equalTo: naviView.bottomAnchor),
             progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
         NSLayoutConstraint.activate([
-            loadingView.topAnchor.constraint(equalTo: view.topAnchor, constant: navigationBarHeight),
+            loadingView.topAnchor.constraint(equalTo: naviView.bottomAnchor),
             loadingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             loadingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
