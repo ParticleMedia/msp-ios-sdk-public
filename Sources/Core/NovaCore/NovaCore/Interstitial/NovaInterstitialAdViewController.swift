@@ -270,9 +270,10 @@ class NovaInterstitialAdViewController: UIViewController {
     private static var didWarnFullScreen = false
 
     @objc func handleApplicationWillEnterForeground(_ aNoticiation: Notification) {
-        dismiss(animated: false) { [weak self] in
-            guard let self else { return }
-            self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
+        if (interstitialAd.shouldAutoDismiss) {
+            dismiss(animated: false) {
+                self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
+            }
         }
     }
 

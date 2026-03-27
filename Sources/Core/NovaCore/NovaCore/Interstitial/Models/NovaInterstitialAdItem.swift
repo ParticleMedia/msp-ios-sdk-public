@@ -27,6 +27,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
     
     public var shouldPreloadHtml: Bool
     var cachedHtmlView: NovaAdHtmlView?
+    
+    public var shouldAutoDismiss: Bool = false
 
     var layoutStyle: NovaInterstitialAdLayout {
         if let _layoutStyle {

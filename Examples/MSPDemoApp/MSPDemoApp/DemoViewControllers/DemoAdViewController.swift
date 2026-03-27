@@ -146,7 +146,7 @@ class DemoAdViewController: UIViewController {
         }
     }()
 
-    private let customParams: [String: Any]
+    private var customParams: [String: Any]
     private let testParams: TestParams
 
     init(adType: AdType, customParams: [String: Any] = [:], testParams: TestParams = TestParams()) {
@@ -172,7 +172,7 @@ class DemoAdViewController: UIViewController {
         mergedCustomParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = [
             "https://www.google.com", "https://newsbreak.com",
         ]
-
+        mergedCustomParams["interstitial_auto_dismiss"] = true
         let testParams = self.testParams.toDictionary()
 
         let adRequest = AdRequest(

@@ -284,6 +284,7 @@ public class NovaAdapter: AdNetworkAdapter {
                         let adRequest = self.adRequest,
                         let auctionBidListener = self.auctionBidListener
                     {
+                        interstitialAdItem?.shouldAutoDismiss = adRequest.customParams["interstitial_auto_dismiss"] as? Bool ?? false
                         if interstitialAdItem?.creativeType == .nativeImage {
                             // TODO: - GPY check with Huanzhi if preload is needed
                             self.handleAdLoaded(
