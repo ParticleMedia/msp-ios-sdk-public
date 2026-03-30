@@ -78,6 +78,7 @@ When user questions match keywords in the inventory below, READ the matching `.c
 | ctx-sources-004 | 脚本最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-004-script-best-practices.md` | script, bash, shell, python, sh, automation, ... |
 | ctx-sources-005 | Code Comment 最佳实践 (AI-First) | `.context/sources/tech/ctx-sources-005-code-comment-best-practices.md` | comment, 注释, documentation, DocC, ///, MARK, ... |
 | ctx-sources-010 | S2S Adapter 广告加载模式 — 两阶段流程与 mspAd 弱引用陷阱 | `.context/sources/tech/ctx-sources-010-s2s-adapter-loading-pattern.md` | S2S adapter, server-to-server, loadAdCreative, handleAdLoaded, mspAd weak, ad load callback, ... |
+| ctx-sources-013 | MSPSnapKit — SnapKit 封装库使用指南 (AI-First) | `.context/sources/tech/ctx-sources-013-msp-snapkit-usage.md` | MSPSnapKit, SnapKit, snp.makeConstraints, snp.remakeConstraints, snp.updateConstraints, snp, ... |
 
 ### Testing / Tech Layer
 
@@ -87,7 +88,7 @@ When user questions match keywords in the inventory below, READ the matching `.c
 | ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` | BDD, behavior, Given, When, Then, describe, ... |
 | ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` | bugfix, regression, fix, bug, hotfix, regression_for, ... |
 
-**Total: 26 entries**
+**Total: 27 entries**
 
 <!-- END:GENERATED:CONTEXT_INVENTORY -->
 
