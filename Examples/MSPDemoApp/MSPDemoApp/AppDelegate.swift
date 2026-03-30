@@ -17,6 +17,8 @@ import UnityAdapter
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
+    private let fbTestDeviceRegistrar = FBTestDeviceRegistrar()
+
     private let adNetworkManagers: [AdNetworkManager] = [
         GoogleManager(), FacebookManager(), NovaManager(), UnityManager(), PubmaticManager(), MintegralManager(),
         MobilefuseManager(), InmobiManager(), MolocoManager(), LiftoffManager(),
@@ -26,6 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Must be called before initializeMSP to capture FB device hash logs
+        // emitted during FB SDK's first initialization.
+        fbTestDeviceRegistrar.setup()
         initializeMSP(with: AppProfile.current)
         window = UIWindow(frame: UIScreen.main.bounds)
         resetRootViewController()
