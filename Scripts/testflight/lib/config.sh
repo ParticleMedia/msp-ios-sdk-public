@@ -72,7 +72,7 @@ tf_load_config() {
 }
 
 # ---------------------------------------------------------------------------
-# tf_compute_next_build_number — current + 1 or use override
+# tf_compute_next_build_number — query ASC for latest, then +1; fallback to config.yaml
 # ---------------------------------------------------------------------------
 tf_compute_next_build_number() {
     local override="${1:-}"
@@ -80,9 +80,49 @@ tf_compute_next_build_number() {
     if [[ -n "$override" ]]; then
         TF_NEXT_BUILD_NUMBER="$override"
         log::info "TF-CONFIG" "Using overridden build number: $TF_NEXT_BUILD_NUMBER"
+        export TF_NEXT_BUILD_NUMBER
+        return 0
+    fi
+
+    # Try to query the latest build number from ASC in real-time
+    local asc_build_number=""
+    if [[ -n "${ASC_KEY_ID:-}" && -n "${ASC_ISSUER_ID:-}" && -n "${ASC_KEY_PATH:-}" ]]; then
+        local api_key_json
+        api_key_json="$(mktemp -t asc_api_key)"
+
+        cat > "$api_key_json" <<EOF
+{
+    "key_id": "${ASC_KEY_ID}",
+    "issuer_id": "${ASC_ISSUER_ID}",
+    "key_filepath": "${ASC_KEY_PATH}",
+    "in_house": false
+}
+EOF
+
+        local raw_output=""
+        # Temporarily disable set -e so fastlane failure doesn't abort the script
+        set +e
+        raw_output="$(bundle exec fastlane run latest_testflight_build_number \
+            app_identifier:"${TF_BUNDLE_ID}" \
+            api_key_path:"$api_key_json" 2>&1)"
+        set -e
+
+        rm -f "$api_key_json"
+
+        # Parse "Result: <number>" from fastlane output
+        asc_build_number="$(echo "$raw_output" | grep -E "^[[:space:]]*Result:" | tail -1 | sed 's/.*Result:[[:space:]]*//' | tr -d '[:space:]')" || true
+    fi
+
+    if [[ -n "$asc_build_number" && "$asc_build_number" =~ ^[0-9]+$ ]]; then
+        # Use whichever is higher: ASC or local config, then +1
+        local base
+        base=$(( asc_build_number > TF_BUILD_NUMBER ? asc_build_number : TF_BUILD_NUMBER ))
+        TF_NEXT_BUILD_NUMBER=$(( base + 1 ))
+        log::info "TF-CONFIG" "Next build number: $TF_NEXT_BUILD_NUMBER (ASC latest=$asc_build_number, local=$TF_BUILD_NUMBER)"
     else
+        # Fallback to local config.yaml
         TF_NEXT_BUILD_NUMBER=$(( TF_BUILD_NUMBER + 1 ))
-        log::info "TF-CONFIG" "Next build number: $TF_NEXT_BUILD_NUMBER (was $TF_BUILD_NUMBER)"
+        log::warn "TF-CONFIG" "Could not query ASC — falling back to local config (next=$TF_NEXT_BUILD_NUMBER)"
     fi
 
     export TF_NEXT_BUILD_NUMBER

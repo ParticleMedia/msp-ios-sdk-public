@@ -8,6 +8,7 @@
 #   make validate       Quick CI validation
 #   make rtt            Round-trip test (full target-switching compatibility)
 #   make ci             Full CI pipeline
+#   make fetch-credentials  Fetch ASC keys from private credentials repo
 #   make beta           Upload DemoApp to TestFlight
 #   make release        Production CocoaPods release
 #   make resume         Resume a failed release
@@ -15,7 +16,7 @@
 #   make clean          Clean DerivedData and Pods
 # ============================================================================
 
-.PHONY: setup open test validate rtt ci beta release resume clean sync help
+.PHONY: setup open test validate rtt ci fetch-credentials beta beta-dry release resume clean sync validate-sync help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -32,6 +33,7 @@ help:
 	@echo "  make validate           Quick CI validation"
 	@echo "  make rtt                Round-trip test (target-switching compatibility)"
 	@echo "  make ci                 Full CI pipeline"
+	@echo "  make fetch-credentials  Fetch ASC keys from private credentials repo"
 	@echo "  make beta               Upload DemoApp to TestFlight (requires ASC credentials)"
 	@echo "  make beta-dry           Archive + export only, no upload"
 	@echo "  make release            Production release (VERSION= NOTES= required)"
@@ -90,6 +92,14 @@ rtt:
 # --------------------------------------------------------------------------
 ci:
 	$(SCRIPTS)/ci/ci-pipeline.sh
+
+# --------------------------------------------------------------------------
+# fetch-credentials — Pull ASC keys from private credentials repo
+# --------------------------------------------------------------------------
+# Usage: make fetch-credentials
+# Optional: CREDENTIALS_REPO_URL=git@github.com:Org/repo.git make fetch-credentials
+fetch-credentials:
+	$(SCRIPTS)/testflight/fetch-credentials.sh
 
 # --------------------------------------------------------------------------
 # beta — TestFlight upload via fastlane

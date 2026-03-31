@@ -46,6 +46,9 @@ make resume VERSION=1.0.0
 ### TestFlight Deployment
 
 ```bash
+# First time setup: fetch credentials from private repo (one-time per machine)
+make fetch-credentials
+
 # Full deploy (archive + export + upload to App Store Connect)
 make beta
 
@@ -56,32 +59,20 @@ make beta-dry
 ./Scripts/testflight/deploy.sh --build-number 42
 ```
 
+**Credentials are managed via a private repo** (`ParticleMedia/msp-ios-credentials`). Running `make fetch-credentials` clones it and installs:
+- `AuthKey_*.p8` — ASC API key (App Manager role)
+- `Distribution.p12` — iOS Distribution certificate (imported into Keychain automatically)
+- `.env` — `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_PATH`
+
+All credential files are gitignored and never committed to this repo.
+
+The SDK version (`MARKETING_VERSION`) is read from `Scripts/config/sdk_version.conf` (SSOT). Build number is queried from ASC in real-time (falls back to `Scripts/testflight/config.yaml`).
+
 ### Cleanup
 
 ```bash
 make clean        # Remove DerivedData + Pods
 ```
-
-**Required environment variables** (for upload only, not needed for `--dry-run`):
-
-| Variable | Description |
-|----------|-------------|
-| `ASC_KEY_ID` | App Store Connect API Key ID |
-| `ASC_ISSUER_ID` | App Store Connect Issuer ID |
-| `ASC_KEY_PATH` | Path to AuthKey `.p8` file |
-
-**Setup (recommended):** Copy the `.env` template and fill in your credentials:
-
-```bash
-cp Scripts/testflight/.env.example Scripts/testflight/.env
-# Edit Scripts/testflight/.env with your ASC credentials
-```
-
-The `.env` file is gitignored and loaded automatically by `deploy.sh`. Existing environment variables take precedence over `.env` values.
-
-> ASC API Keys are created at [App Store Connect > Users and Access > Integrations > Team Keys](https://appstoreconnect.apple.com/access/integrations/api). Requires Admin or App Manager role.
-
-The SDK version (`MARKETING_VERSION`) is automatically read from `Scripts/config/sdk_version.conf` (SSOT). Build number is auto-incremented from `Scripts/testflight/config.yaml`.
 
 **All Makefile Targets:**
 
@@ -93,6 +84,7 @@ The SDK version (`MARKETING_VERSION`) is automatically read from `Scripts/config
 | `make validate` | Quick CI validation |
 | `make rtt` | Round-trip test (target-switching compatibility) |
 | `make ci` | Full CI pipeline |
+| `make fetch-credentials` | Fetch ASC keys + Distribution cert from private credentials repo |
 | `make beta` | Upload DemoApp to TestFlight |
 | `make beta-dry` | Archive + export only, no upload |
 | `make release VERSION=x NOTES="..."` | Production CocoaPods + SPM release |
