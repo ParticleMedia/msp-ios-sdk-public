@@ -565,10 +565,6 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
                     "[Adapter: Facebook] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
             )
             guard let facebookRewardedAd = self.facebookRewardedAd else { return }
-            if let adRequest = self.adRequest, let bidResponse = self.bidResponse {
-                self.adMetricReporter?.logAdImpression(
-                    ad: facebookRewardedAd, adRequest: adRequest, bidResponse: bidResponse)
-            }
             facebookRewardedAd.markDisplayed()
         }
     }

@@ -707,10 +707,6 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
                     message:
                         "[Adapter: Google] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
                 )
-                if let adRequest = self.adRequest {
-                    self.adMetricReporter?.logAdImpression(
-                        ad: rewardedAd, adRequest: adRequest, bidResponse: self.bidResponse)
-                }
                 rewardedAd.markDisplayed()
             } else if let interstitialAd = self.interstitialAd {
                 if let adRequest = self.adRequest {
