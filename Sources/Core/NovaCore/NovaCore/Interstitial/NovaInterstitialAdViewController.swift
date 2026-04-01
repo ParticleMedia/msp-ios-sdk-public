@@ -174,8 +174,19 @@ class NovaInterstitialAdViewController: UIViewController {
             selector: #selector(handleApplicationWillEnterForeground(_:)),
             name: UIApplication.willEnterForegroundNotification,
             object: nil)
-
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationWillResignActive(_:)),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+        
         activateOrientationLock()
+        
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -195,6 +206,14 @@ class NovaInterstitialAdViewController: UIViewController {
         NotificationCenter.default.removeObserver(
             self,
             name: UIApplication.willEnterForegroundNotification,
+            object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.didBecomeActiveNotification,
             object: nil)
     }
 
@@ -275,6 +294,14 @@ class NovaInterstitialAdViewController: UIViewController {
                 self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
             }
         }
+    }
+    
+    @objc func handleApplicationWillResignActive(_ aNoticiation: Notification) {
+        self.adView?.didDisappear()
+    }
+     
+    @objc func handleApplicationDidBecomeActive(_ aNoticiation: Notification) {
+        self.adView?.willAppear()
     }
 
     // MARK: Private
