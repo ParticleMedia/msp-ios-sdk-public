@@ -16,8 +16,8 @@ final class AppInfoSheetViewController: UIViewController {
             Row(label: "Version", keyPath: \.appVersion),
         ]),
         (title: "SDK", rows: [
-            Row(label: "msp_id", keyPath: \.mspId),
-            Row(label: "msp_user_id", keyPath: \.mspUserId),
+            Row(label: "MSP ID", keyPath: \.mspId),
+            Row(label: "SHORT ID", keyPath: \.shortId),
         ]),
     ]
 
@@ -31,8 +31,10 @@ final class AppInfoSheetViewController: UIViewController {
         UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID) ?? "Fetching…"
     }
 
-    private var mspUserId: String {
-        UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? "Fetching…"
+    private var shortId: String {
+        guard let mspIdStr = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID),
+              let value = Int64(mspIdStr) else { return "Fetching…" }
+        return String(value & 0xFFFFFFFFF)
     }
 
     // MARK: - UI
@@ -79,7 +81,7 @@ final class AppInfoSheetViewController: UIViewController {
     // MARK: - UserDefaults observation
 
     private func startObservingIfNeeded() {
-        guard mspId == "Fetching…" || mspUserId == "Fetching…" else { return }
+        guard mspId == "Fetching…" || shortId == "Fetching…" else { return }
         observer = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
@@ -87,7 +89,7 @@ final class AppInfoSheetViewController: UIViewController {
         ) { [weak self] _ in
             guard let self else { return }
             self.tableView.reloadData()
-            if self.mspId != "Fetching…" && self.mspUserId != "Fetching…" {
+            if self.mspId != "Fetching…" && self.shortId != "Fetching…" {
                 self.stopObserving()
             }
         }
