@@ -233,6 +233,7 @@ class NovaInterstitialAdViewController: UIViewController {
         }
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
+            self?.adView?.willTransit()
             self?.adView?.setNeedsLayout()
             self?.adView?.layoutIfNeeded()
         })

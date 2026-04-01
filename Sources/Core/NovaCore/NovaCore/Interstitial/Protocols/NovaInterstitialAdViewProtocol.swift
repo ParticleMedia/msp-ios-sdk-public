@@ -18,6 +18,7 @@ protocol NovaInterstitialAdViewProtocol: UIView {
     func willDisappear()
     func setupCountdownTimerIfNeeded()
     func enableTopRightCloseButtonIfNeeded()
+    func willTransit()
 }
 
 // MARK: - Default Implementation
@@ -30,4 +31,5 @@ extension NovaInterstitialAdViewProtocol {
     func willDisappear() {}
     func setupCountdownTimerIfNeeded() {}
     func enableTopRightCloseButtonIfNeeded() {}
+    func willTransit() {}
 }

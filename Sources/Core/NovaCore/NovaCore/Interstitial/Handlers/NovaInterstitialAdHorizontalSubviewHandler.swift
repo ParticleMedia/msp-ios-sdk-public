@@ -189,6 +189,40 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
     }
+    
+    func willTransit(in containerView: UIView) {
+        let isIPadAndLandscapeMode =
+            UIDevice.current.userInterfaceIdiom == .pad
+            && (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)
+        switch interstitialAd.mediaContent.renderRecommendation {
+        case .aspectRatio(let ratio):
+            mediaView.snp.remakeConstraints { make in
+                make.top.equalTo(adTagLabel.snp.bottom).offset(16)
+                make.centerX.equalToSuperview()
+                make.directionalHorizontalEdges.equalToSuperview().inset(16)
+                if isIPadAndLandscapeMode {
+                    make.height.equalTo(containerView.snp.height).multipliedBy(CGFloat(1.0 / 3.0))
+                } else {
+                    make.height.equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0 / ratio))
+                }
+            }
+        case .free, .none:
+            mediaView.snp.remakeConstraints { make in
+                make.top.equalTo(adTagLabel.snp.bottom).offset(16)
+                make.centerX.equalToSuperview()
+                make.directionalHorizontalEdges.equalToSuperview().inset(16)
+                if isIPadAndLandscapeMode {
+                    make.height.equalTo(containerView.snp.height).multipliedBy(CGFloat(1.0 / 3.0))
+                } else {
+                    make.height
+                        .equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0 / AdsMediaConstants.defaultAspectRatio))
+                }
+            }
+        default:
+            break
+        }
+        containerView.layoutIfNeeded()
+    }
 
     // MARK: Private
 

@@ -70,6 +70,10 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
         // Setup tap gesture
         setupTapGesture()
     }
+    
+    func willTransit() {
+        subviewHandler.willTransit(in: self)
+    }
 
     func didAppear() {
         subviewHandler.didAppear()
