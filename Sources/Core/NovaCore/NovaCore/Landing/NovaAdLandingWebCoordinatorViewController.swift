@@ -375,9 +375,11 @@ private extension NovaAdLandingWebCoordinatorViewController {
                 }
                 self.view.layoutIfNeeded()
             } completion: { _ in
+                self.nestedLandingWebViewController?.logPageClose()
                 self.dismiss(animated: false)
             }
         case .fullscreen:
+            self.nestedLandingWebViewController?.logPageClose()
             dismiss(animated: true)
         }
     }

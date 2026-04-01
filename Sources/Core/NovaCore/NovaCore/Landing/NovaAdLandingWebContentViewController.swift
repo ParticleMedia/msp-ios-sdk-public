@@ -196,12 +196,6 @@ class NovaAdLandingWebContentViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NovaAdLandingWebLogHelper.logClose(
-            webContext: webContext,
-            status: status,
-            scrollDepth: unifiedWebViewHost.scrollDepth,
-            pageIndex: unifiedWebViewHost.pageIndex
-        )
         status = .closed
     }
 
@@ -216,11 +210,21 @@ class NovaAdLandingWebContentViewController: UIViewController {
     func setWebView(offset: CGPoint) {
         webView.scrollView.contentOffset = offset
     }
+    
+    func logPageClose() {
+        NovaAdLandingWebLogHelper.logClose(
+            webContext: webContext,
+            status: status,
+            scrollDepth: unifiedWebViewHost.scrollDepth,
+            pageIndex: unifiedWebViewHost.pageIndex
+        )
+    }
 }
 
 
 private extension NovaAdLandingWebContentViewController {
     func navigationViewDidClickBackButton() {
+        logPageClose()
         dismiss(animated: true)
     }
 
