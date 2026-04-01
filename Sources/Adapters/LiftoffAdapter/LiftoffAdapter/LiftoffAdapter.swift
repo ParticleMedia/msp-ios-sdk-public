@@ -204,22 +204,8 @@ import VungleAdsSDK
             return
         }
 
-        let bannerSize: VungleAdSize? = adRequest.adSize.flatMap {
-            switch ($0.width, $0.height) {
-            case (320, 50): return VungleAdSize.VungleAdSizeBannerRegular
-            case (300, 250): return VungleAdSize.VungleAdSizeMREC
-            case (728, 90): return VungleAdSize.VungleAdSizeLeaderboard
-            case (300, 50): return VungleAdSize.VungleAdSizeBannerShort
-            default: return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: $0.width, height: $0.height))
-            }
-        }
-
-        guard let bannerSize = bannerSize else {
-            self.handleAuctionBidError(
-                error: "Failed to load liftoff banner ad: invalid ad size", bidResponse: self.bidResponse)
-            return
-        }
-
+        // pass width and height 0 here to let banner size decided from bid response adm
+        let bannerSize = VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: 0, height: 0))
         self.bannerView = VungleBannerView(placementId: placementReferenceId, vungleAdSize: bannerSize)
 
         self.bannerView?.delegate = self
