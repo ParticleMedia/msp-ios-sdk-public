@@ -43,6 +43,7 @@ public class GradientShadowView: UIView {
         super.init(frame: .zero)
         setupGradient()
         setupShadow()
+        self.isUserInteractionEnabled = false
     }
 
     @available(*, unavailable)

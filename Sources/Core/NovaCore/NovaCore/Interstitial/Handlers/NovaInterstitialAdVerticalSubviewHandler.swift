@@ -46,12 +46,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
             make.edges.equalToSuperview()
         }
 
-        bottomShadow.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            let screenWidth = UIScreen.main.bounds.width
-            make.height.equalTo(screenWidth * 280 / 375)
-        }
-
         let totalButtonBottomMargin = LayoutMetrics.bottomButtonBottomMargin + LayoutMetrics.progressBarBottomMargin
 
         if showTopRightCloseButton {
@@ -132,6 +126,11 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
             }
             make.bottom.equalTo(bodyLabel.snp.top).offset(-8.0)
         }
+        
+        bottomShadow.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(advertiserInfoStackView.snp.top).offset(-12.0)
+        }
     }
 
     @MainActor
@@ -182,7 +181,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
     var clickableViews: [UIView] {
         getClickableViewsFromConfiguration() ?? [
-            bottomShadow,
             ctaButton,
             adTagLabel,
             advertiserAvatar,
@@ -302,7 +300,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
             shadowRadius: 0
         )
         let view = GradientShadowView(with: config)
-        view.adClickArea = .badge
         return view
     }()
 

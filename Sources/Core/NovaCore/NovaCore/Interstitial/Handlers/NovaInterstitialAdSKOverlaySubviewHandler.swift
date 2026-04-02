@@ -89,7 +89,6 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
             points: (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1.0))
         )
         let view = GradientShadowView(with: config)
-        view.adClickArea = .badge
         return view
     }()
 
