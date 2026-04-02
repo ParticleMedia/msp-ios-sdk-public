@@ -175,9 +175,11 @@ extension NovaAdPlayableView: WKUIDelegate {
         windowFeatures _: WKWindowFeatures
     ) -> WKWebView? {
         guard userDidClick else {
+            DebugLogger.ui.info("[Playable] Blocked window.open() — no preceding user tap")
             return nil
         }
 
+        DebugLogger.ui.info("[Playable] window.open() received — opening landing page")
         let duration: CFTimeInterval? = {
             if let startTime {
                 return CACurrentMediaTime() - startTime
@@ -218,7 +220,14 @@ extension NovaAdPlayableView: WKNavigationDelegate {
             return
         }
         if url.scheme == "mraid" {
-            mraidController.handleMraidSchemeURL(url)
+            // mraid:// scheme bypasses the JS-layer userActivation check in
+            // novaMraid.js, so we guard with native userDidClick here.
+            if userDidClick {
+                DebugLogger.ui.info("[Playable] mraid:// scheme received — handling via MraidController")
+                mraidController.handleMraidSchemeURL(url)
+            } else {
+                DebugLogger.ui.warning("[Playable] Blocked mraid:// scheme — no preceding user tap")
+            }
             decisionHandler(.cancel)
             return
         }
@@ -232,7 +241,15 @@ extension NovaAdPlayableView: WKNavigationDelegate {
 
 extension NovaAdPlayableView: MraidBehaviorDelegate {
     func mraidOpen(url: URL?) {
-        // Only need to handle the click event; URL is ignored for playable.
+        // Auto-redirect protection is handled entirely in novaMraid.js:
+        //   iOS 16+: navigator.userActivation.isActive (~5s window)
+        //   iOS 15:  click/touchend event listener (300ms window)
+        // No native guard here — mraid.open() is a pure JS API so the JS
+        // layer always executes first. A native userDidClick guard would
+        // conflict because its 0.3s timer is shorter than userActivation's
+        // ~5s window, causing legitimate clicks to be dropped when the
+        // creative has animation between tap and mraid.open().
+        DebugLogger.ui.info("[Playable] mraid.open() received — opening landing page")
         let duration: CFTimeInterval? = {
             if let startTime { return CACurrentMediaTime() - startTime } else { return nil }
         }()

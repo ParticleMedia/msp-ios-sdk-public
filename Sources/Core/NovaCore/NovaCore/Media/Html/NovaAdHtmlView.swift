@@ -373,11 +373,13 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         userDidClick = false
 
         if url.scheme == "mraid" {
+            DebugLogger.ui.info("[Html] mraid:// scheme received — handling via MraidController")
             mraidController.handleMraidSchemeURL(url)
             decisionHandler(.cancel)
             return
         }
 
+        DebugLogger.ui.info("[Html] URL navigation click — opening landing page")
         htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: .html)
 
         decisionHandler(.cancel)
@@ -450,9 +452,11 @@ extension NovaAdHtmlView: WKUIDelegate {
         windowFeatures: WKWindowFeatures
     ) -> WKWebView? {
         guard userDidClick else {
+            DebugLogger.ui.info("[Html] Blocked window.open() — no preceding user tap")
             return nil
         }
         userDidClick = false
+        DebugLogger.ui.info("[Html] window.open() received — opening landing page")
         if useCustomUrl {
             htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: .html)
         } else {
@@ -464,6 +468,11 @@ extension NovaAdHtmlView: WKUIDelegate {
 
 extension NovaAdHtmlView: MraidBehaviorDelegate {
     func mraidOpen(url: URL?) {
+        // Auto-redirect protection is handled entirely in novaMraid.js:
+        //   iOS 16+: navigator.userActivation.isActive (~5s window)
+        //   iOS 15:  click/touchend event listener (300ms window)
+        // No native guard here — see NovaAdPlayableView.mraidOpen for rationale.
+        DebugLogger.ui.info("[Html] mraid.open() received — opening landing page")
         htmlActionDelegate?.didTapAdCtr(customUrl: url, clickArea: .html)
     }
 

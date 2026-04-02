@@ -1,31 +1,12 @@
 {
   "version": "2.0",
-  "generated_at": "2026-04-14T07:17:27Z",
+  "generated_at": "2026-04-14T07:41:00Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 27,
+  "entry_count": 28,
   "domains": {
-    "testing": {
-      "count": 3,
-      "layers": [
-        "tech"
-      ]
-    },
-    "sources": {
-      "count": 13,
-      "layers": [
-        "experience",
-        "tech"
-      ]
-    },
     "compatibility": {
       "count": 0,
       "layers": []
-    },
-    "ci": {
-      "count": 4,
-      "layers": [
-        "experience"
-      ]
     },
     "integration": {
       "count": 2,
@@ -40,9 +21,28 @@
         "tech"
       ]
     },
+    "testing": {
+      "count": 3,
+      "layers": [
+        "tech"
+      ]
+    },
     "architecture": {
       "count": 0,
       "layers": []
+    },
+    "ci": {
+      "count": 4,
+      "layers": [
+        "experience"
+      ]
+    },
+    "sources": {
+      "count": 14,
+      "layers": [
+        "experience",
+        "tech"
+      ]
     }
   },
   "entries": [
@@ -517,6 +517,40 @@
       "summary": "Calling adListener directly instead of handleAdImpression/handleAdClicked silently drops MES events — P0 revenue risk.",
       "status": "active",
       "updated": "2026-03-27"
+    },
+    {
+      "id": "ctx-sources-014",
+      "path": ".context/sources/experience/ctx-sources-014-mraid-auto-redirect-blocked.md",
+      "title": "MRAID 素材 setTimeout → mraid.open() 自动跳转 — JS 层 userActivation 防护",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "mraid",
+        "auto-redirect",
+        "playable",
+        "html",
+        "webview",
+        "user-activation",
+        "click",
+        "gesture",
+        "security",
+        "ad-creative"
+      ],
+      "triggers": [
+        "mraid.open() auto redirect",
+        "ad auto opens landing page",
+        "playable ad auto click",
+        "Blocked mraid.open()",
+        "no user activation",
+        "no recent user gesture",
+        "setTimeout mraid.open",
+        "auto-redirect blocked",
+        "userDidClick",
+        "navigator.userActivation"
+      ],
+      "summary": "MRAID auto-redirect via setTimeout blocked by JS userActivation check",
+      "status": "active",
+      "updated": "2026-04-02"
     },
     {
       "id": "ctx-sources-001",

@@ -218,7 +218,39 @@
         }
     };
 
+    // --- User gesture tracking (iOS 15 fallback) ---
+    // navigator.userActivation is only available on iOS 16+.
+    // For iOS 15, track real click/touchend events to detect user gestures.
+    // Malicious JS cannot synthesize trusted click events.
+    var _userGestureActive = false;
+    var _gestureTimer = null;
+    var _gestureWindowMs = 300;
+
+    function markUserGesture(event) {
+        // Only trust events dispatched by the browser, not by JS code.
+        // dispatchEvent() creates events with isTrusted=false.
+        if (event && event.isTrusted === false) return;
+        _userGestureActive = true;
+        clearTimeout(_gestureTimer);
+        _gestureTimer = setTimeout(function() { _userGestureActive = false; }, _gestureWindowMs);
+    }
+    document.addEventListener('click', markUserGesture, true);
+    document.addEventListener('touchend', markUserGesture, true);
+
     mraid.open = function(url) {
+        // Primary: navigator.userActivation (iOS 16+, browser-enforced)
+        if (navigator.userActivation) {
+            if (!navigator.userActivation.isActive) {
+                console.warn('[MRAID] Blocked mraid.open() — no user activation (iOS 16+)');
+                return;
+            }
+        } else {
+            // Fallback: JS-side gesture tracking (iOS 15)
+            if (!_userGestureActive) {
+                console.warn('[MRAID] Blocked mraid.open() — no recent user gesture (iOS 15 fallback)');
+                return;
+            }
+        }
         postToNative('open', { url: url });
     };
 
