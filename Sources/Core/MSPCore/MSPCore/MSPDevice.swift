@@ -272,12 +272,6 @@ public class MSPDevice {
 
     internal func getVolumeLevel() -> Int32 {
         let audioSession = AVAudioSession.sharedInstance()
-        do {
-            try audioSession.setActive(true)
-            let volume = audioSession.outputVolume
-            return Int32(volume * 100)
-        } catch {
-            return -1
-        }
+        return Int32(audioSession.outputVolume * 100)
     }
 }
