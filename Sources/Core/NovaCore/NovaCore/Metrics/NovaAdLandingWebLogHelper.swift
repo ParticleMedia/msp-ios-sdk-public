@@ -120,4 +120,18 @@ class NovaAdLandingWebLogHelper {
             params: params
         )
     }
+    
+    static func logError(webContext: NovaAdsLandingWebContext,
+                         isForeground: Bool,
+                         errorMessage: String?
+    ) {
+        var params = baseParams(webContext: webContext)
+        params["reason"] = errorMessage
+        params["is_foreground"] = String(isForeground)
+        NovaAdMetricReporter.logWebEvent(
+            .novaLandingPageError,
+            encryptedAdToken: webContext.tracingInfo.encryptedAdToken,
+            params: params
+        )
+    }
 }

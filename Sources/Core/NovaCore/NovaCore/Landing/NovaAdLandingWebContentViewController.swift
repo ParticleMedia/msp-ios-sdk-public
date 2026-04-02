@@ -221,7 +221,6 @@ class NovaAdLandingWebContentViewController: UIViewController {
     }
 }
 
-
 private extension NovaAdLandingWebContentViewController {
     func navigationViewDidClickBackButton() {
         logPageClose()
@@ -243,6 +242,16 @@ private extension NovaAdLandingWebContentViewController {
             pageIndex: unifiedWebViewHost.pageIndex
         )
     }
+    
+    func didFailToLoad(errorMessage: String?) {
+        let isForeground = UIApplication.shared.applicationState == .active && self.webView.onTop && self.webView.novaIsPartiallyVisibleOnScreen
+        
+        NovaAdLandingWebLogHelper.logError(webContext: webContext,
+                                           isForeground: isForeground,
+                                           errorMessage: errorMessage)
+        
+    }
+    
 }
 
 extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDelegate {
@@ -323,6 +332,8 @@ extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDel
         loadingView.isHidden = true
         progressView.isHidden = true
         status = .allLoaded
+        
+        self.didFailToLoad(errorMessage: error.formattedMessage)
     }
 
     func webViewInitialLoadDidRedirect(_ webView: WKWebView) {
@@ -331,6 +342,14 @@ extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDel
 
     func webViewDidGoBackToInitialLoad(_ webView: WKWebView) {
         self.didGoBackToInitialLoad?(webView)
+    }
+    
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        self.didFailToLoad(errorMessage: "webview web content process did terminate")
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
+        self.didFailToLoad(errorMessage: error.formattedMessage)
     }
 }
 

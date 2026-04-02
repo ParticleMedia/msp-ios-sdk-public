@@ -251,6 +251,10 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
         self.navigationDelegate?.webViewWebContentProcessDidTerminate(webView)
     }
 
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        self.navigationDelegate?.webView(webView, didFail: navigation, withError: error)
+    }
+
 }
 
 extension NovaUnifiedWebViewHost: WKUIDelegate {

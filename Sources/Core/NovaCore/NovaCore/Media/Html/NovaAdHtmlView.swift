@@ -394,7 +394,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         if preloadState == .pending {
             handlePreloadCompletion(false)
         } else {
-            htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
+            htmlActionDelegate?.didFailToLoadPage(errorMessage: error.formattedMessage)
         }
     }
 
@@ -402,7 +402,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         if preloadState == .pending {
             handlePreloadCompletion(false)
         } else {
-            htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
+            htmlActionDelegate?.didFailToLoadPage(errorMessage: error.formattedMessage)
         }
     }
 

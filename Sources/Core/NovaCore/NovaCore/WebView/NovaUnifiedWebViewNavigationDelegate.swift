@@ -24,6 +24,8 @@ protocol NovaUnifiedWebViewNavigationDelegate: NSObject {
 
     func webViewDidGoBackToInitialLoad(_ webView: WKWebView);
     
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error)
+    
 }
 
 extension NovaUnifiedWebViewNavigationDelegate {
@@ -53,6 +55,8 @@ extension NovaUnifiedWebViewNavigationDelegate {
     func webViewInitialLoadDidRedirect(_ webView: WKWebView) {}
     
     func webViewDidGoBackToInitialLoad(_ webView: WKWebView) {}
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {}
 
 }
 
