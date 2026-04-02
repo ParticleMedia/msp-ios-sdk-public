@@ -9,6 +9,7 @@ final class AppInfoSheetViewController: UIViewController {
     private struct Row {
         let label: String
         let keyPath: KeyPath<AppInfoSheetViewController, String>
+        var copyable: Bool = false
     }
 
     private let sections: [(title: String, rows: [Row])] = [
@@ -16,8 +17,8 @@ final class AppInfoSheetViewController: UIViewController {
             Row(label: "Version", keyPath: \.appVersion),
         ]),
         (title: "SDK", rows: [
-            Row(label: "MSP ID", keyPath: \.mspId),
-            Row(label: "SHORT ID", keyPath: \.shortId),
+            Row(label: "MSP ID", keyPath: \.mspId, copyable: true),
+            Row(label: "SHORT ID", keyPath: \.shortId, copyable: true),
         ]),
     ]
 
@@ -101,6 +102,48 @@ final class AppInfoSheetViewController: UIViewController {
             self.observer = nil
         }
     }
+
+    // MARK: - Copy & Toast
+
+    private func copyToClipboard(_ value: String) {
+        UIPasteboard.general.string = value
+        showToast("Copied!")
+    }
+
+    private func showToast(_ message: String) {
+        let container = UIView()
+        container.backgroundColor = UIColor.label.withAlphaComponent(0.8)
+        container.layer.cornerRadius = 16
+        container.clipsToBounds = true
+
+        let label = UILabel()
+        label.text = message
+        label.textColor = .systemBackground
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+
+        container.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(8)
+            make.leading.trailing.equalToSuperview().inset(16)
+        }
+
+        view.addSubview(container)
+        container.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-32)
+        }
+
+        container.alpha = 0
+        UIView.animate(withDuration: 0.2) {
+            container.alpha = 1
+        } completion: { _ in
+            UIView.animate(withDuration: 0.3, delay: 1.2) {
+                container.alpha = 0
+            } completion: { _ in
+                container.removeFromSuperview()
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -125,6 +168,22 @@ extension AppInfoSheetViewController: UITableViewDataSource {
         content.secondaryTextProperties.color = .secondaryLabel
         content.secondaryTextProperties.numberOfLines = 0
         cell.contentConfiguration = content
+
+        if row.copyable {
+            let button = UIButton(type: .system)
+            let config = UIImage.SymbolConfiguration(pointSize: 13, weight: .regular)
+            button.setImage(UIImage(systemName: "doc.on.doc", withConfiguration: config), for: .normal)
+            button.tintColor = .secondaryLabel
+            button.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+            button.addAction(UIAction { [weak self] _ in
+                guard let self else { return }
+                self.copyToClipboard(self[keyPath: row.keyPath])
+            }, for: .touchUpInside)
+            cell.accessoryView = button
+        } else {
+            cell.accessoryView = nil
+        }
+
         return cell
     }
 }
