@@ -14,13 +14,16 @@ protocol NovaTopRightClosable: AnyObject {
     var countdownTimer: Timer? { get set }
     var delayTimer: Timer? { get set }
     var countdownSecondRemaining: Int { get set }
-    var delaySecondRemaining: Int? { get }
+    var delaySecondRemaining: Int? { get set }
     var topRightCloseButton: UIButton { get }
     var topRightCloseButtonArea: UIView { get }
     var darkColor: UIColor { get }
+    var backgroundObserver: NSObjectProtocol? { get set }
+    var foregroundObserver: NSObjectProtocol? { get set }
     func setupCountdownTimerIfNeeded()
     func enableCloseButtonIfNeeded()
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView)
+    func teardownCountdown()
 }
 
 enum NovaTopRightCloseButtonStyle {
@@ -58,6 +61,7 @@ extension NovaTopRightClosable {
 
     private func topRightCloseButtonStartCountDown(button: UIButton, clickableArea: UIView) {
         countdownTimer?.invalidate()
+        removeAppLifecycleObservers()
 
         let endTime = Date().addingTimeInterval(TimeInterval(countdownSecondRemaining))
 
@@ -73,22 +77,76 @@ extension NovaTopRightClosable {
                 button.setTitle("\(remaining)", for: .normal)
             } else {
                 timer.invalidate()
+                self?.removeAppLifecycleObservers()
                 self?.enableTopRightCloseButton(button: button, clickableArea: clickableArea)
             }
         }
 
         RunLoop.main.add(countdownTimer!, forMode: .common)
+
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.countdownTimer?.invalidate()
+            self?.countdownTimer = nil
+        }
+
+        foregroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self, self.countdownSecondRemaining > 0 else { return }
+            self.topRightCloseButtonStartCountDown(button: self.topRightCloseButton, clickableArea: self.topRightCloseButtonArea)
+        }
+    }
+
+    private func removeAppLifecycleObservers() {
+        if let obs = backgroundObserver {
+            NotificationCenter.default.removeObserver(obs)
+            backgroundObserver = nil
+        }
+        if let obs = foregroundObserver {
+            NotificationCenter.default.removeObserver(obs)
+            foregroundObserver = nil
+        }
     }
 
     private func delayStartCountDown(delaySeconds: Int) {
-        var remainingSeconds = delaySeconds
-        delayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            remainingSeconds -= 1
-            if remainingSeconds > 0 {
-            } else {
+        delaySecondRemaining = delaySeconds
+        delayTimer?.invalidate()
+        removeAppLifecycleObservers()
+
+        delayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            let remaining = (self.delaySecondRemaining ?? 0) - 1
+            self.delaySecondRemaining = remaining
+            if remaining <= 0 {
                 self.delayTimer?.invalidate()
+                self.delayTimer = nil
+                self.removeAppLifecycleObservers()
                 self.setupCountdownTimerIfNeeded()
             }
+        }
+
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.delayTimer?.invalidate()
+            self?.delayTimer = nil
+        }
+
+        foregroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self, let remaining = self.delaySecondRemaining, remaining > 0 else { return }
+            self.delayStartCountDown(delaySeconds: remaining)
         }
     }
 
@@ -102,5 +160,13 @@ extension NovaTopRightClosable {
             UIImage(systemName: "xmark", withConfiguration: config)?.withTintColor(
                 UIColor(light: NovaColorPalettes.Gray.tint600, dark: darkColor), renderingMode: .alwaysOriginal),
             for: .normal)
+    }
+
+    func teardownCountdown() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+        delayTimer?.invalidate()
+        delayTimer = nil
+        removeAppLifecycleObservers()
     }
 }

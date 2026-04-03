@@ -31,6 +31,8 @@ class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewH
     var countdownSecondRemaining: Int
     var delayTimer: Timer?
     var delaySecondRemaining: Int?
+    var backgroundObserver: NSObjectProtocol?
+    var foregroundObserver: NSObjectProtocol?
     var useCustomClose: Bool
     private var htmlMediaModel: NovaAdHtmlMediaModel
     private var showReportButton: Bool = false
@@ -117,6 +119,7 @@ class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewH
 
     func didDisappear() {
         skOverlayController.dismiss()
+        teardownCountdown()
     }
 
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {

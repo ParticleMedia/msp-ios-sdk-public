@@ -188,6 +188,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
 
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
+        teardownCountdown()
     }
     
     func willTransit(in containerView: UIView) {
@@ -351,7 +352,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     var countdownTimer: Timer?
     var countdownSecondRemaining: Int
     var delayTimer: Timer? = nil
-    let delaySecondRemaining: Int? = nil
+    var delaySecondRemaining: Int? = nil
+    var backgroundObserver: NSObjectProtocol?
+    var foregroundObserver: NSObjectProtocol?
     private let showTopRightCloseButton: Bool
 
     var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }

@@ -198,6 +198,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
+        teardownCountdown()
     }
 
     private lazy var volumeButton: UIButton = {
@@ -356,6 +357,8 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     var countdownSecondRemaining: Int
     var delayTimer: Timer? = nil
     var delaySecondRemaining: Int? = nil
+    var backgroundObserver: NSObjectProtocol?
+    var foregroundObserver: NSObjectProtocol?
     private let showTopRightCloseButton: Bool
 
     var darkColor: UIColor {
