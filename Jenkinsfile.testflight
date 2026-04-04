@@ -1,0 +1,182 @@
+// ============================================================================
+// MSP iOS SDK - TestFlight Upload Pipeline
+// ============================================================================
+// Fetches signing credentials, archives MSPDemoApp, and uploads to TestFlight.
+//
+// Parameters:
+//   BRANCH         - Branch to build from (default: develop)
+//   RELEASER_EMAIL - Who is triggering this build (for Slack notification)
+// ============================================================================
+
+pipeline {
+    agent { label 'Mac_Studio' }
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    parameters {
+        gitParameter(
+            name: 'BRANCH',
+            type: 'PT_BRANCH',
+            defaultValue: 'develop',
+            branchFilter: 'origin/(develop|feature/.*|release/.*|hotfix/.*)',
+            selectedValue: 'DEFAULT',
+            sortMode: 'DESCENDING_SMART',
+            description: 'Branch to build from.'
+        )
+        choice(
+            name: 'RELEASER_EMAIL',
+            choices: [
+                'pengyu.gou@newsbreak.com',
+                'han.xiang@newsbreak.com',
+                'huanzhi.zhang@newsbreak.com',
+                'ling.yang@newsbreak.com',
+                'mingming.luo@newsbreak.com',
+                'shanyu.li@newsbreak.com'
+            ],
+            description: 'Who is triggering this build? Used for Slack notification.'
+        )
+    }
+
+    environment {
+        // DEVELOPER_DIR is auto-detected in 'Environment check' stage below
+        PATH         = "/opt/homebrew/bin:/usr/local/bin:/Users/bjdev/.rbenv/shims:/Users/bjdev/.rbenv/bin:${env.PATH}"
+        SLACK_CONFIG = 'Scripts/config/slack.conf'
+        LANG         = 'en_US.UTF-8'
+        LC_ALL       = 'en_US.UTF-8'
+        CI           = 'true'
+    }
+
+    stages {
+        stage('Environment check') {
+            steps {
+                script {
+                    env.DEVELOPER_DIR = sh(script: './Scripts/lib/detect_developer_dir.sh', returnStdout: true).trim()
+                    echo "Auto-detected DEVELOPER_DIR: ${env.DEVELOPER_DIR}"
+                }
+                sh '''
+                    echo "=== Environment ==="
+                    echo "DEVELOPER_DIR: $DEVELOPER_DIR"
+                    echo "Xcode: $(xcodebuild -version 2>/dev/null | head -1 || echo NOT FOUND)"
+                    echo "Ruby:  $(ruby --version 2>/dev/null || echo NOT FOUND)"
+                    echo "gh:    $(which gh 2>/dev/null || echo NOT FOUND)"
+                    brew list xcodegen &>/dev/null || brew install xcodegen
+                    echo "XcodeGen: $(xcodegen --version)"
+                '''
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${params.BRANCH ?: 'develop'}"]],
+                    userRemoteConfigs: scm.userRemoteConfigs
+                ])
+            }
+        }
+
+        stage('Install Ruby dependencies') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle install
+                    echo "Bundler: $(bundle --version)"
+                    echo "Fastlane: $(FASTLANE_SKIP_UPDATE_CHECK=1 bundle exec fastlane --version | tail -n 1)"
+                '''
+            }
+        }
+
+        stage('Prepare workspace') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    CI="" ./Scripts/workspace/update.sh  # update.sh skips certain steps in CI mode; intentionally unset here
+                    ./Scripts/ci/install-pods.sh
+                '''
+            }
+        }
+
+        stage('Fetch signing credentials') {
+            steps {
+                sshagent(credentials: ['git key']) {
+                    sh '''
+                        set -euo pipefail
+                        ./Scripts/testflight/fetch-credentials.sh
+                    '''
+                }
+            }
+        }
+
+        stage('Upload to TestFlight') {
+            steps {
+                sshagent(credentials: ['git key']) {
+                    sh '''
+                        set -euo pipefail
+                        make beta
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            withCredentials([
+                string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL')
+            ]) {
+                script {
+                    def branch        = params.BRANCH ?: 'develop'
+                    def triggeredBy   = params.RELEASER_EMAIL ?: 'unknown'
+                    def elapsedSecs   = currentBuild.duration.intdiv(1000)
+                    def duration      = "${elapsedSecs.intdiv(60)}m ${elapsedSecs % 60}s"
+
+                    // Pass values as environment variables instead of Groovy string
+                    // interpolation to prevent shell injection from user-controlled inputs.
+                    withEnv([
+                        "TF_BRANCH=${branch}",
+                        "TF_TRIGGERED_BY=${triggeredBy}",
+                        "TF_DURATION=${duration}"
+                    ]) {
+                        sh '''
+                            set +e
+                            ./Scripts/ci/jenkins-slack.sh testflight-success "$TF_BRANCH" "$TF_TRIGGERED_BY" "$TF_DURATION" || true
+                        '''
+                    }
+                }
+            }
+        }
+
+        always {
+            sh '''
+                set +e
+                # Restore keychain search list before deleting the CI keychain.
+                # This runs even when deploy.sh's EXIT trap is bypassed (e.g. Jenkins
+                # node disconnect, OOM kill) to prevent a dangling reference that breaks
+                # codesign in other jobs running as the same user.
+                restore_file="Scripts/testflight/.keychain_restore"
+                keychain_name="msp-build.keychain"
+                if [ -f Scripts/testflight/.env ]; then
+                    parsed_restore_file="$(grep '^CI_KEYCHAIN_RESTORE_FILE=' Scripts/testflight/.env | head -1 | cut -d'=' -f2-)"
+                    parsed_keychain_name="$(grep '^CI_KEYCHAIN_NAME=' Scripts/testflight/.env | head -1 | cut -d'=' -f2-)"
+                    if [ -n "$parsed_restore_file" ]; then
+                        restore_file="$parsed_restore_file"
+                    fi
+                    if [ -n "$parsed_keychain_name" ]; then
+                        keychain_name="$parsed_keychain_name"
+                    fi
+                    unset parsed_restore_file parsed_keychain_name
+                fi
+                if [ -f "$restore_file" ]; then
+                    security list-keychains -d user -s $(cat "$restore_file") 2>/dev/null || true
+                    rm -f "$restore_file"
+                fi
+                rm -f Scripts/testflight/AuthKey_*.p8 Scripts/testflight/.env
+                security delete-keychain "$keychain_name" 2>/dev/null || true
+                echo "Credentials cleaned up."
+            '''
+        }
+    }
+}

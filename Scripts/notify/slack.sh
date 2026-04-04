@@ -571,6 +571,29 @@ notify_release_success_with_summary() {
     send_slack_notification "$message" "$color" "$title" "$fields"
 }
 
+# Send TestFlight upload success notification
+# Args: $1=build_number $2=sdk_version $3=branch $4=triggered_by $5=duration
+notify_testflight_success() {
+    local build_number="$1"
+    local sdk_version="$2"
+    local branch="${3:-unknown}"
+    local triggered_by="${4:-unknown}"
+    local duration="${5:-unknown}"
+
+    local message="✈️ *TestFlight Upload Successful!*"
+    local title="MSPDemoApp Build Details"
+    local fields=""
+
+    fields+="{\"title\": \"Build Number\", \"value\": \"$build_number\", \"short\": true}"
+    fields+=",{\"title\": \"SDK Version\", \"value\": \"$sdk_version\", \"short\": true}"
+    fields+=",{\"title\": \"Branch\", \"value\": \"$branch\", \"short\": true}"
+    fields+=",{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true}"
+    fields+=",{\"title\": \"Triggered By\", \"value\": \"$triggered_by\", \"short\": true}"
+    fields+=",{\"title\": \"Environment\", \"value\": \"$(get_slack_environment_info)\", \"short\": true}"
+
+    send_slack_notification "$message" "good" "$title" "$fields"
+}
+
 # Test Slack notification
 test_slack_notification() {
     log::step "NOTIFY" "Testing Slack notification..."
@@ -598,4 +621,4 @@ export -f format_release_notes_for_slack
 export -f send_slack_notification
 export -f notify_release_success notify_release_failure notify_release_warning
 export -f notify_release_start notify_pod_release notify_release_summary
-export -f notify_release_success_with_summary test_slack_notification
+export -f notify_release_success_with_summary notify_testflight_success test_slack_notification

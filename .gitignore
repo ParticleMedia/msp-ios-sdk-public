@@ -227,6 +227,7 @@ Tests/notify_runner/__pycache__/
 .envrc
 Scripts/testflight/.env
 Scripts/testflight/AuthKey_*.p8
+Scripts/testflight/.keychain_restore*
 
 # Slack notification credentials (NEVER commit actual tokens)
 Scripts/config/slack.conf

@@ -13,7 +13,8 @@ unset _msp_root
 # This script shows how to integrate Slack notifications into Jenkins pipelines
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/release-common.sh"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$REPO_ROOT/Scripts/lib/release-common.sh"
 
 # Jenkins-specific configuration
 export SLACK_CHANNEL="${SLACK_CHANNEL:-#jenkins-releases}"
@@ -70,6 +71,23 @@ jenkins_test_slack() {
     test_slack_notification
 }
 
+jenkins_testflight_success() {
+    local branch="${1:-unknown}"
+    local triggered_by="${2:-unknown}"
+    local duration="${3:-unknown}"
+    local build_number
+    local sdk_version
+
+    build_number="$(grep 'build_number:' "$REPO_ROOT/Scripts/testflight/config.yaml" | awk '{print $2}')"
+    sdk_version="$(grep 'SDK_VERSION=' "$REPO_ROOT/Scripts/config/sdk_version.conf" | sed 's/.*="//;s/"//')"
+
+    export JENKINS_URL="${JENKINS_URL:-}"
+    export BUILD_NUMBER="${BUILD_NUMBER:-unknown}"
+
+    log::info "CI" "Sending Jenkins TestFlight success notification for build ${build_number}"
+    notify_testflight_success "$build_number" "$sdk_version" "$branch" "$triggered_by" "$duration"
+}
+
 main() {
     local command="$1"
     shift
@@ -84,13 +102,17 @@ main() {
         "test-slack")
             jenkins_test_slack
             ;;
+        "testflight-success")
+            jenkins_testflight_success "$@"
+            ;;
         *)
-            echo "Usage: $0 {cocoapods|spm|test-slack} [args...]"
+            echo "Usage: $0 {cocoapods|spm|test-slack|testflight-success} [args...]"
             echo ""
             echo "Commands:"
             echo "  cocoapods <version> <release_branch>  - Run CocoaPods release"
             echo "  spm <version> <release_branch>        - Run SPM release"
             echo "  test-slack                            - Test Slack integration"
+            echo "  testflight-success <branch> <email> <duration>"
             exit 1
             ;;
     esac

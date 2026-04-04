@@ -189,11 +189,6 @@ targetTemplates:
     platform: iOS
     sources:
       - path: MSPDemoApp
-    info:
-      path: MSPDemoApp/Info.plist
-      properties:
-        UILaunchStoryboardName: LaunchScreen
-        UIMainStoryboardFile: Main
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

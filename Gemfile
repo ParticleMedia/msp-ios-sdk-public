@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Fastlane - iOS automation tool
-gem 'fastlane', '~> 2.217'
+gem 'fastlane', '~> 2.232'
 
 # CocoaPods - iOS dependency management
 gem 'cocoapods', '~> 1.14'
@@ -26,5 +26,4 @@ platforms :ruby do
 end
 
 # Specify Ruby version
-ruby '~> 3.1'
-
+ruby '~> 3.2'

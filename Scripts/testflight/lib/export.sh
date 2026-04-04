@@ -29,12 +29,23 @@ tf_export() {
 
     start_timer
 
+    # Unlock CI keychain before codesign — prevents errSecInternalComponent.
+    # Values must match fetch-credentials.sh constants.
+    local ci_keychain="${CI_KEYCHAIN_NAME:-msp-build.keychain}"
+    local ci_keychain_pw="${CI_KEYCHAIN_PASSWORD:-msp-ci-build}"
+    if security unlock-keychain -p "$ci_keychain_pw" "$ci_keychain" 2>/dev/null; then
+        log::info "TF-EXPORT" "Unlocked $ci_keychain for codesign"
+    else
+        log::warn "TF-EXPORT" "Could not unlock $ci_keychain — codesign may fail"
+    fi
+
     # Build xcodebuild arguments
     local -a xc_args=(
         -archivePath "$ROOT_DIR/$TF_ARCHIVE_PATH"
         -exportPath "$ROOT_DIR/$TF_EXPORT_PATH"
         -exportOptionsPlist "$export_options"
         -allowProvisioningUpdates
+        -quiet
     )
 
     # ASC API key auth (only when credentials are available; dry-run may skip)
@@ -48,10 +59,12 @@ tf_export() {
         log::warn "TF-EXPORT" "ASC credentials not set — using local Keychain for signing"
     fi
 
+    # Use || to capture exit code without triggering set -e, consistent with
+    # archive.sh and upload.sh (prevents set -e from skipping the error check below).
+    local exit_code=0
     xcodebuild -exportArchive "${xc_args[@]}" \
-        | tee "$ROOT_DIR/$TF_LOG_PATH/export.log"
-
-    local exit_code=${PIPESTATUS[0]}
+        2>&1 | tee "$ROOT_DIR/$TF_LOG_PATH/export.log" \
+        || exit_code=${PIPESTATUS[0]}
     local duration
     duration=$(end_timer)
 

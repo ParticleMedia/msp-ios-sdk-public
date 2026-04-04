@@ -113,6 +113,33 @@ unset _tf_env_file
 
 # Source TestFlight modules
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ---- Keychain cleanup on EXIT ----
+# Restores the original keychain search list and removes the CI keychain so
+# that other Jenkins jobs on the same machine are not affected.
+_CI_KEYCHAIN_NAME="${CI_KEYCHAIN_NAME:-msp-build.keychain}"
+_CI_KEYCHAIN_RESTORE_FILE="${CI_KEYCHAIN_RESTORE_FILE:-$SCRIPT_DIR/.keychain_restore}"
+_tf_cleanup_keychain() {
+    # Restore Info.plist if archive.sh was interrupted mid-write (SIGKILL, Jenkins
+    # abort). _TF_INFO_PLIST is exported by archive.sh before modifying the plist
+    # and unset after the normal restore. If still set here, restore is needed.
+    if [[ -n "${_TF_INFO_PLIST:-}" && -f "${_TF_INFO_PLIST}" ]]; then
+        log::warn "TF-DEPLOY" "Restoring Info.plist after interrupted archive: $_TF_INFO_PLIST"
+        /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString $(MARKETING_VERSION)' "$_TF_INFO_PLIST" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion $(CURRENT_PROJECT_VERSION)' "$_TF_INFO_PLIST" 2>/dev/null || true
+    fi
+
+    local restore_file="$_CI_KEYCHAIN_RESTORE_FILE"
+    if [[ -f "$restore_file" ]]; then
+        log::warn "TF-DEPLOY" "Restoring original keychain list..."
+        # shellcheck disable=SC2046
+        security list-keychains -d user -s $(cat "$restore_file") 2>/dev/null || true
+        rm -f "$restore_file"
+    fi
+    log::warn "TF-DEPLOY" "Removing CI keychain: $_CI_KEYCHAIN_NAME"
+    security delete-keychain "$_CI_KEYCHAIN_NAME" 2>/dev/null || true
+}
+trap '_tf_cleanup_keychain' EXIT
 # shellcheck source=Scripts/testflight/lib/config.sh
 source "$SCRIPT_DIR/lib/config.sh"
 # shellcheck source=Scripts/testflight/lib/validate.sh
@@ -140,17 +167,15 @@ main() {
     # Step 2: Load config
     tf_load_config
 
-    # Step 3: Compute next build number
-    tf_compute_next_build_number "$BUILD_NUMBER_OVERRIDE"
-
-    # Step 3.5: Read SDK version from SSOT for MARKETING_VERSION
-    if read_sdk_version_from_config >/dev/null 2>&1; then
-        TF_SDK_VERSION="$(read_sdk_version_from_config)"
-    else
+    # Step 3: Read SDK version from SSOT for MARKETING_VERSION
+    TF_SDK_VERSION="$(read_sdk_version_from_config 2>/dev/null)" || {
         TF_SDK_VERSION="0.0.1"
         log::warn "TF-DEPLOY" "Could not read SDK version from SSOT, using fallback: $TF_SDK_VERSION"
-    fi
+    }
     export TF_SDK_VERSION
+
+    # Step 3.5: Compute next build number (scoped to the target marketing version)
+    tf_compute_next_build_number "$BUILD_NUMBER_OVERRIDE"
 
     # Print deployment summary
     log::info "TF-DEPLOY" "--------------------------------------------"

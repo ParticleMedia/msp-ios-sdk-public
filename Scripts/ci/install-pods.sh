@@ -62,6 +62,27 @@ fi
 
 echo "$LOG_PREFIX Installing root-level CocoaPods dependencies..."
 
+refresh_demoapp_workspace_after_pods() {
+  local demoapp_dir=""
+  if [ -d "Examples/MSPDemoApp" ]; then
+    demoapp_dir="Examples/MSPDemoApp"
+  elif [ -d "MSPDemoApp" ]; then
+    demoapp_dir="MSPDemoApp"
+  fi
+
+  if [ -z "$demoapp_dir" ]; then
+    return 0
+  fi
+
+  if [ ! -x "Scripts/workspace/update.sh" ]; then
+    echo "$LOG_PREFIX Skipping workspace refresh (Scripts/workspace/update.sh not executable)"
+    return 0
+  fi
+
+  echo "$LOG_PREFIX Refreshing DemoApp project/workspace after pod install..."
+  CI="" ./Scripts/workspace/update.sh
+}
+
 ensure_demoapp_xcodeproj() {
   local demoapp_dir=""
   if [ -d "Examples/MSPDemoApp" ]; then
@@ -123,6 +144,7 @@ if [[ "$COCOAPODS_MODULE_AVAILABLE" == "true" ]]; then
     fi
 
     if install_pods "${install_options[@]+"${install_options[@]}"}"; then
+        refresh_demoapp_workspace_after_pods
         echo "✅ pod install completed (via cocoapods.sh module)"
         exit 0
     else
@@ -133,6 +155,7 @@ else
     # Fallback: Direct pod install (when cocoapods.sh module is not available)
     if [ "$REPO_UPDATE" -eq 1 ]; then
       if "${POD_CMD[@]}" install --repo-update; then
+        refresh_demoapp_workspace_after_pods
         echo "✅ pod install --repo-update completed"
         exit 0
       fi
@@ -140,6 +163,7 @@ else
     fi
 
     if "${POD_CMD[@]}" install; then
+      refresh_demoapp_workspace_after_pods
       echo "✅ pod install completed"
       exit 0
     fi
