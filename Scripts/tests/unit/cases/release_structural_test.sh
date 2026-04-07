@@ -40,6 +40,7 @@ MODULAR="$ROOT_DIR/Scripts/release/orchestrator/modular.sh"
 SPM_PUBLISH="$ROOT_DIR/Scripts/release/publish/spm/publish.sh"
 SLACK_CONF="$ROOT_DIR/Scripts/config/slack.conf"
 NOTIFY_CORE="$ROOT_DIR/Scripts/notify/notify_core.sh"
+GIT_UTIL="$ROOT_DIR/Scripts/release/utils/git.sh"
 
 # ============================================================================
 # Bug 1: Version propagation must happen before pods/publish.sh
@@ -175,6 +176,25 @@ test_push_failure_continues_to_pr() {
     fi
 }
 
+test_pr_creation_uses_backup_branch() {
+    if grep -q 'pr_backup_branch_name' "$GIT_UTIL" &&
+       grep -q 'prepare_pr_backup_branch' "$GIT_UTIL" &&
+       grep -q -- '--head.*pr_source_branch' "$GIT_UTIL"; then
+        pass "Bug3: PR creation uses isolated backup branch as head"
+    else
+        fail "Bug3: PR creation should prepare and use a backup branch"
+    fi
+}
+
+test_pr_backup_branch_is_tracked_in_state() {
+    if grep -q 'msp_state_set_pr_branch_name' "$GIT_UTIL" &&
+       grep -q 'msp_state_mark_git_flag "pr_branch_pushed" true' "$GIT_UTIL"; then
+        pass "Bug3: PR backup branch is tracked in release state"
+    else
+        fail "Bug3: PR backup branch should be recorded in state"
+    fi
+}
+
 # ============================================================================
 # Slack: Credential validity
 # ============================================================================
@@ -277,6 +297,8 @@ test_push_has_retry
 test_push_has_sleep_interval
 test_push_failure_is_soft_fail
 test_push_failure_continues_to_pr
+test_pr_creation_uses_backup_branch
+test_pr_backup_branch_is_tracked_in_state
 
 echo ""
 echo "--- Slack credential validation ---"

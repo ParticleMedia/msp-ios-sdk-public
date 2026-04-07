@@ -250,13 +250,15 @@ msp_cmd_rollback() {
     fi
 
     # Extract relevant fields
-    local version release_branch tag_created tag_name branch_pushed gh_release_created
+    local version release_branch pr_branch tag_created tag_name branch_pushed pr_branch_pushed gh_release_created
 
     version="$(jq -r '.version // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
     release_branch="$(jq -r '.release_branch // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
+    pr_branch="$(jq -r '.git.pr_branch_name // empty' "$state_file" 2>/dev/null || echo "")"
     tag_created="$(jq -r '.git.tag_created // false' "$state_file" 2>/dev/null || echo "false")"
     tag_name="$(jq -r '.git.tag_name // empty' "$state_file" 2>/dev/null || echo "")"
     branch_pushed="$(jq -r '.git.release_branch_pushed // false' "$state_file" 2>/dev/null || echo "false")"
+    pr_branch_pushed="$(jq -r '.git.pr_branch_pushed // false' "$state_file" 2>/dev/null || echo "false")"
     gh_release_created="$(jq -r '.git.github_release_created // false' "$state_file" 2>/dev/null || echo "false")"
 
     # Print a clear rollback plan
@@ -266,10 +268,12 @@ msp_cmd_rollback() {
     if command -v ui_kv &>/dev/null; then
         ui_kv "Version" "${version}"
         ui_kv "Release branch" "${release_branch}"
+        ui_kv "PR branch" "${pr_branch:-<none>}"
         ui_kv "Git tag" "${tag_name:-<none>}"
     else
         log::info "CMD" "Version: ${version}"
         log::info "CMD" "Release branch: ${release_branch}"
+        log::info "CMD" "PR branch: ${pr_branch:-<none>}"
         log::info "CMD" "Git tag: ${tag_name:-<none>}"
     fi
     echo ""
@@ -302,6 +306,20 @@ msp_cmd_rollback() {
         fi
     else
         log::info "CMD" "- No release branch recorded as pushed"
+    fi
+
+    echo ""
+
+    if [[ "$pr_branch_pushed" == "true" ]]; then
+        if [[ -z "$pr_branch" || "$pr_branch" == "unknown" || "$pr_branch" == "null" ]]; then
+            log::info "CMD" "- PR backup branch was pushed but branch name is not recorded"
+        elif [[ "$pr_branch" == "$release_branch" ]]; then
+            log::info "CMD" "- PR backup branch matches release branch (${pr_branch}); no separate deletion needed"
+        else
+            log::info "CMD" "- Would delete remote PR backup branch: ${pr_branch}"
+        fi
+    else
+        log::info "CMD" "- No PR backup branch recorded as pushed"
     fi
 
     echo ""
@@ -339,13 +357,7 @@ msp_cmd_rollback() {
     log::warn "CMD" "This includes deleting git tags/branches and GitHub Releases"
 
     # Execute rollback actions
-    if _msp_execute_rollback_actions \
-        "$version" \
-        "$release_branch" \
-        "$tag_created" \
-        "$tag_name" \
-        "$branch_pushed" \
-        "$gh_release_created"; then
+    if _msp_execute_rollback_actions "$state_file"; then
 
         # On success, reset git flags in the state
         if command -v msp_state_reset_git_flags &>/dev/null; then
@@ -369,13 +381,20 @@ msp_cmd_rollback() {
 }
 
 # Private helper to execute rollback actions
+# Reads all needed fields directly from the state file to avoid positional parameter bloat.
+# Usage: _msp_execute_rollback_actions <state_file_path>
 _msp_execute_rollback_actions() {
-    local version="$1"
-    local release_branch="$2"
-    local tag_created="$3"
-    local tag_name="$4"
-    local branch_pushed="$5"
-    local gh_release_created="$6"
+    local state_file="$1"
+
+    local version release_branch pr_branch tag_created tag_name branch_pushed pr_branch_pushed gh_release_created
+    version="$(jq -r '.version // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
+    release_branch="$(jq -r '.release_branch // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
+    pr_branch="$(jq -r '.git.pr_branch_name // empty' "$state_file" 2>/dev/null || echo "")"
+    tag_created="$(jq -r '.git.tag_created // false' "$state_file" 2>/dev/null || echo "false")"
+    tag_name="$(jq -r '.git.tag_name // empty' "$state_file" 2>/dev/null || echo "")"
+    branch_pushed="$(jq -r '.git.release_branch_pushed // false' "$state_file" 2>/dev/null || echo "false")"
+    pr_branch_pushed="$(jq -r '.git.pr_branch_pushed // false' "$state_file" 2>/dev/null || echo "false")"
+    gh_release_created="$(jq -r '.git.github_release_created // false' "$state_file" 2>/dev/null || echo "false")"
 
     local any_error=0
 
@@ -429,7 +448,31 @@ _msp_execute_rollback_actions() {
 
     echo ""
 
-    # 3) Delete GitHub Release if recorded as created
+    # 3) Delete remote PR backup branch if recorded as pushed
+    if [[ "$pr_branch_pushed" == "true" ]]; then
+        if [[ -z "$pr_branch" || "$pr_branch" == "unknown" || "$pr_branch" == "null" ]]; then
+            log::warn "CMD" "State indicates pr_branch_pushed=true but pr_branch_name is unknown. Skipping remote PR branch deletion"
+        elif [[ "$pr_branch" == "$release_branch" ]]; then
+            log::info "CMD" "PR backup branch matches release branch (${pr_branch}). Skipping duplicate deletion"
+        else
+            log::info "CMD" "Deleting remote PR backup branch: ${pr_branch}"
+            if command -v msp_git_delete_remote_branch &>/dev/null; then
+                if ! msp_git_delete_remote_branch "$pr_branch"; then
+                    log::error "CMD" "Failed to delete remote PR backup branch ${pr_branch}"
+                    any_error=1
+                fi
+            else
+                log::error "CMD" "msp_git_delete_remote_branch function not available"
+                any_error=1
+            fi
+        fi
+    else
+        log::info "CMD" "No PR backup branch recorded as pushed. Skipping remote branch deletion"
+    fi
+
+    echo ""
+
+    # 4) Delete GitHub Release if recorded as created
     if [[ "$gh_release_created" == "true" ]]; then
         local release_target=""
         if [[ -n "$tag_name" && "$tag_name" != "null" && "$tag_name" != "" ]]; then

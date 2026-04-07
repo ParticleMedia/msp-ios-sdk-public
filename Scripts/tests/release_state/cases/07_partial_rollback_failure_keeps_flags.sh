@@ -73,11 +73,12 @@ mock_log_contains "$MOCK_LOG" "push origin --delete" "Branch deletion should be 
 # and release_branch_pushed remains true because branch deletion failed.
 tag_created="$(read_state_field "$repo_root" '.git.tag_created')"
 branch_pushed="$(read_state_field "$repo_root" '.git.release_branch_pushed')"
+pr_branch_pushed="$(read_state_field "$repo_root" '.git.pr_branch_pushed')"
 assert_equals "true" "$tag_created" "tag_created flag should remain true after partial rollback failure (not updated for visibility)"
 assert_equals "true" "$branch_pushed" "release_branch_pushed flag should remain true after branch deletion failure"
+assert_equals "true" "$pr_branch_pushed" "pr_branch_pushed flag should remain true after PR branch deletion failure"
 
 # Clean up
 unset MOCK_GIT_FAIL_ON_BRANCH_DELETE
 
 echo "✓ Test passed: Partial rollback failure keeps flags for visibility"
-

@@ -342,7 +342,7 @@ msp_git_delete_tag() {
     return 0
 }
 
-# Delete a remote release branch
+# Delete a remote branch
 # Usage: msp_git_delete_remote_branch <branch_name>
 msp_git_delete_remote_branch() {
     local branch_name="$1"
@@ -354,51 +354,119 @@ msp_git_delete_remote_branch() {
     
     # We intentionally do NOT delete the local branch for safety
     if ! git push origin --delete "$branch_name" 2>/dev/null; then
-        log::error "GIT" "Failed to delete remote release branch: ${branch_name}"
+        log::error "GIT" "Failed to delete remote branch: ${branch_name}"
         return 1
     fi
     
-    log::success "GIT" "Deleted remote release branch: ${branch_name}"
+    log::success "GIT" "Deleted remote branch: ${branch_name}"
+    return 0
+}
+
+pr_backup_branch_name() {
+    local source_branch="${1:-}"
+
+    if [[ -z "$source_branch" ]]; then
+        source_branch=$(git rev-parse --abbrev-ref HEAD)
+    fi
+
+    if [[ "$source_branch" == backup/* ]]; then
+        echo "$source_branch"
+        return 0
+    fi
+
+    local sanitized_source="${source_branch//\//-}"
+    echo "backup/${sanitized_source}"
+}
+
+prepare_pr_backup_branch() {
+    local source_branch="$1"
+    local backup_branch="$2"
+    local remote="${3:-origin}"
+
+    if [[ -z "$source_branch" || -z "$backup_branch" ]]; then
+        log::error "GIT" "Source branch and backup branch are required"
+        return 1
+    fi
+
+    if [[ "$source_branch" == "$backup_branch" ]]; then
+        log::info "GIT" "PR source branch already isolated: $backup_branch"
+    else
+        local source_commit_sha
+        source_commit_sha=$(git rev-parse "$source_branch" 2>/dev/null || echo "")
+        if [[ -z "$source_commit_sha" ]]; then
+            log::error "GIT" "Failed to resolve source branch commit: $source_branch"
+            return 1
+        fi
+
+        log::step "GIT" "Refreshing PR backup branch $backup_branch from $source_branch"
+        if git branch -f "$backup_branch" "$source_commit_sha" 2>/dev/null; then
+            log::success "GIT" "Prepared PR backup branch $backup_branch at $source_commit_sha"
+        else
+            log::error "GIT" "Failed to prepare PR backup branch $backup_branch"
+            return 1
+        fi
+    fi
+
+    if ! push_branch "$backup_branch" "$remote" "true"; then
+        log::error "GIT" "Failed to push PR backup branch $backup_branch"
+        return 1
+    fi
+
+    if command -v msp_state_set_pr_branch_name &>/dev/null; then
+        msp_state_set_pr_branch_name "$backup_branch"
+    fi
+    if command -v msp_state_mark_git_flag &>/dev/null; then
+        msp_state_mark_git_flag "pr_branch_pushed" true
+    fi
+
     return 0
 }
 
 # @description Create a pull request from current branch to target branch using gh CLI
 # @param $1 version - Release version (for PR title)
 # @param $2 target_branch - Target branch (e.g., BASE_BRANCH)
+# @param $3 source_branch - Optional source branch (defaults to current branch)
 create_pr_to_branch() {
     local version="$1"
     local target_branch="$2"
-    local source_branch
-    source_branch=$(git rev-parse --abbrev-ref HEAD)
-
-    if ! command -v gh >/dev/null 2>&1; then
-        log::warn "GIT" "gh CLI not available — skipping PR creation"
-        log::info "GIT" "Please manually create PR: $source_branch → $target_branch"
-        return 0
+    local source_branch="${3:-}"
+    if [[ -z "$source_branch" ]]; then
+        source_branch=$(git rev-parse --abbrev-ref HEAD)
     fi
 
-    # Guard: skip if source and target are the same branch
+    local pr_source_branch
+    pr_source_branch="$(pr_backup_branch_name "$source_branch")"
+
     if [[ "$source_branch" == "$target_branch" ]]; then
         log::warn "GIT" "Source and target branch are the same ($source_branch) — skipping PR creation"
         return 0
     fi
 
-    log::info "GIT" "Creating PR: $source_branch → $target_branch"
+    if ! prepare_pr_backup_branch "$source_branch" "$pr_source_branch"; then
+        log::error "GIT" "Failed to prepare PR backup branch — aborting PR creation"
+        return 1
+    fi
+
+    if ! command -v gh >/dev/null 2>&1; then
+        log::warn "GIT" "gh CLI not available — skipping PR creation"
+        log::info "GIT" "Please manually create PR: $pr_source_branch → $target_branch"
+        return 0
+    fi
+
+    log::info "GIT" "Creating PR: $pr_source_branch → $target_branch (source: $source_branch)"
 
     gh pr create \
         --base "$target_branch" \
-        --head "$source_branch" \
+        --head "$pr_source_branch" \
         --title "chore(release): merge $version into $target_branch" \
-        --body "Auto-generated PR to sync release $version changes into \`$target_branch\`." \
+        --body "$(printf 'Auto-generated PR to sync release %s changes into `%s`.\n\nPR head branch: `%s`\nOriginal release branch: `%s`.' "$version" "$target_branch" "$pr_source_branch" "$source_branch")" \
         2>&1 || {
             log::warn "GIT" "PR creation failed (may already exist or branch not pushed)"
             return 0
         }
 
-    log::success "GIT" "PR created: $source_branch → $target_branch"
+    log::success "GIT" "PR created: $pr_source_branch → $target_branch"
 }
 
 # Export functions
-export -f ensure_git_clean create_branch delete_branch tag_exists create_tag push_branch push_tag fetch_remote msp_git_delete_tag msp_git_delete_remote_branch create_pr_to_branch 2>/dev/null || true
-
-
+export -f ensure_git_clean create_branch delete_branch tag_exists create_tag push_branch push_tag fetch_remote msp_git_delete_tag msp_git_delete_remote_branch pr_backup_branch_name prepare_pr_backup_branch create_pr_to_branch 2>/dev/null || true

@@ -48,8 +48,13 @@ assert_equals "null" "$tag_name" "tag_name should be reset to null"
 branch_pushed="$(read_state_field "$repo_root" '.git.release_branch_pushed')"
 assert_equals "false" "$branch_pushed" "release_branch_pushed flag should be reset to false"
 
+pr_branch_name="$(read_state_field "$repo_root" '.git.pr_branch_name')"
+assert_equals "null" "$pr_branch_name" "pr_branch_name should be reset to null"
+
+pr_branch_pushed="$(read_state_field "$repo_root" '.git.pr_branch_pushed')"
+assert_equals "false" "$pr_branch_pushed" "pr_branch_pushed flag should be reset to false"
+
 gh_release_created="$(read_state_field "$repo_root" '.git.github_release_created')"
 assert_equals "false" "$gh_release_created" "github_release_created flag should be reset to false"
 
 echo "✓ Test passed: Rollback --force executes actions and resets flags"
-

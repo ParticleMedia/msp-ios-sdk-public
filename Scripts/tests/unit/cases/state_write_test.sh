@@ -112,6 +112,12 @@ test_state_init_creates_state_file() {
     version=$(jq -r '.version' "${TEST_TMPDIR}/.msp-release-state.json")
     assert_equals "1.0.0" "$version" "Version should be '1.0.0'"
 
+    local pr_branch_name pr_branch_pushed
+    pr_branch_name=$(jq -r '.git.pr_branch_name' "${TEST_TMPDIR}/.msp-release-state.json")
+    pr_branch_pushed=$(jq -r '.git.pr_branch_pushed' "${TEST_TMPDIR}/.msp-release-state.json")
+    assert_equals "null" "$pr_branch_name" "PR branch name should default to null"
+    assert_equals "false" "$pr_branch_pushed" "PR branch pushed flag should default to false"
+
     info "msp_state_init creates state file correctly"
 }
 
@@ -563,6 +569,45 @@ EOF
 }
 
 # ============================================================================
+# Test: msp_state_set_pr_branch_name
+# ============================================================================
+
+test_set_pr_branch_name_updates_state() {
+    setup_test_env
+    cd "${TEST_TMPDIR}"
+
+    # Create minimal state file
+    cat > "${TEST_TMPDIR}/.msp-release-state.json" <<'EOF'
+{
+  "schema_version": 3,
+  "git": {
+    "pr_branch_name": null
+  },
+  "steps": {},
+  "timestamps": {
+    "started_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z"
+  }
+}
+EOF
+
+    # Source state.sh
+    # shellcheck source=/dev/null
+    source "${TEST_TMPDIR}/Scripts/release/utils/state.sh"
+
+    # Set PR branch name
+    msp_state_set_pr_branch_name "backup/release-1.0.0"
+
+    # Verify PR branch name
+    local pr_branch_name
+    pr_branch_name=$(jq -r '.git.pr_branch_name' "${TEST_TMPDIR}/.msp-release-state.json")
+
+    assert_equals "backup/release-1.0.0" "$pr_branch_name" "PR branch name should be updated"
+
+    info "msp_state_set_pr_branch_name updates state correctly"
+}
+
+# ============================================================================
 # Test: msp_state_reset_git_flags
 # ============================================================================
 
@@ -578,6 +623,8 @@ test_reset_git_flags_clears_all_flags() {
     "tag_created": true,
     "tag_name": "v1.0.0",
     "release_branch_pushed": true,
+    "pr_branch_name": "backup/release-1.0.0",
+    "pr_branch_pushed": true,
     "github_release_created": true
   },
   "steps": {},
@@ -596,15 +643,19 @@ EOF
     msp_state_reset_git_flags
 
     # Verify all flags are reset
-    local tag_created tag_name branch_pushed release_created
+    local tag_created tag_name branch_pushed pr_branch_name pr_branch_pushed release_created
     tag_created=$(jq -r '.git.tag_created' "${TEST_TMPDIR}/.msp-release-state.json")
     tag_name=$(jq -r '.git.tag_name' "${TEST_TMPDIR}/.msp-release-state.json")
     branch_pushed=$(jq -r '.git.release_branch_pushed' "${TEST_TMPDIR}/.msp-release-state.json")
+    pr_branch_name=$(jq -r '.git.pr_branch_name' "${TEST_TMPDIR}/.msp-release-state.json")
+    pr_branch_pushed=$(jq -r '.git.pr_branch_pushed' "${TEST_TMPDIR}/.msp-release-state.json")
     release_created=$(jq -r '.git.github_release_created' "${TEST_TMPDIR}/.msp-release-state.json")
 
     assert_equals "false" "$tag_created" "tag_created should be false"
     assert_equals "null" "$tag_name" "tag_name should be null"
     assert_equals "false" "$branch_pushed" "release_branch_pushed should be false"
+    assert_equals "null" "$pr_branch_name" "pr_branch_name should be null"
+    assert_equals "false" "$pr_branch_pushed" "pr_branch_pushed should be false"
     assert_equals "false" "$release_created" "github_release_created should be false"
 
     info "msp_state_reset_git_flags clears all flags correctly"
@@ -628,6 +679,7 @@ test_mark_pod_status_creates_pod_entry
 test_mark_pod_status_updates_existing_pod
 test_mark_git_flag_sets_boolean
 test_set_tag_name_updates_state
+test_set_pr_branch_name_updates_state
 test_reset_git_flags_clears_all_flags
 
 info "All state write tests passed!"

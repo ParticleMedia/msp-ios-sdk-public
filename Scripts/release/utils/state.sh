@@ -181,6 +181,8 @@ msp_state_init() {
                 tag_created: false,
                 tag_name: null,
                 release_branch_pushed: false,
+                pr_branch_name: null,
+                pr_branch_pushed: false,
                 github_release_created: false
             },
             steps: {
@@ -446,6 +448,26 @@ msp_state_set_tag_name() {
     return 0
 }
 
+msp_state_set_pr_branch_name() {
+    local name="$1"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    local name_json
+    name_json=$(printf '%s' "$name" | jq -Rs .)
+
+    _msp_state_update_json ".git.pr_branch_name = $name_json | .timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+
+    return 0
+}
+
 msp_state_reset_git_flags() {
     if ! msp_state_is_enabled; then
         return 0
@@ -456,7 +478,7 @@ msp_state_reset_git_flags() {
 
     [[ -f "$path" ]] || return 0
 
-    _msp_state_update_json '.git.tag_created = false | .git.tag_name = null | .git.release_branch_pushed = false | .git.github_release_created = false | .timestamps.updated_at = "'"$(_msp_state_now)"'"' || return 0
+    _msp_state_update_json '.git.tag_created = false | .git.tag_name = null | .git.release_branch_pushed = false | .git.pr_branch_name = null | .git.pr_branch_pushed = false | .git.github_release_created = false | .timestamps.updated_at = "'"$(_msp_state_now)"'"' || return 0
 
     return 0
 }
@@ -669,6 +691,7 @@ export -f msp_state_get_step_status
 export -f msp_state_mark_git_flag
 export -f msp_state_touch
 export -f msp_state_set_tag_name
+export -f msp_state_set_pr_branch_name
 export -f msp_state_reset_git_flags
 export -f msp_state_mark_pod_status
 export -f msp_state_get_pod_status

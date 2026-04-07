@@ -454,6 +454,8 @@ create_mock_state() {
     "tag_created": false,
     "tag_name": null,
     "release_branch_pushed": false,
+    "pr_branch_name": null,
+    "pr_branch_pushed": false,
     "github_release_created": false
   },
   "timestamps": {

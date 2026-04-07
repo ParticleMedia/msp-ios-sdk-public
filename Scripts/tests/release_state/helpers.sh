@@ -172,6 +172,7 @@ create_synthetic_state() {
     local version="${2:-0.0.1}"
     local tag_name="${3:-v${version}}"
     local release_branch="${4:-release/${version}}"
+    local pr_branch="backup/${release_branch//\//-}"
     
     cat > "${repo_root}/.msp-release-state.json" <<EOF
 {
@@ -191,6 +192,8 @@ create_synthetic_state() {
     "tag_created": true,
     "tag_name": "${tag_name}",
     "release_branch_pushed": true,
+    "pr_branch_name": "${pr_branch}",
+    "pr_branch_pushed": true,
     "github_release_created": true
   },
   "steps": {
@@ -214,4 +217,3 @@ create_synthetic_state() {
 }
 EOF
 }
-

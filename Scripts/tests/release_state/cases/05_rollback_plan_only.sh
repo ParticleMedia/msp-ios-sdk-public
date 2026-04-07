@@ -64,5 +64,10 @@ assert_equals "true" "$tag_created" "tag_created flag should remain true"
 branch_pushed="$(read_state_field "$repo_root" '.git.release_branch_pushed')"
 assert_equals "true" "$branch_pushed" "release_branch_pushed flag should remain true"
 
-echo "✓ Test passed: Rollback plan only, no destructive actions"
+pr_branch="$(read_state_field "$repo_root" '.git.pr_branch_name')"
+assert_equals "backup/release-0.0.1" "$pr_branch" "pr_branch_name should remain recorded"
 
+pr_branch_pushed="$(read_state_field "$repo_root" '.git.pr_branch_pushed')"
+assert_equals "true" "$pr_branch_pushed" "pr_branch_pushed flag should remain true"
+
+echo "✓ Test passed: Rollback plan only, no destructive actions"

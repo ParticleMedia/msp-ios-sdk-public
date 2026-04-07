@@ -297,6 +297,8 @@ test_git_flags_preserved_on_resume() {
     "tag_created": true,
     "tag_name": "v1.0.0",
     "release_branch_pushed": true,
+    "pr_branch_name": "backup/release-1.0.0",
+    "pr_branch_pushed": true,
     "github_release_created": false
   },
   "steps": {},
@@ -315,15 +317,19 @@ EOF
     msp_state_increment_resume_count
 
     # Verify git flags preserved
-    local tag_created tag_name branch_pushed release_created
+    local tag_created tag_name branch_pushed pr_branch_name pr_branch_pushed release_created
     tag_created=$(jq -r '.git.tag_created' "${TEST_TMPDIR}/.msp-release-state.json")
     tag_name=$(jq -r '.git.tag_name' "${TEST_TMPDIR}/.msp-release-state.json")
     branch_pushed=$(jq -r '.git.release_branch_pushed' "${TEST_TMPDIR}/.msp-release-state.json")
+    pr_branch_name=$(jq -r '.git.pr_branch_name' "${TEST_TMPDIR}/.msp-release-state.json")
+    pr_branch_pushed=$(jq -r '.git.pr_branch_pushed' "${TEST_TMPDIR}/.msp-release-state.json")
     release_created=$(jq -r '.git.github_release_created' "${TEST_TMPDIR}/.msp-release-state.json")
 
     assert_equals "true" "$tag_created" "tag_created should be preserved"
     assert_equals "v1.0.0" "$tag_name" "tag_name should be preserved"
     assert_equals "true" "$branch_pushed" "release_branch_pushed should be preserved"
+    assert_equals "backup/release-1.0.0" "$pr_branch_name" "pr_branch_name should be preserved"
+    assert_equals "true" "$pr_branch_pushed" "pr_branch_pushed should be preserved"
     assert_equals "false" "$release_created" "github_release_created should be preserved"
 
     info "Git flags preserved on resume"
