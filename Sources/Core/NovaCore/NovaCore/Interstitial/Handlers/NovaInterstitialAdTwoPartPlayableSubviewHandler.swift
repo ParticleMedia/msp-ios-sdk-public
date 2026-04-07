@@ -438,7 +438,11 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
 
         bottomBar.snp.makeConstraints { make in
             make.bottom.directionalHorizontalEdges.equalToSuperview()
-            make.height.equalTo(UIApplication.novaSafeAreaInsets.bottom + 22)
+            // When the install banner is shown, the extra 22pt padding becomes redundant.
+            // Use max(safeAreaBottom, 12) to preserve a minimal visual floor without excess whitespace.
+            make.height.equalTo(
+                NovaTwoPartPlayableLayoutMetrics.bottomBannerInset(for: UIApplication.novaSafeAreaInsets.bottom)
+            )
         }
         banner.snp.makeConstraints { make in
             make.directionalHorizontalEdges.equalToSuperview()

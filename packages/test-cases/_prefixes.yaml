@@ -9,3 +9,4 @@ prefixes:
   MVS: MSPVersion
   NMS: NovaMraidSupporting
   SKO: NovaSKOverlayController
+  TPB: TwoPartPlayableBanner

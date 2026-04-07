@@ -1,0 +1,39 @@
+module: TwoPartPlayableBanner
+prefix: TPB
+description: "Two-part playable install banner layout must remove redundant bottom whitespace while preserving a minimum floor"
+bundle: NovaCoreTests
+created: "2026-04-07"
+updated: "2026-04-07"
+cases:
+  - id: TPB001
+    type: behavior
+    description: "bottomBannerInset uses the safe area when the device has a home indicator"
+    priority: high
+    tags: [behavior, interstitial, playable, layout]
+    file: Tests/NovaCoreTests/Specs/Interstitial/NovaTwoPartPlayableLayoutMetricsSpec.swift
+    status: implemented
+    given: "A two-part playable layout with bottom safe area 34"
+    when: "bottomBannerInset(for:) is evaluated"
+    then: "the returned inset is 34"
+
+  - id: TPB002
+    type: behavior
+    description: "bottomBannerInset preserves a minimum inset when the device has no bottom safe area"
+    priority: high
+    tags: [behavior, interstitial, playable, layout]
+    file: Tests/NovaCoreTests/Specs/Interstitial/NovaTwoPartPlayableLayoutMetricsSpec.swift
+    status: implemented
+    given: "A two-part playable layout with bottom safe area 0"
+    when: "bottomBannerInset(for:) is evaluated"
+    then: "the returned inset is 12"
+
+  - id: TPB003
+    type: behavior
+    description: "bottomBannerInset floors small safe areas to the minimum inset"
+    priority: medium
+    tags: [behavior, interstitial, playable, regression]
+    file: Tests/NovaCoreTests/Specs/Interstitial/NovaTwoPartPlayableLayoutMetricsSpec.swift
+    status: implemented
+    given: "A two-part playable layout with bottom safe area 8"
+    when: "bottomBannerInset(for:) is evaluated"
+    then: "the returned inset is 12"
