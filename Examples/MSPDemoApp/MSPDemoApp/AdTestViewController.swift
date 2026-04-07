@@ -1,9 +1,9 @@
-import MSPCore
-import MSPiOSCore
-import MSPSnapKit
-import UIKit
-
 // MARK: - AdFormat
+
+import MSPCore
+import MSPSnapKit
+import MSPiOSCore
+import UIKit
 
 enum AdFormat: String {
     case banner = "Banner"
@@ -24,7 +24,6 @@ enum AdFormat: String {
 // MARK: - AdTestViewController
 
 final class AdTestViewController: UIViewController {
-
     // MARK: - Init
 
     init(format: AdFormat, placements: [String]? = nil) {
@@ -167,10 +166,11 @@ final class AdTestViewController: UIViewController {
         label.numberOfLines = 0
         placementLabel = label
 
-        let arrow = UIImageView(image: UIImage(
-            systemName: "arrowtriangle.down.fill",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 9)
-        ))
+        let arrow = UIImageView(
+            image: UIImage(
+                systemName: "arrowtriangle.down.fill",
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 9)
+            ))
         arrow.tintColor = .label
         arrow.setContentHuggingPriority(.required, for: .horizontal)
         arrow.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -190,9 +190,10 @@ final class AdTestViewController: UIViewController {
 
         if !viewModel.placements.isEmpty {
             let btn = UIButton(type: .custom)
-            btn.addAction(UIAction { [weak self] _ in
-                self?.presentPlacementPicker()
-            }, for: .touchUpInside)
+            btn.addAction(
+                UIAction { [weak self] _ in
+                    self?.presentPlacementPicker()
+                }, for: .touchUpInside)
             container.addSubview(btn)
             btn.snp.makeConstraints { make in make.edges.equalToSuperview() }
         }
@@ -214,7 +215,8 @@ final class AdTestViewController: UIViewController {
             creativeType: card.creativeType,
             creativeLayout: card.creativeLayout,
             enableH5Format: card.enableH5Format,
-            h5TemplateGroup: card.h5TemplateGroup
+            h5TemplateGroup: card.h5TemplateGroup,
+            preload: card.preload
         )
         viewModel.loadAd(
             bannerSize: card.bannerSize,
@@ -310,7 +312,6 @@ extension AdTestViewController: AdListener {
 // MARK: - PlacementPickerViewController
 
 private final class PlacementPickerViewController: UITableViewController {
-
     private let options: [String]
     private let selected: String
     private let onSelect: (String) -> Void

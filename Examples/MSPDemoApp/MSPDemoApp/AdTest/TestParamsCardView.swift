@@ -2,7 +2,6 @@ import MSPSnapKit
 import UIKit
 
 final class TestParamsCardView: UIView {
-
     // MARK: - State (read by VC at ad load time)
 
     private(set) var bannerSize = CGSize(width: 320, height: 50)
@@ -14,6 +13,7 @@ final class TestParamsCardView: UIView {
     private(set) var creativeLayout: String? = TestParams.creativeLayouts[0]
     private(set) var enableH5Format = true
     private(set) var h5TemplateGroup = TestParams.h5TemplateGroupsImageVideo[2]
+    private(set) var preload = true
 
     // MARK: - Private UI refs
 
@@ -22,6 +22,8 @@ final class TestParamsCardView: UIView {
     private weak var novaSection: UIStackView?
     private weak var creativeTypeChips: ChipFlowView?
     private weak var h5TemplateChips: ChipFlowView?
+    private weak var preloadElements: UIStackView?
+    private weak var h5TemplateSection: UIStackView?
 
     private let format: AdFormat
 
@@ -81,11 +83,12 @@ final class TestParamsCardView: UIView {
 
         let toggle = UISwitch()
         toggle.isOn = false
-        toggle.addAction(UIAction { [weak self] action in
-            guard let self, let toggle = action.sender as? UISwitch else { return }
-            self.innerStack?.isHidden = !toggle.isOn
-            self.divider?.isHidden = !toggle.isOn
-        }, for: .valueChanged)
+        toggle.addAction(
+            UIAction { [weak self] action in
+                guard let self, let toggle = action.sender as? UISwitch else { return }
+                self.innerStack?.isHidden = !toggle.isOn
+                self.divider?.isHidden = !toggle.isOn
+            }, for: .valueChanged)
 
         let spacer = UIView()
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -141,7 +144,8 @@ final class TestParamsCardView: UIView {
         stack.spacing = 12
 
         stack.addArrangedSubview(fieldLabel("Creative Type"))
-        let ctOptions = (format == .interstitial)
+        let ctOptions =
+            (format == .interstitial)
             ? TestParams.creativeTypes
             : TestParams.creativeTypes.filter { $0 != "playable_video" }
         let ctChips = ChipFlowView(options: ctOptions, selected: creativeType) { [weak self] selected in
@@ -180,14 +184,41 @@ final class TestParamsCardView: UIView {
         row.addArrangedSubview(spacer)
         let h5Toggle = UISwitch()
         h5Toggle.isOn = enableH5Format
-        h5Toggle.addAction(UIAction { [weak self] action in
-            guard let self, let toggle = action.sender as? UISwitch else { return }
-            self.enableH5Format = toggle.isOn
-        }, for: .valueChanged)
         row.addArrangedSubview(h5Toggle)
+
+        let preloadStack = UIStackView()
+        preloadStack.axis = .horizontal
+        preloadStack.alignment = .center
+        preloadStack.spacing = 8
+        preloadStack.addArrangedSubview(fieldLabel("Preload"))
+        let preloadSwitch = UISwitch()
+        preloadSwitch.isOn = preload
+        preloadSwitch.addAction(
+            UIAction { [weak self] action in
+                guard let self, let toggle = action.sender as? UISwitch else { return }
+                self.preload = toggle.isOn
+            }, for: .valueChanged)
+        preloadStack.addArrangedSubview(preloadSwitch)
+        preloadStack.isHidden = !enableH5Format
+        preloadElements = preloadStack
+        row.addArrangedSubview(preloadStack)
+
+        h5Toggle.addAction(
+            UIAction { [weak self] action in
+                guard let self, let toggle = action.sender as? UISwitch else { return }
+                self.enableH5Format = toggle.isOn
+                self.preloadElements?.isHidden = !toggle.isOn
+                self.h5TemplateSection?.isHidden = !toggle.isOn
+            }, for: .valueChanged)
         stack.addArrangedSubview(row)
 
-        stack.addArrangedSubview(fieldLabel("H5 Template Group"))
+        let templateSection = UIStackView()
+        templateSection.axis = .vertical
+        templateSection.spacing = 12
+        templateSection.isHidden = !enableH5Format
+        h5TemplateSection = templateSection
+
+        templateSection.addArrangedSubview(fieldLabel("H5 Template Group"))
         let chips = ChipFlowView(
             options: TestParams.h5TemplateGroupsImageVideo,
             selected: h5TemplateGroup
@@ -195,12 +226,14 @@ final class TestParamsCardView: UIView {
             if let selected { self?.h5TemplateGroup = selected }
         }
         h5TemplateChips = chips
-        stack.addArrangedSubview(chips)
+        templateSection.addArrangedSubview(chips)
+        stack.addArrangedSubview(templateSection)
         return stack
     }
 
     private func updateH5TemplateOptions() {
-        let options = (creativeType == "playable_video")
+        let options =
+            (creativeType == "playable_video")
             ? TestParams.h5TemplateGroupsPlayableVideo
             : TestParams.h5TemplateGroupsImageVideo
         if !options.contains(h5TemplateGroup) { h5TemplateGroup = options[0] }
@@ -241,15 +274,16 @@ final class TestParamsCardView: UIView {
         config.contentInsets = .zero
         let btn = UIButton(configuration: config)
         btn.automaticallyUpdatesConfiguration = false
-        btn.addAction(UIAction { [weak btn] _ in
-            guard let btn else { return }
-            btn.isSelected.toggle()
-            var updated = btn.configuration
-            updated?.image = UIImage(systemName: btn.isSelected ? "checkmark.square.fill" : "square")
-            updated?.baseForegroundColor = btn.isSelected ? .systemBlue : .secondaryLabel
-            btn.configuration = updated
-            onChange(btn.isSelected)
-        }, for: .touchUpInside)
+        btn.addAction(
+            UIAction { [weak btn] _ in
+                guard let btn else { return }
+                btn.isSelected.toggle()
+                var updated = btn.configuration
+                updated?.image = UIImage(systemName: btn.isSelected ? "checkmark.square.fill" : "square")
+                updated?.baseForegroundColor = btn.isSelected ? .systemBlue : .secondaryLabel
+                btn.configuration = updated
+                onChange(btn.isSelected)
+            }, for: .touchUpInside)
         return btn
     }
 

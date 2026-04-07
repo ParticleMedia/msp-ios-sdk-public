@@ -14,6 +14,7 @@ struct TestParams {
     private let creativeLayout: String?
     private let enableH5Format: Bool
     private let h5TemplateGroup: String?
+    private let preload: Bool
 
     init(
         testAd: Bool = false,
@@ -21,7 +22,8 @@ struct TestParams {
         creativeType: String = "video",
         creativeLayout: String? = "vertical",
         enableH5Format: Bool = true,
-        h5TemplateGroup: String? = "t2g2"
+        h5TemplateGroup: String? = "t2g2",
+        preload: Bool = true
     ) {
         self.testAd = testAd
         self.adNetwork = adNetwork
@@ -29,6 +31,7 @@ struct TestParams {
         self.creativeLayout = creativeLayout
         self.enableH5Format = enableH5Format
         self.h5TemplateGroup = h5TemplateGroup
+        self.preload = preload
     }
 
     func toDictionary() -> [String: Any] {
@@ -41,7 +44,10 @@ struct TestParams {
 
         guard adNetwork == "msp_nova" else { return dict }
 
-        var expParameter: [String: Any] = ["enable_h5_format": String(enableH5Format)]
+        var expParameter: [String: Any] = [
+            "enable_h5_format": String(enableH5Format),
+            "preload": String(preload),
+        ]
         if let h5TemplateGroup {
             expParameter["h5_template_group"] = h5TemplateGroup
         }
