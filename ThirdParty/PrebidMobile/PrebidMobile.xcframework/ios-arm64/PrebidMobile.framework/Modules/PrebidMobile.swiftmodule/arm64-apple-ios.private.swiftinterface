@@ -1,7 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
-// swift-module-flags: -target arm64-apple-ios10.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name PrebidMobile
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1.2
+// swift-compiler-version: Apple Swift version 6.2.1 effective-5.10 (swiftlang-6.2.1.4.8 clang-1700.4.4.1)
+// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name PrebidMobile
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.1
 import CoreLocation
 import DeveloperToolsSupport
 import Foundation
@@ -25,14 +25,18 @@ import ObjectiveC.runtime
   @objc public var bid: PrebidMobile.Bid? {
     get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc required public init(fetchDemandResult: PrebidMobile.ResultCode, bid: PrebidMobile.Bid?, configId: Swift.String?, winNotifierBlock: @escaping PrebidMobile.PBMWinNotifierBlock, bidResponse: PrebidMobile.BidResponse?)
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers public class BannerEventHandlerStandalone : ObjectiveC.NSObject, PrebidMobile.BannerEventHandler {
   @objc weak public var loadingDelegate: (any PrebidMobile.BannerEventLoadingDelegate)?
   @objc weak public var interactionDelegate: (any PrebidMobile.BannerEventInteractionDelegate)?
   @objc public var adSizes: [CoreFoundation.CGSize]
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
   @objc public func trackImpression()
   @objc override dynamic public init()
   @objc deinit
@@ -41,7 +45,9 @@ import ObjectiveC.runtime
   public typealias IntegerLiteralType = Swift.Int
   @objc final public let value: Swift.Int
   @objc required public init(integerLiteral value: Swift.Int)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
   @objc override dynamic public var hash: Swift.Int {
     @objc get
   }
@@ -98,7 +104,9 @@ import ObjectiveC.runtime
     @objc public static let Interstitial: PrebidMobile.Signals.Placement
     @objc public static let Slider: PrebidMobile.Signals.Placement
     @objc public static let Floating: PrebidMobile.Signals.Placement
+    #if compiler(>=5.3) && $NonescapableTypes
     @objc public static func getPlacementByRawValue(_ value: Swift.Int) -> PrebidMobile.Signals.Placement?
+    #endif
     @objc required public init(integerLiteral value: Swift.Int)
     @objc deinit
   }
@@ -106,15 +114,23 @@ import ObjectiveC.runtime
   @objc deinit
 }
 @objc public protocol RewardedEventHandlerProtocol : PrebidMobile.PBMInterstitialAd {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var loadingDelegate: (any PrebidMobile.RewardedEventLoadingDelegate)? { get set }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var interactionDelegate: (any PrebidMobile.RewardedEventInteractionDelegate)? { get set }
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class CacheManager : ObjectiveC.NSObject {
   public static let cacheManagerExpireInterval: Swift.Double
   @objc public static let shared: PrebidMobile.CacheManager
+  #if compiler(>=5.3) && $NonescapableTypes
   public func save(content: Swift.String, expireInterval: Foundation.TimeInterval = CacheManager.cacheManagerExpireInterval) -> Swift.String?
+  #endif
   public func isValid(cacheId: Swift.String) -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   public func get(cacheId: Swift.String) -> Swift.String?
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers public class RewardedEventHandlerStandalone : ObjectiveC.NSObject, PrebidMobile.RewardedEventHandlerProtocol {
@@ -123,8 +139,12 @@ import ObjectiveC.runtime
   @objc public var isReady: Swift.Bool {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func show(from controller: UIKit.UIViewController?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -133,7 +153,9 @@ import ObjectiveC.runtime
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   override public init(configId: Swift.String, size: CoreFoundation.CGSize?)
+  #endif
   @_inheritsConvenienceInitializers @available(*, deprecated, message: "This class is deprecated. Please, use VideoParameters instead.")
   @objc(PBVideoAdUnitParameters) public class Parameters : ObjectiveC.NSObject {
     @objc public var api: [PrebidMobile.Signals.Api]?
@@ -167,14 +189,20 @@ import ObjectiveC.runtime
   @objc public static func whereAmI(filename: Swift.String = #file, line: Swift.Int = #line, function: Swift.String = #function)
   @objc public static func serialWriteToLog(_ message: Swift.String)
   @objc public static func writeToLogFile(_ message: Swift.String)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public static func getLogFileAsString() -> Swift.String?
+  #endif
   @objc public static func clearLogFile()
   @objc override dynamic public init()
   @objc deinit
 }
 @objc public protocol InterstitialEventHandlerProtocol : PrebidMobile.PBMInterstitialAd {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var loadingDelegate: (any PrebidMobile.InterstitialEventLoadingDelegate)? { get set }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var interactionDelegate: (any PrebidMobile.InterstitialEventInteractionDelegate)? { get set }
+  #endif
 }
 @objc @objcMembers public class ServerEvent : ObjectiveC.NSObject {
   @objc public init(url: Swift.String, expectedEventType: PrebidMobile.PBMTrackingEvent)
@@ -215,10 +243,14 @@ import ObjectiveC.runtime
   @objc public var privacy: Swift.Int
   @objc public var ext: [Swift.String : Any]?
   @objc override dynamic public init()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var jsonDictionary: [Swift.String : Any]? {
     @objc get
   }
+  #endif
   @objc public func toJsonString() throws -> Swift.String
   @objc deinit
 }
@@ -241,7 +273,9 @@ public let PREBID_VERSION: Swift.String
   case Size400x300
   case Size640x480
   case Size320x480
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -249,14 +283,20 @@ public let PREBID_VERSION: Swift.String
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers final public class IMAUtils : ObjectiveC.NSObject {
   @objc public static let shared: PrebidMobile.IMAUtils
+  #if compiler(>=5.3) && $NonescapableTypes
   final public func generateInstreamUriForGAM(adUnitID: Swift.String, adSlotSizes: [PrebidMobile.IMAAdSlotSize], customKeywords: [Swift.String : Swift.String]?) throws -> Swift.String
+  #endif
   @objc deinit
 }
 @objc public protocol DisplayViewInteractionDelegate : ObjectiveC.NSObjectProtocol {
   @objc func trackImpression(forDisplayView: PrebidMobile.PBMDisplayView)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func viewControllerForModalPresentation(fromDisplayView: PrebidMobile.PBMDisplayView) -> UIKit.UIViewController?
+  #endif
   @objc func didLeaveApp(from displayView: PrebidMobile.PBMDisplayView)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func willPresentModal(from displayView: PrebidMobile.PBMDisplayView, url: Swift.String?)
+  #endif
   @objc func didDismissModal(from displayView: PrebidMobile.PBMDisplayView)
 }
 @objc @_hasMissingDesignatedInitializers @objcMembers public class MediationBaseInterstitialAdUnit : ObjectiveC.NSObject {
@@ -285,7 +325,9 @@ public let PREBID_VERSION: Swift.String
   @objc public var configId: Swift.String {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func fetchDemand(completion: ((PrebidMobile.ResultCode) -> Swift.Void)?)
+  #endif
   @objc public func addContextData(_ data: Swift.String, forKey key: Swift.String)
   @objc public func updateContextData(_ data: Swift.Set<Swift.String>, forKey key: Swift.String)
   @objc public func removeContextDate(forKey key: Swift.String)
@@ -308,9 +350,13 @@ public let PREBID_VERSION: Swift.String
   @objc public var identifier: Swift.String
   @objc public var atype: Foundation.NSNumber?
   @objc public var ext: [Swift.String : Any]?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public init(source: Swift.String, identifier: Swift.String, atype: Foundation.NSNumber? = nil, ext: [Swift.String : Any]? = nil)
+  #endif
   @objc public func encode(with coder: Foundation.NSCoder)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc required public init?(coder: Foundation.NSCoder)
+  #endif
   @objc public func toJSONDictionary() -> [Swift.AnyHashable : Any]
   @objc deinit
 }
@@ -325,7 +371,9 @@ public let PREBID_VERSION: Swift.String
   @objc public var eventtrackers: [PrebidMobile.NativeEventTrackerResponse]?
   @objc public var privacy: Swift.String?
   @objc public var ext: [Swift.String : Any]?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc convenience public init?(jsonString: Swift.String?)
+  #endif
   @objc required public init(jsonDictionary: [Swift.String : Any])
   @objc override dynamic public init()
   @objc deinit
@@ -346,24 +394,36 @@ public let PREBID_VERSION: Swift.String
   }
   @objc convenience public init(configID: Swift.String, eventHandler: Swift.AnyObject)
   @objc convenience public init(configID: Swift.String)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func userDidEarnReward(_ reward: ObjectiveC.NSObject?)
+  #endif
   @objc override public func interstitialControllerDidCloseAd(_ interstitialController: PrebidMobile.InterstitialController)
   @objc override public func callDelegate_didReceiveAd()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callDelegate_didFailToReceiveAd(with error: (any Swift.Error)?)
+  #endif
   @objc override public func callDelegate_willPresentAd()
   @objc override public func callDelegate_didDismissAd()
   @objc override public func callDelegate_willLeaveApplication()
   @objc override public func callDelegate_didClickAd()
   @objc override public func callEventHandler_isReady() -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callEventHandler_setLoadingDelegate(_ loadingDelegate: ObjectiveC.NSObject?)
+  #endif
   @objc override public func callEventHandler_setInteractionDelegate()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callEventHandler_requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callEventHandler_show(from controller: UIKit.UIViewController?)
+  #endif
   @objc override public func callEventHandler_trackImpression()
   @objc deinit
 }
 @objc public protocol BannerAdLoaderDelegate : ObjectiveC.NSObjectProtocol {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc var eventHandler: (any PrebidMobile.BannerEventHandler)? { get }
+  #endif
   @objc func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, loadedAdView adView: UIKit.UIView, adSize: CoreFoundation.CGSize)
   @objc func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, createdDisplayView displayView: PrebidMobile.PBMDisplayView)
 }
@@ -382,7 +442,9 @@ public let PREBID_VERSION: Swift.String
   case displayURL = 11
   case ctaText = 12
   case custom = 500
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -438,7 +500,9 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
   case Appnexus
   case Rubicon
   case Custom
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -446,13 +510,19 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objcMembers public class Host : ObjectiveC.NSObject {
   @objc public static let shared: PrebidMobile.Host
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func setCustomHostURL(_ urlString: Swift.String?) throws
+  #endif
   @objc public func getHostURL(host: PrebidMobile.PrebidHost) throws -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func verifyUrl(urlString: Swift.String?) -> Swift.Bool
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class MediationNativeUtils : ObjectiveC.NSObject {
+  #if compiler(>=5.3) && $NonescapableTypes
   public static func findNative(in extras: [Swift.AnyHashable : Any]) -> Swift.Result<PrebidMobile.NativeAd, any Swift.Error>
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -471,66 +541,108 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func userGenderDescription() -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var userID: Swift.String? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var buyerUID: Swift.String?
   @objc public var keywords: Swift.String?
   @objc public var userCustomData: Swift.String?
   @objc public var eids: [[Swift.String : Swift.AnyHashable]]?
   @objc public var userExt: [Swift.String : Swift.AnyHashable]?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var coppa: Foundation.NSNumber? {
     @objc get
     @objc set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public var subjectToCOPPA: Swift.Bool? {
     get
     set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public var subjectToGDPR: Swift.Bool? {
     get
     set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func setSubjectToGDPR(_ newValue: Foundation.NSNumber?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getSubjectToGDPR() -> Foundation.NSNumber?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var gdprConsentString: Swift.String? {
     @objc get
     @objc set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var purposeConsents: Swift.String? {
     @objc get
     @objc set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public func getDeviceAccessConsent() -> Swift.Bool?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getDeviceAccessConsentObjc() -> Foundation.NSNumber?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public func getPurposeConsent(index: Swift.Int) -> Swift.Bool?
+  #endif
   @objc public func isAllowedAccessDeviceData() -> Swift.Bool
   @objc public var externalUserIds: [PrebidMobile.ExternalUserId]
   @objc public func storeExternalUserId(_ externalUserId: PrebidMobile.ExternalUserId)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func fetchStoredExternalUserIds() -> [PrebidMobile.ExternalUserId]?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func fetchStoredExternalUserId(_ source: Swift.String) -> PrebidMobile.ExternalUserId?
+  #endif
   @objc public func removeStoredExternalUserId(_ source: Swift.String)
   @objc public func removeStoredExternalUserIds()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getExternalUserIds() -> [[Swift.AnyHashable : Any]]?
+  #endif
   @objc public var contentUrl: Swift.String?
   @objc public var publisherName: Swift.String?
   @objc public var sourceapp: Swift.String?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var storeURL: Swift.String? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var domain: Swift.String?
   @objc public var itunesID: Swift.String?
-  @objc public var location: CoreLocation.CLLocation?
+  @objc public var location: _LocationEssentials.CLLocation?
   public var locationPrecision: Swift.Int?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func setLocationPrecision(_ newValue: Foundation.NSNumber?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getLocationPrecision() -> Foundation.NSNumber?
+  #endif
   @objc public var coordinate: Foundation.NSValue?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func addParam(_ value: Swift.String, withName: Swift.String?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func setCustomParams(_ params: [Swift.String : Swift.String]?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func addCustomParam(_ value: Swift.String, withName: Swift.String?)
+  #endif
   @objc public func setLatitude(_ latitude: Swift.Double, longitude: Swift.Double)
   @objc public func addBidderToAccessControlList(_ bidderName: Swift.String)
   @objc public func removeBidderFromAccessControlList(_ bidderName: Swift.String)
@@ -578,7 +690,9 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
 @objc public protocol PrebidMediationDelegate {
   @objc func setUpAdObject(with values: [Swift.String : Any]) -> Swift.Bool
   @objc func cleanUpAdObject()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func getAdView() -> UIKit.UIView?
+  #endif
 }
 @objc public class BannerAdUnit : PrebidMobile.BannerBaseAdUnit {
   @objc public init(configId: Swift.String, size: CoreFoundation.CGSize)
@@ -638,7 +752,9 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
     get
     set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -648,7 +764,9 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
 @objcMembers public class SkadnEventTracker : ObjectiveC.NSObject, PrebidMobile.PBMEventTrackerProtocol {
   @objc public init(with imp: StoreKit.SKAdImpression)
   @objc public func trackEvent(_ event: PrebidMobile.PBMTrackingEvent)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func trackVideoAdLoaded(_ parameters: PrebidMobile.PBMVideoVerificationParameters!)
+  #endif
   @objc public func trackStartVideo(withDuration duration: CoreFoundation.CGFloat, volume: CoreFoundation.CGFloat)
   @objc public func trackVolumeChanged(_ playerVolume: CoreFoundation.CGFloat, deviceVolume: CoreFoundation.CGFloat)
   @objc deinit
@@ -666,8 +784,12 @@ extension UIKit.UIView {
   case bottomCenter
   case bottomRight
   case custom
+  #if compiler(>=5.3) && $NonescapableTypes
   public static func getPositionByStringLiteral(_ stringValue: Swift.String) -> PrebidMobile.Position?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -712,7 +834,9 @@ extension UIKit.UIView {
   @objc public var inferredCountry: Swift.String? {
     get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc convenience public init(adUnitId: Swift.String?, targetingInfo: [Swift.String : Swift.String]?)
+  #endif
   @objc convenience public init(jsonDictionary: PrebidMobile.JsonDictionary)
   @objc public func setTargetingInfo(with newValue: [Swift.String : Swift.String])
   @objc deinit
@@ -722,10 +846,12 @@ extension UIKit.UIView {
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var additionalSizes: [CoreFoundation.CGSize]? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var skipButtonArea: Swift.Double {
     @objc get
     @objc set
@@ -739,7 +865,9 @@ extension UIKit.UIView {
     @objc set
   }
   @objc convenience public init(configId: Swift.String, mediationDelegate: any PrebidMobile.PrebidMediationDelegate)
+  #if compiler(>=5.3) && $NonescapableTypes
   public init(configId: Swift.String, minSizePercentage: CoreFoundation.CGSize?, mediationDelegate: any PrebidMobile.PrebidMediationDelegate)
+  #endif
   @objc override public var configId: Swift.String {
     @objc get
   }
@@ -767,12 +895,24 @@ extension UIKit.UIView {
     @objc get
   }
   @objc convenience public init(userAgentService: PrebidMobile.PBMUserAgentService)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func fireAndForget(_ resourceURL: Swift.String?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func head(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func get(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, contentType: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func download(_ resourceURL: Swift.String?, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -788,7 +928,9 @@ extension UIKit.UIView {
   case male
   case female
   case other
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -798,7 +940,9 @@ extension UIKit.UIView {
   @objc public func registerTracker(_ tracker: any PrebidMobile.PBMEventTrackerProtocol)
   @objc public func unregisterTracker(_ tracker: any PrebidMobile.PBMEventTrackerProtocol)
   @objc public func trackEvent(_ event: PrebidMobile.PBMTrackingEvent)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func trackVideoAdLoaded(_ parameters: PrebidMobile.PBMVideoVerificationParameters!)
+  #endif
   @objc public func trackStartVideo(withDuration duration: CoreFoundation.CGFloat, volume: CoreFoundation.CGFloat)
   @objc public func trackVolumeChanged(_ playerVolume: CoreFoundation.CGFloat, deviceVolume: CoreFoundation.CGFloat)
   @objc override dynamic public init()
@@ -829,9 +973,11 @@ extension UIKit.UIView {
   @objc public var videoParameters: PrebidMobile.VideoParameters {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   public var lastBidResponse: PrebidMobile.BidResponse? {
     get
   }
+  #endif
   @objc public var configID: Swift.String {
     @objc get
   }
@@ -860,9 +1006,15 @@ extension UIKit.UIView {
   }
   @objc weak public var delegate: Swift.AnyObject?
   @objc final public let adUnitConfig: PrebidMobile.AdUnitConfig
+  #if compiler(>=5.3) && $NonescapableTypes
   required public init(configID: Swift.String, minSizePerc: Foundation.NSValue?, eventHandler: Swift.AnyObject?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   convenience public init(configID: Swift.String, minSizePercentage: CoreFoundation.CGSize, eventHandler: Swift.AnyObject?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   convenience public init(configID: Swift.String, eventHandler: Swift.AnyObject?)
+  #endif
   convenience public init(configID: Swift.String, minSizePercentage: CoreFoundation.CGSize)
   convenience public init(configID: Swift.String)
   @objc public func loadAd()
@@ -881,14 +1033,20 @@ extension UIKit.UIView {
   @objc public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearUserData()
   @objc public func setUpAdCreativeDelegate()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getAdCreative() -> PrebidMobile.PBMAbstractCreative?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func interstitialAdLoader(_ interstitialAdLoader: PrebidMobile.PBMInterstitialAdLoader, loadedAd showBlock: @escaping (UIKit.UIViewController?) -> Swift.Void, isReadyBlock: @escaping () -> Swift.Bool)
+  #endif
   @objc public func interstitialAdLoader(_ interstitialAdLoader: PrebidMobile.PBMInterstitialAdLoader, createdInterstitialController interstitialController: PrebidMobile.InterstitialController)
   @objc public var eventHandler: Any?
   @objc public func adLoadFlowControllerWillSendBidRequest(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @objc public func adLoadFlowControllerWillRequestPrimaryAd(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @objc public func adLoadFlowControllerShouldContinue(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController) -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func adLoadFlowController(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController, failedWithError error: (any Swift.Error)?)
+  #endif
   @objc public func adLoadFlowControllerDidReceiveBidResponse(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @objc public func trackImpression(forInterstitialController: PrebidMobile.InterstitialController)
   @objc public func interstitialControllerDidClickAd(_ interstitialController: PrebidMobile.InterstitialController)
@@ -896,28 +1054,42 @@ extension UIKit.UIView {
   @objc public func interstitialControllerDidLeaveApp(_ interstitialController: PrebidMobile.InterstitialController)
   @objc public func interstitialControllerDidDisplay(_ interstitialController: PrebidMobile.InterstitialController)
   @objc public func interstitialControllerDidComplete(_ interstitialController: PrebidMobile.InterstitialController)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func viewControllerForModalPresentation(fromInterstitialController: PrebidMobile.InterstitialController) -> UIKit.UIViewController?
+  #endif
   @objc public func willPresentAd()
   @objc public func didDismissAd()
   @objc public func willLeaveApp()
   @objc public func didClickAd()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func callEventHandler_requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func callEventHandler_show(from controller: UIKit.UIViewController?)
+  #endif
   @objc public func callEventHandler_isReady() -> Swift.Bool
   @objc public func callDelegate_didReceiveAd()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func callDelegate_didFailToReceiveAd(with: (any Swift.Error)?)
+  #endif
   @objc public func callDelegate_willPresentAd()
   @objc public func callDelegate_didDismissAd()
   @objc public func callDelegate_willLeaveApplication()
   @objc public func callDelegate_didClickAd()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func callEventHandler_setLoadingDelegate(_ loadingDelegate: ObjectiveC.NSObject?)
+  #endif
   @objc public func callEventHandler_setInteractionDelegate()
+  #if compiler(>=5.3) && $NonescapableTypes
   public func callEventHandler_showFromViewController(controller: UIKit.UIViewController?)
+  #endif
   @objc public func callEventHandler_trackImpression()
   @objc deinit
 }
 @objc extension PrebidMobile.PBMError {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc dynamic public class func demandResult(from error: (any Swift.Error)?) -> PrebidMobile.ResultCode
+  #endif
 }
 @objc public protocol DisplayViewLoadingDelegate : ObjectiveC.NSObjectProtocol {
   @objc func displayViewDidLoadAd(_ displayView: PrebidMobile.PBMDisplayView)
@@ -934,7 +1106,9 @@ extension UIKit.UIView {
   @objc deinit
 }
 @objc public protocol RewardedEventLoadingDelegate : PrebidMobile.InterstitialEventLoadingDelegate {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var reward: ObjectiveC.NSObject? { get set }
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class NativeImage : ObjectiveC.NSObject {
   public var type: Swift.Int?
@@ -955,9 +1129,11 @@ extension UIKit.UIView {
   @objc @_Concurrency.MainActor @preconcurrency public var videoParameters: PrebidMobile.VideoParameters {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc @_Concurrency.MainActor @preconcurrency public var lastBidResponse: PrebidMobile.BidResponse? {
     @objc get
   }
+  #endif
   @objc @_Concurrency.MainActor @preconcurrency public var configID: Swift.String {
     @objc get
   }
@@ -965,10 +1141,12 @@ extension UIKit.UIView {
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc @_Concurrency.MainActor @preconcurrency public var additionalSizes: [CoreFoundation.CGSize]? {
     @objc get
     @objc set
   }
+  #endif
   @objc @_Concurrency.MainActor @preconcurrency public var adFormat: PrebidMobile.AdFormat {
     @objc get
     @objc set
@@ -983,7 +1161,9 @@ extension UIKit.UIView {
   @objc @_Concurrency.MainActor @preconcurrency convenience public init(configID: Swift.String, eventHandler: any PrebidMobile.BannerEventHandler)
   @objc @_Concurrency.MainActor @preconcurrency convenience public init(frame: CoreFoundation.CGRect, configID: Swift.String, adSize: CoreFoundation.CGSize)
   @objc deinit
+  #if compiler(>=5.3) && $NonescapableTypes
   @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  #endif
   @objc @_Concurrency.MainActor @preconcurrency public func loadAd()
   @objc @_Concurrency.MainActor @preconcurrency public func setStoredAuctionResponse(storedAuction: Swift.String)
   @objc @_Concurrency.MainActor @preconcurrency public func stopRefresh()
@@ -1004,13 +1184,19 @@ extension UIKit.UIView {
   @objc @_Concurrency.MainActor @preconcurrency public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
   @objc @_Concurrency.MainActor @preconcurrency public func clearUserData()
   @_Concurrency.MainActor @preconcurrency @objc public func trackImpression(forDisplayView: PrebidMobile.PBMDisplayView)
+  #if compiler(>=5.3) && $NonescapableTypes
   @_Concurrency.MainActor @preconcurrency @objc public func viewControllerForModalPresentation(fromDisplayView: PrebidMobile.PBMDisplayView) -> UIKit.UIViewController?
+  #endif
   @_Concurrency.MainActor @preconcurrency @objc public func didLeaveApp(from displayView: PrebidMobile.PBMDisplayView)
+  #if compiler(>=5.3) && $NonescapableTypes
   @_Concurrency.MainActor @preconcurrency @objc public func willPresentModal(from displayView: PrebidMobile.PBMDisplayView, url: Swift.String?)
+  #endif
   @_Concurrency.MainActor @preconcurrency @objc public func didDismissModal(from displayView: PrebidMobile.PBMDisplayView)
   @_Concurrency.MainActor @preconcurrency @objc public func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, loadedAdView adView: UIKit.UIView, adSize: CoreFoundation.CGSize)
   @_Concurrency.MainActor @preconcurrency @objc public func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, createdDisplayView displayView: PrebidMobile.PBMDisplayView)
+  #if compiler(>=5.3) && $NonescapableTypes
   @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowController(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController, failedWithError error: (any Swift.Error)?)
+  #endif
   @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerWillSendBidRequest(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerWillRequestPrimaryAd(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerShouldContinue(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController) -> Swift.Bool
@@ -1018,12 +1204,16 @@ extension UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency @objc public func willPresentModal()
   @_Concurrency.MainActor @preconcurrency @objc public func didDismissModal()
   @_Concurrency.MainActor @preconcurrency @objc public func willLeaveApp()
+  #if compiler(>=5.3) && $NonescapableTypes
   @_Concurrency.MainActor @preconcurrency @objc public var viewControllerForPresentingModal: UIKit.UIViewController? {
     @objc get
   }
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class PathBuilder : ObjectiveC.NSObject {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public static func buildURL(for host: Swift.String, path: Swift.String = "", queryItems: [Foundation.URLQueryItem]? = nil) -> Swift.String?
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -1039,33 +1229,51 @@ extension UIKit.UIView {
   @objc public var images: [PrebidMobile.NativeImage] {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var eventTrackers: [PrebidMobile.NativeEventTrackerResponse]? {
     @objc get
   }
+  #endif
   @objc public func dataObjects(of dataType: PrebidMobile.NativeDataAssetType) -> [PrebidMobile.NativeData]
   @objc public func images(of imageType: PrebidMobile.NativeImageAssetType) -> [PrebidMobile.NativeImage]
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var title: Swift.String? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var imageUrl: Swift.String? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var iconUrl: Swift.String? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var sponsoredBy: Swift.String? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var text: Swift.String? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var callToAction: Swift.String? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public static func create(cacheId: Swift.String) -> PrebidMobile.NativeAd?
+  #endif
   @objc deinit
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc @discardableResult
   public func registerView(view: UIKit.UIView?, clickableViews: [UIKit.UIView]?) -> Swift.Bool
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objcMembers public class Prebid : ObjectiveC.NSObject {
   @objc public var enablePageLoadFix: Swift.Bool
@@ -1115,11 +1323,17 @@ extension UIKit.UIView {
   @objc public func setCustomPrebidServer(url: Swift.String) throws
   @objc public func addStoredBidResponse(bidder: Swift.String, responseId: Swift.String)
   @objc public func clearStoredBidResponses()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getStoredBidResponses() -> [[Swift.String : Swift.String]]?
+  #endif
   @objc public func addCustomHeader(name: Swift.String, value: Swift.String)
   @objc public func clearCustomHeaders()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public static func initializeSDK(_ gadMobileAdsObject: Swift.AnyObject? = nil, _ completion: ((PrebidMobile.PrebidInitializationStatus, (any Swift.Error)?) -> Swift.Void)? = nil)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public static func initializeSDK(_ completion: ((PrebidMobile.PrebidInitializationStatus, (any Swift.Error)?) -> Swift.Void)? = nil)
+  #endif
   @objc deinit
 }
 @objc @objcMembers public class MediationNativeAdUnit : ObjectiveC.NSObject {
@@ -1143,7 +1357,9 @@ extension UIKit.UIView {
   @objc public func addUserData(_ userDataObjects: [PrebidMobile.PBMORTBContentData])
   @objc public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearUserData()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func fetchDemand(completion: ((PrebidMobile.ResultCode) -> Swift.Void)?)
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class InterstitialController : ObjectiveC.NSObject, PrebidMobile.PBMAdViewManagerDelegate {
@@ -1169,7 +1385,9 @@ extension UIKit.UIView {
   @objc convenience public init(bid: PrebidMobile.Bid, configId: Swift.String)
   @objc public func loadAd()
   @objc public func show()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func viewControllerForModalPresentation() -> UIKit.UIViewController?
+  #endif
   @objc public func adLoaded(_ pbmAdDetails: PrebidMobile.PBMAdDetails)
   @objc public func failed(toLoad error: any Swift.Error)
   @objc public func adDidComplete()
@@ -1187,7 +1405,9 @@ extension UIKit.UIView {
 @objc public enum PrebidInitializationStatus : Swift.Int {
   case successed
   case failed
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -1199,7 +1419,9 @@ extension UIKit.UIView {
   case footer = 5
   case sidebar = 6
   case fullScreen = 7
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -1236,10 +1458,12 @@ extension UIKit.UIView {
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var additionalSizes: [CoreFoundation.CGSize]? {
     @objc get
     @objc set
   }
+  #endif
   @objc public func addContextData(_ data: Swift.String, forKey key: Swift.String)
   @objc public func updateContextData(_ data: Swift.Set<Swift.String>, forKey key: Swift.String)
   @objc public func removeContextDate(forKey key: Swift.String)
@@ -1253,13 +1477,17 @@ extension UIKit.UIView {
   @objc public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearUserData()
   @objc public init(configID: Swift.String, size: CoreFoundation.CGSize, mediationDelegate: any PrebidMobile.PrebidMediationDelegate)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func fetchDemand(completion: ((PrebidMobile.ResultCode) -> Swift.Void)?)
+  #endif
   @objc public func stopRefresh()
   @objc public func adObjectDidFailToLoadAd(adObject: UIKit.UIView, with error: any Swift.Error)
   @objc deinit
 }
 @objc public protocol BannerViewDelegate : ObjectiveC.NSObjectProtocol {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func bannerViewPresentationController() -> UIKit.UIViewController?
+  #endif
   @objc optional func bannerView(_ bannerView: PrebidMobile.BannerView, didReceiveAdWithAdSize adSize: CoreFoundation.CGSize)
   @objc optional func bannerView(_ bannerView: PrebidMobile.BannerView, didFailToReceiveAdWith error: any Swift.Error)
   @objc optional func bannerViewWillLeaveApplication(_ bannerView: PrebidMobile.BannerView)
@@ -1270,7 +1498,9 @@ extension UIKit.UIView {
 @objc public protocol BannerEventLoadingDelegate : ObjectiveC.NSObjectProtocol {
   @objc func prebidDidWin()
   @objc func adServerDidWin(_ view: UIKit.UIView, adSize: CoreFoundation.CGSize)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func failedWithError(_ error: (any Swift.Error)?)
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objcMembers public class InterstitialRenderingAdUnit : PrebidMobile.BaseInterstitialAdUnit {
   @objc public var skipButtonArea: Swift.Double {
@@ -1289,22 +1519,32 @@ extension UIKit.UIView {
   @objc public init(configID: Swift.String, minSizePercentage: CoreFoundation.CGSize)
   @objc public init(configID: Swift.String, minSizePercentage: CoreFoundation.CGSize, eventHandler: Swift.AnyObject)
   @objc override public func callDelegate_didReceiveAd()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callDelegate_didFailToReceiveAd(with error: (any Swift.Error)?)
+  #endif
   @objc override public func callDelegate_willPresentAd()
   @objc override public func callDelegate_didDismissAd()
   @objc override public func callDelegate_willLeaveApplication()
   @objc override public func callDelegate_didClickAd()
   @objc override public func callEventHandler_isReady() -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callEventHandler_setLoadingDelegate(_ loadingDelegate: ObjectiveC.NSObject?)
+  #endif
   @objc override public func callEventHandler_setInteractionDelegate()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callEventHandler_requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc override public func callEventHandler_show(from controller: UIKit.UIViewController?)
+  #endif
   @objc override public func callEventHandler_trackImpression()
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objcMembers public class DateFormatService : ObjectiveC.NSObject {
   @objc public static let shared: PrebidMobile.DateFormatService
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func formatISO8601(for strDate: Swift.String?) -> Foundation.Date?
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class NativeLink : ObjectiveC.NSObject {
@@ -1317,13 +1557,19 @@ extension UIKit.UIView {
   @objc deinit
 }
 @objc @objcMembers public class AdUnit : ObjectiveC.NSObject {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var pbAdSlot: Swift.String? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var adUnitConfig: PrebidMobile.AdUnitConfig
+  #if compiler(>=5.3) && $NonescapableTypes
   public init(configId: Swift.String, size: CoreFoundation.CGSize?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc dynamic public func fetchDemand(completion: @escaping (_ result: PrebidMobile.ResultCode, _ kvResultDict: [Swift.String : Swift.String]?) -> Swift.Void)
+  #endif
   @objc dynamic public func fetchDemand(adObject: Swift.AnyObject, completion: @escaping (_ result: PrebidMobile.ResultCode) -> Swift.Void)
   @objc public func addContextData(key: Swift.String, value: Swift.String)
   @objc public func updateContextData(key: Swift.String, value: Swift.Set<Swift.String>)
@@ -1334,12 +1580,16 @@ extension UIKit.UIView {
   @objc public func removeContextKeyword(_ element: Swift.String)
   @objc public func clearContextKeywords()
   @objc public func setAppContent(_ appContentObject: PrebidMobile.PBMORTBAppContent)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getAppContent() -> PrebidMobile.PBMORTBAppContent?
+  #endif
   @objc public func clearAppContent()
   @objc public func addAppContentData(_ dataObjects: [PrebidMobile.PBMORTBContentData])
   @objc public func removeAppContentData(_ dataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearAppContentData()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getUserData() -> [PrebidMobile.PBMORTBContentData]?
+  #endif
   @objc public func addUserData(_ userDataObjects: [PrebidMobile.PBMORTBContentData])
   @objc public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearUserData()
@@ -1360,15 +1610,21 @@ extension UIKit.UIView {
   @objc public var startDelay: PrebidMobile.Signals.StartDelay?
   @objc public var placement: PrebidMobile.Signals.Placement?
   @objc public var linearity: PrebidMobile.SingleContainerInt?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var rawAPI: [Swift.Int]? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var rawPlaybackMethod: [Swift.Int]? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var rawProtocols: [Swift.Int]? {
     @objc get
   }
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -1411,7 +1667,9 @@ extension UIKit.UIView {
   case prebidSDKMisuse = 8000
   case prebidSDKMisusePreviousFetchNotCompletedYet
   public func name() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -1424,7 +1682,9 @@ extension UIKit.UIView {
   @objc func interstitialControllerDidLeaveApp(_ interstitialController: PrebidMobile.InterstitialController)
   @objc func interstitialControllerDidDisplay(_ interstitialController: PrebidMobile.InterstitialController)
   @objc func interstitialControllerDidComplete(_ interstitialController: PrebidMobile.InterstitialController)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func viewControllerForModalPresentation(fromInterstitialController: PrebidMobile.InterstitialController) -> UIKit.UIViewController?
+  #endif
 }
 @objc @_inheritsConvenienceInitializers public class BannerBaseAdUnit : PrebidMobile.AdUnit {
   @objc public var parameters: PrebidMobile.BannerParameters {
@@ -1437,7 +1697,9 @@ extension UIKit.UIView {
     @objc override dynamic public init()
     @objc deinit
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   override public init(configId: Swift.String, size: CoreFoundation.CGSize?)
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class PlacementType : PrebidMobile.SingleContainerInt {
@@ -1453,7 +1715,9 @@ extension UIKit.UIView {
   case icon = 1
   case main = 3
   case custom = 500
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -1478,7 +1742,9 @@ extension UIKit.UIView {
 }
 @objc public protocol AdLoadFlowControllerDelegate : ObjectiveC.NSObjectProtocol {
   @objc var adUnitConfig: PrebidMobile.AdUnitConfig { get }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func adLoadFlowController(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController, failedWithError error: (any Swift.Error)?)
+  #endif
   @objc func adLoadFlowControllerWillSendBidRequest(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @objc func adLoadFlowControllerWillRequestPrimaryAd(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
   @objc func adLoadFlowControllerShouldContinue(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController) -> Swift.Bool
@@ -1488,7 +1754,9 @@ extension UIKit.UIView {
   @objc func willPresentModal()
   @objc func didDismissModal()
   @objc func willLeaveApp()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc var viewControllerForPresentingModal: UIKit.UIViewController? { get }
+  #endif
 }
 public let refreshIntervalMin: Swift.Double
 public let refreshIntervalMax: Swift.Double
@@ -1508,10 +1776,12 @@ public let refreshIntervalDefault: Swift.Double
   }
   @objc public var nativeAdConfiguration: PrebidMobile.NativeAdConfiguration?
   @objc public var extraRequestHeaders: [Swift.String : Swift.String]
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var additionalSizes: [CoreFoundation.CGSize]? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var refreshInterval: Foundation.TimeInterval {
     @objc get
     @objc set
@@ -1529,23 +1799,35 @@ public let refreshIntervalDefault: Swift.Double
   @objc public func clearContextKeywords()
   @objc public func getContextKeywords() -> Swift.Set<Swift.String>
   @objc public func setAppContent(_ appContent: PrebidMobile.PBMORTBAppContent)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getAppContent() -> PrebidMobile.PBMORTBAppContent?
+  #endif
   @objc public func clearAppContent()
   @objc public func addAppContentData(_ dataObjects: [PrebidMobile.PBMORTBContentData])
   @objc public func removeAppContentData(_ dataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearAppContentData()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getUserData() -> [PrebidMobile.PBMORTBContentData]?
+  #endif
   @objc public func addUserData(_ userDataObjects: [PrebidMobile.PBMORTBContentData])
   @objc public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
   @objc public func clearUserData()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func setPbAdSlot(_ newElement: Swift.String?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getPbAdSlot() -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  #endif
   @objc deinit
 }
 @objc public protocol InterstitialAdUnitDelegate : ObjectiveC.NSObjectProtocol {
   @objc optional func interstitialDidReceiveAd(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc optional func interstitial(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit, didFailToReceiveAdWithError error: (any Swift.Error)?)
+  #endif
   @objc optional func interstitialWillPresentAd(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit)
   @objc optional func interstitialDidDismissAd(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit)
   @objc optional func interstitialWillLeaveApplication(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit)
@@ -1554,7 +1836,9 @@ public let refreshIntervalDefault: Swift.Double
 @objc public protocol RewardedAdUnitDelegate : ObjectiveC.NSObjectProtocol {
   @objc optional func rewardedAdDidReceiveAd(_ rewardedAd: PrebidMobile.RewardedAdUnit)
   @objc optional func rewardedAdUserDidEarnReward(_ rewardedAd: PrebidMobile.RewardedAdUnit)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc optional func rewardedAd(_ rewardedAd: PrebidMobile.RewardedAdUnit, didFailToReceiveAdWithError error: (any Swift.Error)?)
+  #endif
   @objc optional func rewardedAdWillPresentAd(_ rewardedAd: PrebidMobile.RewardedAdUnit)
   @objc optional func rewardedAdDidDismissAd(_ rewardedAd: PrebidMobile.RewardedAdUnit)
   @objc optional func rewardedAdWillLeaveApplication(_ rewardedAd: PrebidMobile.RewardedAdUnit)
@@ -1585,7 +1869,9 @@ public let refreshIntervalDefault: Swift.Double
 @objc public protocol InterstitialEventLoadingDelegate : ObjectiveC.NSObjectProtocol {
   @objc func prebidDidWin()
   @objc func adServerDidWin()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func failedWithError(_ error: (any Swift.Error)?)
+  #endif
 }
 public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.Error)?) -> Swift.Void
 @objc @_inheritsConvenienceInitializers @objcMembers public class ServerResponse : ObjectiveC.NSObject {
@@ -1602,16 +1888,24 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
 @objc public protocol BaseInterstitialAdUnitProtocol : ObjectiveC.NSObjectProtocol {
   @objc func interstitialControllerDidCloseAd(_ interstitialController: PrebidMobile.InterstitialController)
   @objc func callDelegate_didReceiveAd()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func callDelegate_didFailToReceiveAd(with error: (any Swift.Error)?)
+  #endif
   @objc func callDelegate_willPresentAd()
   @objc func callDelegate_didDismissAd()
   @objc func callDelegate_willLeaveApplication()
   @objc func callDelegate_didClickAd()
   @objc func callEventHandler_isReady() -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func callEventHandler_setLoadingDelegate(_ loadingDelegate: ObjectiveC.NSObject?)
+  #endif
   @objc func callEventHandler_setInteractionDelegate()
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func callEventHandler_requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func callEventHandler_show(from controller: UIKit.UIViewController?)
+  #endif
   @objc func callEventHandler_trackImpression()
 }
 @objc @objcMembers public class PrebidServerEventTracker : ObjectiveC.NSObject, PrebidMobile.PBMEventTrackerProtocol {
@@ -1620,7 +1914,9 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   }
   @objc public init(serverEvents: [PrebidMobile.ServerEvent] = [])
   @objc public func trackEvent(_ event: PrebidMobile.PBMTrackingEvent)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func trackVideoAdLoaded(_ parameters: PrebidMobile.PBMVideoVerificationParameters!)
+  #endif
   @objc public func trackStartVideo(withDuration duration: CoreFoundation.CGFloat, volume: CoreFoundation.CGFloat)
   @objc public func trackVolumeChanged(_ playerVolume: CoreFoundation.CGFloat, deviceVolume: CoreFoundation.CGFloat)
   @objc public func addServerEvents(_ serverEvents: [PrebidMobile.ServerEvent])
@@ -1650,17 +1946,27 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   @objc public var isReady: Swift.Bool {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func show(from controller: UIKit.UIViewController?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func requestAd(with bidResponse: PrebidMobile.BidResponse?)
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
 @objc public protocol RewardedEventInteractionDelegate : PrebidMobile.InterstitialEventInteractionDelegate {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func userDidEarnReward(_ reward: ObjectiveC.NSObject?)
+  #endif
 }
 @_hasMissingDesignatedInitializers public class ImageHelper {
+  #if compiler(>=5.3) && $NonescapableTypes
   public static func downloadImageSync(_ urlString: Swift.String) -> Swift.Result<UIKit.UIImage, any Swift.Error>
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public static func downloadImageAsync(_ urlString: Swift.String, completion: @escaping (Swift.Result<UIKit.UIImage, any Swift.Error>) -> Swift.Void)
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class VideoControlsConfiguration : ObjectiveC.NSObject {
@@ -1686,7 +1992,9 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   }
   @objc public var skipDelay: Swift.Double
   @objc public var isSoundButtonVisible: Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func initialize(with ortbAdConfiguration: PrebidMobile.PBMORTBAdConfiguration?)
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -1695,18 +2003,24 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var context: PrebidMobile.ContextType? {
     @objc get
     @objc set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var contextSubType: PrebidMobile.ContextSubType? {
     @objc get
     @objc set
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var placementType: PrebidMobile.PlacementType? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var placementCount: Swift.Int {
     @objc get
     @objc set
@@ -1715,10 +2029,12 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var assets: [PrebidMobile.NativeAsset]? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var asseturlsupport: Swift.Int {
     @objc get
     @objc set
@@ -1727,27 +2043,35 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var eventtrackers: [PrebidMobile.NativeEventTracker]? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var privacy: Swift.Int {
     @objc get
     @objc set
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var ext: [Swift.String : Any]? {
     @objc get
     @objc set
   }
+  #endif
   @objc public var configId: Swift.String {
     @objc get
     @objc set
   }
   @objc public init(configId: Swift.String)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc convenience public init(configId: Swift.String, assets: [PrebidMobile.NativeAsset]? = nil, eventTrackers: [PrebidMobile.NativeEventTracker]? = nil)
+  #endif
   @objc public func addNativeAssets(_ assets: [PrebidMobile.NativeAsset])
   @objc public func addNativeEventTracker(_ eventTrackers: [PrebidMobile.NativeEventTracker])
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public func getNativeRequestObject() -> [Swift.AnyHashable : Any]?
+  #endif
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers public class MediationBidInfoWrapper : ObjectiveC.NSObject {
@@ -1757,8 +2081,12 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   @objc deinit
 }
 @objc public protocol BannerEventHandler : PrebidMobile.PBMPrimaryAdRequesterProtocol {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var loadingDelegate: (any PrebidMobile.BannerEventLoadingDelegate)? { get set }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc weak var interactionDelegate: (any PrebidMobile.BannerEventInteractionDelegate)? { get set }
+  #endif
   @objc var adSizes: [CoreFoundation.CGSize] { get }
   @objc func trackImpression()
 }
@@ -1791,24 +2119,34 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   @objc public var size: CoreFoundation.CGSize {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var targetingInfo: [Swift.String : Swift.String]? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var skadn: PrebidMobile.PBMORTBBidExtSkadn? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var adFormat: PrebidMobile.AdFormat? {
     @objc get
   }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var videoAdConfiguration: PrebidMobile.PBMORTBAdConfiguration? {
     @objc get
   }
+  #endif
   @objc public var isWinning: Swift.Bool {
     @objc get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var events: PrebidMobile.PBMORTBExtPrebidEvents? {
     @objc get
   }
+  #endif
   @objc public var bid: PrebidMobile.PBMORTBBid<PrebidMobile.PBMORTBBidExt> {
     get
   }
@@ -1847,10 +2185,12 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   @objc public var pollFrequency: Swift.Double
   @objc public var viewableArea: Swift.Int
   @objc public var viewableDuration: Swift.Int
+  #if compiler(>=5.3) && $NonescapableTypes
   override public var autoRefreshDelay: Foundation.TimeInterval? {
     get
     set
   }
+  #endif
   @objc public var clickHandlerOverride: ((() -> Swift.Void) -> Swift.Void)?
   @objc override dynamic public init()
   @objc deinit
@@ -1864,9 +2204,13 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class SkadnParametersManager : ObjectiveC.NSObject {
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc @available(iOS 14.5, *)
   public static func getSkadnImpression(for skadnInfo: PrebidMobile.PBMORTBBidExtSkadn) -> StoreKit.SKAdImpression?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public static func getSkadnProductParameters(for skadnInfo: PrebidMobile.PBMORTBBidExtSkadn) -> Swift.Dictionary<Swift.String, Any>?
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }
@@ -1878,7 +2222,9 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   public var description: Swift.String {
     get
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   public init?(rawValue: Swift.Int)
+  #endif
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
@@ -1887,18 +2233,32 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
 public typealias ServerResponseCallback = (PrebidMobile.ServerResponse) -> Swift.Void
 @objc public protocol ServerConnectionProtocol {
   @objc var userAgentService: PrebidMobile.PBMUserAgentService { get }
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func fireAndForget(_ resourceURL: Swift.String?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func head(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func get(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, contentType: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc func download(_ resourceURL: Swift.String?, callback: @escaping PrebidMobile.ServerResponseCallback)
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class BannerParameters : ObjectiveC.NSObject {
   @objc public var api: [PrebidMobile.Signals.Api]?
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc public var rawAPI: [Swift.Int]? {
     @objc get
   }
+  #endif
   @objc override dynamic public init()
   @objc deinit
 }

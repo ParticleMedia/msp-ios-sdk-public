@@ -6,7 +6,7 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		hhsH0WU9GXfQSENMN+Iqmg4yRHQ=
+		LpxSa9i7yuDdL9mzgRdqF8v20RY=
 		</data>
 		<key>ClickthroughBrowserView.nib</key>
 		<data>
@@ -422,7 +422,7 @@
 		</data>
 		<key>Headers/PrebidMobile-Swift.h</key>
 		<data>
-		MB8Fm3okbH7F+NVeQqpQDW2QWVc=
+		+4Oi9Aclk8FiFySLrfdBfyWLlTk=
 		</data>
 		<key>Headers/PrebidMobile.h</key>
 		<data>
@@ -434,47 +434,47 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		KkIYDIRFOO/0Ri1OmpI+ULjeZ+E=
+		v+nhunboNSiZ7sLU6EEY6mR96Lg=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		P60jvj9wkkZPD18JVxtf1VkYw78=
+		pYZlrJV5oTv7/AUzB5773xr3j78=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		7C09DZxi0NHnroYs01KzToN6qOA=
+		R1OT+PlPdvRISMX5bYvsFmFCpUk=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		s9PlE0k7ca5V4MnPFQqo2LwwZpk=
+		/kXM5jlGvxWw/tLDJ1KQlV9E254=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		7C09DZxi0NHnroYs01KzToN6qOA=
+		R1OT+PlPdvRISMX5bYvsFmFCpUk=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		cBZpKR0Q/r9qo8BsQrgPrbq9bkI=
+		NdgMitfctnuSQhEujXdtl/qKyXY=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		P60jvj9wkkZPD18JVxtf1VkYw78=
+		pYZlrJV5oTv7/AUzB5773xr3j78=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		icKxgt1UUDANAsDINIf2Ft0FBwY=
+		lYEbC8rVeIHdObsV3MYlwOZ6Grg=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		X7/S1HyfjAdsXA+k6I0quHo8ZQ4=
+		GpVJmyleb1mp/GqdUx6nyEi4Rxc=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		icKxgt1UUDANAsDINIf2Ft0FBwY=
+		lYEbC8rVeIHdObsV3MYlwOZ6Grg=
 		</data>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		cgkiYUpSPJf6mNZc7YwmxRiK6vI=
+		PWoIVLcGfpUcpMbW3NacIBnG7O8=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -501,21 +501,13 @@
 	<dict>
 		<key>Assets.car</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hhsH0WU9GXfQSENMN+Iqmg4yRHQ=
-			</data>
 			<key>hash2</key>
 			<data>
-			jWPqqFbuNbOJEO3xsomP06lrecFth3hl4MZJPp3qzAY=
+			OisIxICcjEkm+fGmWN8P4Tooc107Z3ijS606LjXZKzc=
 			</data>
 		</dict>
 		<key>ClickthroughBrowserView.nib</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			rMwshyTSzdJXBME4GC/vCHyx1Rg=
-			</data>
 			<key>hash2</key>
 			<data>
 			ibxOATX8TEvGBwqUS0yKdQwTXCsoKCvSH1hQbLkMTlM=
@@ -523,10 +515,6 @@
 		</dict>
 		<key>Headers/Log+Extensions.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			R61taBQEwu+A8Qf1LYXC8bgP61U=
-			</data>
 			<key>hash2</key>
 			<data>
 			7x0kfyw594Uzb28SMPp49M8EDGT2yhW1jv+Pc2lDZus=
@@ -534,10 +522,6 @@
 		</dict>
 		<key>Headers/NSDictionary+PBMExtensions.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Q6fC+yJYcNa9zN/BSTEEIHw/5JU=
-			</data>
 			<key>hash2</key>
 			<data>
 			xjhtQ4tVQ8fGtbzBOZSoccvQX9/wTl2H1Tw0uAQOSVY=
@@ -545,10 +529,6 @@
 		</dict>
 		<key>Headers/NSMutableDictionary+PBMExtensions.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			MesLh1CNfvUSvYrZA3TCxnmTklA=
-			</data>
 			<key>hash2</key>
 			<data>
 			ct+hmaCcE0khqH+Sqc/BcK9XVR8xN7l7tMTr4v/fscI=
@@ -556,10 +536,6 @@
 		</dict>
 		<key>Headers/NSNumber+PBMORTBNative.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			fnT22Mp7li1pljFzhFkh1sBgk50=
-			</data>
 			<key>hash2</key>
 			<data>
 			uuCqF8xJhUrict2NtI3M4eYarBNkSosqjeGKbKhPGik=
@@ -567,10 +543,6 @@
 		</dict>
 		<key>Headers/NSTimer+PBMScheduledTimerFactory.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			k2hsvdTDemAW8fuDkUZpGN3qcFg=
-			</data>
 			<key>hash2</key>
 			<data>
 			suGkPObdGamX9IzERNyD4+sRz5jlGvJK2Dy3k+anAHY=
@@ -578,10 +550,6 @@
 		</dict>
 		<key>Headers/NSTimer+PBMTimerInterface.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			3dKuPeTCLnAummx58JEiv3ivJ6A=
-			</data>
 			<key>hash2</key>
 			<data>
 			WjBcuEPAhC9C+r7WAg0s3+jQGwInR2oM75m5bcqZ8T0=
@@ -589,10 +557,6 @@
 		</dict>
 		<key>Headers/PBMAbstractCreative.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			8sBKbojT8CZ7/dQSRqlK567oVsc=
-			</data>
 			<key>hash2</key>
 			<data>
 			Pe3I+BBGbPpSQnjIZojv+8fDNFgDJaSpbdK4nGXUwCM=
@@ -600,10 +564,6 @@
 		</dict>
 		<key>Headers/PBMAdDetails.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			bLPFjOcC86zlWfteW/OGjde5ky0=
-			</data>
 			<key>hash2</key>
 			<data>
 			3IoArwqI2ObTg7JSOfNQo7A0g3KubTqz2uX/PxsYIPo=
@@ -611,10 +571,6 @@
 		</dict>
 		<key>Headers/PBMAdLoadFlowController.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			MeI4SyCzRdsE06BDK5+8hJfa9SE=
-			</data>
 			<key>hash2</key>
 			<data>
 			KHTDx5HrdH6KQWiymj06vilR5eLxWjlfhlr7NVm+i9Q=
@@ -622,10 +578,6 @@
 		</dict>
 		<key>Headers/PBMAdLoadManagerDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			bCXjYxL0+j9OB7tL48JuBe3SYts=
-			</data>
 			<key>hash2</key>
 			<data>
 			7YaEAqPzjz23nc1IgOC1me13BZRnt8Eq8gXDAVUZqUs=
@@ -633,10 +585,6 @@
 		</dict>
 		<key>Headers/PBMAdLoaderProtocol.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			6STUMqVAEwyWXeBEYeohyrxei1k=
-			</data>
 			<key>hash2</key>
 			<data>
 			VoX9h+hsJTO5GVBdrlBmJiZqGS96UG2GnpegLvtzju8=
@@ -644,10 +592,6 @@
 		</dict>
 		<key>Headers/PBMAdMarkupStringHandler.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			wbl3haNRZ2214BmexFlDhATh8YQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			Je3GRcdVcvQ6htc++LcH6MSEA3A2tx4P95m1Zr39Bi0=
@@ -655,10 +599,6 @@
 		</dict>
 		<key>Headers/PBMAdViewManager.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			6rDSKvQssc35/hhoi7UbbT6GdG0=
-			</data>
 			<key>hash2</key>
 			<data>
 			zj/96CQbg5nP9Qqx2Q3G3jf00ToKQpKgzKzzhLZKSyQ=
@@ -666,10 +606,6 @@
 		</dict>
 		<key>Headers/PBMAdViewManagerDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			PxEPpl5eq9YQT/cYrFXSGG4Hncs=
-			</data>
 			<key>hash2</key>
 			<data>
 			lZuVUuFcpYdra6By3MMYI07192HrtiJbHvbRD9YhYn8=
@@ -677,10 +613,6 @@
 		</dict>
 		<key>Headers/PBMAutoRefreshManager.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			2X6pargVeIX6WbbnxmA+/d85hDk=
-			</data>
 			<key>hash2</key>
 			<data>
 			DZXIy3pRrrluAxN+SLHbsDxn/pAQabiMs31sGpxAvdM=
@@ -688,10 +620,6 @@
 		</dict>
 		<key>Headers/PBMBannerAdLoader.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			zxa4UV6Q9DzYSWKRT3g9CcyFDmQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			5iXbslZqzIr0QtV1hqCC3nsgbtD9cH+4VaFHlinDbqQ=
@@ -699,10 +627,6 @@
 		</dict>
 		<key>Headers/PBMBidRequester.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			aQpY58dCZ8FE4w50tdbfwwZm500=
-			</data>
 			<key>hash2</key>
 			<data>
 			y163xFdlvnuQc/n9EJF6aQV2c9PE1MyweetOhjz+aCM=
@@ -710,10 +634,6 @@
 		</dict>
 		<key>Headers/PBMBidRequesterFactory.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			q2EVXu5rg64F7g/4eJuBbnsCJPU=
-			</data>
 			<key>hash2</key>
 			<data>
 			1c876CiUiQGW39dRZiI3maxkjdMPyWMYGXlELq+86bM=
@@ -721,10 +641,6 @@
 		</dict>
 		<key>Headers/PBMBidRequesterFactoryBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			97CqKNKM4mtdQNyGki5GZu+nfls=
-			</data>
 			<key>hash2</key>
 			<data>
 			TEXVVk7azjArIw88NsyTsZA/TXvlk4umVr1gsTNxLeU=
@@ -732,10 +648,6 @@
 		</dict>
 		<key>Headers/PBMBidRequesterProtocol.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hPDbQ/kXmE3U5R8pfCMvpeQW6yE=
-			</data>
 			<key>hash2</key>
 			<data>
 			J5OniJ6fqK3U9bbPD+fzjMlYIuKDGhxKjJqsSb+FEoc=
@@ -743,10 +655,6 @@
 		</dict>
 		<key>Headers/PBMCircularProgressBarView.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hPkxjCRa33kGyTIoXZ/MQz+kj+s=
-			</data>
 			<key>hash2</key>
 			<data>
 			kmAZO+PWmKZ2m9yI2OwqREnJz5clE5ahHoPFFtruGYI=
@@ -754,10 +662,6 @@
 		</dict>
 		<key>Headers/PBMClickthroughBrowserOpener.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Suvc/yCMxV1zreBy95lisE/QHrg=
-			</data>
 			<key>hash2</key>
 			<data>
 			33XYxrX65S9lunkrCChK+fJHxEIC6Z2a2jPUdadFqwY=
@@ -765,10 +669,6 @@
 		</dict>
 		<key>Headers/PBMConstants.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			2q6XqKoNyXniYI31YtJTCpseXK8=
-			</data>
 			<key>hash2</key>
 			<data>
 			RzF/q1IuuIdUclLo2qnm+QEsljmlYxnRufnaNwzBgvw=
@@ -776,10 +676,6 @@
 		</dict>
 		<key>Headers/PBMCreativeViewDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			o4lySKIKi4F3fFdnwvv0kTwnpEE=
-			</data>
 			<key>hash2</key>
 			<data>
 			xbuB5qIltVfxyuco4gBymz2Ia1VOh7+SxVu2JbT7LUI=
@@ -787,10 +683,6 @@
 		</dict>
 		<key>Headers/PBMDeepLinkPlusHelper+PBMExternalLinkHandler.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			QtvVcGdyyh7rpcUZz1+uIOS5uLw=
-			</data>
 			<key>hash2</key>
 			<data>
 			mj2qhCodfCZEvPjWX8lOT/4GYB0qBZDUdCzGqPO5/sI=
@@ -798,10 +690,6 @@
 		</dict>
 		<key>Headers/PBMDeepLinkPlusHelper.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			5Q4YiQyjpxr17qH95I2hBFvqkko=
-			</data>
 			<key>hash2</key>
 			<data>
 			Ca6onTRcZmp8jsCwIdxUmcksZZLGAMkEMYlIVsFMZPQ=
@@ -809,10 +697,6 @@
 		</dict>
 		<key>Headers/PBMDisplayView.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			JpfFb7GUvhNknBzuCQo5GpyjL6U=
-			</data>
 			<key>hash2</key>
 			<data>
 			cO2TPiLep7xrdRHrDNmGymnkn1Vke6f7AjcmFpqcPOU=
@@ -820,10 +704,6 @@
 		</dict>
 		<key>Headers/PBMError.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			++KPBC1ejy4daLLFTBj3uTx59dE=
-			</data>
 			<key>hash2</key>
 			<data>
 			2DPfwDgYejOeKiUZ/9RbsdQ+iXo2ZiF6JOGjMMi2a7s=
@@ -831,10 +711,6 @@
 		</dict>
 		<key>Headers/PBMErrorCode.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			d6NL+3Nei/u9Pt5vgz1xFU+aaWU=
-			</data>
 			<key>hash2</key>
 			<data>
 			WsxfNa2emTZ5pc+Tw6bn7DknvNDKdcrqOAnAJi+U/VM=
@@ -842,10 +718,6 @@
 		</dict>
 		<key>Headers/PBMErrorFamily.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			c+jY60Jg91AS+PkQnzR1MMWHDlo=
-			</data>
 			<key>hash2</key>
 			<data>
 			yL8kx2apKztLVLOZGmzQzuD3pl1Dep/5wRGpDIn9rZk=
@@ -853,10 +725,6 @@
 		</dict>
 		<key>Headers/PBMErrorType.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			8lwGAWo09vw7GZtU57GgNYUBC40=
-			</data>
 			<key>hash2</key>
 			<data>
 			iusJG4Xvtoi2KToiiuctifuWe7nlCGGEPDAecZaN8k0=
@@ -864,10 +732,6 @@
 		</dict>
 		<key>Headers/PBMEventTrackerProtocol.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			mu49JJCUxSQsKuW1c4VVGZqVuhw=
-			</data>
 			<key>hash2</key>
 			<data>
 			Pw4S0JFEN6FgwZ+CoqhZr907sl/4EMvsDxOkxF25+Q4=
@@ -875,10 +739,6 @@
 		</dict>
 		<key>Headers/PBMExternalLinkHandler.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			nGdayOgyBHbFR/xuRuwoLe0aWaM=
-			</data>
 			<key>hash2</key>
 			<data>
 			AjMOuWXuoX4WwErMHy1/P33MdqlsvlQsvRJb69JXrxA=
@@ -886,10 +746,6 @@
 		</dict>
 		<key>Headers/PBMExternalURLOpenCallbacks.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			7Fr59PPxbc6IaXmC0V4xhO2JYCA=
-			</data>
 			<key>hash2</key>
 			<data>
 			My4LzK5bSrJMMJGI+l8nisgwkTHnH4tyvQ8+u2wxOhU=
@@ -897,10 +753,6 @@
 		</dict>
 		<key>Headers/PBMExternalURLOpenerBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			zvoe/B0+IbR1PB+CQZKp7RmBKDQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			329D5hrIzwbSSSgQD5/yiZ7/MtlWxezXPakPEZxrfwc=
@@ -908,10 +760,6 @@
 		</dict>
 		<key>Headers/PBMExternalURLOpeners.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			nR6UOqo7nrbLQ+qkzTNT5TK/XX4=
-			</data>
 			<key>hash2</key>
 			<data>
 			04PXWKDLkjDqOEPHRbYE4LDR7m8mneUI/2jziSLyEww=
@@ -919,10 +767,6 @@
 		</dict>
 		<key>Headers/PBMFunctions+Private.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			eHsa5bEDKczYaHLkxqLKy9K1+P4=
-			</data>
 			<key>hash2</key>
 			<data>
 			LiRkF/hwcjO8OyzEEQrHRleuC5zW4++STQIboqFnSNc=
@@ -930,10 +774,6 @@
 		</dict>
 		<key>Headers/PBMFunctions+Testing.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Udt+4CHetuKEDMWqy9un7zU4swk=
-			</data>
 			<key>hash2</key>
 			<data>
 			rMbAoHVYBE3Kz/SDlwcoTVUz8gY0q+05qb06u7/h47g=
@@ -941,10 +781,6 @@
 		</dict>
 		<key>Headers/PBMFunctions.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			xsIUTO9WGkBxm16J9u5gJ4hJ7M0=
-			</data>
 			<key>hash2</key>
 			<data>
 			nlSnp4TPWwz5DsFYPrGGP5XgscIJGquZnFyG70OpRLQ=
@@ -952,10 +788,6 @@
 		</dict>
 		<key>Headers/PBMInterstitialAdLoader.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			G25DXJAYFFw1ZTXbsftKw+Xlu+c=
-			</data>
 			<key>hash2</key>
 			<data>
 			FjNRO75OAUO8GzW9z9zC/BOXSuAL2CqxgMfRgqcCByE=
@@ -963,10 +795,6 @@
 		</dict>
 		<key>Headers/PBMInterstitialAdLoaderDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			z7WeVabIWtB/JwLeGzLzZFH6uyM=
-			</data>
 			<key>hash2</key>
 			<data>
 			indhwKU/LciU/Ehas1CDF1JFReAT6dWCrOYMczkNUHs=
@@ -974,10 +802,6 @@
 		</dict>
 		<key>Headers/PBMInterstitialDisplayProperties.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			CoLzY3psMpAtwKpqqhriSzmiHD0=
-			</data>
 			<key>hash2</key>
 			<data>
 			UtSVLxy+SqeA1m2T3cPf/AOuir8UWWtCIT8SAwpQfek=
@@ -985,10 +809,6 @@
 		</dict>
 		<key>Headers/PBMInterstitialEventHandler.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			fHAOz3J/UlaaYHXtoTW46xDz130=
-			</data>
 			<key>hash2</key>
 			<data>
 			Oq8H3bLpHDdI22MD/1K4CvxgAcoGzYUEldkGCk768po=
@@ -996,10 +816,6 @@
 		</dict>
 		<key>Headers/PBMInterstitialLayout.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			IOGpujVfwK1hZN1n55E6EWgfPE0=
-			</data>
 			<key>hash2</key>
 			<data>
 			qhrIuweE6p5itA+HwjCuFDkZcD6kEB4uGHb8I5HaSXw=
@@ -1007,10 +823,6 @@
 		</dict>
 		<key>Headers/PBMJsonCodable.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			24SHsSKO++POvwL5wHDGcJKUJvk=
-			</data>
 			<key>hash2</key>
 			<data>
 			1thjUjhwVllmvK8C09bic9A2jVFliyRf7Obl+ql157o=
@@ -1018,10 +830,6 @@
 		</dict>
 		<key>Headers/PBMJsonDecodable.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			4CJaXBnyofmV5HqF/j7Ief15L14=
-			</data>
 			<key>hash2</key>
 			<data>
 			NJVFKlCencGIiguyNz1APqg6JY3M5uO+mfg5sDwh2/w=
@@ -1029,10 +837,6 @@
 		</dict>
 		<key>Headers/PBMLocationManager.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hJRRUboByqrNQzW0fwykkCOEorY=
-			</data>
 			<key>hash2</key>
 			<data>
 			a0GTw+D0olz/6SWB27sl/93uVqhqpJeGTB1DtZ+Bo8k=
@@ -1040,10 +844,6 @@
 		</dict>
 		<key>Headers/PBMModalManager.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			52cbDefuKiy5pJof8OZcVgIz6gQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			zAQDJspqki3kBjckNu+AnZicPgtwe+3odmOkbAUQdlM=
@@ -1051,10 +851,6 @@
 		</dict>
 		<key>Headers/PBMModalManagerDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Swhftl9GR1ahSAjDr7i1rBgACRc=
-			</data>
 			<key>hash2</key>
 			<data>
 			BavVCwZemIdKVw5glvXMqvJ4OiZdqCFze7NokJfW75o=
@@ -1062,10 +858,6 @@
 		</dict>
 		<key>Headers/PBMModalState.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			ldWwAmC2wmaqDbEbV4YAhGAoHJI=
-			</data>
 			<key>hash2</key>
 			<data>
 			/xptOYj3jLKrsTL8CrByB+Q87wrqCZC6F4McepUJSqQ=
@@ -1073,10 +865,6 @@
 		</dict>
 		<key>Headers/PBMModalViewControllerDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			L3h3Uv5cUXIS/I3JdTlA6wXb5xk=
-			</data>
 			<key>hash2</key>
 			<data>
 			H3f10nRs4DliR2RQSFUatMloDZPxZl5pLy+b2M5Wgss=
@@ -1084,10 +872,6 @@
 		</dict>
 		<key>Headers/PBMORTBAbstract+Protected.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Qvw6majxFBpZtK9TF4czIo1JNUg=
-			</data>
 			<key>hash2</key>
 			<data>
 			7nLUjdpSCn+TOc0hYXm4/CDSxO3oY0EcpwazNMXRBvM=
@@ -1095,10 +879,6 @@
 		</dict>
 		<key>Headers/PBMORTBAbstract.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			+GmzxpHtugXKs7BRRg/gOAGZl8w=
-			</data>
 			<key>hash2</key>
 			<data>
 			LcWQsQ1ML72jEEHoXLnPEJgX4NQ2/IbpADfmxCDWlYc=
@@ -1106,10 +886,6 @@
 		</dict>
 		<key>Headers/PBMORTBAbstractResponse+Protected.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			C6jizajyt02bsgQyMa0QFWxl8Fk=
-			</data>
 			<key>hash2</key>
 			<data>
 			3wqqYPTZvm3/Z7eKMYSCbsIMy+C9KNLpAnn7zr1MKJU=
@@ -1117,10 +893,6 @@
 		</dict>
 		<key>Headers/PBMORTBAbstractResponse.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			V7SJNlho0usflyXVDtbz4QJ6ejM=
-			</data>
 			<key>hash2</key>
 			<data>
 			kQOTZJHP+gnkwl50j8EPBi5sU+2Zv9v5nrzVNr9YWP4=
@@ -1128,10 +900,6 @@
 		</dict>
 		<key>Headers/PBMORTBAdConfiguration.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			/jXjE2lebHOX5AancNX7IexZKO0=
-			</data>
 			<key>hash2</key>
 			<data>
 			CRaCx5iYvkkwV7R4yhpdPP8vMmk4sd0vZeLjvsf55fo=
@@ -1139,10 +907,6 @@
 		</dict>
 		<key>Headers/PBMORTBAppContent.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			zBuxOH/TuptsKSS5C3yaYW/o0Fc=
-			</data>
 			<key>hash2</key>
 			<data>
 			pc1EsgwjjoOgEeRV1Q9O94JrbIPXgydn7tDuOu5gNAo=
@@ -1150,10 +914,6 @@
 		</dict>
 		<key>Headers/PBMORTBBid.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			THoN/0Om3LHaHg8Edb/jajRLTPI=
-			</data>
 			<key>hash2</key>
 			<data>
 			T4SmnqP1UoJMrGFfr3XKlyobd4c/d6794JzKBnQ1nWM=
@@ -1161,10 +921,6 @@
 		</dict>
 		<key>Headers/PBMORTBBidExt.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			8BUOgiublj453aW4l16Ix2elqX8=
-			</data>
 			<key>hash2</key>
 			<data>
 			Ty/TaWpreeLqwJ+SjcAYY87KY40IB63l+bs5lEsV6t4=
@@ -1172,10 +928,6 @@
 		</dict>
 		<key>Headers/PBMORTBBidExtPrebid.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			PSV9OBfzFDNjNC3IhiIVrDGmYcM=
-			</data>
 			<key>hash2</key>
 			<data>
 			y3ZrXsn+1EAllbztVbKgNYmYoPkrWsps07neWi6f8vI=
@@ -1183,10 +935,6 @@
 		</dict>
 		<key>Headers/PBMORTBBidExtSkadn.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			7Nq3SRwM0MV94rMqe8Gs/lP8p1M=
-			</data>
 			<key>hash2</key>
 			<data>
 			7XblSkoKpO0dVhNAlq/gGkPplSlTOUz1PWPKNgi/cnE=
@@ -1194,10 +942,6 @@
 		</dict>
 		<key>Headers/PBMORTBBidResponse+Internal.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Yhlkp+NLqzOH8MDh9/U5Ai62zEs=
-			</data>
 			<key>hash2</key>
 			<data>
 			1NuQkX2yNa81rSBeWErNZqan6Uvld7f23O8Z9tzKFmw=
@@ -1205,10 +949,6 @@
 		</dict>
 		<key>Headers/PBMORTBBidResponse.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Nmo+FeuGNskJjXbPjZS0TNHvkw0=
-			</data>
 			<key>hash2</key>
 			<data>
 			I6ga3DbmDqii0/XsceziREAfybdzTD37SZjnytBA/Xk=
@@ -1216,10 +956,6 @@
 		</dict>
 		<key>Headers/PBMORTBBidResponseExt.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			rZwPl1i0Os21yu9XE7LNBWVGnaU=
-			</data>
 			<key>hash2</key>
 			<data>
 			8YBO5ztjl52K1O5bZKgFFGEazCpupWpJVw/qTDsSLCw=
@@ -1227,10 +963,6 @@
 		</dict>
 		<key>Headers/PBMORTBContentData.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			bbE6wu1S6JO3dyXXVkeeVSU4Pts=
-			</data>
 			<key>hash2</key>
 			<data>
 			wZpmcp+HkhV8VXXwVfMx+3QD0zRQrEJaMWqAvoDU3xM=
@@ -1238,10 +970,6 @@
 		</dict>
 		<key>Headers/PBMORTBContentProducer.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			IjjCXfqy7N1jJBNEakkA1UQlSgY=
-			</data>
 			<key>hash2</key>
 			<data>
 			yp0qhvNgtvr38dzzCMN0UsY1SsAwNbJD3Z3c6TZgKsg=
@@ -1249,10 +977,6 @@
 		</dict>
 		<key>Headers/PBMORTBContentSegment.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			i6ZQcbwJ6G4qjycZI5WhegnhEeY=
-			</data>
 			<key>hash2</key>
 			<data>
 			en8sE7azKqdezjN8LnF8RfhMfjv5/pH74p4lJ4C3wyg=
@@ -1260,10 +984,6 @@
 		</dict>
 		<key>Headers/PBMORTBExtPrebidEvents.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			NRpn8C8cos7n/mZWWFo5s9yXks0=
-			</data>
 			<key>hash2</key>
 			<data>
 			IaGro8wdu+NVh9HVkCNhF3ieZVsla5X/Ze6eBX9X92s=
@@ -1271,10 +991,6 @@
 		</dict>
 		<key>Headers/PBMORTBExtPrebidPassthrough.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hibXec2MgC9y2PlP98deLcla8Fo=
-			</data>
 			<key>hash2</key>
 			<data>
 			f2ZsQsOIJrZDY+dSi4gThmwSWlW4n2pow+p+FltaDQM=
@@ -1282,10 +998,6 @@
 		</dict>
 		<key>Headers/PBMORTBMacrosHelper.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			lhY/t8rGCwqATu1tDtaFeX/jhBQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			592wwkGj98h/kTtRagrDCACZUh1UWjzxoGsggxyweIs=
@@ -1293,10 +1005,6 @@
 		</dict>
 		<key>Headers/PBMORTBNative.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hYX30sdJ2yanpovjEHZ23qYncGU=
-			</data>
 			<key>hash2</key>
 			<data>
 			mLePmcWtiB2bspLmCs3BHfXq12hneCNEu6vHi0wBSQo=
@@ -1304,10 +1012,6 @@
 		</dict>
 		<key>Headers/PBMORTBSeatBid.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			WKTkDtOJSPs7rYalgSD+vXtAdsw=
-			</data>
 			<key>hash2</key>
 			<data>
 			DVImsQzZWPJM+arMX9xqTkbxp09DJJ/GEUxd6309NO0=
@@ -1315,10 +1019,6 @@
 		</dict>
 		<key>Headers/PBMORTBSkadnFidelity.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			sFnUAVAGgcSKd3s6Ir5g8fu6lwY=
-			</data>
 			<key>hash2</key>
 			<data>
 			pZ0U85xJ7EJe3Ya5kJ55cgS1jCNCrGtlUDoQE2f0x1s=
@@ -1326,10 +1026,6 @@
 		</dict>
 		<key>Headers/PBMOpenMeasurementFriendlyObstructionPurpose.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			I0oQu8r3COLGhotiwxqjyWymsv4=
-			</data>
 			<key>hash2</key>
 			<data>
 			ozLRG1IlmMhXWc0jAmJGAM/lG9KwikHdEmoh+8+Ck0c=
@@ -1337,10 +1033,6 @@
 		</dict>
 		<key>Headers/PBMOpenMeasurementSession.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			WdWjlCoCJUXKLSIVdF7yEg4vIao=
-			</data>
 			<key>hash2</key>
 			<data>
 			RVFtpP7Ls+1sySPrfqU0ZSTzdlslgIDi9Im9z9DW8uc=
@@ -1348,10 +1040,6 @@
 		</dict>
 		<key>Headers/PBMOpenMeasurementWrapper.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Fy8WbX8mTWKw4pxH4yjNDBuvoZo=
-			</data>
 			<key>hash2</key>
 			<data>
 			1vT96a8R1cyFNbx/GDtEBpVyGQj/6ie31Bp3+xWyzwQ=
@@ -1359,10 +1047,6 @@
 		</dict>
 		<key>Headers/PBMPrimaryAdRequesterProtocol.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			izwmFVKtJd9jw+0BnvfTbbrRHsk=
-			</data>
 			<key>hash2</key>
 			<data>
 			J2f5CDGFuu7rRZVgbDXnz8tQ5SMdHjPi/1f+FhVlp4s=
@@ -1370,10 +1054,6 @@
 		</dict>
 		<key>Headers/PBMRawBidResponse.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			j6n8/8cR5iR85Q0txhMnKpSQagM=
-			</data>
 			<key>hash2</key>
 			<data>
 			qaLKnFZpF+XqmCDF0J8msQc5rU4nY73Truo2CwjkApo=
@@ -1381,10 +1061,6 @@
 		</dict>
 		<key>Headers/PBMScheduledTimerFactory.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			lfvj/sj3vR5/G0vloJaw0lzlQJE=
-			</data>
 			<key>hash2</key>
 			<data>
 			Zbnm6spmCXKbYkWC4EsQ5fo17etMH73s2JGybdrNaG4=
@@ -1392,10 +1068,6 @@
 		</dict>
 		<key>Headers/PBMTimerInterface.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			xaaReDVqKtmLawcZYQzZg0lm5KE=
-			</data>
 			<key>hash2</key>
 			<data>
 			F61EDG2h9qfyaNW6ilvxda+rp9jfYdQRlv3rvViYUbg=
@@ -1403,10 +1075,6 @@
 		</dict>
 		<key>Headers/PBMTrackingEvent.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			sT2mqCMMG6hfCku5pPXokhqNXtU=
-			</data>
 			<key>hash2</key>
 			<data>
 			S1XtrOi7OK281XXHLX49dYzFqonZeI/N8/MkrTKt5PI=
@@ -1414,10 +1082,6 @@
 		</dict>
 		<key>Headers/PBMTrackingURLVisitorBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			YA6HZUbHlQg+y9GnyJDNBKuBcNM=
-			</data>
 			<key>hash2</key>
 			<data>
 			WKadhRny+T8jBvSA7oCVCHOOsxYWKS22mlgVG4L9QAc=
@@ -1425,10 +1089,6 @@
 		</dict>
 		<key>Headers/PBMTrackingURLVisitors.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Mhdmkw/6kqJjCPqVNGJ03WHAY54=
-			</data>
 			<key>hash2</key>
 			<data>
 			xlCruZkfoGvCDqoAGyYy030SHICyov/29oSE91IUeB4=
@@ -1436,10 +1096,6 @@
 		</dict>
 		<key>Headers/PBMTransaction.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			F23zdxuiqZIIOk/56ngrvg7llr4=
-			</data>
 			<key>hash2</key>
 			<data>
 			7JK7+3iG/jXz2vwIefGTwGZHFixdpqx+VMVpXcstQpY=
@@ -1447,10 +1103,6 @@
 		</dict>
 		<key>Headers/PBMTransactionFactory.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			K1WeKfYFliwKk10BAj/Oc+NTyyY=
-			</data>
 			<key>hash2</key>
 			<data>
 			QkvCKldKskHJUBwIz3kCRqiSfiz/6d4oNyPw1arD6UI=
@@ -1458,10 +1110,6 @@
 		</dict>
 		<key>Headers/PBMTransactionFactoryCallback.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			PG5YuGFM7ISp82Z5bQUuw/Ix0Tc=
-			</data>
 			<key>hash2</key>
 			<data>
 			LrxvS8yr/KGVz4OtkdeiUnPBeoZoRSLEy9bcEvjrkDE=
@@ -1469,10 +1117,6 @@
 		</dict>
 		<key>Headers/PBMUIApplicationProtocol.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			g/oCSyPN/UC4ZHFWmDOVs/YPyjg=
-			</data>
 			<key>hash2</key>
 			<data>
 			0UPzLTdD2YfuOFYzEB3MMF7wvFBa5v5Lpw3gWKaWUkE=
@@ -1480,10 +1124,6 @@
 		</dict>
 		<key>Headers/PBMURLOpenAttempterBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			6mRfwXRaKsbKjriGNaLnuflduAk=
-			</data>
 			<key>hash2</key>
 			<data>
 			H92b1Gq4jdGoGCHFwq2rvzfdevSxdUWxbGx7IRF96Pk=
@@ -1491,10 +1131,6 @@
 		</dict>
 		<key>Headers/PBMURLOpenResultHandlerBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			XhzktE2Q4pGUk2tCQy+NZRxOXBg=
-			</data>
 			<key>hash2</key>
 			<data>
 			L6aMMG0jpqr9kbQzpf6M//ysWe06XoRz4jRxEiuUWTA=
@@ -1502,10 +1138,6 @@
 		</dict>
 		<key>Headers/PBMUserAgentService.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			sgpe604E6C1rA2toiuMkmRjbWCE=
-			</data>
 			<key>hash2</key>
 			<data>
 			bofOvUT5yPjhbLrALKlsCcHknm97KHZk+wIZJ7TcKqs=
@@ -1513,10 +1145,6 @@
 		</dict>
 		<key>Headers/PBMUserConsentDataManager.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			FMRItwzjf1C7cYGh6UkoBQXe+MQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			mZ8K4v03J5fhmq1BbMGIvr1c/IBr0r/twWCVot5rKsY=
@@ -1524,10 +1152,6 @@
 		</dict>
 		<key>Headers/PBMVastTransactionFactory.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			XgAzT19T0lQpfGlNdZgjr/Bj+No=
-			</data>
 			<key>hash2</key>
 			<data>
 			yNoV8HbrwefEsXKJMI2CxaEGiiw0Jr0sOI6c+qOrnNo=
@@ -1535,10 +1159,6 @@
 		</dict>
 		<key>Headers/PBMVideoVerificationParameters.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			dcU/YmCfJIXpzIoYWVJyu6e6azE=
-			</data>
 			<key>hash2</key>
 			<data>
 			k8rD/a+YO8Ld/sWqSU8Q2sqW9XEVzGTAWOwtrbUdUNo=
@@ -1546,10 +1166,6 @@
 		</dict>
 		<key>Headers/PBMVideoView.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			X9c8jK6KKN39TdbULqmWnBIy/jU=
-			</data>
 			<key>hash2</key>
 			<data>
 			tgEcB5nu/Xtt77aHOAUWAi0fcsPxwnSbIFql/krn8u4=
@@ -1557,10 +1173,6 @@
 		</dict>
 		<key>Headers/PBMVideoViewDelegate.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			q3YkR4fNJQEIK9YavrmVQW7jl0I=
-			</data>
 			<key>hash2</key>
 			<data>
 			3BsKJ/Ok/amBTpYpeadQIWF52l/pgbgVNQgDfORs+5k=
@@ -1568,10 +1180,6 @@
 		</dict>
 		<key>Headers/PBMViewControllerProvider.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			+GLv3EYyG8nK62UEy+b8FN3l5pI=
-			</data>
 			<key>hash2</key>
 			<data>
 			kLE++OGkKh4jXtpPy0qWnQ6wZD5TgNP4Qd6JMZilpQU=
@@ -1579,10 +1187,6 @@
 		</dict>
 		<key>Headers/PBMViewExposure.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			4RQNaWG6GaMsdvFHDW2xX4kKOs4=
-			</data>
 			<key>hash2</key>
 			<data>
 			Ror/Mi/MosuxwvBGo08pg5pe9vVylt2SfOTR12mw4Aw=
@@ -1590,10 +1194,6 @@
 		</dict>
 		<key>Headers/PBMVoidBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			lKklvPsBywUEfCg+/mO3wC8SE1w=
-			</data>
 			<key>hash2</key>
 			<data>
 			HVfPonppr52smIlE59gItW7sem9S5+MbBUMBP8Y36l8=
@@ -1601,10 +1201,6 @@
 		</dict>
 		<key>Headers/PBMWeakTimerTargetBox.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			eHdfWXbnNH/cJZHPFsLzP7LsHRY=
-			</data>
 			<key>hash2</key>
 			<data>
 			aTHcgOIynK/WVMUDk47HTLow5aF2l1+VZDBO6N1OOgk=
@@ -1612,10 +1208,6 @@
 		</dict>
 		<key>Headers/PBMWinNotifier.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			t7MiZAhFUP7D48SuJtt48RuEPJ8=
-			</data>
 			<key>hash2</key>
 			<data>
 			7J8mtm78H+78UJ085WYXrOqvISDtD1YYcP/h9A6yoWw=
@@ -1623,10 +1215,6 @@
 		</dict>
 		<key>Headers/PBMWinNotifierBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			6F9e8iSG5phaSaZQFVn3SMFibJw=
-			</data>
 			<key>hash2</key>
 			<data>
 			4qbBYoPnx1zXH54J5Esv6HGJiDvRC6CmKlR05hxVlms=
@@ -1634,10 +1222,6 @@
 		</dict>
 		<key>Headers/PBMWinNotifierFactoryBlock.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			QJwjECmROuIB3iTkCy3UoqHreTM=
-			</data>
 			<key>hash2</key>
 			<data>
 			YP6LU1yd8WW3I6aw/Q6QoKTxy7CIjDPq6eagWs4gaeU=
@@ -1645,21 +1229,13 @@
 		</dict>
 		<key>Headers/PrebidMobile-Swift.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			MB8Fm3okbH7F+NVeQqpQDW2QWVc=
-			</data>
 			<key>hash2</key>
 			<data>
-			M4eoc8IwvPPgxiO/zvTgtMYgcPCpUIec/fj23tisAfg=
+			t8B32W3PT9hB9qJSa0YEYS++PWYKgr8RYVhT92tof1I=
 			</data>
 		</dict>
 		<key>Headers/PrebidMobile.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			aKw2l5J5tFQJkuerX8i/GAh+uZ8=
-			</data>
 			<key>hash2</key>
 			<data>
 			sKvhUb0/Je17eWN6tcNLDadBa6pz2OKhU8dNFI+mmVA=
@@ -1667,10 +1243,6 @@
 		</dict>
 		<key>Headers/UIView+PBMExtensions.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			C8ztLfVxj8W1P6AAaDIO4X1bQSg=
-			</data>
 			<key>hash2</key>
 			<data>
 			/3Z/utRj45V4KyzXtG/Q5oln90/iSmlM57OWXcIlTjY=
@@ -1678,120 +1250,76 @@
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			P60jvj9wkkZPD18JVxtf1VkYw78=
-			</data>
 			<key>hash2</key>
 			<data>
-			lcw+pDTQlAJGgFHs/4YE871+KM0iQHdg46MyL8W64fs=
+			xjfDRBDzporhyAZrYO7Y5hmInYngveUZxbVTHvWhi+E=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			7C09DZxi0NHnroYs01KzToN6qOA=
-			</data>
 			<key>hash2</key>
 			<data>
-			93ueGne1CK4bIlPvy4njcf/Zc32edlQIjO6jCTrVXyk=
+			k6knOLOmt2uaMtFofLi/MP92V+KG+ne+RifDvrIA7Yo=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			s9PlE0k7ca5V4MnPFQqo2LwwZpk=
-			</data>
 			<key>hash2</key>
 			<data>
-			yAh8/ZBFx1yJLNxne0jjUvmcofNsnCDVnyABKY6kblg=
+			hseLYiV4qsN4qCAys/oVwJodh7z84ycnK47XLiRwWwA=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			7C09DZxi0NHnroYs01KzToN6qOA=
-			</data>
 			<key>hash2</key>
 			<data>
-			93ueGne1CK4bIlPvy4njcf/Zc32edlQIjO6jCTrVXyk=
+			k6knOLOmt2uaMtFofLi/MP92V+KG+ne+RifDvrIA7Yo=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			cBZpKR0Q/r9qo8BsQrgPrbq9bkI=
-			</data>
 			<key>hash2</key>
 			<data>
-			WO17h25IExSnWQE8fOP6aRJk08b9cvMVHN6cnBWZGpg=
+			AdjePcya9n+cGKipnwipK/SYg8nk6Epl2doix/RCvEg=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			P60jvj9wkkZPD18JVxtf1VkYw78=
-			</data>
 			<key>hash2</key>
 			<data>
-			lcw+pDTQlAJGgFHs/4YE871+KM0iQHdg46MyL8W64fs=
+			xjfDRBDzporhyAZrYO7Y5hmInYngveUZxbVTHvWhi+E=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			icKxgt1UUDANAsDINIf2Ft0FBwY=
-			</data>
 			<key>hash2</key>
 			<data>
-			95cqCU9ny/yVSfvwCHW8gnNeGbMDty9ZWP4w3KgaEJw=
+			egQfy4q474CzfPMGtjdEXjGjeKwMUAjvUjce8gR+2Nk=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			X7/S1HyfjAdsXA+k6I0quHo8ZQ4=
-			</data>
 			<key>hash2</key>
 			<data>
-			PjM0wCKOeVQePFzo6ZzJNHHm44bA0cmq3S45nEqhzeY=
+			qVdw2TG1VzAa0j2C5xlqNsVRFvMYtRUm85mEWgN9iA4=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			icKxgt1UUDANAsDINIf2Ft0FBwY=
-			</data>
 			<key>hash2</key>
 			<data>
-			95cqCU9ny/yVSfvwCHW8gnNeGbMDty9ZWP4w3KgaEJw=
+			egQfy4q474CzfPMGtjdEXjGjeKwMUAjvUjce8gR+2Nk=
 			</data>
 		</dict>
 		<key>Modules/PrebidMobile.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			cgkiYUpSPJf6mNZc7YwmxRiK6vI=
-			</data>
 			<key>hash2</key>
 			<data>
-			CZ435yKMrn9VTlnvdWhnXmTXE35gW46ZriE602taf90=
+			CgMsNw75OJog9YpvJzUKqSrqkJXN6qrFOQsZARU9mA8=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			G9WA/uOEfVtFWb7lkm32/OxL40c=
-			</data>
 			<key>hash2</key>
 			<data>
 			E7yUJ4uTlFW4RADytcStioOT/TZW3x0f9j/sd29Owsk=
@@ -1799,10 +1327,6 @@
 		</dict>
 		<key>PrivateHeaders/OMSDKVersionProvider.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			gc0iZppOMnMt+OhXrMefvSduNcM=
-			</data>
 			<key>hash2</key>
 			<data>
 			lvV95hS4jlgUozguYTbNiBhWaViQPrWKHNUVoSGwD58=
@@ -1810,10 +1334,6 @@
 		</dict>
 		<key>companion.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			NhLCGomJdkcbLTXc1GHXRF2JSzs=
-			</data>
 			<key>hash2</key>
 			<data>
 			UsYyo6mmGwMOG5UV8/U9wCXXmIMMgtemG022RTT6plo=
@@ -1821,10 +1341,6 @@
 		</dict>
 		<key>mraid.js</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			w/U1CCucLpP/H2bl8eyI6hhGRso=
-			</data>
 			<key>hash2</key>
 			<data>
 			fmiQYqOzEVjTDwJr3YyfzYPTVXu1A2DgTcbK6dGeiJM=
@@ -1832,10 +1348,6 @@
 		</dict>
 		<key>omsdk.js</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			gHGQFei4PigMPCDxMe1k+dLcbPA=
-			</data>
 			<key>hash2</key>
 			<data>
 			n8WuqMyGPNYJumH+VtISaEBXQFrTsdDte7rIWtThJ/s=
