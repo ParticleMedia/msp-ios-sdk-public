@@ -10,10 +10,15 @@ import StoreKit
 import UIKit
 
 public final class NovaSKOverlayController: NSObject {
+    enum ThirdPartyTrackingDecision: Equatable {
+        case fire(URL)
+        case skip
+    }
+
     private weak var forwardedOverlayDelegate: (any SKOverlayDelegate)?
 
     private var overlay: SKOverlay?
-    private var skOverlayShowTimestamp: CFTimeInterval?
+    private(set) var skOverlayShowTimestamp: CFTimeInterval?
     private let encryptedAdToken: String
     private let thirdPartyTrackingURL: URL?
     private let monitorAppStoreLifecycle: Bool
@@ -21,7 +26,6 @@ public final class NovaSKOverlayController: NSObject {
     private var appStoreObservers: [NSObjectProtocol] = []
     private var shouldRestoreAfterAppStoreReturn = false
     private var lastShowContext: (appStoreId: Int, position: SKOverlay.Position, userDismissible: Bool)?
-    private var hasTrackedThirdParty = false
     private weak var currentScene: UIWindowScene?
     private weak var lastResolvedScene: UIWindowScene?
     public private(set) var isShowing: Bool = false
@@ -117,6 +121,13 @@ public final class NovaSKOverlayController: NSObject {
         }
     }
 
+    func handleOverlayDidFinishPresentation() -> ThirdPartyTrackingDecision {
+        registerShowTime()
+        // SK Overlay 展示不等于用户点击 — 不在此处 fire thirdPartyTrackingURL。
+        // 自动 fire 会导致 MMP CTR 虚高（fraud rate 上升）。真实点击由 CTA popup 路径上报。
+        return .skip
+    }
+
     @objc func appDidEnterBackground() {
         guard isShowing else { return }
         var durationInMs: Int?
@@ -165,10 +176,11 @@ extension NovaSKOverlayController: SKOverlayDelegate {
 
     public func storeOverlayDidFinishPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext)
     {
-        registerShowTime()
-        if !hasTrackedThirdParty, let thirdPartyTrackingURL {
-            hasTrackedThirdParty = true
-            NovaTrackingUrlHelper.fire(url: thirdPartyTrackingURL)
+        switch handleOverlayDidFinishPresentation() {
+        case .fire(let trackingURL):
+            NovaTrackingUrlHelper.fire(url: trackingURL)
+        case .skip:
+            break
         }
         if let requiredTopViewControllerType {
             let topVC = UIApplication.novaTopViewController

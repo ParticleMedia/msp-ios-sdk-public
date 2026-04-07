@@ -1,0 +1,39 @@
+module: NovaSKOverlayController
+prefix: SKO
+description: "NovaSKOverlayController must not fire thirdPartyTrackingURL on overlay presentation — SK Overlay show ≠ user click"
+bundle: NovaCoreTests
+created: "2026-04-03"
+updated: "2026-04-03"
+cases:
+  - id: SKO001
+    type: behavior
+    description: "handleOverlayDidFinishPresentation returns skip when overlay presentation completes"
+    priority: critical
+    tags: [behavior, skoverlay, click-tracking, regression]
+    file: Tests/NovaCoreTests/Specs/SKOverlay/NovaSKOverlayControllerSpec.swift
+    status: implemented
+    given: "A NovaSKOverlayController initialized with a thirdPartyTrackingURL"
+    when: "handleOverlayDidFinishPresentation() is called"
+    then: "the returned tracking decision is skip — overlay presentation does not count as a click"
+
+  - id: SKO002
+    type: behavior
+    description: "handleOverlayDidFinishPresentation records skOverlayShowTimestamp on first call and does not overwrite it on subsequent calls"
+    priority: high
+    tags: [behavior, skoverlay, show-time]
+    file: Tests/NovaCoreTests/Specs/SKOverlay/NovaSKOverlayControllerSpec.swift
+    status: implemented
+    given: "A NovaSKOverlayController initialized with a thirdPartyTrackingURL"
+    when: "handleOverlayDidFinishPresentation() is called once, then called again"
+    then: "skOverlayShowTimestamp is non-nil after first call; value unchanged after second call"
+
+  - id: SKO003
+    type: behavior
+    description: "handleOverlayDidFinishPresentation still returns skip when thirdPartyTrackingURL is nil"
+    priority: medium
+    tags: [behavior, skoverlay, nil-tracking-url]
+    file: Tests/NovaCoreTests/Specs/SKOverlay/NovaSKOverlayControllerSpec.swift
+    status: implemented
+    given: "A NovaSKOverlayController initialized without a thirdPartyTrackingURL"
+    when: "handleOverlayDidFinishPresentation() is called"
+    then: "the returned tracking decision is skip"

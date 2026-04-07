@@ -8,3 +8,4 @@ prefixes:
   DRC: DebugRadioCell
   MVS: MSPVersion
   NMS: NovaMraidSupporting
+  SKO: NovaSKOverlayController
