@@ -86,6 +86,9 @@ final class GoogleRewardedAdTests: QuickSpec {
             }
 
             it("is valid when it holds a rewarded ad item reference") {
+                // GADRewardedAd has no public initializer, so unsafeBitCast is the
+                // pragmatic way to produce a non-nil value. isValid() only checks != nil,
+                // so memory layout doesn't matter here.
                 let fakeItem = unsafeBitCast(NSObject(), to: MSPGADRewardedAd?.self)
                 sut.rewardedAdItem = fakeItem
 

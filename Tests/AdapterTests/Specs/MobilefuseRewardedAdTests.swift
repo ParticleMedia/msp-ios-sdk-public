@@ -77,7 +77,7 @@ class MobilefuseRewardedAdTests: QuickSpec {
                 context("when reward is earned") {
                     it("should fire onAdRewardReceived once") {
                         // Act
-                        sut.handleRewardEarned()
+                        sut.markRewardEarned()
 
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
@@ -86,8 +86,8 @@ class MobilefuseRewardedAdTests: QuickSpec {
 
                     it("should be idempotent - calling twice fires callback once only") {
                         // Act
-                        sut.handleRewardEarned()
-                        sut.handleRewardEarned()
+                        sut.markRewardEarned()
+                        sut.markRewardEarned()
 
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
@@ -100,7 +100,7 @@ class MobilefuseRewardedAdTests: QuickSpec {
                 context("when ad is closed without prior reward") {
                     it("should NOT call onAdRewardReceived") {
                         // Act
-                        sut.handleAdClosed()
+                        sut.markDismissed()
 
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(0))
@@ -116,8 +116,8 @@ class MobilefuseRewardedAdTests: QuickSpec {
                         mockAdListener.onDismissCallback = { callbackOrder.append("dismiss") }
 
                         // Act
-                        sut.handleRewardEarned()
-                        sut.handleAdClosed()
+                        sut.markRewardEarned()
+                        sut.markDismissed()
 
                         // Assert
                         expect(callbackOrder).to(equal(["reward", "dismiss"]))
@@ -129,7 +129,7 @@ class MobilefuseRewardedAdTests: QuickSpec {
             describe("lifecycle events") {
                 it("should handle impression tracking") {
                     // Act
-                    sut.handleAdRendered()
+                    sut.markDisplayed()
 
                     // Assert
                     expect(mockAdListener.onAdImpressionCallCount).toEventually(equal(1))
@@ -137,7 +137,7 @@ class MobilefuseRewardedAdTests: QuickSpec {
 
                 it("should handle click tracking") {
                     // Act
-                    sut.handleAdClicked()
+                    sut.markClicked()
 
                     // Assert
                     expect(mockAdListener.onAdClickCallCount).toEventually(equal(1))
@@ -151,17 +151,17 @@ class MobilefuseRewardedAdTests: QuickSpec {
                     expect(mockAdListener.onErrorCallCount).to(equal(0))
                 }
 
-                it("sends MES impression event on handleAdRendered") {
+                it("sends MES impression event on markDisplayed") {
                     // Act
-                    sut.handleAdRendered()
+                    sut.markDisplayed()
 
                     // Assert
                     expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
                 }
 
-                it("sends MES click event on handleAdClicked") {
+                it("sends MES click event on markClicked") {
                     // Act
-                    sut.handleAdClicked()
+                    sut.markClicked()
 
                     // Assert
                     expect(metricReporter.logAdClickCallCount).toEventually(equal(1))

@@ -4,6 +4,9 @@ import UIKit
 
 @testable import MSPiOSCore
 
+// Note: RewardedLifecycleController methods have dispatchPrecondition(.onQueue(.main)).
+// Quick/Nimble `it` closures execute on DispatchQueue.main, so these preconditions pass.
+// If test execution ever moves off the main queue, these tests will crash rather than fail.
 final class RewardedLifecycleControllerSpec: QuickSpec {
     override class func spec() {
         describe("RewardedLifecycleController") {
@@ -43,6 +46,14 @@ final class RewardedLifecycleControllerSpec: QuickSpec {
 
                     expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
                 }
+
+                it("fires impression only once (double-fire regression)") {
+                    sut.markDisplayed()
+                    sut.markDisplayed()
+
+                    expect(adListener.impressionAds.count).toEventually(equal(1))
+                    expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+                }
             }
 
             // MARK: - markClicked
@@ -57,6 +68,14 @@ final class RewardedLifecycleControllerSpec: QuickSpec {
                 it("calls logAdClick on adMetricReporter") {
                     sut.markClicked()
 
+                    expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
+                }
+
+                it("fires click only once (double-fire regression)") {
+                    sut.markClicked()
+                    sut.markClicked()
+
+                    expect(adListener.clickedAds.count).toEventually(equal(1))
                     expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
                 }
             }
@@ -121,10 +140,12 @@ private final class MockAdListener: AdListener {
 
     func onAdImpression(ad: MSPAd) {
         impressionAds.append(ad)
+        callSequence.append("impression")
     }
 
     func onAdClick(ad: MSPAd) {
         clickedAds.append(ad)
+        callSequence.append("click")
     }
 
     func onAdLoaded(placementId: String) {

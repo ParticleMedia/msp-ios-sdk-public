@@ -5,6 +5,14 @@
 
 import Foundation
 
+/// Manages rewarded ad lifecycle state: impression, click, reward, and dismiss.
+/// Provides idempotency guards so each event fires at most once per ad session,
+/// preventing duplicate MES event reporting regardless of how many times the
+/// underlying SDK fires a given callback.
+///
+/// - Note: **Internal SDK use only.** This class is an implementation detail of the
+///   adapter layer and is not part of the public API contract. It may change without notice.
+///   All methods must be called on the main queue (`dispatchPrecondition` enforced).
 public final class RewardedLifecycleController {
     private enum Constants {
         static let logTag = "Rewarded"
@@ -16,8 +24,10 @@ public final class RewardedLifecycleController {
     // refactoring and avoids a crash if the ownership invariant ever breaks.
     private weak var ad: RewardedAd?
 
-    public private(set) var hasEarnedReward = false
-    public private(set) var hasDismissed = false
+    private var hasDisplayed = false
+    private var hasClicked = false
+    private var hasEarnedReward = false
+    private var hasDismissed = false
 
     public init(adListener: AdListener?, ad: RewardedAd) {
         self.adListener = adListener
@@ -26,11 +36,16 @@ public final class RewardedLifecycleController {
 
     public func markDisplayed() {
         dispatchPrecondition(condition: .onQueue(.main))
+        guard !hasDisplayed else {
+            MSPLogger.shared.info(tag: Constants.logTag, message: "Duplicate rewarded impression callback ignored")
+            return
+        }
         guard let ad else {
             MSPLogger.shared.error(
                 tag: Constants.logTag, message: "Rewarded impression dropped because ad is already released")
             return
         }
+        hasDisplayed = true
         MSPLogger.shared.info(
             tag: Constants.logTag,
             message:
@@ -39,11 +54,16 @@ public final class RewardedLifecycleController {
 
     public func markClicked() {
         dispatchPrecondition(condition: .onQueue(.main))
+        guard !hasClicked else {
+            MSPLogger.shared.info(tag: Constants.logTag, message: "Duplicate rewarded click callback ignored")
+            return
+        }
         guard let ad else {
             MSPLogger.shared.error(
                 tag: Constants.logTag, message: "Rewarded click dropped because ad is already released")
             return
         }
+        hasClicked = true
         MSPLogger.shared.info(
             tag: Constants.logTag,
             message: "Rewarded ad click recorded. requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")

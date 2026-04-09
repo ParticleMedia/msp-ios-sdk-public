@@ -54,16 +54,16 @@ public final class MintegralRewardedAd: MSPiOSCore.RewardedAd {
         )
     }
 
-    internal func handleImpression() {
+    internal func markDisplayed() {
         lifecycleController.markDisplayed()
     }
 
-    internal func handleClick() {
+    internal func markClicked() {
         lifecycleController.markClicked()
     }
 
-    internal func handleDismiss(converted: Bool) {
-        if converted {
+    internal func markDismissed(rewardEarned: Bool) {
+        if rewardEarned {
             lifecycleController.markRewardEarned()
         }
         lifecycleController.markDismissed()
@@ -80,11 +80,15 @@ private final class MintegralRewardedAdDelegateHandler: NSObject, MTGRewardAdSho
     weak var rewardedAd: MintegralRewardedAd?
 
     func onVideoAdShowSuccess(_ placementId: String?, unitId: String?) {
-        rewardedAd?.handleImpression()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markDisplayed()
+        }
     }
 
     func onVideoAdClicked(_ placementId: String?, unitId: String?) {
-        rewardedAd?.handleClick()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markClicked()
+        }
     }
 
     func onVideoAdDismissed(
@@ -93,7 +97,9 @@ private final class MintegralRewardedAdDelegateHandler: NSObject, MTGRewardAdSho
         withConverted converted: Bool,
         withRewardInfo rewardInfo: MTGRewardAdInfo?
     ) {
-        rewardedAd?.handleDismiss(converted: converted)
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markDismissed(rewardEarned: converted)
+        }
     }
 
     func onVideoAdShowFailed(_ placementId: String?, unitId: String?, withError error: Error) {

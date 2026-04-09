@@ -11,17 +11,29 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
         describe("GoogleRewardedAd reward flow") {
             var sut: GoogleRewardedAd!
             var listener: RewardedAdListenerSpy!
+            var adapter: RewardedAdNetworkAdapterStub!
+            var metricReporter: SpyAdMetricReporter!
             var originalPresenter: ((MSPGADRewardedAd?, UIViewController?, @escaping () -> Void) -> Void)!
 
             beforeEach {
                 listener = RewardedAdListenerSpy()
+                adapter = RewardedAdNetworkAdapterStub()
+                adapter.adRequest = AdRequest(
+                    customParams: [:], geo: nil, context: nil,
+                    adaptiveBannerSize: nil, adSize: nil,
+                    placementId: "test", adFormat: .rewarded
+                )
+                metricReporter = SpyAdMetricReporter()
+                adapter.adMetricReporter = metricReporter
                 sut = GoogleRewardedAd(
-                    adNetworkAdapter: RewardedAdNetworkAdapterStub(),
+                    adNetworkAdapter: adapter,
                     reward: Reward(type: "coins", amount: 10),
                     rewardedAdItem: nil,
                     rootViewController: UIViewController(),
                     adListener: listener
                 )
+                adapter.mspAd = sut
+                adapter.adListener = listener
                 originalPresenter = GoogleRewardedAd.presenter
             }
 

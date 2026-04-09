@@ -38,19 +38,19 @@ public final class LiftoffRewardedAd: MSPiOSCore.RewardedAd {
         vungleRewarded.present(with: viewController)
     }
 
-    internal func handleImpression() {
+    internal func markDisplayed() {
         lifecycleController.markDisplayed()
     }
 
-    internal func handleClick() {
+    internal func markClicked() {
         lifecycleController.markClicked()
     }
 
-    internal func handleReward() {
+    internal func markRewardEarned() {
         lifecycleController.markRewardEarned()
     }
 
-    internal func handleDismiss() {
+    internal func markDismissed() {
         lifecycleController.markDismissed()
     }
 
@@ -65,19 +65,27 @@ private final class LiftoffRewardedAdDelegateHandler: NSObject, VungleRewardedDe
     weak var rewardedAd: LiftoffRewardedAd?
 
     func rewardedAdDidTrackImpression(_ rewarded: VungleRewarded) {
-        rewardedAd?.handleImpression()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markDisplayed()
+        }
     }
 
     func rewardedAdDidClick(_ rewarded: VungleRewarded) {
-        rewardedAd?.handleClick()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markClicked()
+        }
     }
 
     func rewardedAdDidRewardUser(_ rewarded: VungleRewarded) {
-        rewardedAd?.handleReward()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markRewardEarned()
+        }
     }
 
     func rewardedAdDidClose(_ rewarded: VungleRewarded) {
-        rewardedAd?.handleDismiss()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markDismissed()
+        }
     }
 
     func rewardedAdDidFailToPresent(_ rewarded: VungleRewarded, withError error: NSError) {

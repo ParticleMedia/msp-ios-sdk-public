@@ -17,8 +17,8 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
         rewardedVideoAdItem?.show(fromRootViewController: rootViewController)
     }
 
-    public weak var rootViewController: UIViewController?
-    public var rewardedVideoAdItem: FBRewardedVideoAd?
+    weak var rootViewController: UIViewController?
+    var rewardedVideoAdItem: FBRewardedVideoAd?
 
     private lazy var lifecycleController = RewardedLifecycleController(adListener: adListener, ad: self)
 

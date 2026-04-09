@@ -82,7 +82,7 @@ class MintegralRewardedAdTests: QuickSpec {
                         mockAdListener.onDismissCallback = { callbackOrder.append("dismiss") }
 
                         // Act
-                        sut.handleDismiss(converted: true)
+                        sut.markDismissed(rewardEarned: true)
 
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
@@ -93,8 +93,8 @@ class MintegralRewardedAdTests: QuickSpec {
                     it("should be idempotent - calling twice fires callbacks once only") {
                         // Arrange
                         // Act
-                        sut.handleDismiss(converted: true)
-                        sut.handleDismiss(converted: true)
+                        sut.markDismissed(rewardEarned: true)
+                        sut.markDismissed(rewardEarned: true)
 
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(1))
@@ -106,7 +106,7 @@ class MintegralRewardedAdTests: QuickSpec {
                     it("should NOT call onAdRewardReceived") {
                         // Arrange
                         // Act
-                        sut.handleDismiss(converted: false)
+                        sut.markDismissed(rewardEarned: false)
 
                         // Assert
                         expect(mockAdListener.onAdRewardReceivedCallCount).to(equal(0))
@@ -119,7 +119,7 @@ class MintegralRewardedAdTests: QuickSpec {
             describe("lifecycle events") {
                 it("should handle impression tracking") {
                     // Act
-                    sut.handleImpression()
+                    sut.markDisplayed()
 
                     // Assert
                     expect(mockAdListener.onAdImpressionCallCount).toEventually(equal(1))
@@ -127,7 +127,7 @@ class MintegralRewardedAdTests: QuickSpec {
 
                 it("should handle click tracking") {
                     // Act
-                    sut.handleClick()
+                    sut.markClicked()
 
                     // Assert
                     expect(mockAdListener.onAdClickCallCount).toEventually(equal(1))
@@ -144,17 +144,17 @@ class MintegralRewardedAdTests: QuickSpec {
                     expect(mockAdListener.onErrorCallCount).to(equal(0))
                 }
 
-                it("sends MES impression event on handleImpression") {
+                it("sends MES impression event on markDisplayed") {
                     // Act
-                    sut.handleImpression()
+                    sut.markDisplayed()
 
                     // Assert
                     expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
                 }
 
-                it("sends MES click event on handleClick") {
+                it("sends MES click event on markClicked") {
                     // Act
-                    sut.handleClick()
+                    sut.markClicked()
 
                     // Assert
                     expect(metricReporter.logAdClickCallCount).toEventually(equal(1))

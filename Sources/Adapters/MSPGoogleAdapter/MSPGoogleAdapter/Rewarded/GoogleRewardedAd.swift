@@ -16,8 +16,8 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
 
     static var presenter = MSPGADRewardedAdPresent
 
-    public weak var rootViewController: UIViewController?
-    public var rewardedAdItem: MSPGADRewardedAd?
+    weak var rootViewController: UIViewController?
+    var rewardedAdItem: MSPGADRewardedAd?
 
     private lazy var lifecycleController = RewardedLifecycleController(adListener: adListener, ad: self)
 

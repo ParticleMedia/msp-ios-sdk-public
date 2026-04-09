@@ -78,22 +78,22 @@ public final class MobilefuseRewardedAd: MSPiOSCore.RewardedAd {
     // MARK: - Internal Methods
 
     /// Called by delegate handler when the rewarded ad is rendered/displayed
-    internal func handleAdRendered() {
+    internal func markDisplayed() {
         lifecycleController.markDisplayed()
     }
 
     /// Called by delegate handler when the rewarded ad is clicked
-    internal func handleAdClicked() {
+    internal func markClicked() {
         lifecycleController.markClicked()
     }
 
     /// Called by delegate handler when the user earns the reward
-    internal func handleRewardEarned() {
+    internal func markRewardEarned() {
         lifecycleController.markRewardEarned()
     }
 
     /// Called by delegate handler when the rewarded ad is closed/dismissed
-    internal func handleAdClosed() {
+    internal func markDismissed() {
         lifecycleController.markDismissed()
     }
 
@@ -122,25 +122,33 @@ private final class MobilefuseRewardedAdDelegateHandler: NSObject, IMFAdCallback
     /// Called when the rewarded ad is rendered/displayed
     /// - Parameter ad: The MFRewardedAd instance
     func onAdRendered(_ ad: MFRewardedAd) {
-        rewardedAd?.handleAdRendered()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markDisplayed()
+        }
     }
 
     /// Called when the rewarded ad is clicked
     /// - Parameter ad: The MFRewardedAd instance
     func onAdClicked(_ ad: MFRewardedAd) {
-        rewardedAd?.handleAdClicked()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markClicked()
+        }
     }
 
     /// Called when the user earns the reward
     /// - Parameter ad: The MFRewardedAd instance
     func onUserEarnedReward(_ ad: MFRewardedAd) {
-        rewardedAd?.handleRewardEarned()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markRewardEarned()
+        }
     }
 
     /// Called when the rewarded ad is closed/dismissed
     /// - Parameter ad: The MFRewardedAd instance
     func onAdClosed(_ ad: MFRewardedAd) {
-        rewardedAd?.handleAdClosed()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.markDismissed()
+        }
     }
 
     /// Called when an error occurs with the rewarded ad

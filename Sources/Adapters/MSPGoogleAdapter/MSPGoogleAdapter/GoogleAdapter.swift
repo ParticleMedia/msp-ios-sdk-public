@@ -724,29 +724,35 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
     }
 
     public func adDidRecordClick(_ ad: MSPGADFullScreenPresentingAd) {
-        if let rewardedAd = self.rewardedAd {
-            MSPLogger.shared.info(
-                message:
-                    "[Adapter: Google] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
-            )
-            rewardedAd.markClicked()
-            self.adListener?.onAdClick(ad: rewardedAd)
-            self.sendClickAdEvent(ad: rewardedAd)
-        } else if let interstitialAd = self.interstitialAd {
-            self.adListener?.onAdClick(ad: interstitialAd)
-            self.sendClickAdEvent(ad: interstitialAd)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            if let rewardedAd = self.rewardedAd {
+                MSPLogger.shared.info(
+                    message:
+                        "[Adapter: Google] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
+                )
+                rewardedAd.markClicked()
+                self.adListener?.onAdClick(ad: rewardedAd)
+                self.sendClickAdEvent(ad: rewardedAd)
+            } else if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdClick(ad: interstitialAd)
+                self.sendClickAdEvent(ad: interstitialAd)
+            }
         }
     }
 
     public func adDidDismissFullScreenContent(_ ad: any MSPGADFullScreenPresentingAd) {
-        if let rewardedAd = self.rewardedAd {
-            MSPLogger.shared.info(
-                message:
-                    "[Adapter: Google] Rewarded dismiss callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
-            )
-            rewardedAd.markDismissed()
-        } else if let interstitialAd = self.interstitialAd {
-            self.adListener?.onAdDismissed(ad: interstitialAd)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            if let rewardedAd = self.rewardedAd {
+                MSPLogger.shared.info(
+                    message:
+                        "[Adapter: Google] Rewarded dismiss callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
+                )
+                rewardedAd.markDismissed()
+            } else if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdDismissed(ad: interstitialAd)
+            }
         }
     }
 
