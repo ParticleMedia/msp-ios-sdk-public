@@ -119,13 +119,17 @@ private final class UnityRewardedAdDelegateHandler: NSObject, LPMRewardedAdDeleg
     /// Called when the rewarded ad is displayed
     /// - Parameter adInfo: The ad information
     func didDisplayAd(with adInfo: LPMAdInfo) {
-        rewardedAd?.handleAdDisplayed()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleAdDisplayed()
+        }
     }
 
     /// Called when the rewarded ad is clicked
     /// - Parameter adInfo: The ad information
     func didClickAd(with adInfo: LPMAdInfo) {
-        rewardedAd?.handleAdClicked()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleAdClicked()
+        }
     }
 
     /// Called when the user earns the reward
@@ -133,13 +137,17 @@ private final class UnityRewardedAdDelegateHandler: NSObject, LPMRewardedAdDeleg
     ///   - adInfo: The ad information
     ///   - reward: The reward information from Unity SDK
     func didRewardAd(with adInfo: LPMAdInfo, reward: LPMReward) {
-        rewardedAd?.handleRewardEarned()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleRewardEarned()
+        }
     }
 
     /// Called when the rewarded ad is closed
     /// - Parameter adInfo: The ad information
     func didCloseAd(with adInfo: LPMAdInfo) {
-        rewardedAd?.handleAdClosed()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleAdClosed()
+        }
     }
 
     /// Called when the rewarded ad fails to display

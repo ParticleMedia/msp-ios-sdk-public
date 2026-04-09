@@ -81,7 +81,9 @@ extension InmobiRewardedAd: IMInterstitialDelegate {
     /// Called when the interstitial ad is presented
     /// - Parameter interstitial: The IMInterstitial instance
     public func interstitialDidPresent(_ interstitial: IMInterstitial) {
-        lifecycleController.markDisplayed()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markDisplayed()
+        }
     }
 
     /// Called when the interstitial ad receives interaction
@@ -89,7 +91,9 @@ extension InmobiRewardedAd: IMInterstitialDelegate {
     ///   - interstitial: The IMInterstitial instance
     ///   - params: Interaction parameters
     public func interstitial(_ interstitial: IMInterstitial, didReceiveWith params: [String: Any]?) {
-        lifecycleController.markClicked()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markClicked()
+        }
     }
 
     /// Called when the user completes the reward action (InMobi specific for rewarded placements)
@@ -97,13 +101,17 @@ extension InmobiRewardedAd: IMInterstitialDelegate {
     ///   - interstitial: The IMInterstitial instance
     ///   - rewards: The reward information
     public func interstitial(_ interstitial: IMInterstitial, rewardActionCompletedWithRewards rewards: [String: Any]) {
-        lifecycleController.markRewardEarned()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markRewardEarned()
+        }
     }
 
     /// Called when the interstitial ad is dismissed
     /// - Parameter interstitial: The IMInterstitial instance
     public func interstitialDidDismiss(_ interstitial: IMInterstitial) {
-        lifecycleController.markDismissed()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markDismissed()
+        }
     }
 
     /// Called when the interstitial ad fails to present

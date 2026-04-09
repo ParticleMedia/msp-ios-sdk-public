@@ -88,7 +88,9 @@ extension MolocoRewardedAd: MolocoRewardedDelegate {
     }
 
     public func didShow(ad: any MolocoAd) {
-        lifecycleController.markDisplayed()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markDisplayed()
+        }
     }
 
     public func failToShow(ad: any MolocoAd, with error: (any Error)?) {
@@ -99,15 +101,21 @@ extension MolocoRewardedAd: MolocoRewardedDelegate {
     }
 
     public func didHide(ad: any MolocoAd) {
-        lifecycleController.markDismissed()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markDismissed()
+        }
     }
 
     public func didClick(on ad: any MolocoAd) {
-        lifecycleController.markClicked()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markClicked()
+        }
     }
 
     public func userRewarded(ad: any MolocoAd) {
-        lifecycleController.markRewardEarned()
+        DispatchQueue.main.async { [weak self] in
+            self?.lifecycleController.markRewardEarned()
+        }
     }
 
     public func rewardedVideoStarted(ad: any MolocoAd) {

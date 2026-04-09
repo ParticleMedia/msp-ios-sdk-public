@@ -119,13 +119,17 @@ private final class PubmaticRewardedAdDelegateHandler: NSObject, POBRewardedAdDe
     /// Called when the rewarded ad records an impression
     /// - Parameter rewardedAd: The POBRewardedAd instance
     func rewardedAdDidRecordImpression(_ rewardedAd: POBRewardedAd) {
-        self.rewardedAd?.handleAdImpression()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleAdImpression()
+        }
     }
 
     /// Called when the rewarded ad is clicked
     /// - Parameter rewardedAd: The POBRewardedAd instance
     func rewardedAdDidClick(_ rewardedAd: POBRewardedAd) {
-        self.rewardedAd?.handleAdClicked()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleAdClicked()
+        }
     }
 
     /// Called when the user earns the reward
@@ -133,13 +137,17 @@ private final class PubmaticRewardedAdDelegateHandler: NSObject, POBRewardedAdDe
     ///   - rewardedAd: The POBRewardedAd instance
     ///   - reward: The reward information from PubMatic SDK
     func rewardedAd(_ rewardedAd: POBRewardedAd, didReward reward: POBReward) {
-        self.rewardedAd?.handleRewardEarned()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleRewardEarned()
+        }
     }
 
     /// Called when the rewarded ad is dismissed
     /// - Parameter rewardedAd: The POBRewardedAd instance
     func rewardedAdDidDismiss(_ rewardedAd: POBRewardedAd) {
-        self.rewardedAd?.handleAdDismissed()
+        DispatchQueue.main.async { [weak self] in
+            self?.rewardedAd?.handleAdDismissed()
+        }
     }
 
     /// Called when the rewarded ad fails to show

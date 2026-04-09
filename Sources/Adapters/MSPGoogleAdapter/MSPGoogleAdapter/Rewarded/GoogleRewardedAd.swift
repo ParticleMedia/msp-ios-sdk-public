@@ -51,12 +51,14 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
 
         Self.presenter(rewardedAdItem, presentingViewController) { [weak self] in
             guard let self else { return }
-            MSPLogger.shared.info(
-                tag: Constants.logTag,
-                message:
-                    "[Adapter: Google] Reward callback received from Google SDK. reward=\(self.reward.type):\(self.reward.amount)"
-            )
-            self.lifecycleController.markRewardEarned()
+            DispatchQueue.main.async {
+                MSPLogger.shared.info(
+                    tag: Constants.logTag,
+                    message:
+                        "[Adapter: Google] Reward callback received from Google SDK. reward=\(self.reward.type):\(self.reward.amount)"
+                )
+                self.lifecycleController.markRewardEarned()
+            }
         }
     }
 
