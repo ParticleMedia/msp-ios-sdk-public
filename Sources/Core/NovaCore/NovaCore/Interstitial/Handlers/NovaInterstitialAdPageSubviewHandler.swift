@@ -108,6 +108,12 @@ class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewH
         showNextPageIfNeededOrClose()
     }
 
+    func willAppear() {
+        if !useCustomClose {
+            setupDelayTimerIfNeeded()
+        }
+    }
+
     func didAppear() {
         htmlView?.setAllMediaPlaybackSuspended(false, completionHandler: nil)
     }
@@ -252,7 +258,6 @@ private extension NovaInterstitialAdPageSubviewHandler {
                     make.width.greaterThanOrEqualTo(32)
                 }
             }
-            setupDelayTimerIfNeeded()
         }
     }
 
