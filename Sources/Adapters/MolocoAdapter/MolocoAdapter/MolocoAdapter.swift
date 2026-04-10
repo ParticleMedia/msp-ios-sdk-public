@@ -376,9 +376,7 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             let mediaView = UIImageView(image: image)
             mediaContainer.addSubview(mediaView)
             mediaView.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.centerY.equalToSuperview()
-                make.height.equalTo(mediaView.snp.width).multipliedBy(height / width)
+                make.edges.equalToSuperview()
             }
         }
     }
