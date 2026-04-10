@@ -257,6 +257,10 @@ final class AdTestViewController: UIViewController {
     private func destroyAd() {
         adContainerView?.subviews.forEach { $0.removeFromSuperview() }
         currentNativeAdView = nil
+        let ad = viewModel.state.currentAd
+        if case .loaded = viewModel.state {
+            MSP.shared.notifyLoss(winnerBidderName: "dummy winner", winnerPrice: 1.0, ad: ad, requestId: nil)
+        }
         viewModel.destroyAd()
     }
 
