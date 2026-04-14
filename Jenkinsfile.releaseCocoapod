@@ -259,7 +259,7 @@ pipeline {
                                     git checkout -- . 2>/dev/null || true
                                     git clean -fd Pods/ 2>/dev/null || true
                                     git add release.md
-                                    git commit -m "ci: add release notes" --no-verify
+                                    git diff --cached --quiet || git commit -m "ci: add release notes" --no-verify
                                 '''
                                 sh """
                                     set -euo pipefail
