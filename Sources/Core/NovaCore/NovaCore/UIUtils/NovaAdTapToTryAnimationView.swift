@@ -84,14 +84,10 @@ final class NovaAdTapToTryAnimationView: UIView {
         super.layoutSubviews()
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
 
-        // Hand icon: ~60% of view size, offset slightly toward bottom-right (matching Lottie anchor)
+        // Hand icon: ~55% of view size, centered
         let handSize = min(bounds.width, bounds.height) * 0.55
-        handImageView.frame = CGRect(
-            x: center.x - handSize * 0.35,
-            y: center.y - handSize * 0.25,
-            width: handSize,
-            height: handSize
-        )
+        handImageView.bounds = CGRect(origin: .zero, size: CGSize(width: handSize, height: handSize))
+        handImageView.center = center
 
         // Ring path centered
         let ringRadius: CGFloat = min(bounds.width, bounds.height) * 0.35
