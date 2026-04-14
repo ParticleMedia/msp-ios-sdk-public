@@ -35,7 +35,6 @@ public final class RewardedLifecycleController {
             tag: Constants.logTag,
             message:
                 "Rewarded ad impression recorded. requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")
-        ad.adNetworkAdapter?.handleAdImpression()
     }
 
     public func markClicked() {
@@ -48,7 +47,6 @@ public final class RewardedLifecycleController {
         MSPLogger.shared.info(
             tag: Constants.logTag,
             message: "Rewarded ad click recorded. requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")")
-        ad.adNetworkAdapter?.handleAdClicked()
     }
 
     public func markRewardEarned() {
