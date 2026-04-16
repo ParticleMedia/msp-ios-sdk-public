@@ -226,14 +226,14 @@ run_pod_install_with_retry() {
             else
                 log::error "TARGET" "All retry attempts exhausted"
                 log::error "TARGET" "Final error output:"
-                echo "$last_error_output" | tail -20 | sed 's/^/  /' >&2
+                echo "$last_error_output" | tail -60 | sed 's/^/  /' >&2
                 return 1
             fi
         else
             # Non-network error, don't retry
             log::error "TARGET" "pod install failed with non-network error (exit code $exit_code)"
             log::error "TARGET" "Error output:"
-            echo "$last_error_output" | tail -20 | sed 's/^/  /' >&2
+            echo "$last_error_output" | tail -60 | sed 's/^/  /' >&2
             return 1
         fi
         
