@@ -597,14 +597,13 @@ smart_wait_for_pod_availability() {
     log_section "Checking $pod_name $version availability$context_msg"
 
     # ═══════════════════════════════════════════════════════════════════════════
-    # Stage 1: Quick check (3 minutes with longer intervals)
+    # Stage 1: Quick check (3 minutes, 15s intervals = 12 checks)
     # ═══════════════════════════════════════════════════════════════════════════
-    # Changed from 120s/10s to 180s/30s (6 checks → 6 checks but less overhead)
-    # With caching, each check now takes 5-10s instead of 50-60s
-    # Total Stage 1 time: ~3 minutes (much faster than before despite longer timeout)
-    log::step "PODSPEC" "Quick check: Is $pod_name $version available? (3 min timeout, 30s intervals)..."
+    # CDN direct-check is fast (~0.5s), so 15s interval gives responsive feedback.
+    # Total Stage 1 time: 3 minutes (180s / 15s = 12 checks).
+    log::step "PODSPEC" "Quick check: Is $pod_name $version available? (3 min timeout, 15s intervals)..."
 
-    if wait_for_pod_availability "$pod_name" "$version" 180 30; then
+    if wait_for_pod_availability "$pod_name" "$version" 180 15; then
         log::success "PODSPEC" "✓ $pod_name $version is available!"
         return 0
     fi
@@ -619,22 +618,21 @@ smart_wait_for_pod_availability() {
     fi
 
     # ═══════════════════════════════════════════════════════════════════════════
-    # Stage 3: Long wait (up to 57 more minutes, 60 total)
+    # Stage 3: Long wait (up to 57 more minutes, 60 total; 30s intervals)
     # ═══════════════════════════════════════════════════════════════════════════
-    # Rationale: Observed 10-25 min, extreme cases up to 40-60 min
+    # Rationale: CDN propagation observed 10-25 min, extreme cases up to 60 min.
+    # 30s intervals (vs old 60s) gives earlier detection while still being quiet.
     log::info "PODSPEC" "Continuing to wait for $pod_name $version (up to 57 more minutes)..."
-    log::info "PODSPEC" "CDN propagation can take 10-60 minutes. Checking every 60 seconds."
+    log::info "PODSPEC" "CDN propagation can take 10-60 minutes. Checking every 30 seconds."
 
     # 57 minutes = 3420 seconds (60 total - 3 already waited)
-    if ! wait_for_pod_availability "$pod_name" "$version" 3420 60; then
+    if ! wait_for_pod_availability "$pod_name" "$version" 3420 30; then
         log::error "PODSPEC" "$pod_name $version still not available after 60 minutes total"
         log::error "PODSPEC" "This is unusual. Please check:"
         log::error "PODSPEC" "  1. Did $pod_name $version publish succeed?"
         log::error "PODSPEC" "     Command: pod trunk info $pod_name"
         log::error "PODSPEC" "  2. Is CocoaPods CDN having issues?"
         log::error "PODSPEC" "     Check: https://status.cocoapods.org"
-        log::error "PODSPEC" "  3. Try manual check:"
-        log::error "PODSPEC" "     pod repo update && pod search $pod_name | grep $version"
         return 1
     fi
 

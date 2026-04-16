@@ -280,17 +280,6 @@ EOF
     log::info "VERIFY" "Podfile created with version constraint: ~> $version"
     log::info "VERIFY" "Podfile uses remote source: $pods_remote_url"
 
-    log_step_info "Updating CocoaPods repository"
-    if ! pod repo update 2>&1 | grep -v "Updating spec repo" | grep -v "^$" || true; then
-        log::warn "VERIFY" "pod repo update had warnings (continuing)"
-    fi
-
-    log_step_info "Checking if version $version is available remotely"
-    if ! pod search MSPCore --simple 2>/dev/null | grep -q "$version"; then
-        log::warn "VERIFY" "Version $version may not be available in pod search (this is normal for very recent releases)"
-        log::info "VERIFY" "Attempting pod install anyway..."
-    fi
-
     log_step_info "Installing pods from remote trunk"
     local install_exit_code=0
     if ! pod install --silent 2>&1; then

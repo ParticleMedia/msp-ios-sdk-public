@@ -47,6 +47,11 @@ pipeline {
             description: 'Resume a previously failed release. The version is automatically restored from the saved state — leave VERSION blank, any value entered will be ignored.'
         )
         booleanParam(
+            name: 'PRERELEASE',
+            defaultValue: false,
+            description: '⚠️ TEST RELEASE ONLY. Tick to publish a prerelease version (X.Y.Z-suffix). These versions are NOT for production use and are marked accordingly in Slack.'
+        )
+        booleanParam(
             name: 'SKIP_PREFLIGHT',
             defaultValue: false,
             description: 'Skip preflight checks (static + build). Use only when preflight was already run.'
@@ -117,6 +122,29 @@ pipeline {
                     brew upgrade xcodegen 2>/dev/null || brew install xcodegen
                     echo "XcodeGen ready: $(xcodegen --version)"
                 '''
+            }
+        }
+
+        stage('Validate params') {
+            when {
+                expression { !params.RESUME && params.VERSION?.trim() }
+            }
+            steps {
+                script {
+                    def v = params.VERSION.trim()
+                    def isClean = v ==~ /^[0-9]+\.[0-9]+\.[0-9]+$/
+                    def hasSuffix = v ==~ /^[0-9]+\.[0-9]+\.[0-9]+-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*$/
+                    if (!isClean && !hasSuffix) {
+                        error "Invalid VERSION format: '${v}'. Expected X.Y.Z or X.Y.Z-suffix."
+                    }
+                    if (!isClean && !params.PRERELEASE) {
+                        error "VERSION='${v}' looks like a prerelease. Tick the PRERELEASE checkbox to confirm, or use a clean X.Y.Z."
+                    }
+                    if (isClean && params.PRERELEASE) {
+                        error "VERSION='${v}' is clean X.Y.Z but PRERELEASE is ticked. Uncheck PRERELEASE for production releases."
+                    }
+                    echo "✓ Params consistent: VERSION=${v} PRERELEASE=${params.PRERELEASE}"
+                }
             }
         }
 
@@ -244,6 +272,9 @@ pipeline {
                     if (params.RELEASE_NOTES?.trim()) {
                         envVars << "RELEASE_NOTES=${params.RELEASE_NOTES.trim()}"
                     }
+                    if (params.PRERELEASE) {
+                        envVars << "MSP_PRERELEASE=1"
+                    }
                     withEnv(envVars) {
                         sshagent(credentials: ['git key']) {
                             withCredentials([
@@ -251,13 +282,19 @@ pipeline {
                                 string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL'),
                                 string(credentialsId: 'msp-github-token', variable: 'GH_TOKEN')
                             ]) {
-                                // Reset workspace, generate release.md, commit so preflight sees clean tree
+                                // Reset workspace, generate release.md (only if not already present),
+                                // then commit so preflight sees a clean tree.
                                 def notes = params.RELEASE_NOTES?.trim() ?: "Release ${version}"
-                                writeFile file: 'release.md', text: "# Release ${version}\n\n## Changes\n\n- ${notes}\n\n## End\n"
                                 sh '''
                                     set -euo pipefail
                                     git checkout -- . 2>/dev/null || true
                                     git clean -fd Pods/ 2>/dev/null || true
+                                '''
+                                if (!fileExists('release.md')) {
+                                    writeFile file: 'release.md', text: "# Release ${version}\n\n## Changes\n\n- ${notes}\n\n## End\n"
+                                }
+                                sh '''
+                                    set -euo pipefail
                                     git add release.md
                                     git diff --cached --quiet || git commit -m "ci: add release notes" --no-verify
                                 '''

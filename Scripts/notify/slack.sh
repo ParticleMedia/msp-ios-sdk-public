@@ -295,6 +295,26 @@ EOF
 # High-Level Notification Functions
 # ============================================================================
 
+# Internal: determine is_prerelease from env (primary) then state file (fallback).
+# This dual-source pattern ensures correct behavior both in-process (env) and
+# in Jenkins post{} blocks (env scope lost → state file is authoritative).
+# Returns: "1" if prerelease, "0" otherwise
+_notify_get_is_prerelease() {
+    local is_pre="${MSP_IS_PRERELEASE:-0}"
+
+    if [[ "$is_pre" == "0" || -z "$is_pre" ]]; then
+        # Try state file fallback
+        local state_file="${ROOT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+            local state_val
+            state_val=$(jq -r '.is_prerelease // false' "$state_file" 2>/dev/null || echo "false")
+            [[ "$state_val" == "true" ]] && is_pre=1 || is_pre=0
+        fi
+    fi
+
+    echo "$is_pre"
+}
+
 # Send release success notification
 notify_release_success() {
     local release_type="$1"
@@ -302,37 +322,55 @@ notify_release_success() {
     local pods="$3"
     local duration="${4:-unknown}"
     local release_notes="${5:-}"
-    
-    local message="🚀 *${release_type} Release Successful!*"
+
+    # Prerelease detection: env-first, state-file-fallback
+    local is_prerelease
+    is_prerelease=$(_notify_get_is_prerelease)
+
+    local message color fields=""
+    if [[ "$is_prerelease" == "1" ]]; then
+        message="⚠️ *${release_type} PRERELEASE Published*"
+        color="warning"
+        # Banner prepended to fields
+        fields+="{\"title\": \":warning: PRERELEASE\", \"value\": \":warning: *This is a TEST/PRERELEASE version. DO NOT use in production apps.*\", \"short\": false},"
+    else
+        message="🚀 *${release_type} Release Successful!*"
+        color="good"
+    fi
+
     local title="Release Details"
-    local fields=""
-    
+
     # Add version field
     fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
+
     # Add pods field
     if [[ -n "$pods" ]]; then
         fields+="{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true},"
     fi
-    
+
     # Add duration field
     fields+="{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true},"
-    
+
     # Add environment field
     fields+="{\"title\": \"Environment\", \"value\": \"$(get_slack_environment_info)\", \"short\": true}"
-    
+
     # Add release notes if provided
     if [[ -n "$release_notes" ]]; then
         local formatted_notes
         formatted_notes=$(format_release_notes_for_slack "$release_notes")
         fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
     fi
-    
-    send_slack_notification "$message" "good" "$title" "$fields"
+
+    send_slack_notification "$message" "$color" "$title" "$fields"
 
     # DM to release author via smart routing
     if command -v notify::dm &>/dev/null; then
-        local dm_text="🚀 ${release_type} Release Successful"
+        local dm_text
+        if [[ "$is_prerelease" == "1" ]]; then
+            dm_text="⚠️ ${release_type} PRERELEASE Published (NOT for production use)"
+        else
+            dm_text="🚀 ${release_type} Release Successful"
+        fi
         dm_text+=$'\n'"Version: ${version}"
         [[ -n "${pods:-}" ]] && dm_text+=$'\n'"Pods: ${pods}"
         dm_text+=$'\n'"Duration: ${duration}"
@@ -347,7 +385,16 @@ notify_release_failure() {
     local error_message="$3"
     local failed_step="${4:-unknown}"
 
-    local message="❌ *${release_type} Release Failed!*"
+    # Prerelease detection: env-first, state-file-fallback
+    local is_prerelease
+    is_prerelease=$(_notify_get_is_prerelease)
+
+    local message
+    if [[ "$is_prerelease" == "1" ]]; then
+        message="❌ *${release_type} Release (prerelease) Failed!*"
+    else
+        message="❌ *${release_type} Release Failed!*"
+    fi
     local title="Release Error Details"
     local fields=""
 
@@ -363,9 +410,16 @@ notify_release_failure() {
     # Add environment field
     fields+="{\"title\": \"Environment\", \"value\": \"$(get_slack_environment_info)\", \"short\": true}"
 
+    send_slack_notification "$message" "danger" "$title" "$fields"
+
     # DM only — failure notifications go directly to the release author, not channel
     if command -v notify::dm &>/dev/null; then
-        local dm_text="❌ ${release_type} Release Failed"
+        local dm_text
+        if [[ "$is_prerelease" == "1" ]]; then
+            dm_text="❌ ${release_type} Release (prerelease) Failed"
+        else
+            dm_text="❌ ${release_type} Release Failed"
+        fi
         dm_text+=$'\n'"Version: ${version}"
         dm_text+=$'\n'"Failed Step: ${failed_step}"
         [[ -n "${error_message:-}" ]] && dm_text+=$'\n'"Error: ${error_message}"
@@ -525,49 +579,64 @@ notify_release_success_with_summary() {
     local successful_pods="$7"
     local failed_pods="$8"
     local release_branch="${9:-}"
-    
-    local message="🚀 *${release_type} Release Successful!*"
+
+    # Prerelease detection: env-first, state-file-fallback
+    local is_prerelease
+    is_prerelease=$(_notify_get_is_prerelease)
+
+    local message color fields=""
+    if [[ "$is_prerelease" == "1" ]]; then
+        message="⚠️ *${release_type} PRERELEASE Published*"
+        color="warning"
+        fields+="{\"title\": \":warning: PRERELEASE\", \"value\": \":warning: *This is a TEST/PRERELEASE version. DO NOT use in production apps.*\", \"short\": false},"
+    else
+        message="🚀 *${release_type} Release Successful!*"
+        # Color adjusted by pod success counts below
+        color="good"
+    fi
+
     local title="Release Details & Summary"
-    local fields=""
-    
+
     # Add version field
     fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true}"
-    
+
     # Add release branch field if provided
     if [[ -n "$release_branch" ]]; then
         fields+=",{\"title\": \"Release Branch\", \"value\": \"$release_branch\", \"short\": true}"
     fi
-    
+
     # Add duration field
     fields+=",{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true}"
-    
+
     # Add released pods field
     if [[ -n "$pods" ]]; then
         fields+=",{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true}"
     fi
-    
+
     # Add environment field
     fields+=",{\"title\": \"Environment\", \"value\": \"$(get_slack_environment_info)\", \"short\": true}"
-    
+
     # Add release notes if provided
     if [[ -n "$release_notes" ]]; then
         local formatted_notes
         formatted_notes=$(format_release_notes_for_slack "$release_notes")
         fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
     fi
-    
+
     # Add summary statistics
     fields+=",{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true}"
     fields+=",{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true}"
     fields+=",{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true}"
-    
-    local color="good"
-    if [[ "$failed_pods" -gt 0 ]]; then
-        color="danger"
-    elif [[ "$successful_pods" -lt "$total_pods" ]]; then
-        color="warning"
+
+    # Adjust color for partial failures (only in production mode — prerelease stays warning)
+    if [[ "$is_prerelease" == "0" ]]; then
+        if [[ "$failed_pods" -gt 0 ]]; then
+            color="danger"
+        elif [[ "$successful_pods" -lt "$total_pods" ]]; then
+            color="warning"
+        fi
     fi
-    
+
     send_slack_notification "$message" "$color" "$title" "$fields"
 }
 
@@ -618,6 +687,7 @@ test_slack_notification() {
 export -f load_slack_config
 export -f get_slack_environment get_slack_environment_info
 export -f format_release_notes_for_slack
+export -f _notify_get_is_prerelease
 export -f send_slack_notification
 export -f notify_release_success notify_release_failure notify_release_warning
 export -f notify_release_start notify_pod_release notify_release_summary

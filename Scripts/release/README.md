@@ -315,14 +315,28 @@ msp_state_increment_resume_count()  # 增加 resume 计数
 
 ## State Management Internals
 
-### State File Schema (v3)
+### State File Schema (v4)
+
+> v4 adds `is_prerelease` and `cdn_metrics` top-level fields.
+> Old v3 files are backward-compatible — all new accessors use `// false` / `// {}` jq fallbacks.
 
 ```json
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "version": "1.0.4-rc.10",
   "release_mode": "full",
   "resume_count": 0,
+  "is_prerelease": false,
+  "cdn_metrics": {
+    "total_checks": 3,
+    "successful_checks": 3,
+    "failed_checks": 0,
+    "total_retries": 0,
+    "avg_latency_ms": 142,
+    "max_latency_ms": 210,
+    "min_latency_ms": 98,
+    "last_check_at": "2026-01-01T00:00:00Z"
+  },
   "git": {
     "tag_created": true,
     "github_release_created": true
@@ -332,9 +346,9 @@ msp_state_increment_resume_count()  # 增加 resume 计数
       "status": "published|failed|pending|inconsistent",
       "trunk_verified": true|false,
       "trunk_verified_at": "ISO8601",
-      "github_release_created": true|false,    // v3 新增
-      "github_release_url": "URL",             // v3 新增
-      "github_release_verified_at": "ISO8601"  // v3 新增
+      "github_release_created": true|false,
+      "github_release_url": "URL",
+      "github_release_verified_at": "ISO8601"
     }
   }
 }
@@ -376,6 +390,86 @@ release_msp_core() {
     fi
 }
 ```
+
+---
+
+## CocoaPods CDN Availability Check
+
+Pod availability is checked directly against the CocoaPods CDN trunk (`cdn.cocoapods.org`) rather than
+running `pod repo update` + `pod search`. This eliminates ~3-5 min sync latency and removes the
+dependency on a local spec repo mirror.
+
+### CDN URL Format
+
+```
+https://cdn.cocoapods.org/Specs/<h0>/<h1>/<h2>/<Pod>/<Version>/<Pod>.podspec.json
+```
+
+Where `h0`, `h1`, `h2` are the first 3 hex characters of `md5(<pod_name>)`:
+
+- `MSPCore` → `9/c/4`
+- `MSPSharedLibraries` → `7/3/3`
+- `AFNetworking` → `a/7/5`
+
+### Retry Policy
+
+| Stage | Behavior |
+|-------|----------|
+| Retries | 3 per check (exponential backoff: 1s → 2s → 4s) |
+| Timeout | 10s per `curl` request |
+| Exit 0 | HTTP 200 — pod available |
+| Exit 2 | HTTP 404 — not yet propagated |
+| Exit 3 | Unreachable / curl error |
+
+### Smart Wait Intervals (after trunk push)
+
+| Stage | Interval | Duration | Checks |
+|-------|----------|----------|--------|
+| Stage 1 (fast poll) | 15s | ~3 min | 12 |
+| Stage 2 (slow poll) | 30s | ~57 min | 114 |
+| Total budget | — | 60 min | — |
+
+### CDN Metrics
+
+After each release, CDN check metrics are flushed to the state file under `cdn_metrics`:
+
+```json
+"cdn_metrics": {
+  "total_checks": 3,
+  "successful_checks": 3,
+  "failed_checks": 0,
+  "total_retries": 1,
+  "avg_latency_ms": 142,
+  "max_latency_ms": 210,
+  "min_latency_ms": 98,
+  "last_check_at": "2026-01-01T00:00:00Z"
+}
+```
+
+---
+
+## Safety Gates
+
+Safety checks run in production mode (`DRY_RUN=false`). All checks are implemented in
+`Scripts/release/utils/safety.sh`.
+
+| Check | Behavior |
+|-------|----------|
+| CI gate | **Unlocked** — local releases allowed from any branch |
+| Branch gate | **Unlocked** — any branch allowed |
+| `--force` requirement | **Removed** — not required |
+| `MSP_ALLOW_LOCAL_RELEASE` | **Removed** — not required |
+| Clean Git state | Required in production mode |
+| `release.md` | Required; auto-generated skeleton if absent (local only); CI fails hard |
+| Version format | X.Y.Z (production) or X.Y.Z-suffix + `MSP_PRERELEASE=1` (prerelease) |
+
+### Prerelease Support
+
+Set `MSP_PRERELEASE=1` (or tick the Jenkins checkbox) to publish a prerelease version:
+
+- VERSION must have a suffix (e.g. `3.6.8-rc.1`)
+- Slack notification uses a ⚠️ banner and `warning` color
+- State file records `is_prerelease: true` for resume-safe rehydration
 
 ---
 

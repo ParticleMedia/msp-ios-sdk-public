@@ -16,7 +16,7 @@
 #   make clean          Clean DerivedData and Pods
 # ============================================================================
 
-.PHONY: setup open test validate rtt ci fetch-credentials beta beta-dry release resume clean sync validate-sync help
+.PHONY: setup open test validate rtt ci fetch-credentials beta beta-dry release release-prerelease resume clean sync validate-sync help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -37,6 +37,7 @@ help:
 	@echo "  make beta               Upload DemoApp to TestFlight (requires ASC credentials)"
 	@echo "  make beta-dry           Archive + export only, no upload"
 	@echo "  make release            Production release (VERSION= NOTES= required)"
+	@echo "  make release-prerelease Prerelease publication (VERSION=X.Y.Z-suffix required)"
 	@echo "  make resume             Resume failed release (VERSION= required)"
 	@echo "  make sync               Sync agent rules across Claude/Cursor/Codex/Gemini"
 	@echo "  make clean              Clean DerivedData and Pods"
@@ -123,7 +124,21 @@ release:
 ifndef VERSION
 	$(error VERSION is required. Usage: make release VERSION=1.2.0 NOTES="Release notes")
 endif
-	MSP_ALLOW_LOCAL_RELEASE=1 $(SCRIPTS)/msp-release.sh run $(VERSION) \
+	$(SCRIPTS)/msp-release.sh run $(VERSION) \
+		$(if $(NOTES),--release-notes "$(NOTES)") \
+		$(EXTRA_FLAGS)
+
+# --------------------------------------------------------------------------
+# release-prerelease — Publish a prerelease (X.Y.Z-suffix) for testing only
+# --------------------------------------------------------------------------
+# Usage: make release-prerelease VERSION=1.2.0-rc.1 NOTES="RC for testing"
+# The MSP_PRERELEASE=1 flag enforces the version suffix mutex check and
+# enables the Slack ⚠️ prerelease banner. NOT for production apps.
+release-prerelease:
+ifndef VERSION
+	$(error VERSION is required. Usage: make release-prerelease VERSION=1.2.0-rc.1 NOTES="RC")
+endif
+	MSP_PRERELEASE=1 $(SCRIPTS)/msp-release.sh run $(VERSION) \
 		$(if $(NOTES),--release-notes "$(NOTES)") \
 		$(EXTRA_FLAGS)
 

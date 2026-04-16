@@ -42,6 +42,20 @@ set -euo pipefail
 readonly _RELEASE_ORCHESTRATION_SOURCED=1
 
 # ============================================================================
+# CDN module: source early so all check_pod_availability calls use CDN checks
+# ============================================================================
+_orch_cdn_module="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/Scripts/lib/shared/cocoapods_cdn.sh"
+if [[ -f "$_orch_cdn_module" ]] && ! command -v cocoapods_cdn_check_pod_available >/dev/null 2>&1; then
+    # shellcheck source=/dev/null
+    source "$_orch_cdn_module"
+fi
+# Initialize CDN metrics accumulator for this release session
+if command -v cocoapods_cdn_metrics_init >/dev/null 2>&1; then
+    cocoapods_cdn_metrics_init
+fi
+unset _orch_cdn_module
+
+# ============================================================================
 # Release MSPiOSCore (Step 0)
 # ============================================================================
 # MSPiOSCore is the foundation module required by all other modules.
@@ -1285,6 +1299,11 @@ release_msp_core() {
     fi
 
     log::success "PODS" "MSPCore released successfully"
+
+    # Flush CDN metrics to state file (once per release session, at end of orchestration)
+    if command -v cocoapods_cdn_metrics_flush_to_state >/dev/null 2>&1; then
+        cocoapods_cdn_metrics_flush_to_state || true
+    fi
 }
 
 # ============================================================================

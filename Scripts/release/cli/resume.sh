@@ -445,6 +445,32 @@ msp_resume_setup_environment() {
     export MSP_ALLOW_EXISTING_RELEASE=true
     export MSP_ALLOW_EXISTING_TAG=true
 
+    # T025: Restore MSP_PRERELEASE from state file (env scope is lost on resume)
+    # This ensures safety.sh version validation and Slack notifications are
+    # consistent with the original release intent.
+    if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
+        local saved_is_prerelease
+        saved_is_prerelease=$(jq -r '.is_prerelease // false' "$state_file" 2>/dev/null || echo "false")
+        if [[ "$saved_is_prerelease" == "true" ]]; then
+            export MSP_PRERELEASE=1
+            log::info "RELEASE" "Resume: restored MSP_PRERELEASE=1 from state file"
+        else
+            unset MSP_PRERELEASE 2>/dev/null || true
+            log::debug "RELEASE" "Resume: is_prerelease=false, MSP_PRERELEASE not set"
+        fi
+    fi
+
+    # T026: If caller passed a VERSION that differs from state file version, log and continue
+    # (do NOT abort — state file is authoritative for resume)
+    if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
+        local state_version
+        state_version=$(jq -r '.version // ""' "$state_file" 2>/dev/null || echo "")
+        if [[ -n "$state_version" && -n "${RELEASE_VERSION:-}" && "$RELEASE_VERSION" != "$state_version" ]]; then
+            log::warn "RELEASE" "Resume: using state version ${state_version}, ignoring input ${RELEASE_VERSION}"
+            export RELEASE_VERSION="$state_version"
+        fi
+    fi
+
 }
 
 # Export functions

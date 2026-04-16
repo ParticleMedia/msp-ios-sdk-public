@@ -85,10 +85,10 @@ test_export_options_plist_method() {
     local content
     content=$(cat "$plist")
 
-    if [[ "$content" == *"<string>app-store</string>"* ]]; then
-        pass "ExportOptions.plist has method=app-store"
+    if [[ "$content" == *"<string>app-store-connect</string>"* ]]; then
+        pass "ExportOptions.plist has method=app-store-connect"
     else
-        fail "ExportOptions.plist should contain method=app-store"
+        fail "ExportOptions.plist should contain method=app-store-connect (Xcode 15+ renamed app-store → app-store-connect)"
     fi
 }
 

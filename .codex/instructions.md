@@ -149,6 +149,7 @@ When user questions match keywords in the entries below, READ the matching file.
 | ctx-release-002 | Pod trunk push 失败但脚本显示成功 - 退出码捕获错误 | `.context/release/experience/ctx-release-002.md` | pod trunk push succeeds but version not published, shell pipeline exit code incorrect, PIPESTATUS tee exit code, CI shows success but pod not released |
 | ctx-release-003 | Pod 发布后使用方 crash - Kingfisher 静态链接重复 | `.context/release/experience/ctx-release-003.md` | Kingfisher objc_retain crash after pod release, NovaCore duplicate Kingfisher symbols, static linked third-party library crash in xcframework, wrapper API to avoid duplicate symbol |
 | ctx-release-004 | XCFramework 二进制中版本号未更新 — 构建时序问题 | `.context/release/experience/ctx-release-004-xcframework-version-stale.md` | XCFramework version stale after release, Config.plist SDKVersion wrong in binary, NovaConstants.version 0.0.0, getSDKVersion returns old version, version not updated in xcframework binary, build order version mismatch |
+| ctx-release-006 | pod repo update + pod search 不稳定导致发布验证误报 | `.context/release/experience/ctx-release-006-pod-repo-update-flakiness.md` | pod repo update flakiness in CI, pod search returns not found after trunk push, availability check false negative, CDN direct check replaces pod repo update, cocoapods cdn url check |
 
 ### Release / Tech Layer
 
@@ -188,7 +189,7 @@ When user questions match keywords in the entries below, READ the matching file.
 | ctx-testing-002 | BDD 最佳实践 — Given/When/Then (AI-First) | `.context/testing/tech/ctx-testing-002-bdd-best-practices.md` | BDD, behavior, Given, When, Then, describe, ... |
 | ctx-testing-003 | Bugfix 回归测试策略 (AI-First) | `.context/testing/tech/ctx-testing-003-bugfix-regression.md` | bugfix, regression, fix, bug, hotfix, regression_for, ... |
 
-**Total: 28 entries**
+**Total: 29 entries**
 
 <!-- END:GENERATED:CONTEXT_INVENTORY -->
 

@@ -639,137 +639,55 @@ check_pod_availability() {
     local pod_name="$1"
     local version="${2:-}"
 
-    # R040d: Use configurable values from cocoapods-config.yaml
-    local max_attempts="${PODS_MAX_UPDATE_ATTEMPTS:-3}"
-    local attempt=1
-
-    if [[ -n "$version" ]]; then
-        log::step "PODS" "Checking availability of $pod_name version $version..."
-    else
-        log::step "PODS" "Checking availability of $pod_name..."
+    if [[ -z "$version" ]]; then
+        # No version specified — we can only check pod existence, not version availability.
+        # CDN URL requires a specific version. Fall back to a simple CDN root check.
+        log::step "PODS" "Checking availability of $pod_name (no version specified, CDN shard check)..."
+        local shard
+        shard=$(cocoapods_cdn_compute_shard "$pod_name" 2>/dev/null) || {
+            log::warn "PODS" "Could not compute CDN shard for $pod_name"
+            return $EXIT_VALIDATION_ERROR
+        }
+        log::info "PODS" "$pod_name CDN shard: $shard"
+        return $EXIT_SUCCESS
     fi
 
-    local last_search_failed=false
+    log::step "PODS" "Checking CDN availability of $pod_name version $version..."
 
-    while [[ $attempt -le $max_attempts ]]; do
-        # ═══════════════════════════════════════════════════════════════════════
-        # Smart Update Strategy (Fix for infinite loop issue)
-        # ═══════════════════════════════════════════════════════════════════════
-        # Only update specs repo on first attempt or after search failure
-        # This reduces redundant updates from ~7 per check to 1-2 per check
-        # ═══════════════════════════════════════════════════════════════════════
-
-        # Update on first attempt, or if previous search failed
-        local should_update=false
-        if [[ $attempt -eq 1 ]]; then
-            should_update=true
-            log::debug "PODS" "First attempt: Updating CocoaPods specs repository..."
-        elif [[ "$last_search_failed" == "true" ]]; then
-            should_update=true
-            log::debug "PODS" "Previous search failed, updating specs repository (attempt $attempt/$max_attempts)..."
+    # Source the CDN module if not already loaded
+    if ! command -v cocoapods_cdn_check_pod_available >/dev/null 2>&1; then
+        local cdn_module
+        cdn_module="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/shared/cocoapods_cdn.sh"
+        if [[ -f "$cdn_module" ]]; then
+            # shellcheck source=/dev/null
+            source "$cdn_module"
         else
-            log::debug "PODS" "Attempt $attempt/$max_attempts: Reusing cached specs repository..."
+            log::error "PODS" "cocoapods_cdn.sh module not found at: $cdn_module"
+            return $EXIT_VALIDATION_ERROR
         fi
+    fi
 
-        # Update specs repository if needed
-        if [[ "$should_update" == "true" ]]; then
-            if ! update_specs_repo; then
-                log::warn "PODS" "Failed to update specs repository (attempt $attempt/$max_attempts)"
-                if [[ $attempt -lt $max_attempts ]]; then
-                    local delay=$((attempt * 3))
-                    log::info "PODS" "Retrying in ${delay} seconds..."
-                    sleep $delay
-                fi
-                ((attempt++)) || true
-                continue
-            fi
-        fi
+    local cdn_exit=0
+    cocoapods_cdn_check_pod_available "$pod_name" "$version" || cdn_exit=$?
 
-        log::debug "PODS" "Searching for $pod_name..."
-        
-        # Use a more reliable method to check pod availability
-        local search_output
-        local search_exit_code
-        
-        # R040d: Use configurable timeouts from cocoapods-config.yaml
-        local search_timeout="${PODS_SEARCH_TIMEOUT:-600}"
-        local repo_update_timeout="${PODS_REPO_UPDATE_TIMEOUT:-900}"
-
-        # Check both cocoapods and trunk repositories to ensure availability
-        # since pod spec lint uses trunk repo while pod search might use cocoapods repo
-        log::debug "PODS" "Running: bundle exec pod search '$pod_name' --simple"
-        # Rationale: Usually seconds, but large specs repo can be slow
-        if search_output=$(run_with_timeout "$search_timeout" bundle exec pod search "$pod_name" --simple 2>&1); then
-            search_exit_code=0
-        else
-            search_exit_code=$?
-            if [[ $search_exit_code -eq 124 ]]; then
-                log::error "PODS" "pod search TIMED OUT after $((search_timeout/60)) minutes"
-                log::error "PODS" "This usually indicates specs repo corruption or network issues"
-                # Try to recover by updating specs repo
-                log::info "PODS" "Attempting to recover by updating specs repo..."
-                run_with_timeout "$repo_update_timeout" bundle exec pod repo update || true
-            fi
-            log::debug "PODS" "Pod search exit code: $search_exit_code"
-            log::debug "PODS" "Pod search output: $search_output"
-        fi
-        
-        if [[ $search_exit_code -eq 0 ]] && [[ -n "$search_output" ]]; then
-            if [[ -n "$version" ]]; then
-                # Try to find specific version in the search output
-                if echo "$search_output" | grep -q "$version"; then
-                    # Additional verification: check if the podspec is available in the CDN trunk repo
-                    # pod trunk push uses CDN for lint, so we must confirm CDN has the spec
-                    # before proceeding to publish dependent pods
-                    log::debug "PODS" "Version found in search, verifying CDN availability for trunk push lint..."
-                    local spec_file_pattern="${pod_name}/${version}/${pod_name}.podspec.json"
-                    local trunk_spec_path="${HOME}/.cocoapods/repos/trunk/Specs"
-
-                    # Force CDN repo to fetch the spec by running pod spec cat (triggers lazy download)
-                    pod spec cat "$pod_name" --version="$version" >/dev/null 2>&1 || true
-
-                    # Check trunk CDN repo specifically (pod trunk push lint only uses CDN)
-                    if [[ -d "$trunk_spec_path" ]] && find "$trunk_spec_path" -path "*/${spec_file_pattern}" -type f -print -quit 2>/dev/null | grep -q "${pod_name}\.podspec\.json"; then
-                        log::success "PODS" "$pod_name version $version is available and ready for validation"
-                        # Clear failure flag on success
-                        last_search_failed=false
-                        return $EXIT_SUCCESS
-                    else
-                        log::warn "PODS" "$pod_name version $version found in search but not yet available for validation"
-                        log::debug "PODS" "Available versions in search: $(echo "$search_output" | head -5)"
-                        return $EXIT_NOT_FOUND_YET  # Return proper constant for "not found yet"
-                    fi
-                else
-                    log::warn "PODS" "$pod_name is available but version $version not found yet"
-                    log::debug "PODS" "Available versions: $(echo "$search_output" | head -5)"
-                    return $EXIT_NOT_FOUND_YET  # Return proper constant for "not found yet"
-                fi
-            else
-                log::success "PODS" "$pod_name is available"
-                return $EXIT_SUCCESS
-            fi
-        else
-            log::warn "PODS" "Pod search failed (attempt $attempt/$max_attempts)"
-            log::debug "PODS" "Search output: $search_output"
-
-            # Mark that search failed (trigger update on next attempt)
-            last_search_failed=true
-
-            if [[ $attempt -lt $max_attempts ]]; then
-                local delay=$((attempt * 3))
-                log::info "PODS" "Retrying in ${delay} seconds..."
-                sleep $delay
-            else
-                # Return proper constant for "not found yet" instead of validation error
-                return $EXIT_NOT_FOUND_YET
-            fi
-        fi
-
-        ((attempt++)) || true
-    done
-
-    log::error "PODS" "$pod_name not found in CocoaPods repository after $max_attempts attempts"
-    return $EXIT_NOT_FOUND_YET  # Return proper constant for "not found yet"
+    case $cdn_exit in
+        0)
+            log::success "PODS" "$pod_name $version is available on CocoaPods CDN"
+            return $EXIT_SUCCESS
+            ;;
+        2)
+            log::warn "PODS" "$pod_name $version not yet available on CocoaPods CDN (HTTP 404)"
+            return $EXIT_NOT_FOUND_YET
+            ;;
+        3)
+            log::error "PODS" "$pod_name $version: CocoaPods CDN unreachable after retries"
+            return $EXIT_NOT_FOUND_YET
+            ;;
+        *)
+            log::error "PODS" "$pod_name $version: CDN check returned unexpected exit code $cdn_exit"
+            return $EXIT_VALIDATION_ERROR
+            ;;
+    esac
 }
 
 troubleshoot_cocoapods_network() {

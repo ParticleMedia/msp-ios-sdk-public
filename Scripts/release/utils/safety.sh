@@ -48,41 +48,13 @@ msp_safety_is_local_override_branch_allowed() {
 }
 
 # ============================================================================
-# Safety Check 1: CI default, local production requires explicit override
+# Safety Check 1: CI check — unlocked (any branch, no MSP_ALLOW_LOCAL_RELEASE needed)
 # ============================================================================
+# Previously enforced CI-only + branch allowlist + MSP_ALLOW_LOCAL_RELEASE=1.
+# Now a no-op: local releases are fully allowed. Clean git + changelog are the
+# only safety nets for local production releases (see US2 contract).
 msp_safety_require_ci_for_release() {
-    local dry_run="${DRY_RUN:-true}"
-    local current_branch
-
-    if [[ "$dry_run" != "false" ]]; then
-        return 0
-    fi
-
-    if msp_safety_is_ci; then
-        log::info "SAFETY" "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
-        return 0
-    fi
-
-    if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" != "1" ]]; then
-        log::error "SAFETY" "[SAFETY] Production releases default to CI."
-        log::error "SAFETY" "[SAFETY] For emergency local releases, set MSP_ALLOW_LOCAL_RELEASE=1 and pass --force."
-        return 1
-    fi
-
-    current_branch="$(msp_safety_current_branch)"
-    if [[ -z "$current_branch" ]]; then
-        log::error "SAFETY" "[SAFETY] Cannot determine current Git branch for local production override"
-        return 1
-    fi
-
-    if ! msp_safety_is_local_override_branch_allowed "$current_branch"; then
-        log::error "SAFETY" "[SAFETY] Local production override is not allowed on branch '$current_branch'"
-        log::error "SAFETY" "[SAFETY] Allowed local production branches: develop, main, master, hotfix/*"
-        return 1
-    fi
-
-    log::warn "SAFETY" "[SAFETY] Emergency local production override enabled"
-    log::warn "SAFETY" "[SAFETY] Branch '$current_branch' is allowed for local production override"
+    log::debug "SAFETY" "[SAFETY] CI gate: unlocked (local releases allowed from any branch)"
     return 0
 }
 
@@ -119,38 +91,79 @@ msp_safety_require_clean_git() {
 }
 
 # ============================================================================
-# Safety Check 3: Validate Version Format
+# Safety Check 3: Validate Version Format — dual-mode
+# ============================================================================
+# Strict mode  (MSP_PRERELEASE unset/0): only X.Y.Z accepted
+# Prerelease   (MSP_PRERELEASE=1):       only X.Y.Z-suffix accepted
+# Mutex:
+#   suffix + no flag  → reject ("looks like prerelease, tick PRERELEASE")
+#   clean  + flag set → reject ("clean version but PRERELEASE is set, uncheck it")
+#   0.0.*  always     → reject
 # ============================================================================
 msp_safety_validate_version() {
     local version="$1"
-    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
     local dry_run="${DRY_RUN:-true}"
 
-    # Production mode (DRY_RUN=false) requires version validation
-    if [[ "$dry_run" == "false" ]]; then
-        log::info "SAFETY" "[SAFETY] Validating version format: $version"
+    if [[ "$dry_run" != "false" ]]; then
+        return 0
+    fi
 
-        # Check for valid release version patterns
-        # Valid: X.Y.Z, X.Y.Z-hotfix.N, X.Y.Z-rc.N
-        # Invalid: 0.0.*, *-preflight*, versions missing components
+    log::info "SAFETY" "[SAFETY] Validating version format: $version"
 
-        # Reject 0.0.* versions
-        if [[ "$version" =~ ^0\.0\. ]]; then
-            log::error "SAFETY" "[SAFETY] Invalid release version format: $version"
-            log::error "SAFETY" "[SAFETY] Production mode cannot use 0.0.* versions (development only)"
-            return 1
-        fi
+    # Reject empty / malformed
+    if [[ -z "$version" ]]; then
+        log::error "SAFETY" "[SAFETY] Version is empty. Expected X.Y.Z or X.Y.Z-suffix."
+        return 1
+    fi
 
+    # Reject 0.0.* (development placeholders)
+    if [[ "$version" =~ ^0\.0\. ]]; then
+        log::error "SAFETY" "[SAFETY] Version $version rejected: 0.0.* is for development only."
+        return 1
+    fi
 
-        # Validate format: SemVer 2.0 compliant
-        # Valid: X.Y.Z, X.Y.Z-qualifier, X.Y.Z-qualifier.N, X.Y.Z-qualifier.N.identifier
-        # Examples: 1.0.0, 1.0.0-migration, 1.0.0-rc.1, 1.0.0-beta.2.fix
-        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$ ]]; then
-            log::error "SAFETY" "[SAFETY] Invalid release version format: $version"
-            log::error "SAFETY" "[SAFETY] Expected SemVer format: X.Y.Z or X.Y.Z-prerelease"
-            return 1
-        fi
+    # Pattern: strict (X.Y.Z — digits only)
+    local strict_re='^[0-9]+\.[0-9]+\.[0-9]+$'
+    # Pattern: prerelease (X.Y.Z-suffix — alphanumeric segments)
+    local pre_re='^[0-9]+\.[0-9]+\.[0-9]+-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*$'
 
+    local is_clean=false
+    local has_suffix=false
+    [[ "$version" =~ $strict_re ]] && is_clean=true
+    [[ "$version" =~ $pre_re ]]   && has_suffix=true
+
+    # Reject malformed (neither strict nor prerelease)
+    if [[ "$is_clean" == "false" && "$has_suffix" == "false" ]]; then
+        log::error "SAFETY" "[SAFETY] Invalid version format: '$version'."
+        log::error "SAFETY" "[SAFETY] Expected X.Y.Z (production) or X.Y.Z-suffix (prerelease, requires MSP_PRERELEASE=1)."
+        return 1
+    fi
+
+    # Determine prerelease intent from MSP_PRERELEASE env
+    local is_prerelease_mode=false
+    if [[ "${MSP_PRERELEASE:-0}" == "1" ]] || [[ "${MSP_PRERELEASE:-}" == "true" ]]; then
+        is_prerelease_mode=true
+    fi
+
+    # Mutex: suffix version but MSP_PRERELEASE not set
+    if [[ "$has_suffix" == "true" && "$is_prerelease_mode" == "false" ]]; then
+        log::error "SAFETY" "[SAFETY] VERSION='${version}' looks like a prerelease (has suffix)."
+        log::error "SAFETY" "[SAFETY] Set MSP_PRERELEASE=1 to confirm this is a prerelease, or use a clean X.Y.Z."
+        return 1
+    fi
+
+    # Mutex: clean version but MSP_PRERELEASE=1
+    if [[ "$is_clean" == "true" && "$is_prerelease_mode" == "true" ]]; then
+        log::error "SAFETY" "[SAFETY] VERSION='${version}' is clean X.Y.Z but MSP_PRERELEASE=1 is set."
+        log::error "SAFETY" "[SAFETY] Unset MSP_PRERELEASE for production releases, or add a suffix for prerelease."
+        return 1
+    fi
+
+    if [[ "$is_prerelease_mode" == "true" ]]; then
+        log::warn "SAFETY" "[SAFETY] ⚠️  Prerelease version: ${version} — NOT for production"
+        # Export transitional env var for backward-compatible consumers
+        export MSP_IS_PRERELEASE=1
+    else
         log::info "SAFETY" "[SAFETY] ✓ Version format is valid: $version"
     fi
 
@@ -158,51 +171,22 @@ msp_safety_validate_version() {
 }
 
 # ============================================================================
-# Safety Check 4: Require Confirmation Unless --force
+# Safety Check 4: Confirmation — unlocked (no --force required)
 # ============================================================================
+# Previously required --force for local non-CI production releases.
+# Now a no-op: the clean-git and changelog checks are the safety net.
 msp_safety_require_confirmation() {
-    local version="$1"
-    local force="${MSP_RELEASE_FORCE:-false}"
-    local dry_run="${DRY_RUN:-true}"
-
-    if [[ "$dry_run" != "false" ]]; then
-        return 0
-    fi
-
-    if ! msp_safety_is_ci; then
-        if [[ "$force" != "true" ]]; then
-            log::error "SAFETY" "[SAFETY] Local production override requires --force"
-            log::error "SAFETY" "[SAFETY] Example: MSP_ALLOW_LOCAL_RELEASE=1 ./Scripts/msp-release.sh --profile=production run <version> --force"
-            return 1
-        fi
-        log::info "SAFETY" "[SAFETY] ✓ Local production override confirmed with --force"
-        return 0
-    fi
-
-    log::info "SAFETY" "[SAFETY] ✓ Production release confirmed (non-interactive CI)"
+    log::debug "SAFETY" "[SAFETY] Confirmation gate: unlocked (--force not required)"
     return 0
 }
 
 # ============================================================================
-# Safety Check 5: Validate Branch Name
+# Safety Check 5: Branch validation — unlocked (any branch allowed)
 # ============================================================================
+# Previously blocked releases from non-allowlisted branches in CI.
+# Now a no-op: release from any branch.
 msp_safety_validate_branch() {
-    local dry_run="${DRY_RUN:-true}"
-
-    if [[ "$dry_run" != "false" ]]; then
-        return 0
-    fi
-
-    if ! msp_safety_is_ci; then
-        return 0
-    fi
-
-    # Use centralized branch validation from validation.sh (DRY principle)
-    # This ensures consistency between safety.sh and modular.sh
-    if ! validate_release_branch; then
-        return 1
-    fi
-
+    log::debug "SAFETY" "[SAFETY] Branch gate: unlocked (any branch allowed)"
     return 0
 }
 
@@ -227,10 +211,36 @@ msp_safety_require_changelog() {
         log::info "SAFETY" "[SAFETY] Checking for changelog: release.md"
 
         if [[ ! -f "$changelog_file" ]]; then
-            log::error "SAFETY" "[SAFETY] Missing release.md"
-            log::error "SAFETY" "[SAFETY] A release cannot proceed without documented changes"
-            log::error "SAFETY" "[SAFETY] Create release.md with a '## Changes' section"
-            return 1
+            if msp_safety_is_ci; then
+                # CI: strict — missing release.md is a hard fail
+                log::error "SAFETY" "[SAFETY] Missing release.md"
+                log::error "SAFETY" "[SAFETY] A release cannot proceed without documented changes"
+                log::error "SAFETY" "[SAFETY] Create release.md with a '## Changes' section"
+                return 1
+            else
+                # Local: auto-generate a skeleton so the release can proceed
+                local version_label="${RELEASE_VERSION:-unknown}"
+                local git_user
+                git_user=$(git config user.name 2>/dev/null || echo "unknown")
+                local hostname_val
+                hostname_val=$(hostname 2>/dev/null || echo "unknown")
+                local now_str
+                now_str=$(date "+%Y-%m-%d %H:%M:%S %Z" 2>/dev/null || echo "unknown")
+
+                cat > "$changelog_file" <<EOF
+# Release ${version_label}
+
+## Changes
+
+- Auto-generated by release safety check on ${now_str}
+- Released by ${git_user} from ${hostname_val}
+- TODO: describe the actual changes before publishing
+
+## End
+EOF
+                log::warn "SAFETY" "[SAFETY] ⚠️  release.md was missing; auto-generated skeleton at ${changelog_file}. Edit and re-run if you need custom changelog."
+                # Continue — the generated file satisfies the validation below
+            fi
         fi
 
         # Check if file has content under "## Changes"

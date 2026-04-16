@@ -102,7 +102,7 @@ test_state_init_creates_state_file() {
         return 0
     fi
 
-    assert_equals "3" "$schema_version" "Schema version should be 3"
+    assert_equals "4" "$schema_version" "Schema version should be 4"
 
     local mode
     mode=$(jq -r '.mode' "${TEST_TMPDIR}/.msp-release-state.json")

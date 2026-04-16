@@ -237,28 +237,39 @@ Release mode controls whether post-release verification runs:
 
 ## Production Release Policy
 
-Production release has two paths with different guardrails:
-
-- `CI/Jenkins` is the default path for production releases.
-- Local production release remains available only as an emergency override.
+Production releases can be triggered from CI/Jenkins **or** locally — no special flags required.
 
 ### CI/Jenkins Production Release
 
-- Supported branches: `develop`, `feature/*`, `release/*`, `hotfix/*`
-- This is the standard path for regular production releases.
+- Standard path for regular production releases.
+- Trigger via the `releaseCocoapod` Jenkins pipeline with a clean `VERSION=X.Y.Z`.
+- The pipeline enforces a clean Git state and a valid `release.md` automatically.
 
-### Local Emergency Production Release
+### Local Production Release
 
-- Supported branches: `develop`, `main`, `master`, `hotfix/*`
-- `feature/*` is intentionally not allowed for local production release.
-- You must set `MSP_ALLOW_LOCAL_RELEASE=1`.
-- You must also pass `--force`.
-- Your Git working tree must be clean.
-- `release.md` must exist and contain a `## Changes` section.
+- Your Git working tree must be clean (`git status` shows nothing).
+- `release.md` must exist and contain a `## Changes` section (auto-generated if absent).
+- No branch restrictions; any branch is allowed.
 
 ```bash
-MSP_ALLOW_LOCAL_RELEASE=1 ./Scripts/msp-release.sh --profile=production run 1.0.0 --force
+make release VERSION=1.2.0 NOTES="Fix crash in ad loading"
+# or directly:
+./Scripts/msp-release.sh run 1.2.0
 ```
+
+### Prerelease Publication
+
+Use `MSP_PRERELEASE=1` to publish a test release (e.g., `3.6.8-rc.1`). Prereleases are
+announced in Slack with a ⚠️ banner and are **not for production apps**.
+
+```bash
+# Local prerelease
+make release-prerelease VERSION=3.6.8-rc.1 NOTES="RC for testing"
+
+# Jenkins: tick the ⚠️ PRERELEASE checkbox and enter a VERSION with a suffix (e.g. 3.6.8-rc.1)
+```
+
+See [`specs/004-release-hardening/quickstart.md`](specs/004-release-hardening/quickstart.md) for a full walkthrough.
 
 ---
 

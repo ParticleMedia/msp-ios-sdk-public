@@ -125,12 +125,17 @@ msp_state_init() {
     local config_path="${CONFIG_FILE:-null}"
     local cli_args="${MSP_RELEASE_ORIGINAL_ARGS:-}"
     local invoked_subcommand="${SUBCOMMAND:-${mode}}"
-    
+
     # Phase 5: Simple vs Full release mode (FR-007)
     # - simple: Skip verification phase (default)
     # - full: Include verification phase (--full flag)
     local release_mode="${MSP_RELEASE_MODE:-simple}"
-    # Removed: local release_tier="${MSP_RELEASE_TIER:-preflight}"
+
+    # Schema v4: is_prerelease — read from MSP_PRERELEASE env at init time
+    local is_prerelease_bool="false"
+    if [[ "${MSP_PRERELEASE:-0}" == "1" ]] || [[ "${MSP_PRERELEASE:-}" == "true" ]]; then
+        is_prerelease_bool="true"
+    fi
 
     # Normalize dry_run to boolean
     local dry_run_bool="false"
@@ -148,7 +153,7 @@ msp_state_init() {
     local now
     now="$(_msp_state_now)"
 
-    # Create initial state JSON with Phase 4 TASK 3 final schema + Resume mechanism pods tracking
+    # Create initial state JSON — schema v4 with is_prerelease + cdn_metrics
     jq -n \
         --arg run_id "$now" \
         --arg mode "$mode" \
@@ -162,12 +167,14 @@ msp_state_init() {
         --arg started_at "$now" \
         --arg updated_at "$now" \
         --arg release_mode "$release_mode" \
+        --argjson is_prerelease "$is_prerelease_bool" \
         '{
-            schema_version: 3,
+            schema_version: 4,
             run_id: $run_id,
             mode: $mode,
             version: $version,
             release_mode: $release_mode,
+            is_prerelease: $is_prerelease,
             base_branch: $base_branch,
             release_branch: $release_branch,
             dry_run: $dry_run,
@@ -195,6 +202,16 @@ msp_state_init() {
                 remote_verify_pods: {}
             },
             pods: {},
+            cdn_metrics: {
+                total_checks: 0,
+                success_count: 0,
+                retry_count: 0,
+                failure_count: 0,
+                p50_latency_ms: 0,
+                p95_latency_ms: 0,
+                first_check_at: null,
+                last_check_at: null
+            },
             artifacts: {
                 xcframework_paths: [],
                 ipa_path: null,
@@ -678,6 +695,71 @@ msp_state_increment_resume_count() {
 }
 
 # ============================================================================
+# Public API: Schema v4 — Prerelease + CDN Metrics
+# ============================================================================
+
+# Returns "true" or "false" from state file; falls back to "false" for v3 files
+msp_state_get_is_prerelease() {
+    if ! msp_state_is_enabled; then
+        echo "false"
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        echo "false"
+        return 0
+    fi
+
+    jq -r '.is_prerelease // false' "$path" 2>/dev/null || echo "false"
+    return 0
+}
+
+# Args: JSON object with cdn_metrics fields (all 8 required)
+# Example: msp_state_set_cdn_metrics '{"total_checks":5,"success_count":4,...}'
+msp_state_set_cdn_metrics() {
+    local metrics_json="$1"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    [[ -f "$path" ]] || return 0
+
+    # Validate it's valid JSON before writing
+    if ! echo "$metrics_json" | jq empty 2>/dev/null; then
+        return 1
+    fi
+
+    local metrics_arg
+    metrics_arg=$(echo "$metrics_json" | jq -c .)
+    _msp_state_update_json ".cdn_metrics = ${metrics_arg} | .timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+
+    return 0
+}
+
+# Returns the cdn_metrics object as JSON; falls back to empty object for v3 files
+msp_state_get_cdn_metrics() {
+    if ! msp_state_is_enabled; then
+        echo '{}'
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        echo '{}'
+        return 0
+    fi
+
+    jq -c '.cdn_metrics // {}' "$path" 2>/dev/null || echo '{}'
+    return 0
+}
+
+# ============================================================================
 # Export Functions
 # ============================================================================
 export -f msp_state_file_path
@@ -701,3 +783,6 @@ export -f msp_state_set_pod_github_release_created
 export -f msp_state_get_pod_github_release_created
 export -f msp_state_set_pod_github_release_url
 export -f msp_state_increment_resume_count
+export -f msp_state_get_is_prerelease
+export -f msp_state_set_cdn_metrics
+export -f msp_state_get_cdn_metrics

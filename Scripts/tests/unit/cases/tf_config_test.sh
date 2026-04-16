@@ -181,7 +181,8 @@ test_compute_next_build_number_auto_increment() {
     source_config_module "$tmpdir"
 
     tf_load_config
-    tf_compute_next_build_number ""
+    # DRY_RUN_MODE=true avoids real ASC network call; falls back to local config +1
+    DRY_RUN_MODE=true tf_compute_next_build_number ""
 
     if [[ "$TF_NEXT_BUILD_NUMBER" == "8" ]]; then
         pass "Auto-incremented build number: $TF_NEXT_BUILD_NUMBER (was 7)"
@@ -221,7 +222,7 @@ test_commit_build_number_updates_yaml() {
     source_config_module "$tmpdir"
 
     tf_load_config
-    tf_compute_next_build_number ""
+    DRY_RUN_MODE=true tf_compute_next_build_number ""
     tf_commit_build_number
 
     # Verify config.yaml was updated
@@ -258,7 +259,7 @@ test_commit_build_number_preserves_yaml_structure() {
     source_config_module "$tmpdir"
 
     tf_load_config
-    tf_compute_next_build_number ""
+    DRY_RUN_MODE=true tf_compute_next_build_number ""
     tf_commit_build_number
 
     # Verify other fields were not corrupted
