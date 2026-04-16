@@ -554,6 +554,13 @@ update_specs_repo() {
         local repo_update_timeout="${PODS_REPO_UPDATE_TIMEOUT:-900}"
         local retry_delay="${PODS_RETRY_DELAY:-10}"
 
+        # Ensure bundler gems are intact before any bundle exec call.
+        # In CI, BUNDLE_PATH can become stale after workspace ops (SPM cleanup, git ops).
+        if ! bundle check >/dev/null 2>&1; then
+            log::warn "PODS" "Bundler gems missing — running bundle install before pod repo update..."
+            bundle install --quiet 2>/dev/null || true
+        fi
+
         while [[ $attempt -le $max_attempts ]]; do
             log::debug "PODS" "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
 

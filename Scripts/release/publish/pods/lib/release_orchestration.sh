@@ -688,11 +688,12 @@ release_adapters() {
     # Ensure MSPSharedLibraries and MSPGoogleAdsTypes are available before adapter releases
     log::step "PODS" "Verifying MSPSharedLibraries and MSPGoogleAdsTypes availability before adapter releases..."
 
-    # Update specs repo once before parallel dependency availability checks
-    log::step "PODS" "Updating CocoaPods specs repository before parallel availability checks..."
-    if ! update_specs_repo; then
-        log::error "PODS" "Failed to update specs repository before availability checks"
-        return 1
+    # Attempt specs repo update — non-fatal: CDN direct check is the authoritative
+    # availability signal (cocoapods_cdn_check_pod_available). pod repo update is
+    # best-effort only; failure is expected in CI environments without local spec repos.
+    log::step "PODS" "Attempting CocoaPods specs repo update (non-fatal, CDN check is authoritative)..."
+    if ! update_specs_repo 2>/dev/null; then
+        log::warn "PODS" "Specs repo update failed — continuing with CDN direct check"
     fi
 
     # Create temporary files for parallel checks
