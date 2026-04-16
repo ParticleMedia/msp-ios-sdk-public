@@ -27,6 +27,7 @@ public class MSPBidder: MSPiOSCore.Bidder {
         self.bidLoader = prebidBidLoader
         adRequest.customParams["adn_sdk_versions"] = getSDKVersions()
         adRequest.customParams["network_connection"] = MSPDevice.shared.getConnectionTypeString()
+        adRequest.customParams["model"] = MSPDevice.shared.getDeviceModel()
         for (key, value) in MSPDevice.shared.getDeviceSignalsDictionary() {
             adRequest.customParams[key] = value
         }
