@@ -248,7 +248,7 @@ final class AdTestViewController: UIViewController {
                 make.top.leading.trailing.bottom.equalToSuperview()
             }
         } else if let interstitialAd = ad as? InterstitialAd {
-            interstitialAd.show()
+            interstitialAd.show(rootViewController: self, interstitialAdReportHandling: self)
         } else if let rewardedAd = ad as? RewardedAd {
             rewardedAd.show(rootViewController: self)
         }
@@ -310,6 +310,22 @@ extension AdTestViewController: AdListener {
 
     func onError(msg: String) {
         DispatchQueue.main.async { [weak self] in self?.viewModel.handleAdError(msg) }
+    }
+}
+
+extension AdTestViewController: InterstitialAdReportHandling {
+    func startReportFlow(
+        from presentingVC: UIViewController?,
+        for ad: InterstitialAd,
+        metadata: [String: Any]?
+    ) {
+        print("[AdTest] Ad report flow started")
+        showToast("Ad report clicked, ad will be dismissed", from: self)
+    }
+
+    // MARK: Optional Methods
+    func canShowReportButton(for ad: InterstitialAd) -> Bool {
+        return true
     }
 }
 
