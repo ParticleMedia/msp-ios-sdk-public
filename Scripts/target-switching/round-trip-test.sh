@@ -568,19 +568,19 @@ test_pods_release() {
                 rtt_log::success "TARGET" "Switch → OK (after auto-repair)"
             else
                 rtt_log_fail "Switch → FAILED (hard error, auto-repair failed)"
-                echo "$switch_output" | tail -10 | sed 's/^/    /'
+                echo "$switch_output" | tail -60 | sed 's/^/    /'
                 phase_result="FAIL"
                 return 1
             fi
         else
             rtt_log_fail "Switch → FAILED (hard error)"
-            echo "$switch_output" | tail -10 | sed 's/^/    /'
+            echo "$switch_output" | tail -60 | sed 's/^/    /'
             phase_result="FAIL"
             return 1
         fi
     else
         rtt_log_fail "Switch → FAILED (unknown error)"
-        echo "$switch_output" | tail -10 | sed 's/^/    /'
+        echo "$switch_output" | tail -60 | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
@@ -670,19 +670,19 @@ test_spm_release() {
                 rtt_log::success "TARGET" "Switch → OK (after auto-repair)"
             else
                 rtt_log_fail "Switch → FAILED (hard error, auto-repair failed)"
-                echo "$switch_output" | tail -10 | sed 's/^/    /'
+                echo "$switch_output" | tail -60 | sed 's/^/    /'
                 phase_result="FAIL"
                 return 1
             fi
         else
             rtt_log_fail "Switch → FAILED (hard error)"
-            echo "$switch_output" | tail -10 | sed 's/^/    /'
+            echo "$switch_output" | tail -60 | sed 's/^/    /'
             phase_result="FAIL"
             return 1
         fi
     else
         rtt_log_fail "Switch → FAILED (unknown error)"
-        echo "$switch_output" | tail -10 | sed 's/^/    /'
+        echo "$switch_output" | tail -60 | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi

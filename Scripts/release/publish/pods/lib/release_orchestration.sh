@@ -941,11 +941,11 @@ release_adapters() {
 
     log::success "PODS" "All adapter pre-flight checks passed"
 
-    # Update specs repo once before parallel adapter releases
-    log::step "PODS" "Updating CocoaPods specs repository before parallel adapter releases..."
-    if ! update_specs_repo; then
-        log::error "PODS" "Failed to update specs repository before adapter releases"
-        return 1
+    # Best-effort specs repo update before parallel adapter releases.
+    # Non-fatal: pod trunk push validates server-side; CDN check is authoritative for availability.
+    log::step "PODS" "Attempting CocoaPods specs repo update before parallel adapter releases (non-fatal)..."
+    if ! update_specs_repo 2>/dev/null; then
+        log::warn "PODS" "Specs repo update failed — continuing (pod trunk push validates server-side)"
     fi
 
     # ========================================================================
@@ -1141,12 +1141,8 @@ release_adapters() {
     if [[ "$DRY_RUN" != "true" ]]; then
         log_section "Step 2.5: Checking availability of dependencies for MSPCore"
 
-        # Update specs repository once
-        log::info "PODS" "Updating CocoaPods specs repository..."
-        if ! update_specs_repo; then
-            log::error "PODS" "Failed to update specs repository"
-            return 1
-        fi
+        # Note: No pod repo update here — smart_wait_for_pod_availability uses CDN direct
+        # HTTP check (cocoapods_cdn_check_pod_available) and does not rely on the local specs repo.
 
         # Define required dependencies (always check, fail-fast)
         local required_deps=("MSPSharedLibraries" "MSPPrebidAdapter" "MSPGoogleAdsTypes")
