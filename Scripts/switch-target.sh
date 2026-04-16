@@ -167,15 +167,6 @@ run_pod_install_with_retry() {
         
         log::info "TARGET" "Running pod install (attempt $attempt/$max_attempts)..."
 
-        # Ensure bundler gems are available before calling bundle exec.
-        # Gems can go missing when cleanup_spm.sh or SPM mode switches evict
-        # the BUNDLE_PATH directory between RTT steps.
-        if ! bundle check >/dev/null 2>&1; then
-            log::warn "TARGET" "Bundler gems missing — running bundle install..."
-            bundle install --quiet 2>/dev/null \
-                || log::warn "TARGET" "bundle install failed, attempting pod anyway"
-        fi
-
         # Capture both stdout and stderr
         local temp_output
         temp_output="$(mktemp)"

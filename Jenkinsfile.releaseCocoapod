@@ -298,6 +298,10 @@ pipeline {
                                     git add release.md
                                     git diff --cached --quiet || git commit -m "ci: add release notes" --no-verify
                                 '''
+                                // Re-run bundle install after git checkout/clean to ensure
+                                // gem environment is intact before the release script starts.
+                                // (git checkout -- . above can evict the BUNDLE_PATH directory)
+                                sh 'bundle install --quiet'
                                 sh """
                                     set -euo pipefail
                                     ./Scripts/msp-release.sh ${argsStr}
