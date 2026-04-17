@@ -149,7 +149,11 @@ public class NovaAdapter: AdNetworkAdapter {
                 clickableViews.append(contentsOf: customClickableViews)
             }
 
-            novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
+            novaNativeAdView.setupViews(
+                with: novaNativeAdItem,
+                clickableViews: clickableViews,
+                nativeAdContainer: nativeAdContainer
+            )
 
             if let mediaContainer = nativeAdContainer.getMedia() {
                 mediaContainer.subviews.forEach { $0.removeFromSuperview() }

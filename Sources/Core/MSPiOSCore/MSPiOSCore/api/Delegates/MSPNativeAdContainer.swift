@@ -32,10 +32,16 @@ public protocol MSPNativeAdContainer: UIView {
     func getCustomClickableViews() -> [UIView]?
 
     func getDisplayContext() -> [MSPNativeElement: MSPNativeDisplayContext]?
+
+    /// Called when the SDK creates a tap-to-try view that requires app-controlled layout.
+    /// The app is responsible for placing this view. The SDK manages animation lifecycle.
+    func tapToTryViewCreated(_ view: UIView)
 }
 
 extension MSPNativeAdContainer {
     public func getDisplayContext() -> [MSPNativeElement: MSPNativeDisplayContext]? {
         nil
     }
+
+    public func tapToTryViewCreated(_ view: UIView) {}
 }

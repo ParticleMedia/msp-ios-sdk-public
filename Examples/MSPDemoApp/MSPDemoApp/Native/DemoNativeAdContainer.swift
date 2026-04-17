@@ -66,6 +66,13 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
     }()
 
 
+    private let tapToTryContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isUserInteractionEnabled = false
+        return view
+    }()
+
     private let mediaView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -83,7 +90,7 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
     }
 
     private func setUpViews() {
-        let subViews = [titleLabel, bodyLabel, advertiserLabel, ctaButton, mediaView, icon]
+        let subViews = [titleLabel, bodyLabel, advertiserLabel, ctaButton, mediaView, tapToTryContainer, icon]
         for view in subViews {
             self.addSubview(view)
         }
@@ -145,6 +152,9 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
             ctaButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
             ctaButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -18),
             ctaButton.heightAnchor.constraint(equalToConstant: Constants.ctaButtonHeight),
+
+            tapToTryContainer.centerXAnchor.constraint(equalTo: mediaView.centerXAnchor),
+            tapToTryContainer.centerYAnchor.constraint(equalTo: mediaView.centerYAnchor),
         ])
     }
 
@@ -187,5 +197,15 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
 
     public func getCustomClickableViews() -> [UIView]? {
         nil
+    }
+
+    public func tapToTryViewCreated(_ view: UIView) {
+        tapToTryContainer.subviews.forEach { $0.removeFromSuperview() }
+        tapToTryContainer.addSubview(view)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            view.centerXAnchor.constraint(equalTo: tapToTryContainer.centerXAnchor),
+            view.centerYAnchor.constraint(equalTo: tapToTryContainer.centerYAnchor),
+        ])
     }
 }

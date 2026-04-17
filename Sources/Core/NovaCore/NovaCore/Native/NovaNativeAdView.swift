@@ -1,5 +1,6 @@
 import Foundation
 @_implementationOnly import Kingfisher
+import MSPiOSCore
 import UIKit
 
 open class NovaNativeAdView: UIView {
@@ -61,7 +62,11 @@ open class NovaNativeAdView: UIView {
         callToActionButton = UIButton(type: .custom)
     }
 
-    public func setupViews(with nativeAd: NovaNativeAdItem, clickableViews: [UIView]? = nil) {
+    public func setupViews(
+        with nativeAd: NovaNativeAdItem,
+        clickableViews: [UIView]? = nil,
+        nativeAdContainer: (any MSPNativeAdContainer)? = nil
+    ) {
         register(nativeAd)
         // Create action context for the media view
         let actionContext = NovaAdMediaActionContext(
@@ -74,7 +79,8 @@ open class NovaNativeAdView: UIView {
             .config(
                 with: nativeAd.mediaContent,
                 actionContext: actionContext,
-                iabReporter: self.iABMetricReporter
+                iabReporter: self.iABMetricReporter,
+                nativeAdContainer: nativeAdContainer
             ) {
                 nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
             }

@@ -27,6 +27,7 @@ enum AbConfigKeys {
     static let immersivePlayableUIStyle = "immersive_playable_ui"
     static let popupCTAStyle = "popup_cta_style"
     static let shouldPreloadHtml = "preload"
+    static let shouldUseNewTapToTryLayout = "new_tap_to_try_layout"
 }
 
 // MARK: - AdScene
@@ -411,12 +412,22 @@ private extension NovaAdBuilder {
         }()
 
         let tapToTryFormat: NovaAdPlayableInfo.TapToTryFormat = {
-            guard let formatString = playableItem.tapToTryFormat, !formatString.isEmpty,
-                let format = NovaAdPlayableInfo.TapToTryFormat(rawValue: formatString)
-            else {
-                return .default
+            let serverFormat: NovaAdPlayableInfo.TapToTryFormat = {
+                guard let formatString = playableItem.tapToTryFormat, !formatString.isEmpty,
+                    let format = NovaAdPlayableInfo.TapToTryFormat(rawValue: formatString)
+                else {
+                    return .default
+                }
+                return format
+            }()
+            guard abConfig?[AbConfigKeys.shouldUseNewTapToTryLayout]?.lowercased() == "true" else {
+                return serverFormat
             }
-            return format
+            switch serverFormat {
+            case .default: return .circle
+            case .gamepadWithText: return .pill
+            default: return serverFormat
+            }
         }()
 
         return NovaAdPlayableInfo(

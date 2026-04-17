@@ -6,6 +6,7 @@
 //
 
 @_implementationOnly import MSPSnapKit
+import MSPiOSCore
 import UIKit
 
 // MARK: - NovaAdMediaView
@@ -80,6 +81,10 @@ public final class NovaAdMediaView: UIView {
         view.isUserInteractionEnabled = false
         return view
     }()
+
+    private var customCTAView: NovaCustomCTAAnimationView?
+
+    private weak var nativeAdContainer: (any MSPNativeAdContainer)?
 }
 
 // MARK: - methods
@@ -89,8 +94,10 @@ extension NovaAdMediaView {
         with mediaContent: NovaAdMediaContent,
         actionContext: NovaAdMediaActionContext,
         iabReporter: IABMetricReporter? = nil,
+        nativeAdContainer: (any MSPNativeAdContainer)? = nil,
         completion: @escaping (() -> Void) = {}
     ) {
+        self.nativeAdContainer = nativeAdContainer
         self.mediaContent = mediaContent
         currentView?.removeFromSuperview()
         let newMediaView: UIView? = {
@@ -154,6 +161,9 @@ extension NovaAdMediaView {
 
         tapToTryAnimationView.removeFromSuperview()
         tapToTryStaticView.removeFromSuperview()
+        customCTAView?.stopAnimating()
+        customCTAView?.removeFromSuperview()
+        customCTAView = nil
         discountTag.removeFromSuperview()
 
         let showBottomShadow = mediaContent.elementLayout?.showBottomShadow ?? false
@@ -222,6 +232,9 @@ extension NovaAdMediaView {
         tapToTryAnimationView.stop()
         tapToTryAnimationView.removeFromSuperview()
         tapToTryStaticView.removeFromSuperview()
+        customCTAView?.stopAnimating()
+        customCTAView?.removeFromSuperview()
+        customCTAView = nil
     }
 
     private func setupTapToTry(with mediaModel: NovaAdPlayableMediaModel) {
@@ -241,6 +254,18 @@ extension NovaAdMediaView {
             }
             tapToTryStaticView.layer.cornerRadius = 32.0
             tapToTryStaticView.layer.masksToBounds = true
+        case .pill:
+            let view = NovaAdTapToTryPillAnimationView()
+            view.isUserInteractionEnabled = false
+            customCTAView = view
+            nativeAdContainer?.tapToTryViewCreated(view)
+            view.startAnimating()
+        case .circle:
+            let view = NovaAdTapToTryCircleAnimationView()
+            view.isUserInteractionEnabled = false
+            customCTAView = view
+            nativeAdContainer?.tapToTryViewCreated(view)
+            view.startAnimating()
         }
     }
 
