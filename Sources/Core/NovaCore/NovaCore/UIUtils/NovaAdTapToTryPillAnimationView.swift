@@ -16,7 +16,7 @@ public class NovaAdTapToTryPillAnimationView: NovaCustomCTAAnimationView {
     
 
 
-    override func setupSubviews() {
+    public override func setupSubviews() {
         backgroundColor = UIColor.black.withAlphaComponent(0.60)
         layer.cornerRadius = 16
         clipsToBounds = true
@@ -63,17 +63,17 @@ public class NovaAdTapToTryPillAnimationView: NovaCustomCTAAnimationView {
         }
     }
     
-    override func startAnimating() {
+    public override func startAnimating() {
         titleView.startShimmer()
         startIconPulse(iconView)
     }
 
-    override func stopAnimating() {
+    public override func stopAnimating() {
         titleView.stopShimmer()
         iconView.layer.removeAnimation(forKey: "pulse")
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.height / 2
     }

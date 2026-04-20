@@ -16,7 +16,7 @@ public class NovaAdTapToTryCircleAnimationView: NovaCustomCTAAnimationView {
 
     // MARK: - Setup
 
-    override func setupSubviews() {
+    public override func setupSubviews() {
         backgroundColor = UIColor.black.withAlphaComponent(0.5)
 
         iconView.image = UIImage.Nova.gameFilled?.withRenderingMode(.alwaysTemplate)
@@ -34,7 +34,7 @@ public class NovaAdTapToTryCircleAnimationView: NovaCustomCTAAnimationView {
         }
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.height / 2
         layer.borderWidth = 1
@@ -43,7 +43,7 @@ public class NovaAdTapToTryCircleAnimationView: NovaCustomCTAAnimationView {
 
     // MARK: - Animation
 
-    override func startAnimating() {
+    public override func startAnimating() {
         let rotation = CAKeyframeAnimation(keyPath: "transform.rotation.z")
         rotation.values = [0, 0.25, -0.25, 0.20, -0.20, 0.2, -0.2, 0.2, -0.2, 0, 0]
         rotation.keyTimes = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
@@ -62,7 +62,7 @@ public class NovaAdTapToTryCircleAnimationView: NovaCustomCTAAnimationView {
         iconView.layer.add(group, forKey: "pulse")
     }
 
-    override func stopAnimating() {
+    public override func stopAnimating() {
         iconView.layer.removeAnimation(forKey: "pulse")
     }
 }

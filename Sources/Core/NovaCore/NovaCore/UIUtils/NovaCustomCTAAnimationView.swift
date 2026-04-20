@@ -19,12 +19,12 @@ public class NovaCustomCTAAnimationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupSubviews() {
+    public func setupSubviews() {
     }
-    
-    func startAnimating() {
+
+    public func startAnimating() {
     }
-    
-    func stopAnimating() {
+
+    public func stopAnimating() {
     }
 }
