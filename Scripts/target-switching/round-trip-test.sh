@@ -260,17 +260,12 @@ get_git_status() {
 }
 
 # Resolve DemoApp build destination for RTT.
-# Builds for the native CPU architecture so the same script works on both
-# Apple Silicon (arm64) and Intel (x86_64) machines without modification.
-# On Apple Silicon, iOS 26+ simulator runtimes no longer ship x86_64, so
-# building generic/platform=iOS Simulator (which tries both) would fail.
+# Default to generic simulator — works on all Xcode versions.
 resolve_demoapp_destination() {
     if [[ -n "${RTT_SIMULATOR_DESTINATION:-}" ]]; then
         echo "$RTT_SIMULATOR_DESTINATION"
     else
-        local native_arch
-        native_arch="$(uname -m)"
-        echo "generic/platform=iOS Simulator,arch=${native_arch}"
+        echo "generic/platform=iOS Simulator"
     fi
 }
 
@@ -280,6 +275,11 @@ build_demoapp() {
     local log_file="$BUILD_LOG_DIR/${mode}-build-${TIMESTAMP}.log"
     local destination
     destination="$(resolve_demoapp_destination)"
+    # Restrict compilation to the native CPU architecture via the ARCHS build
+    # setting. generic/platform=iOS Simulator otherwise builds both arm64 and
+    # x86_64 slices; on Apple Silicon CI the x86_64 slice may fail even when
+    # arm64 succeeds. ARCHS env var can override this when needed.
+    local build_archs="${ARCHS:-$(uname -m)}"
 
     cd "$ROOT_DIR"
     # Pipe full output to log file; show last 3 lines while building.
@@ -288,6 +288,7 @@ build_demoapp() {
         -scheme MSPDemoApp \
         -configuration Debug \
         -destination "$destination" \
+        ARCHS="$build_archs" \
         build 2>&1 | tee "$log_file" | tail -3
 
     if grep -q "BUILD SUCCEEDED" "$log_file"; then
