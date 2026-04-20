@@ -149,6 +149,27 @@ release_msp_ioscore() {
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPiOSCore" "$VERSION" "foundation module required by all other modules"
+
+        # Update local specs repo after MSPiOSCore is confirmed available on CDN.
+        # Required: MSPSharedLibraries and MSPGoogleAdsTypes pod trunk push validate
+        # against the LOCAL specs repo, so it must contain MSPiOSCore before they run.
+        log::step "PODS" "Updating local CocoaPods specs repo (required for MSPSharedLibraries/MSPGoogleAdsTypes pod trunk push lint)..."
+        local ios_core_repo_update_attempts=0
+        local ios_core_repo_update_max=3
+        while [[ $ios_core_repo_update_attempts -lt $ios_core_repo_update_max ]]; do
+            ((ios_core_repo_update_attempts++)) || true
+            if update_specs_repo; then
+                log::success "PODS" "Local specs repo updated (attempt $ios_core_repo_update_attempts)"
+                break
+            fi
+            if [[ $ios_core_repo_update_attempts -lt $ios_core_repo_update_max ]]; then
+                log::warn "PODS" "Specs repo update failed (attempt $ios_core_repo_update_attempts/$ios_core_repo_update_max), retrying in 30s..."
+                sleep 30
+            else
+                log::error "PODS" "Specs repo update failed after $ios_core_repo_update_max attempts — MSPSharedLibraries/MSPGoogleAdsTypes pod trunk push will likely fail to resolve MSPiOSCore"
+                return 1
+            fi
+        done
     fi
 
     # End timing
