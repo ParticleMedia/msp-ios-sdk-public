@@ -260,12 +260,17 @@ get_git_status() {
 }
 
 # Resolve DemoApp build destination for RTT.
-# Default to generic simulator to avoid hard dependency on a specific model/OS.
+# Builds for the native CPU architecture so the same script works on both
+# Apple Silicon (arm64) and Intel (x86_64) machines without modification.
+# On Apple Silicon, iOS 26+ simulator runtimes no longer ship x86_64, so
+# building generic/platform=iOS Simulator (which tries both) would fail.
 resolve_demoapp_destination() {
     if [[ -n "${RTT_SIMULATOR_DESTINATION:-}" ]]; then
         echo "$RTT_SIMULATOR_DESTINATION"
     else
-        echo "generic/platform=iOS Simulator"
+        local native_arch
+        native_arch="$(uname -m)"
+        echo "generic/platform=iOS Simulator,arch=${native_arch}"
     fi
 }
 
@@ -275,20 +280,22 @@ build_demoapp() {
     local log_file="$BUILD_LOG_DIR/${mode}-build-${TIMESTAMP}.log"
     local destination
     destination="$(resolve_demoapp_destination)"
-    
+
     cd "$ROOT_DIR"
-    if xcodebuild -workspace msp-ios-sdk.xcworkspace \
+    # Pipe full output to log file; show last 3 lines while building.
+    # On failure, grep the log for actual compiler errors so they appear in CI output.
+    xcodebuild -workspace msp-ios-sdk.xcworkspace \
         -scheme MSPDemoApp \
         -configuration Debug \
         -destination "$destination" \
-        build 2>&1 | tee "$log_file" | tail -3; then
-        
-        if grep -q "BUILD SUCCEEDED" "$log_file"; then
-            return 0
-        else
-            return 1
-        fi
+        build 2>&1 | tee "$log_file" | tail -3
+
+    if grep -q "BUILD SUCCEEDED" "$log_file"; then
+        return 0
     else
+        echo "--- Build errors ---"
+        grep -E "error:|BUILD FAILED" "$log_file" | grep -v "^$" | head -40 | sed 's/^/    /'
+        echo "--- End of errors (full log: $log_file) ---"
         return 1
     fi
 }

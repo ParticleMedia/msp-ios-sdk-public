@@ -329,9 +329,11 @@ pipeline {
                 // Save state file to persistent directory for future resume after manual abort
                 sh """
                     mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
-                    if [ -f .msp-release-state.json ]; then
+                    if [ -f .msp-release-state.json ] && [ -s .msp-release-state.json ]; then
                         cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
                         echo "💾 State file saved after manual abort"
+                    else
+                        echo "⚠️ State file missing or empty — not overwriting persistent copy"
                     fi
                 """
                 archiveArtifacts artifacts: '.msp-release-state.json', allowEmptyArchive: true
@@ -362,9 +364,11 @@ pipeline {
                 // the state file does not exist.
                 sh """
                     mkdir -p "${env.MSP_STATE_PERSIST_DIR}"
-                    if [ -f .msp-release-state.json ]; then
+                    if [ -f .msp-release-state.json ] && [ -s .msp-release-state.json ]; then
                         cp .msp-release-state.json "${env.MSP_STATE_PERSIST_DIR}/.msp-release-state.json"
                         echo "💾 State file saved for resume"
+                    else
+                        echo "⚠️ State file missing or empty — not overwriting persistent copy"
                     fi
                 """
                 // Also archive as build artifact for manual recovery
