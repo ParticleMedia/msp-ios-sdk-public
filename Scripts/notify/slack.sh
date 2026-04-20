@@ -410,8 +410,7 @@ notify_release_failure() {
     # Add environment field
     fields+="{\"title\": \"Environment\", \"value\": \"$(get_slack_environment_info)\", \"short\": true}"
 
-    send_slack_notification "$message" "danger" "$title" "$fields"
-
+    # Webhook channel notification intentionally skipped for failures — only DM the release author.
     # DM only — failure notifications go directly to the release author, not channel
     if command -v notify::dm &>/dev/null; then
         local dm_text
