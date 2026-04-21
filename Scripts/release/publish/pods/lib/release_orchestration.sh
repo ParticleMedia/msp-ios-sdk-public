@@ -242,29 +242,24 @@ release_msp_ioscore() {
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPiOSCore" "$VERSION" "foundation module required by all other modules"
 
-        # Update local specs repo after MSPiOSCore is confirmed available on CDN.
-        # Required: MSPSharedLibraries and MSPGoogleAdsTypes pod trunk push validate
-        # against the LOCAL specs repo, so it must contain MSPiOSCore before they run.
-        log::step "PODS" "Updating local CocoaPods specs repo (required for MSPSharedLibraries/MSPGoogleAdsTypes pod trunk push lint)..."
-        local ios_core_repo_update_attempts=0
-        local ios_core_repo_update_max=3
-        while [[ $ios_core_repo_update_attempts -lt $ios_core_repo_update_max ]]; do
-            ((ios_core_repo_update_attempts++)) || true
-            if update_specs_repo; then
-                log::success "PODS" "Local specs repo updated (attempt $ios_core_repo_update_attempts)"
-                break
-            fi
-            if [[ $ios_core_repo_update_attempts -lt $ios_core_repo_update_max ]]; then
-                log::warn "PODS" "Specs repo update failed (attempt $ios_core_repo_update_attempts/$ios_core_repo_update_max), retrying in 30s..."
-                sleep 30
-            else
-                # Non-fatal: MSPiOSCore was already successfully published to trunk.
-                # MSPSharedLibraries and MSPGoogleAdsTypes have their own
-                # wait_for_pod_in_spec_index calls that will retry pod repo update
-                # with a 60-minute timeout. Do not fail the release here.
-                log::warn "PODS" "Specs repo update failed after $ios_core_repo_update_max attempts — downstream steps will retry via wait_for_pod_in_spec_index"
-            fi
-        done
+        # Wait for MSPiOSCore to appear in the CDN shard index before proceeding.
+        #
+        # WHY: `smart_wait_for_pod_availability` only confirms the CDN HTTP fast-path
+        # (available within minutes). The CDN shard index — which `pod trunk push` uses
+        # internally for dependency lint — propagates on a separate, slower schedule
+        # (can take 15-60 min). MSPSharedLibraries and MSPGoogleAdsTypes are launched
+        # immediately after this function returns; if the shard index has not propagated,
+        # their `pod trunk push` lint fails with "could not find compatible versions for
+        # MSPiOSCore". Using wait_for_pod_in_spec_index with force=true polls via
+        # `pod repo update trunk` (bypassing the local cache) until the spec file
+        # physically exists, guaranteeing the shard index is ready before consumers run.
+        log::step "PODS" "Waiting for MSPiOSCore $VERSION to appear in CDN shard index (required for MSPSharedLibraries/MSPGoogleAdsTypes pod trunk push lint)..."
+        if ! wait_for_pod_in_spec_index "MSPiOSCore" "$VERSION" "true"; then
+            log::error "PODS" "MSPiOSCore $VERSION not in CDN shard index after 60 minutes — MSPSharedLibraries/MSPGoogleAdsTypes pod trunk push will fail"
+            msp_state_mark_step_failed "pods_publish" "MSPiOSCore shard index propagation timeout" "1"
+            exit 1
+        fi
+        log::success "PODS" "MSPiOSCore $VERSION confirmed in CDN shard index — safe to proceed with parallel foundation modules"
     fi
 
     # End timing
