@@ -192,6 +192,30 @@ import VungleAdsSDK
         nativeAdItem.load(adm)
     }
 
+    private func getAdSize(adRequest request: MSPiOSCore.AdRequest) -> VungleAdSize? {
+        guard let adSize = request.adSize else {
+            return nil
+        }
+
+        if let adaptive = request.adaptiveBannerSize {
+            guard adaptive.isInlineAdaptiveBanner && adSize.width > 0 else {
+                return nil
+            }
+            let width = adaptive.width
+            let scaledHeight = width * adSize.height / adSize.width
+            let height: Int =
+                if adaptive.height > 0 {
+                    max(scaledHeight, adaptive.height)
+                } else {
+                    scaledHeight
+                }
+
+            return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: width, height: height))
+        }
+
+        return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: adSize.width, height: adSize.height))
+    }
+
     private func loadBannerAd(
         _ placementId: String, _ winningBid: Bid, _ adRequest: MSPiOSCore.AdRequest,
         _ auctionBidListener: AuctionBidListener
@@ -204,8 +228,12 @@ import VungleAdsSDK
             return
         }
 
-        // pass width and height 0 here to let banner size decided from bid response adm
-        let bannerSize = VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: 0, height: 0))
+        let bannerSize = getAdSize(adRequest: adRequest)
+        guard let bannerSize = bannerSize else {
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff banner ad: banner size is invalid", bidResponse: self.bidResponse)
+            return
+        }
         self.bannerView = VungleBannerView(placementId: placementReferenceId, vungleAdSize: bannerSize)
 
         self.bannerView?.delegate = self
