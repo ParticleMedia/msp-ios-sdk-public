@@ -56,35 +56,42 @@ fi
 unset _orch_cdn_module
 
 # ============================================================================
-# wait_for_pod_in_spec_index <pod_name> <version>
+# wait_for_pod_in_spec_index <pod_name> <version> [force]
 # ============================================================================
-# Verifies that a pod version is truly accessible via "pod repo update trunk"
-# (CDN shard index), not just via direct CDN HTTP (which propagates faster).
+# Waits until a pod version is resolvable by `pod trunk push` validation.
 #
-# Background: check_pod_availability checks the CDN podspec JSON file directly
-# (HTTP 200). pod trunk push validates dependencies via "pod repo update trunk"
-# which uses CDN shard index files — a separate propagation path that can lag
-# behind the individual file by several minutes. This function bridges that gap.
+# How pod trunk push validation works (from CocoaPods source):
+#   1. Creates a temp Podfile with source 'https://cdn.cocoapods.org/'
+#   2. Runs pod install using CDNSource
+#   3. CDNSource resolves versions from LOCAL file:
+#        ~/.cocoapods/repos/trunk/all_pods_versions_{h0}_{h1}_{h2}.txt
+#   4. `pod install` (without --repo-update) does NOT re-fetch this file from CDN;
+#      it uses the local cached copy (@check_existing_files_for_update = false)
+#   5. `pod repo update` sets @check_existing_files_for_update = true, which forces
+#      CDNSource to re-fetch all local shard files from CDN (ETag-based)
+#
+# Two-phase strategy:
+#   Phase 1 — Poll CDN HTTP for all_pods_versions_*.txt (cheap, ~1s/check).
+#              Confirms the new version is on CDN before running pod repo update.
+#   Phase 2 — Run pod repo update once CDN has the version. This updates the local
+#              all_pods_versions_*.txt that pod trunk push validation will read.
+#              Verify the local file contains the version before returning.
 #
 # Args:
 #   $1: pod_name
 #   $2: version
+#   $3: force (kept for call-site compatibility, ignored — check is always live)
 #
 # Returns:
-#   0 once the pod version is confirmed in the local trunk spec repo
-#   1 after 60-minute timeout
+#   0 once the version is confirmed in the local CDN shard file
+#   1 after 60-minute timeout or unrecoverable network failure
 # ============================================================================
 wait_for_pod_in_spec_index() {
     local pod_name="$1"
     local version="$2"
-    # When force=true, skip the fast-path and always run a real pod repo update.
-    # Use this in Step 2.5 to guarantee CDN shard index is fresh — not just a
-    # cached local file that may have come from a different CDN node than the one
-    # pod trunk push will hit internally.
-    local force="${3:-false}"
+    local _force="${3:-false}"  # kept for compatibility
 
-    # Compute CocoaPods shard path (md5 of pod name, first 3 hex chars as dirs).
-    # Use md5sum (Linux) with fallback to md5 (macOS) for cross-platform compatibility.
+    # Compute CocoaPods CDN shard (md5 of pod name, first 3 hex chars).
     local spec_hash
     if command -v md5sum >/dev/null 2>&1; then
         spec_hash=$(printf '%s' "$pod_name" | md5sum | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]')
@@ -92,49 +99,77 @@ wait_for_pod_in_spec_index() {
         spec_hash=$(printf '%s' "$pod_name" | md5 | tr '[:upper:]' '[:lower:]')
     fi
     local s1="${spec_hash:0:1}" s2="${spec_hash:1:1}" s3="${spec_hash:2:1}"
-    local local_spec="$HOME/.cocoapods/repos/trunk/Specs/$s1/$s2/$s3/$pod_name/$version/$pod_name.podspec.json"
 
-    # Fast path: file already exists (populated by parent process or a concurrent subprocess).
-    # Avoids unnecessary pod repo update calls and eliminates git lock contention when
-    # multiple adapter subprocesses check in parallel.
-    # Skipped when force=true so that Step 2.5 always verifies against a fresh CDN pull.
-    if [[ "$force" != "true" ]] && [[ -f "$local_spec" ]]; then
-        log::success "PODS" "$pod_name $version already in local trunk spec repo (fast path)"
-        return 0
-    fi
+    # CDN shard versions index — both the remote URL and the local cached file.
+    # These contain identical content: "PodName/ver1/ver2/.../verN" per line.
+    local shard_url="https://cdn.cocoapods.org/all_pods_versions_${s1}_${s2}_${s3}.txt"
+    local local_shard="$HOME/.cocoapods/repos/trunk/all_pods_versions_${s1}_${s2}_${s3}.txt"
+
+    # Helper: check if version appears in a shard file content string.
+    # Matches version as a whole path component (not substring of another version).
+    _version_in_shard() {
+        echo "$1" | grep "^${pod_name}/" | grep -qE "/${version}(/|$)"
+    }
 
     local spec_wait=0
-    local spec_wait_max=3600  # 60 min — CDN shard index can lag behind CDN file by minutes
-    local consecutive_failures=0
-    local max_consecutive_failures=5  # fail fast if pod repo update is consistently broken
-    while [[ $spec_wait -lt $spec_wait_max ]]; do
-        # Bypass the 5-min cache so we always run a real pod repo update
-        rm -f /tmp/msp-cocoapods-specs-repo-last-update 2>/dev/null || true
-        log::step "PODS" "Running pod repo update to sync CDN shard index for $pod_name $version (${spec_wait}s elapsed)..."
+    local spec_wait_max=3600
+    local cdn_confirmed=false
+    local cdn_failures=0
+    local max_cdn_failures=5
 
-        if update_specs_repo; then
-            consecutive_failures=0
-            if [[ -f "$local_spec" ]]; then
-                log::success "PODS" "$pod_name $version confirmed in local trunk spec repo"
-                return 0
-            fi
-            # update succeeded but pod not in index yet — CDN shard index still propagating
-            log::warn "PODS" "$pod_name $version not yet in local trunk spec repo (CDN shard index still propagating)"
-        else
-            consecutive_failures=$((consecutive_failures + 1))
-            log::warn "PODS" "pod repo update failed ($consecutive_failures/$max_consecutive_failures consecutive failures)"
-            if [[ $consecutive_failures -ge $max_consecutive_failures ]]; then
-                log::error "PODS" "pod repo update failed $max_consecutive_failures times in a row — likely a network issue, aborting"
-                return 1
+    while [[ $spec_wait -lt $spec_wait_max ]]; do
+        # ── Phase 1: Poll CDN HTTP until version appears ──────────────────────
+        if [[ "$cdn_confirmed" == "false" ]]; then
+            log::step "PODS" "Phase 1 — Checking CDN for $pod_name $version (${spec_wait}s elapsed)..."
+            local cdn_content
+            cdn_content=$(curl -s --max-time 15 -L "$shard_url" 2>/dev/null) || true
+
+            if [[ -z "$cdn_content" ]]; then
+                cdn_failures=$((cdn_failures + 1))
+                log::warn "PODS" "CDN fetch failed ($cdn_failures/$max_cdn_failures)"
+                if [[ $cdn_failures -ge $max_cdn_failures ]]; then
+                    log::error "PODS" "CDN unreachable after $max_cdn_failures attempts — network issue"
+                    return 1
+                fi
+            elif _version_in_shard "$cdn_content"; then
+                log::success "PODS" "$pod_name $version found on CDN — proceeding to local sync"
+                cdn_confirmed=true
+                cdn_failures=0
+            else
+                cdn_failures=0
+                log::warn "PODS" "$pod_name $version not yet on CDN shard index (propagating)"
             fi
         fi
 
-        log::info "PODS" "Retrying in 60s... (${spec_wait}s / ${spec_wait_max}s elapsed)"
-        sleep 60
-        spec_wait=$((spec_wait + 60))
+        # ── Phase 2: Sync local shard file via pod repo update ────────────────
+        # Only runs once CDN has confirmed the version is available.
+        # pod trunk push validation reads the LOCAL all_pods_versions_*.txt
+        # (without re-fetching from CDN). pod repo update forces a fresh CDN pull.
+        if [[ "$cdn_confirmed" == "true" ]]; then
+            log::step "PODS" "Phase 2 — Syncing local CDN shard file via pod repo update..."
+            # Clear success cache so update_specs_repo runs a real pod repo update
+            rm -f /tmp/msp-cocoapods-specs-repo-last-update \
+                  /tmp/msp-cocoapods-specs-repo-last-failure 2>/dev/null || true
+
+            if update_specs_repo; then
+                local local_content=""
+                [[ -f "$local_shard" ]] && local_content=$(cat "$local_shard")
+                if _version_in_shard "$local_content"; then
+                    log::success "PODS" "$pod_name $version confirmed in local CDN shard file — pod trunk push validation will resolve it"
+                    return 0
+                fi
+                log::warn "PODS" "pod repo update succeeded but $version not yet in local shard (CDN ETag may not have propagated)"
+            else
+                log::warn "PODS" "pod repo update failed — will retry"
+            fi
+        fi
+
+        log::info "PODS" "Retrying in 30s... (${spec_wait}s / ${spec_wait_max}s elapsed)"
+        sleep 30
+        spec_wait=$((spec_wait + 30))
     done
 
-    log::error "PODS" "$pod_name $version not in local trunk spec repo after 60 minutes"
+    log::error "PODS" "$pod_name $version not confirmed in local CDN shard file after 60 minutes"
     return 1
 }
 export -f wait_for_pod_in_spec_index 2>/dev/null || true
