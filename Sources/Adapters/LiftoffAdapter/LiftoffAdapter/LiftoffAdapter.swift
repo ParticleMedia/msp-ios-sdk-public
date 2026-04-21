@@ -210,9 +210,11 @@ import VungleAdsSDK
                     scaledHeight
                 }
 
+            MSPLogger.shared.info(message: "[Adapter: Liftoff] banner ad size: width = \(width), height = \(height)")
             return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: width, height: height))
         }
 
+        MSPLogger.shared.info(message: "[Adapter: Liftoff] banner ad size: width = \(adSize.width), height = \(adSize.height)")
         return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: adSize.width, height: adSize.height))
     }
 
