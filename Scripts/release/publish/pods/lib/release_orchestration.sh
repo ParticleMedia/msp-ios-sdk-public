@@ -77,6 +77,11 @@ unset _orch_cdn_module
 wait_for_pod_in_spec_index() {
     local pod_name="$1"
     local version="$2"
+    # When force=true, skip the fast-path and always run a real pod repo update.
+    # Use this in Step 2.5 to guarantee CDN shard index is fresh — not just a
+    # cached local file that may have come from a different CDN node than the one
+    # pod trunk push will hit internally.
+    local force="${3:-false}"
 
     # Compute CocoaPods shard path (md5 of pod name, first 3 hex chars as dirs).
     # Use md5sum (Linux) with fallback to md5 (macOS) for cross-platform compatibility.
@@ -92,7 +97,8 @@ wait_for_pod_in_spec_index() {
     # Fast path: file already exists (populated by parent process or a concurrent subprocess).
     # Avoids unnecessary pod repo update calls and eliminates git lock contention when
     # multiple adapter subprocesses check in parallel.
-    if [[ -f "$local_spec" ]]; then
+    # Skipped when force=true so that Step 2.5 always verifies against a fresh CDN pull.
+    if [[ "$force" != "true" ]] && [[ -f "$local_spec" ]]; then
         log::success "PODS" "$pod_name $version already in local trunk spec repo (fast path)"
         return 0
     fi
@@ -571,12 +577,9 @@ release_single_adapter() {
             fi
 
             log::success "PODS" "$adapter $version already available and verified"
-            # Verify shard index has propagated — MSPCore pod trunk push validates adapter
-            # dependencies against the local trunk spec repo.
-            if ! wait_for_pod_in_spec_index "$adapter" "$version"; then
-                echo "ERROR: $adapter $version not in local trunk spec repo after 60 min" > "$result_file"
-                return 1
-            fi
+            # Shard index verification is handled sequentially in Step 2.5 (after all
+            # adapters complete) to avoid git lock contention between parallel subprocesses
+            # all running pod repo update trunk simultaneously.
             echo "SUCCESS: $adapter already published" > "$result_file"
             return 0
         fi
@@ -1285,14 +1288,15 @@ release_adapters() {
         # Wait for MSPCore's required dependencies to appear in the local trunk spec repo.
         # MSPCore pod trunk push validates these against the local spec repo — a blind 3×30s
         # pod repo update retry is too short for CDN shard index propagation lag.
-        # Define required dependencies (always check, fail-fast)
-        local required_deps=("MSPSharedLibraries" "MSPPrebidAdapter" "MSPGoogleAdsTypes")
+        # Check all adapters (which MSPCore depends on) plus shared upstream deps sequentially
+        # to avoid git lock contention from parallel pod repo update calls.
+        local required_deps=("MSPSharedLibraries" "MSPGoogleAdsTypes" "${adapters[@]}")
 
         # Check required dependencies sequentially (fail-fast):
         # 1. CDN availability (smart_wait_for_pod_availability via HTTP)
         # 2. Local trunk spec repo (wait_for_pod_in_spec_index via shard index)
         for dep in "${required_deps[@]}"; do
-            # Check if dependency is in PODS_MODULES
+            # Check if dependency is in PODS_MODULES (skip deps not being released)
             if ! echo "$PODS_MODULES" | grep -q "$dep"; then
                 log::info "PODS" "$dep not in PODS_MODULES, skipping availability check"
                 continue
@@ -1305,7 +1309,10 @@ release_adapters() {
             fi
 
             log::info "PODS" "Waiting for $dep in local trunk spec repo (required for MSPCore pod trunk push lint)..."
-            if ! wait_for_pod_in_spec_index "$dep" "$VERSION"; then
+            # force=true: bypass fast-path — always do a real pod repo update to confirm
+            # the shard index is fresh from CDN, not a cached local file from a prior update
+            # that may not reflect what pod trunk push will see internally.
+            if ! wait_for_pod_in_spec_index "$dep" "$VERSION" "true"; then
                 log::error "PODS" "$dep not in local trunk spec repo, MSPCore pod trunk push will fail"
                 return 1
             fi

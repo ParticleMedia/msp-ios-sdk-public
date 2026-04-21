@@ -256,6 +256,12 @@ is_permanent_trunk_error() {
     if grep -qi -e "Recv failure" -e "Connection reset by peer" -e "curl: (56)" "$log"; then
         return 1
     fi
+    # CDN shard index lag is always transient — dependency spec not yet propagated to
+    # the CDN node pod trunk push hit internally. The CDN retry loop handles this first;
+    # this pre-check ensures auto-retry also runs if CDN retry somehow doesn't trigger.
+    if grep -qi "could not find compatible versions" "$log"; then
+        return 1
+    fi
     grep -qi \
         -e "already exists" \
         -e "duplicate entry" \
