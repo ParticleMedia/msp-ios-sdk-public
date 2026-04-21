@@ -423,19 +423,48 @@ publish_pod_with_resume() {
         fi
     fi
 
-    # Execute pod trunk push
+    # Execute pod trunk push — with CDN shard index retry.
+    # Background: pod trunk push runs pod spec lint internally. The lint step resolves
+    # dependencies from CDN, potentially hitting a DIFFERENT edge node than the one
+    # used by wait_for_pod_in_spec_index. If that node's shard index hasn't propagated
+    # yet, the lint fails with "could not find compatible versions" even though the pod
+    # IS published. Detect this transient failure and retry after refreshing the local
+    # spec repo (forcing a new CDN node hit that may have the updated shard index).
     local exit_code_file
     exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_XXXXXX")
 
-    {
-        pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
-        echo "${PIPESTATUS[0]}" > "$exit_code_file"
-    } || true
+    local publish_exit_code="1"
+    local publish_output=""
+    local cdn_retry=0
+    local cdn_retry_max=5
 
-    local publish_exit_code
-    publish_exit_code=$(cat "$exit_code_file" 2>/dev/null || echo "1")
-    local publish_output
-    publish_output=$(cat "$log_file" 2>/dev/null || echo "")
+    while [[ $cdn_retry -le $cdn_retry_max ]]; do
+        : > "$log_file"  # truncate log before each attempt
+        {
+            pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
+            echo "${PIPESTATUS[0]}" > "$exit_code_file"
+        } || true
+
+        publish_exit_code=$(cat "$exit_code_file" 2>/dev/null || echo "1")
+        publish_output=$(cat "$log_file" 2>/dev/null || echo "")
+
+        if [[ "$publish_exit_code" == "0" ]]; then
+            break
+        fi
+
+        # Retry only for CDN shard index propagation failures (transient, different edge nodes)
+        if echo "$publish_output" | grep -q "could not find compatible versions"; then
+            cdn_retry=$((cdn_retry + 1))
+            if [[ $cdn_retry -le $cdn_retry_max ]]; then
+                log::warn "PODS" "CDN shard index lag detected (attempt $cdn_retry/$cdn_retry_max) — refreshing spec repo and retrying in 60s..."
+                rm -f /tmp/msp-cocoapods-specs-repo-last-update 2>/dev/null || true
+                pod repo update trunk 2>/dev/null || log::warn "PODS" "pod repo update failed, retrying push anyway..."
+                sleep 60
+                continue
+            fi
+        fi
+        break
+    done
 
     rm -f "$exit_code_file"
 
