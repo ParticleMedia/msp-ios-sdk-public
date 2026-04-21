@@ -58,7 +58,7 @@ class NovaAdLandingWebContentViewController: UIViewController {
         self.webContext = webContext
         self.navigationModel = navigationModel
         super.init(nibName: nil, bundle: nil)
-        self.unifiedWebViewHost =
+self.unifiedWebViewHost =
             NovaUnifiedWebViewBuilder
             .buildWebViewHost(
                 enableNBUserAgent: false,
@@ -92,7 +92,7 @@ class NovaAdLandingWebContentViewController: UIViewController {
         }
 
         NotificationCenter.default.addObserver(
-            self, selector: #selector(appWillResignActive), name: UIApplication.willResignActiveNotification,
+            self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification,
             object: nil)
         NotificationCenter.default.addObserver(
             self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification,
@@ -113,9 +113,8 @@ class NovaAdLandingWebContentViewController: UIViewController {
         self.loadingTimer?.invalidate()
         self.loadingTimer = nil
         self.smoothProgress.stopUpdatingProgress()
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(
-            self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     override func viewDidLoad() {
@@ -227,7 +226,7 @@ private extension NovaAdLandingWebContentViewController {
         dismiss(animated: true)
     }
 
-    @objc func appWillResignActive() {
+    @objc func appDidEnterBackground() {
         NovaAdLandingWebLogHelper.logJumpOut(
             webContext: webContext,
             scrollDepth: unifiedWebViewHost.scrollDepth,
