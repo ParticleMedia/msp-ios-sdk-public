@@ -78,6 +78,26 @@ release_msp_ioscore() {
         if check_pod_availability "MSPiOSCore" "$VERSION"; then
             log::info "PODS" "MSPiOSCore $VERSION is already published to CocoaPods, skipping release"
             log::success "PODS" "MSPiOSCore $VERSION already available"
+            # Even when skipping the publish, the local specs repo must be updated.
+            # MSPSharedLibraries and MSPGoogleAdsTypes pod trunk push validate against
+            # the LOCAL specs repo — if it doesn't contain MSPiOSCore yet, lint fails.
+            log::step "PODS" "Updating local CocoaPods specs repo (required even when MSPiOSCore publish is skipped)..."
+            local skip_repo_update_attempts=0
+            local skip_repo_update_max=3
+            while [[ $skip_repo_update_attempts -lt $skip_repo_update_max ]]; do
+                ((skip_repo_update_attempts++)) || true
+                if update_specs_repo; then
+                    log::success "PODS" "Local specs repo updated (attempt $skip_repo_update_attempts)"
+                    break
+                fi
+                if [[ $skip_repo_update_attempts -lt $skip_repo_update_max ]]; then
+                    log::warn "PODS" "Specs repo update failed (attempt $skip_repo_update_attempts/$skip_repo_update_max), retrying in 30s..."
+                    sleep 30
+                else
+                    log::error "PODS" "Specs repo update failed after $skip_repo_update_max attempts — MSPSharedLibraries/MSPGoogleAdsTypes will likely fail to resolve MSPiOSCore"
+                    return 1
+                fi
+            done
             if command -v metrics::end &>/dev/null; then
                 metrics::end "pod_MSPiOSCore"
             fi
