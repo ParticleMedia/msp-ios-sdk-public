@@ -20,6 +20,7 @@ class NovaAdLandingWebLogHelper {
             "ad_unit_id": webContext.tracingInfo.adUnitId,
             "duration_ms": String(durationMS(webContext.clickTime)),
             "web_type": "unified",
+            NovaAdMetricKeys.CLICK_SEQ: "\(webContext.tracingInfo.clickSeq)"
         ]
     }
 

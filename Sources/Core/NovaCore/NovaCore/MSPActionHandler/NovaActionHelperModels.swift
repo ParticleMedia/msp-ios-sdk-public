@@ -56,7 +56,31 @@ struct AdActionExtraInfo {
 
 // MARK: - AdActionTracingInfo
 
-struct AdActionTracingInfo {
+class AdActionTracingInfo {
+    // MARK: Lifecycle
+
+    init(
+        adId: String,
+        adSetId: String,
+        requestId: String,
+        adUnitId: String,
+        thirdPartyClickTrackingUrls: [String],
+        encryptedAdToken: String,
+        adOpportunityID: UUID?,
+        clickSeq: Int
+    ) {
+        self.adId = adId
+        self.adSetId = adSetId
+        self.requestId = requestId
+        self.adUnitId = adUnitId
+        self.thirdPartyClickTrackingUrls = thirdPartyClickTrackingUrls
+        self.encryptedAdToken = encryptedAdToken
+        self.adOpportunityID = adOpportunityID
+        self.clickSeq = clickSeq
+    }
+
+    // MARK: Internal
+
     // using for reporting
     let adId: String
     let adSetId: String
@@ -65,6 +89,7 @@ struct AdActionTracingInfo {
     let thirdPartyClickTrackingUrls: [String]
     let encryptedAdToken: String
     let adOpportunityID: UUID?
+    var clickSeq: Int
 }
 
 // MARK: - AdActionModel
@@ -174,7 +199,8 @@ extension NovaBaseAd {
             adUnitId: adUnitId,
             thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
             encryptedAdToken: encryptedAdToken,
-            adOpportunityID: adOpportunityID
+            adOpportunityID: adOpportunityID,
+            clickSeq: 0
         )
     }
 }

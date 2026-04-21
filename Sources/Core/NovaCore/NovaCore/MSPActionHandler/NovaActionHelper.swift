@@ -34,6 +34,7 @@ enum NovaActionContext {
             return model.extraInfo.onAdViewClick
         }
     }
+
 }
 
 // MARK: - NovaActionState
@@ -46,7 +47,7 @@ enum NovaActionState {
 // MARK: - NovaActionHelper
 
 struct NovaActionHelper<T> {
-    private let context: NovaActionContext
+    private var context: NovaActionContext
     private let actionHandler: any ActionHandling
 }
 
@@ -79,11 +80,13 @@ extension NovaActionHelper where T == NovaActionState.Init {
         with duration: CFTimeInterval? = nil, in area: ClickableAdArea? = nil
     ) -> NovaActionHelper<NovaActionState.NovaEventSent> {
         let durationInMs = duration.flatMap { ($0 * 1000).safeToInt() }
+        context.tracingInfo.clickSeq += 1
         NovaAdMetricReporter
             .logAdClick(
                 thirdPartyClickTrackingUrls: context.tracingInfo.thirdPartyClickTrackingUrls,
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
                 adUnitId: context.tracingInfo.adUnitId,
+                clickSeq: context.tracingInfo.clickSeq,
                 durationInMs: durationInMs,
                 clickArea: area
             )

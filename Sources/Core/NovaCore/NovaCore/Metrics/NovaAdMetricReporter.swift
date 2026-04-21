@@ -41,6 +41,7 @@ class NovaAdMetricReporter: NSObject {
         thirdPartyClickTrackingUrls: [String],
         encryptedAdToken: String,
         adUnitId: String,
+        clickSeq: Int = 0,
         durationInMs: Int? = nil,
         clickArea: ClickableAdArea? = nil
     ) {
@@ -57,6 +58,7 @@ class NovaAdMetricReporter: NSObject {
         }
         params[NovaAdMetricKeys.AD_UNIT_ID] = adUnitId
         params[NovaAdMetricKeys.USER_ID] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
+        params[NovaAdMetricKeys.CLICK_SEQ] = "\(clickSeq)"
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
@@ -236,6 +238,7 @@ struct NovaAdMetricKeys {
     static let SESSION_DWELL_TIME_MS = "session_dwell_time_ms"
     static let TOTAL_DWELL_TIME_MS = "total_dwell_time_ms"
     static let TOTAL_WATCH_TIME_MS = "total_watch_time_ms"
+    static let CLICK_SEQ = "click_seq"
 
     static let EVENT_TYPE = "event_type"
     static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"
