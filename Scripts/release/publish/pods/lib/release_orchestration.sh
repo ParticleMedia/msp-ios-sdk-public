@@ -258,8 +258,11 @@ release_msp_ioscore() {
                 log::warn "PODS" "Specs repo update failed (attempt $ios_core_repo_update_attempts/$ios_core_repo_update_max), retrying in 30s..."
                 sleep 30
             else
-                log::error "PODS" "Specs repo update failed after $ios_core_repo_update_max attempts — MSPSharedLibraries/MSPGoogleAdsTypes pod trunk push will likely fail to resolve MSPiOSCore"
-                return 1
+                # Non-fatal: MSPiOSCore was already successfully published to trunk.
+                # MSPSharedLibraries and MSPGoogleAdsTypes have their own
+                # wait_for_pod_in_spec_index calls that will retry pod repo update
+                # with a 60-minute timeout. Do not fail the release here.
+                log::warn "PODS" "Specs repo update failed after $ios_core_repo_update_max attempts — downstream steps will retry via wait_for_pod_in_spec_index"
             fi
         done
     fi
@@ -321,14 +324,8 @@ release_msp_shared_libraries() {
             fi
 
             log::success "PODS" "MSPSharedLibraries $VERSION already available and verified"
-            # Verify shard index has propagated — adapter pod trunk push validates
-            # MSPSharedLibraries dependency against the local trunk spec repo.
-            if ! wait_for_pod_in_spec_index "MSPSharedLibraries" "$VERSION"; then
-                if command -v metrics::end &>/dev/null; then
-                    metrics::end "pod_MSPSharedLibraries"
-                fi
-                return 1
-            fi
+            # Shard index verification is handled sequentially in release_adapters (pre-check)
+            # to avoid git lock contention when this function runs as a parallel subprocess.
 
             # End timing if metrics enabled
             if command -v metrics::end &>/dev/null; then
@@ -359,11 +356,12 @@ release_msp_shared_libraries() {
 
     # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPSharedLibraries" "$VERSION"; then
-        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log::error "PODS" "[FAIL-FAST] Podspec generation failed for MSPSharedLibraries. Aborting release."
-            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPSharedLibraries" "1"
-            exit 1
+            # Do NOT call msp_state_mark_step_failed here: this function runs as a parallel
+            # subprocess; concurrent jq writes to the state file corrupt the JSON.
+            # The parent process marks failure based on the result file.
+            return 1
         fi
         return 1
     fi
@@ -372,8 +370,7 @@ release_msp_shared_libraries() {
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPSharedLibraries.podspec"
     if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log::error "PODS" "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
-        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
-        exit 1
+        return 1
     fi
 
     # Create GitHub release (with resume support)
@@ -394,8 +391,9 @@ release_msp_shared_libraries() {
     if ! publish_pod_to_cocoapods "MSPSharedLibraries" "$VERSION"; then
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log::error "PODS" "[FAIL-FAST] Failed to publish MSPSharedLibraries to CocoaPods. Aborting release."
-            msp_state_mark_step_failed "pods_publish" "Failed to publish MSPSharedLibraries" "1"
-            exit 1
+            # Do NOT call msp_state_mark_step_failed here: parallel subprocess race condition.
+            # Parent process marks failure based on result file.
+            return 1
         fi
         return 1
     fi
@@ -436,14 +434,8 @@ release_msp_googleadstypes() {
         if check_pod_availability "MSPGoogleAdsTypes" "$VERSION"; then
             log::info "PODS" "MSPGoogleAdsTypes $VERSION is already published to CocoaPods, skipping release"
             log::success "PODS" "MSPGoogleAdsTypes $VERSION already available"
-            # Verify shard index has propagated — MSPGoogleAdapter/MSPAmazonAdapter
-            # pod trunk push validates this dependency against the local trunk spec repo.
-            if ! wait_for_pod_in_spec_index "MSPGoogleAdsTypes" "$VERSION"; then
-                if command -v metrics::end &>/dev/null; then
-                    metrics::end "pod_MSPGoogleAdsTypes"
-                fi
-                return 1
-            fi
+            # Shard index verification is handled sequentially in release_adapters (pre-check)
+            # to avoid git lock contention when this function runs as a parallel subprocess.
             if command -v metrics::end &>/dev/null; then
                 metrics::end "pod_MSPGoogleAdsTypes"
             fi
@@ -471,11 +463,10 @@ release_msp_googleadstypes() {
 
     # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPGoogleAdsTypes" "$VERSION"; then
-        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log::error "PODS" "[FAIL-FAST] Podspec generation failed for MSPGoogleAdsTypes. Aborting release."
-            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPGoogleAdsTypes" "1"
-            exit 1
+            # Do NOT call msp_state_mark_step_failed: parallel subprocess race condition.
+            return 1
         fi
         return 1
     fi
@@ -484,8 +475,7 @@ release_msp_googleadstypes() {
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPGoogleAdsTypes.podspec"
     if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log::error "PODS" "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
-        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
-        exit 1
+        return 1
     fi
 
     # Create GitHub release (with resume support)
@@ -506,8 +496,8 @@ release_msp_googleadstypes() {
     if ! publish_pod_to_cocoapods "MSPGoogleAdsTypes" "$VERSION"; then
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log::error "PODS" "[FAIL-FAST] Failed to publish MSPGoogleAdsTypes to CocoaPods. Aborting release."
-            msp_state_mark_step_failed "pods_publish" "Failed to publish MSPGoogleAdsTypes" "1"
-            exit 1
+            # Do NOT call msp_state_mark_step_failed: parallel subprocess race condition.
+            return 1
         fi
         return 1
     fi
@@ -609,74 +599,24 @@ release_single_adapter() {
         return 1
     fi
 
-    # ========================================================================
-    # DEBUG & CRITICAL FIX: Ensure ROOT_DIR before podspec verification
-    # ========================================================================
-    log::info "PODS" "[DEBUG] Before podspec verification for $adapter"
-    log::info "PODS" "[DEBUG] ROOT_DIR current value: '${ROOT_DIR:-<EMPTY>}'"
-
-    # CRITICAL: Re-ensure ROOT_DIR is set (defensive programming)
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        log::error "PODS" "[CRITICAL] ROOT_DIR is EMPTY before podspec verification!"
-        log::error "PODS" "[CRITICAL] This should not happen - attempting emergency resolution..."
-
-        # Try git method
-        if command -v git >/dev/null 2>&1; then
-            ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-            if [[ -n "$ROOT_DIR" ]]; then
-                log::info "PODS" "[CRITICAL] ROOT_DIR resolved via git: $ROOT_DIR"
-                export ROOT_DIR
-            fi
-        fi
-
-        # Fallback
-        if [[ -z "${ROOT_DIR:-}" ]]; then
-            ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-            log::info "PODS" "[CRITICAL] ROOT_DIR resolved via fallback: $ROOT_DIR"
-            export ROOT_DIR
-        fi
-    else
-        log::info "PODS" "[DEBUG] ROOT_DIR is set: $ROOT_DIR"
-    fi
-    # ========================================================================
-
     # FAIL-FAST: Verify generated podspec exists (release tier only)
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/${adapter}.podspec"
 
-    log::info "PODS" "[DEBUG] Constructed podspec_path: $podspec_path"
-    log::info "PODS" "[DEBUG] Checking if file exists: [[ -f \"$podspec_path\" ]]"
-
     if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
-        log::error "PODS" "[DEBUG] File check FAILED"
-        log::error "PODS" "[DEBUG] ROOT_DIR: '${ROOT_DIR}'"
-        log::error "PODS" "[DEBUG] adapter: '$adapter'"
-        log::error "PODS" "[DEBUG] podspec_path: '$podspec_path'"
-        log::error "PODS" "[DEBUG] Listing Build/ReleasePodspecs/:"
-        if [[ -d "$ROOT_DIR/Build/ReleasePodspecs/" ]]; then
-            ls -la "$ROOT_DIR/Build/ReleasePodspecs/" 2>/dev/null || log::error "PODS" "[DEBUG] Failed to list"
-        else
-            log::error "PODS" "[DEBUG] Directory does not exist: $ROOT_DIR/Build/ReleasePodspecs/"
-        fi
-
-        echo "ERROR: Generated podspec not found: $podspec_path" > "$result_file"
         log::error "PODS" "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
+        if [[ -d "$ROOT_DIR/Build/ReleasePodspecs/" ]]; then
+            log::error "PODS" "Contents of Build/ReleasePodspecs/: $(ls "$ROOT_DIR/Build/ReleasePodspecs/" 2>/dev/null | tr '\n' ' ')"
+        fi
+        echo "ERROR: Generated podspec not found: $podspec_path" > "$result_file"
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
         return 1
     fi
 
-    log::info "PODS" "[DEBUG] Podspec file exists: $podspec_path"
-
     # Update dependencies
-    log::info "PODS" "[DEBUG] About to call update_adapter_podspec_dependencies for $adapter"
-    log::info "PODS" "[DEBUG] ROOT_DIR before call: '${ROOT_DIR:-<EMPTY>}'"
-
     if ! update_adapter_podspec_dependencies "$adapter" "$version"; then
         echo "ERROR: Failed to update dependencies for $adapter" > "$result_file"
-        log::error "PODS" "[DEBUG] update_adapter_podspec_dependencies failed for $adapter"
         return 1
     fi
-
-    log::info "PODS" "[DEBUG] update_adapter_podspec_dependencies succeeded for $adapter"
 
     # Create GitHub release for adapter (all adapters are binary distribution)
     local github_release_status="unknown"

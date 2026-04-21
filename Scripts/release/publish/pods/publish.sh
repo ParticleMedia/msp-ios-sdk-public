@@ -979,14 +979,17 @@ main() {
     log::success "PODS" "Both MSPSharedLibraries and MSPGoogleAdsTypes released successfully"
     
     # Step 2: Release Adapters
+    # Compute adapter count from PODS_MODULES (exclude core modules)
+    local _core_mods="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPCore"
+    local _adapter_count=0
+    for _m in $PODS_MODULES; do
+        echo "$_core_mods" | grep -qw "$_m" || _adapter_count=$((_adapter_count + 1))
+    done
+
     if release_adapters; then
-        # Count successful adapters (assuming all adapters in POD_RELEASE_ORDER except MSPSharedLibraries and MSPCore)
-        local adapter_count=$((${#POD_RELEASE_ORDER[@]} - 2))  # Subtract MSPSharedLibraries and MSPCore
-        successful_pods=$((successful_pods + adapter_count))
+        successful_pods=$((successful_pods + _adapter_count))
     else
-        # Count failed adapters
-        local adapter_count=$((${#POD_RELEASE_ORDER[@]} - 2))
-        failed_pods=$((failed_pods + adapter_count))
+        failed_pods=$((failed_pods + _adapter_count))
         failed_pod_names+=("Adapters")
         if [[ "$DRY_RUN" != "true" ]]; then
             # Use new notification system: DM only (no channel spam)
