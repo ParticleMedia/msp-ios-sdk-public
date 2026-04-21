@@ -56,6 +56,84 @@ fi
 unset _orch_cdn_module
 
 # ============================================================================
+# wait_for_pod_in_spec_index <pod_name> <version>
+# ============================================================================
+# Verifies that a pod version is truly accessible via "pod repo update trunk"
+# (CDN shard index), not just via direct CDN HTTP (which propagates faster).
+#
+# Background: check_pod_availability checks the CDN podspec JSON file directly
+# (HTTP 200). pod trunk push validates dependencies via "pod repo update trunk"
+# which uses CDN shard index files — a separate propagation path that can lag
+# behind the individual file by several minutes. This function bridges that gap.
+#
+# Args:
+#   $1: pod_name
+#   $2: version
+#
+# Returns:
+#   0 once the pod version is confirmed in the local trunk spec repo
+#   1 after 60-minute timeout
+# ============================================================================
+wait_for_pod_in_spec_index() {
+    local pod_name="$1"
+    local version="$2"
+
+    # Compute CocoaPods shard path (md5 of pod name, first 3 hex chars as dirs).
+    # Use md5sum (Linux) with fallback to md5 (macOS) for cross-platform compatibility.
+    local spec_hash
+    if command -v md5sum >/dev/null 2>&1; then
+        spec_hash=$(printf '%s' "$pod_name" | md5sum | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]')
+    else
+        spec_hash=$(printf '%s' "$pod_name" | md5 | tr '[:upper:]' '[:lower:]')
+    fi
+    local s1="${spec_hash:0:1}" s2="${spec_hash:1:1}" s3="${spec_hash:2:1}"
+    local local_spec="$HOME/.cocoapods/repos/trunk/Specs/$s1/$s2/$s3/$pod_name/$version/$pod_name.podspec.json"
+
+    # Fast path: file already exists (populated by parent process or a concurrent subprocess).
+    # Avoids unnecessary pod repo update calls and eliminates git lock contention when
+    # multiple adapter subprocesses check in parallel.
+    if [[ -f "$local_spec" ]]; then
+        log::success "PODS" "$pod_name $version already in local trunk spec repo (fast path)"
+        return 0
+    fi
+
+    local spec_wait=0
+    local spec_wait_max=3600  # 60 min — CDN shard index can lag behind CDN file by minutes
+    local consecutive_failures=0
+    local max_consecutive_failures=5  # fail fast if pod repo update is consistently broken
+    while [[ $spec_wait -lt $spec_wait_max ]]; do
+        # Bypass the 5-min cache so we always run a real pod repo update
+        rm -f /tmp/msp-cocoapods-specs-repo-last-update 2>/dev/null || true
+        log::step "PODS" "Running pod repo update to sync CDN shard index for $pod_name $version (${spec_wait}s elapsed)..."
+
+        if update_specs_repo; then
+            consecutive_failures=0
+            if [[ -f "$local_spec" ]]; then
+                log::success "PODS" "$pod_name $version confirmed in local trunk spec repo"
+                return 0
+            fi
+            # update succeeded but pod not in index yet — CDN shard index still propagating
+            log::warn "PODS" "$pod_name $version not yet in local trunk spec repo (CDN shard index still propagating)"
+        else
+            consecutive_failures=$((consecutive_failures + 1))
+            log::warn "PODS" "pod repo update failed ($consecutive_failures/$max_consecutive_failures consecutive failures)"
+            if [[ $consecutive_failures -ge $max_consecutive_failures ]]; then
+                log::error "PODS" "pod repo update failed $max_consecutive_failures times in a row — likely a network issue, aborting"
+                return 1
+            fi
+        fi
+
+        log::info "PODS" "Retrying in 60s... (${spec_wait}s / ${spec_wait_max}s elapsed)"
+        sleep 60
+        spec_wait=$((spec_wait + 60))
+    done
+
+    log::error "PODS" "$pod_name $version not in local trunk spec repo after 60 minutes"
+    return 1
+}
+export -f wait_for_pod_in_spec_index 2>/dev/null || true
+
+# ============================================================================
 # Release MSPiOSCore (Step 0)
 # ============================================================================
 # MSPiOSCore is the foundation module required by all other modules.
@@ -78,26 +156,14 @@ release_msp_ioscore() {
         if check_pod_availability "MSPiOSCore" "$VERSION"; then
             log::info "PODS" "MSPiOSCore $VERSION is already published to CocoaPods, skipping release"
             log::success "PODS" "MSPiOSCore $VERSION already available"
-            # Even when skipping the publish, the local specs repo must be updated.
-            # MSPSharedLibraries and MSPGoogleAdsTypes pod trunk push validate against
-            # the LOCAL specs repo — if it doesn't contain MSPiOSCore yet, lint fails.
-            log::step "PODS" "Updating local CocoaPods specs repo (required even when MSPiOSCore publish is skipped)..."
-            local skip_repo_update_attempts=0
-            local skip_repo_update_max=3
-            while [[ $skip_repo_update_attempts -lt $skip_repo_update_max ]]; do
-                ((skip_repo_update_attempts++)) || true
-                if update_specs_repo; then
-                    log::success "PODS" "Local specs repo updated (attempt $skip_repo_update_attempts)"
-                    break
+            # Verify CDN shard index has propagated — MSPSharedLibraries/MSPGoogleAdsTypes
+            # pod trunk push validates this dependency against the local trunk spec repo.
+            if ! wait_for_pod_in_spec_index "MSPiOSCore" "$VERSION"; then
+                if command -v metrics::end &>/dev/null; then
+                    metrics::end "pod_MSPiOSCore"
                 fi
-                if [[ $skip_repo_update_attempts -lt $skip_repo_update_max ]]; then
-                    log::warn "PODS" "Specs repo update failed (attempt $skip_repo_update_attempts/$skip_repo_update_max), retrying in 30s..."
-                    sleep 30
-                else
-                    log::error "PODS" "Specs repo update failed after $skip_repo_update_max attempts — MSPSharedLibraries/MSPGoogleAdsTypes will likely fail to resolve MSPiOSCore"
-                    return 1
-                fi
-            done
+                return 1
+            fi
             if command -v metrics::end &>/dev/null; then
                 metrics::end "pod_MSPiOSCore"
             fi
@@ -249,6 +315,14 @@ release_msp_shared_libraries() {
             fi
 
             log::success "PODS" "MSPSharedLibraries $VERSION already available and verified"
+            # Verify shard index has propagated — adapter pod trunk push validates
+            # MSPSharedLibraries dependency against the local trunk spec repo.
+            if ! wait_for_pod_in_spec_index "MSPSharedLibraries" "$VERSION"; then
+                if command -v metrics::end &>/dev/null; then
+                    metrics::end "pod_MSPSharedLibraries"
+                fi
+                return 1
+            fi
 
             # End timing if metrics enabled
             if command -v metrics::end &>/dev/null; then
@@ -356,6 +430,14 @@ release_msp_googleadstypes() {
         if check_pod_availability "MSPGoogleAdsTypes" "$VERSION"; then
             log::info "PODS" "MSPGoogleAdsTypes $VERSION is already published to CocoaPods, skipping release"
             log::success "PODS" "MSPGoogleAdsTypes $VERSION already available"
+            # Verify shard index has propagated — MSPGoogleAdapter/MSPAmazonAdapter
+            # pod trunk push validates this dependency against the local trunk spec repo.
+            if ! wait_for_pod_in_spec_index "MSPGoogleAdsTypes" "$VERSION"; then
+                if command -v metrics::end &>/dev/null; then
+                    metrics::end "pod_MSPGoogleAdsTypes"
+                fi
+                return 1
+            fi
             if command -v metrics::end &>/dev/null; then
                 metrics::end "pod_MSPGoogleAdsTypes"
             fi
@@ -489,6 +571,12 @@ release_single_adapter() {
             fi
 
             log::success "PODS" "$adapter $version already available and verified"
+            # Verify shard index has propagated — MSPCore pod trunk push validates adapter
+            # dependencies against the local trunk spec repo.
+            if ! wait_for_pod_in_spec_index "$adapter" "$version"; then
+                echo "ERROR: $adapter $version not in local trunk spec repo after 60 min" > "$result_file"
+                return 1
+            fi
             echo "SUCCESS: $adapter already published" > "$result_file"
             return 0
         fi
@@ -982,27 +1070,24 @@ release_adapters() {
 
     log::success "PODS" "All adapter pre-flight checks passed"
 
-    # Update local specs repo before parallel adapter releases.
-    # Required: adapter pod trunk push validates dependencies (MSPSharedLibraries, MSPGoogleAdsTypes,
-    # MSPiOSCore) against the LOCAL specs repo. CDN check above confirmed those pods are available,
-    # so pod repo update should succeed here.
-    log::step "PODS" "Updating local CocoaPods specs repo (required for adapter pod trunk push lint)..."
-    local adapter_repo_update_attempts=0
-    local adapter_repo_update_max=3
-    while [[ $adapter_repo_update_attempts -lt $adapter_repo_update_max ]]; do
-        ((adapter_repo_update_attempts++)) || true
-        if update_specs_repo; then
-            log::success "PODS" "Local specs repo updated (attempt $adapter_repo_update_attempts)"
-            break
+    # Wait for upstream dependencies to appear in the local trunk spec repo before starting
+    # parallel adapter releases. Adapter pod trunk push validates MSPiOSCore, MSPSharedLibraries,
+    # and MSPGoogleAdsTypes against the local spec repo — we need all three in the shard index.
+    # Using wait_for_pod_in_spec_index (with fast-path) instead of a blind 3-retry loop:
+    # the 3×30s pattern was too short for CDN shard index propagation lag.
+    log::step "PODS" "Waiting for upstream dependencies in local trunk spec repo (required for adapter pod trunk push lint)..."
+    local upstream_deps=("MSPiOSCore" "MSPSharedLibraries" "MSPGoogleAdsTypes")
+    for upstream_dep in "${upstream_deps[@]}"; do
+        if ! echo "$PODS_MODULES" | grep -q "$upstream_dep" && [[ "$upstream_dep" != "MSPiOSCore" ]]; then
+            log::info "PODS" "$upstream_dep not in PODS_MODULES, skipping shard index wait"
+            continue
         fi
-        if [[ $adapter_repo_update_attempts -lt $adapter_repo_update_max ]]; then
-            log::warn "PODS" "Specs repo update failed (attempt $adapter_repo_update_attempts/$adapter_repo_update_max), retrying in 30s..."
-            sleep 30
-        else
-            log::error "PODS" "Specs repo update failed after $adapter_repo_update_max attempts — adapter pod trunk push will likely fail to resolve MSPSharedLibraries/MSPGoogleAdsTypes/MSPiOSCore"
+        if ! wait_for_pod_in_spec_index "$upstream_dep" "$VERSION"; then
+            log::error "PODS" "Upstream dependency $upstream_dep not in local trunk spec repo — adapter pod trunk push will fail"
             return 1
         fi
     done
+    log::success "PODS" "All upstream dependencies confirmed in local trunk spec repo"
 
     # ========================================================================
     # Step 1: Start parallel adapter releases
@@ -1197,32 +1282,15 @@ release_adapters() {
     if [[ "$DRY_RUN" != "true" ]]; then
         log_section "Step 2.5: Checking availability of dependencies for MSPCore"
 
-        # Update local specs repo before CDN availability check.
-        # Required: pod trunk push for MSPCore validates dependencies against the LOCAL specs repo
-        # (not CDN), so the local repo must contain all adapter versions before MSPCore is published.
-        # CDN check below confirms pods are on CDN, so pod repo update should succeed here.
-        log::step "PODS" "Updating local CocoaPods specs repo (required for MSPCore pod trunk push lint)..."
-        local repo_update_attempts=0
-        local repo_update_max=3
-        while [[ $repo_update_attempts -lt $repo_update_max ]]; do
-            ((repo_update_attempts++)) || true
-            if update_specs_repo; then
-                log::success "PODS" "Local specs repo updated (attempt $repo_update_attempts)"
-                break
-            fi
-            if [[ $repo_update_attempts -lt $repo_update_max ]]; then
-                log::warn "PODS" "Specs repo update failed (attempt $repo_update_attempts/$repo_update_max), retrying in 30s..."
-                sleep 30
-            else
-                log::error "PODS" "Specs repo update failed after $repo_update_max attempts — MSPCore pod trunk push will likely fail to resolve adapter dependencies"
-                return 1
-            fi
-        done
-
+        # Wait for MSPCore's required dependencies to appear in the local trunk spec repo.
+        # MSPCore pod trunk push validates these against the local spec repo — a blind 3×30s
+        # pod repo update retry is too short for CDN shard index propagation lag.
         # Define required dependencies (always check, fail-fast)
         local required_deps=("MSPSharedLibraries" "MSPPrebidAdapter" "MSPGoogleAdsTypes")
 
-        # Check required dependencies sequentially (fail-fast)
+        # Check required dependencies sequentially (fail-fast):
+        # 1. CDN availability (smart_wait_for_pod_availability via HTTP)
+        # 2. Local trunk spec repo (wait_for_pod_in_spec_index via shard index)
         for dep in "${required_deps[@]}"; do
             # Check if dependency is in PODS_MODULES
             if ! echo "$PODS_MODULES" | grep -q "$dep"; then
@@ -1230,12 +1298,18 @@ release_adapters() {
                 continue
             fi
 
-            log::info "PODS" "Checking $dep availability (required for MSPCore)..."
+            log::info "PODS" "Checking $dep CDN availability (required for MSPCore)..."
             if ! smart_wait_for_pod_availability "$dep" "$VERSION" "required by MSPCore or adapters"; then
-                log::error "PODS" "$dep not available, cannot proceed with MSPCore release"
+                log::error "PODS" "$dep not available on CDN, cannot proceed with MSPCore release"
                 return 1
             fi
-            log::success "PODS" "$dep is available"
+
+            log::info "PODS" "Waiting for $dep in local trunk spec repo (required for MSPCore pod trunk push lint)..."
+            if ! wait_for_pod_in_spec_index "$dep" "$VERSION"; then
+                log::error "PODS" "$dep not in local trunk spec repo, MSPCore pod trunk push will fail"
+                return 1
+            fi
+            log::success "PODS" "$dep is available and in local trunk spec repo"
         done
 
         log::success "PODS" "All required dependencies available for MSPCore release"
