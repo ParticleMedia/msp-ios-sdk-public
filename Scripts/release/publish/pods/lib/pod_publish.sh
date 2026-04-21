@@ -252,6 +252,10 @@ auto_fix_checksum_issue() {
 # ============================================================================
 is_permanent_trunk_error() {
     local log="$1"
+    # Network errors are transient even if they cause "did not pass validation"
+    if grep -qi -e "Recv failure" -e "Connection reset by peer" -e "curl: (56)" "$log"; then
+        return 1
+    fi
     grep -qi \
         -e "already exists" \
         -e "duplicate entry" \
