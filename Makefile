@@ -70,7 +70,7 @@ test:
 	set -o pipefail && xcodebuild test \
 		-workspace $(WORKSPACE) \
 		-scheme MSPDemoApp \
-		-destination 'platform=iOS Simulator,name=iPhone 15' \
+		-destination 'platform=iOS Simulator,name=iPhone 16e' \
 		-only-testing:MSPDemoAppTests \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
