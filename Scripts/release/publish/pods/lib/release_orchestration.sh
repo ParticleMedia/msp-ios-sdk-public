@@ -114,6 +114,7 @@ wait_for_pod_in_spec_index() {
     local spec_wait=0
     local spec_wait_max=3600
     local cdn_confirmed=false
+    local cdn_shard_content=""   # CDN response that confirmed the version (used in Phase 2)
     local cdn_failures=0
     local max_cdn_failures=5
 
@@ -134,6 +135,7 @@ wait_for_pod_in_spec_index() {
             elif _version_in_shard "$cdn_content"; then
                 log::success "PODS" "$pod_name $version found on CDN — proceeding to local sync"
                 cdn_confirmed=true
+                cdn_shard_content="$cdn_content"
                 cdn_failures=0
             else
                 cdn_failures=0
@@ -141,27 +143,34 @@ wait_for_pod_in_spec_index() {
             fi
         fi
 
-        # ── Phase 2: Sync local shard file via pod repo update ────────────────
-        # Only runs once CDN has confirmed the version is available.
-        # pod trunk push validation reads the LOCAL all_pods_versions_*.txt
-        # (without re-fetching from CDN). pod repo update forces a fresh CDN pull.
+        # ── Phase 2: Write confirmed CDN content directly to local shard file ──
+        # Only runs once Phase 1 has confirmed the version on CDN.
+        #
+        # We write the Phase 1 CDN response directly instead of relying on
+        # pod repo update. Reason: CDN propagation inconsistency means different
+        # CDN nodes can return different ETags. pod repo update may hit a node
+        # that returns 304 Not Modified (ETag unchanged), leaving the local file
+        # stale even though another node already has the new version.
+        #
+        # pod trunk push reads this LOCAL file via CDNSource with
+        # check_existing_files_for_update=false (no re-fetch), so writing it
+        # directly here is sufficient for pod trunk push validation to pass.
         if [[ "$cdn_confirmed" == "true" ]]; then
-            log::step "PODS" "Phase 2 — Syncing local CDN shard file via pod repo update..."
-            # Clear success cache so update_specs_repo runs a real pod repo update
-            rm -f /tmp/msp-cocoapods-specs-repo-last-update \
-                  /tmp/msp-cocoapods-specs-repo-last-failure 2>/dev/null || true
+            log::step "PODS" "Phase 2 — Writing confirmed CDN shard content to local file..."
+            mkdir -p "$(dirname "$local_shard")"
+            printf '%s\n' "$cdn_shard_content" > "$local_shard"
 
-            if update_specs_repo; then
-                local local_content=""
-                [[ -f "$local_shard" ]] && local_content=$(cat "$local_shard")
-                if _version_in_shard "$local_content"; then
-                    log::success "PODS" "$pod_name $version confirmed in local CDN shard file — pod trunk push validation will resolve it"
-                    return 0
-                fi
-                log::warn "PODS" "pod repo update succeeded but $version not yet in local shard (CDN ETag may not have propagated)"
-            else
-                log::warn "PODS" "pod repo update failed — will retry"
+            if _version_in_shard "$(cat "$local_shard")"; then
+                log::success "PODS" "$pod_name $version confirmed in local CDN shard file — pod trunk push validation will resolve it"
+                # Run pod repo update in the background (non-blocking) to keep
+                # the rest of the local specs repo in sync.
+                rm -f /tmp/msp-cocoapods-specs-repo-last-update \
+                      /tmp/msp-cocoapods-specs-repo-last-failure 2>/dev/null || true
+                update_specs_repo >/dev/null 2>&1 &
+                return 0
             fi
+            # Should not reach here — we just wrote content that passed Phase 1.
+            log::warn "PODS" "Local shard write succeeded but version not found — unexpected, will retry"
         fi
 
         log::info "PODS" "Retrying in 30s... (${spec_wait}s / ${spec_wait_max}s elapsed)"
