@@ -2,6 +2,47 @@ import UIKit
 
 @testable import MSPiOSCore
 
+final class MockAdListener: AdListener {
+    var onAdRewardReceivedCallCount = 0
+    var onAdImpressionCallCount = 0
+    var onAdClickCallCount = 0
+    var onAdDismissedCallCount = 0
+    var onErrorCallCount = 0
+    var lastRewardedAd: MSPAd?
+    var lastErrorMessage: String?
+    var onRewardCallback: (() -> Void)?
+    var onDismissCallback: (() -> Void)?
+
+    func onAdRewardReceived(ad: MSPAd) {
+        onAdRewardReceivedCallCount += 1
+        lastRewardedAd = ad
+        onRewardCallback?()
+    }
+
+    func onAdImpression(ad: MSPAd) { onAdImpressionCallCount += 1 }
+    func onAdClick(ad: MSPAd) { onAdClickCallCount += 1 }
+
+    func onAdDismissed(ad: MSPAd) {
+        onAdDismissedCallCount += 1
+        onDismissCallback?()
+    }
+
+    func onError(msg: String) {
+        onErrorCallCount += 1
+        lastErrorMessage = msg
+    }
+
+    func onError(msg: String, loadInfo: [String: Any]) {
+        onErrorCallCount += 1
+        lastErrorMessage = msg
+    }
+
+    func onAdLoaded(placementId: String) {}
+    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {}
+
+    func getRootViewController() -> UIViewController? { UIViewController() }
+}
+
 final class SpyAdMetricReporter: AdMetricReporter {
     var logAdImpressionCallCount = 0
     var logAdClickCallCount = 0
@@ -17,11 +58,11 @@ final class SpyAdMetricReporter: AdMetricReporter {
     func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?) {}
     func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {}
     func logAdHide(
-        ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, reason: String,
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
     func logAdReport(
-        ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, reason: String, description: String?,
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
     func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}
@@ -75,8 +116,13 @@ final class RewardedAdListenerSpy: AdListener {
 }
 
 final class RewardedAdNetworkAdapterStub: AdNetworkAdapter {
+    var adRequest: AdRequest?
+    var adMetricReporter: AdMetricReporter?
+    weak var mspAd: MSPAd?
+    weak var adListener: AdListener?
+
     @MainActor
-    override func loadAdCreative(
+    func loadAdCreative(
         bidResponse: Any,
         auctionBidListener: AuctionBidListener,
         adListener: AdListener,
@@ -88,25 +134,33 @@ final class RewardedAdNetworkAdapterStub: AdNetworkAdapter {
     ) {
     }
 
-    override func initialize(
+    func initialize(
         initParams: InitializationParameters,
         adapterInitListener: AdapterInitListener,
         context: Any?
     ) {
     }
 
-    override func destroyAd() {
+    func destroyAd() {
     }
 
     @MainActor
-    override func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
+    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
     }
 
-    override func getAdNetwork() -> AdNetwork {
+    func setAdMetricReporter(adMetricReporter: AdMetricReporter) {
+        self.adMetricReporter = adMetricReporter
+    }
+
+    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {}
+
+    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {}
+
+    func getAdNetwork() -> AdNetwork {
         .unknown
     }
 
-    override func getSDKVersion() -> String {
+    func getSDKVersion() -> String {
         ""
     }
 }

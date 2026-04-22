@@ -184,11 +184,11 @@ private final class SpyAdMetricReporter: AdMetricReporter {
     func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?) {}
     func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {}
     func logAdHide(
-        ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, reason: String,
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
     func logAdReport(
-        ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, reason: String, description: String?,
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
     func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}

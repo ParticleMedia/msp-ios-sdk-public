@@ -317,6 +317,8 @@ YAML
 YAML
     fi
 
+    TESTS_XCCONFIG_DEBUG="../../Pods/Target Support Files/Pods-MSPDemoAppTests/Pods-MSPDemoAppTests.debug.xcconfig"
+    TESTS_XCCONFIG_RELEASE="../../Pods/Target Support Files/Pods-MSPDemoAppTests/Pods-MSPDemoAppTests.release.xcconfig"
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
   MSPDemoAppTests:
     type: bundle.unit-test
@@ -328,7 +330,8 @@ YAML
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
 YAML
-    emit_demoapp_pods_config_files "$MODE_TARGETS_FILE" "$PROJECT_DIR" "$XCCONFIG_DEBUG" "$XCCONFIG_RELEASE" "    "
+    # Use Pods-MSPDemoAppTests xcconfig so Quick/Nimble pod deps are linked for the test target
+    emit_demoapp_pods_config_files "$MODE_TARGETS_FILE" "$PROJECT_DIR" "$TESTS_XCCONFIG_DEBUG" "$TESTS_XCCONFIG_RELEASE" "    "
     cat <<'YAML' >> "$MODE_TARGETS_FILE"
     dependencies:
       - target: MSPDemoApp

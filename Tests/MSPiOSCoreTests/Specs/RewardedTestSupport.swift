@@ -3,8 +3,13 @@ import UIKit
 @testable import MSPiOSCore
 
 final class RewardedDummyAdNetworkAdapter: AdNetworkAdapter {
+    var adRequest: AdRequest?
+    var adMetricReporter: AdMetricReporter?
+    weak var mspAd: MSPAd?
+    weak var adListener: AdListener?
+
     @MainActor
-    override func loadAdCreative(
+    func loadAdCreative(
         bidResponse: Any,
         auctionBidListener: AuctionBidListener,
         adListener: AdListener,
@@ -16,25 +21,33 @@ final class RewardedDummyAdNetworkAdapter: AdNetworkAdapter {
     ) {
     }
 
-    override func initialize(
+    func initialize(
         initParams: InitializationParameters,
         adapterInitListener: AdapterInitListener,
         context: Any?
     ) {
     }
 
-    override func destroyAd() {
+    func destroyAd() {
     }
 
     @MainActor
-    override func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
+    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
     }
 
-    override func getAdNetwork() -> AdNetwork {
+    func setAdMetricReporter(adMetricReporter: AdMetricReporter) {
+        self.adMetricReporter = adMetricReporter
+    }
+
+    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {}
+
+    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {}
+
+    func getAdNetwork() -> AdNetwork {
         .unknown
     }
 
-    override func getSDKVersion() -> String {
+    func getSDKVersion() -> String {
         ""
     }
 }
