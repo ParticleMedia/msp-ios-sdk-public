@@ -134,11 +134,14 @@ target 'MSPDemoApp' do
   # - Third-party SDKs (FBAudienceNetwork, InMobiSDK, etc.) are provided by their own CocoaPods
   # - PrebidMobile.xcframework is already included in MSPSharedLibraries.podspec (in all modes)
   # - CocoaPods automatically embeds these frameworks when :integrate_targets => true (pods-dev mode)
+
+  # MSPDemoApp unit tests — hosted inside MSPDemoApp.app, inherits host search paths
+  target 'MSPDemoAppTests' do
+    inherit! :search_paths
+    testing_pods
+  end
 end
 
-# ============================================================================
-# Test Targets
-# ============================================================================
 # MSPCore module tests
 target 'MSPCoreTests' do
   project 'Examples/MSPDemoApp/MSPDemoApp'

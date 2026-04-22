@@ -10,3 +10,4 @@ prefixes:
   NMS: NovaMraidSupporting
   SKO: NovaSKOverlayController
   TPB: TwoPartPlayableBanner
+  WDB: WebDebugViewModel

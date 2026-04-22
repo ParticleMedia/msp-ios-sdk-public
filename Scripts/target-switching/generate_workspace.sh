@@ -475,8 +475,8 @@ if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
       config: Debug
       gatherCoverageData: false
       targets:
-        - target: MSPDemoAppTests
-        - target: MSPDemoAppUITests
+        - MSPDemoAppTests
+        - MSPDemoAppUITests
     run:
       config: Debug
     profile:

@@ -1,0 +1,175 @@
+module: WebDebugViewModel
+prefix: WDB
+description: Test cases for WebDebugViewModel — history management, URL validation, clipboard detection
+bundle: MSPDemoAppTests
+created: "2026-04-22"
+updated: "2026-04-22"
+
+cases:
+  - id: WDB001
+    type: behavior
+    description: New URL is inserted at the front of history
+    priority: high
+    tags: [behavior, history]
+    given: ViewModel with empty history
+    when: openURL with "http://localhost:3000"
+    then: recentURLs has 1 entry equal to "http://localhost:3000"
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB002
+    type: behavior
+    description: Duplicate URL is moved to the front without being added again
+    priority: high
+    tags: [behavior, history, dedup]
+    given: "ViewModel with history [http://a.com, http://b.com]"
+    when: "openURL(http://b.com) is called again"
+    then: "recentURLs equals [http://b.com, http://a.com] with count 2"
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB003
+    type: behavior
+    description: History is capped at maxHistoryCount (15), oldest entry trimmed
+    priority: high
+    tags: [behavior, history, cap]
+    given: ViewModel with 15 URLs already in history
+    when: openURL with a new 16th URL
+    then: recentURLs.count equals 15 and the oldest URL is absent
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB004
+    type: behavior
+    description: deleteURL removes the entry at the given index
+    priority: high
+    tags: [behavior, history, delete]
+    given: "ViewModel with history [http://c.com, http://b.com, http://a.com]"
+    when: "deleteURL(at: 1) is called"
+    then: "recentURLs equals [http://c.com, http://a.com]"
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB005
+    type: behavior
+    description: openURL returns a valid URL for an http address
+    priority: high
+    tags: [behavior, validation]
+    given: ViewModel with empty history
+    when: "openURL(http://localhost:8080/path)"
+    then: returned URL is non-nil and matches the input string
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB006
+    type: behavior
+    description: openURL returns a valid URL for an https address
+    priority: high
+    tags: [behavior, validation]
+    given: ViewModel with empty history
+    when: "openURL(https://192.168.1.1:3000)"
+    then: returned URL is non-nil
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB007
+    type: behavior
+    description: openURL returns nil for a URL without http/https scheme
+    priority: high
+    tags: [behavior, validation, edge-case]
+    given: ViewModel with empty history
+    when: "openURL(ftp://example.com)"
+    then: return value is nil and recentURLs remains empty
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB008
+    type: behavior
+    description: openURL returns nil for an empty string
+    priority: high
+    tags: [behavior, validation, edge-case]
+    given: ViewModel with empty history
+    when: openURL with empty string
+    then: return value is nil and recentURLs remains empty
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB009
+    type: behavior
+    description: refreshClipboard sets clipboardURL when clipboard contains an http URL
+    priority: high
+    tags: [behavior, clipboard]
+    given: "Clipboard contains http://localhost:3000"
+    when: refreshClipboard is called
+    then: "clipboardURL equals http://localhost:3000"
+    doubles:
+      clipboard:
+        type: stub
+        class: StubClipboard
+        reason: Avoid real UIPasteboard access in tests
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB010
+    type: behavior
+    description: refreshClipboard sets clipboardURL to nil when clipboard contains plain text
+    priority: medium
+    tags: [behavior, clipboard, edge-case]
+    given: Clipboard contains plain text "hello world"
+    when: refreshClipboard is called
+    then: clipboardURL is nil
+    doubles:
+      clipboard:
+        type: stub
+        class: StubClipboard
+        reason: Avoid real UIPasteboard access in tests
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB011
+    type: behavior
+    description: refreshClipboard sets clipboardURL to nil for non-http/https schemes
+    priority: medium
+    tags: [behavior, clipboard, edge-case]
+    given: "Clipboard contains ftp://example.com"
+    when: refreshClipboard is called
+    then: clipboardURL is nil
+    doubles:
+      clipboard:
+        type: stub
+        class: StubClipboard
+        reason: Avoid real UIPasteboard access in tests
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB012
+    type: behavior
+    description: History survives ViewModel re-initialization via UserDefaults persistence
+    priority: high
+    tags: [behavior, persistence]
+    given: "ViewModel has opened http://localhost:3000"
+    when: a new ViewModel instance is created with the same UserDefaults suite
+    then: "the new instance's recentURLs contains http://localhost:3000"
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift
+
+  - id: WDB013
+    type: behavior
+    description: onUpdate callback is invoked when openURL succeeds
+    priority: medium
+    tags: [behavior, callback]
+    given: ViewModel with onUpdate assigned to a counter closure
+    when: openURL with a valid https URL
+    then: the counter closure was called exactly once
+    doubles: {}
+    status: implemented
+    file: Examples/MSPDemoApp/MSPDemoAppTests/WebDebugViewModelSpec.swift

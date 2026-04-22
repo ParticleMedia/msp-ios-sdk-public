@@ -35,7 +35,7 @@ properties:
   bundle:
     type: string
     description: "Xcode test target that runs these tests"
-    enum: ["MSPCoreTests", "NovaCoreTests", "MSPiOSCoreTests", "AdapterTests"]
+    enum: ["MSPCoreTests", "NovaCoreTests", "MSPiOSCoreTests", "AdapterTests", "MSPDemoAppTests"]
 
   description:
     type: string
@@ -99,7 +99,7 @@ $defs:
       file:
         type: string
         description: "Path to the Swift spec file implementing this test case"
-        pattern: "^Tests/.+\\.swift$"
+        pattern: "^(Tests|Examples)/.+\\.swift$"
 
       status:
         type: string

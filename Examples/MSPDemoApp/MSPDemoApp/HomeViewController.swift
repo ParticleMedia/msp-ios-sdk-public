@@ -12,6 +12,7 @@ final class HomeViewController: UIViewController {
         case rewarded = "Rewarded"
         case debugAdLoader = "Debug Ad Loader"
         case legacyTest = "Legacy Test"
+        case webDebugger = "Web Debugger"
     }
 
     private weak var tableView: UITableView?
@@ -149,6 +150,8 @@ extension HomeViewController: UITableViewDelegate {
             MSP.shared.showMediationDebugger()
         case .legacyTest:
             navigationController?.pushViewController(LegacyTestViewController(), animated: true)
+        case .webDebugger:
+            navigationController?.pushViewController(WebDebugViewController(), animated: true)
         }
     }
 }
