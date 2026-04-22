@@ -202,6 +202,14 @@ create_release_branch() {
         if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
             log::info "BRANCH" "Release branch '$RELEASE_BRANCH' already exists (resume mode: checking out)"
             git checkout "$RELEASE_BRANCH"
+            # Sync with remote in case hotfixes were pushed to the release branch
+            # between runs (e.g. script fixes pushed while a RESUME is triggered).
+            if git fetch origin "$RELEASE_BRANCH" 2>/dev/null && \
+               git merge --ff-only "origin/$RELEASE_BRANCH" 2>/dev/null; then
+                log::info "BRANCH" "Synced local release branch with remote (fast-forward)"
+            else
+                log::info "BRANCH" "Local release branch is up-to-date with remote (or fetch skipped)"
+            fi
             log::success "BRANCH" "Checked out existing release branch: $RELEASE_BRANCH"
             return 0
         fi
