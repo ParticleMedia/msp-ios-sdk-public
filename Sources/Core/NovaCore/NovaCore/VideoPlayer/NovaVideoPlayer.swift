@@ -337,7 +337,9 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
             self.setProgress(0)
             break
 
-        case .failed: break
+        case .failed:
+            isPlaying = false
+            videoPlayingTimer?.invalidate()
 
         }
 
@@ -414,5 +416,14 @@ extension NovaVideoPlayer: NovaPlayerPlaybackDelegate {
     
     func playerDidPlayToEndTime(_ player: NovaPlayer) {
         self.delegate?.playerDidPlayToEndTime(player)
+    }
+}
+
+extension NovaVideoPlayer {
+    // Forces re-creation of the AVPlayerItem by re-assigning the URL.
+    // Used to recover from a failed player item after a long background session.
+    func resetForReload() {
+        guard let url = url else { return }
+        player.url = url
     }
 }

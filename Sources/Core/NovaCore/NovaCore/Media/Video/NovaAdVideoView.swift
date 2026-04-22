@@ -736,6 +736,13 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                         videoLength: videoPlayer.maximumTimeDuration()
                     )
             }
+        case .failed:
+            // resetForReload() triggers setup(url:) synchronously, which fires .stopped →
+            // .endPlaying through the delegate chain. We then override to .loading so the
+            // detection timer's next tick calls startPlaying() with the fresh AVPlayerItem.
+            videoPlayer.resetForReload()
+            mediaModel?.videoInfo.state?.transition(to: .loading)
+            notifyStateDidChange()
         default:
             break
         }
