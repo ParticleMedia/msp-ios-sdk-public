@@ -272,7 +272,13 @@ cat >> "$PROJECT_SPEC" <<'YAML'
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
 YAML
-emit_demoapp_pods_config_files "$PROJECT_SPEC" "$DEMOAPP_DIR" "$DEMOAPP_PODS_XCCONFIG_DEBUG_REL" "$DEMOAPP_PODS_XCCONFIG_RELEASE_REL" "    "
+# Use Pods-MSPDemoAppTests xcconfig so Quick/Nimble pod deps are visible during archive.
+# update.sh runs after pod install (refresh_demoapp_workspace_after_pods); if we use
+# the MSPDemoApp xcconfig here, Xcode 26+ compiles MSPDemoAppTests during archive and
+# fails with "Unable to find module dependency: 'Quick'/'Nimble'".
+TESTS_XCCONFIG_DEBUG="${DEMOAPP_PODS_XCCONFIG_DEBUG_REL//Pods-MSPDemoApp/Pods-MSPDemoAppTests}"
+TESTS_XCCONFIG_RELEASE="${DEMOAPP_PODS_XCCONFIG_RELEASE_REL//Pods-MSPDemoApp/Pods-MSPDemoAppTests}"
+emit_demoapp_pods_config_files "$PROJECT_SPEC" "$DEMOAPP_DIR" "$TESTS_XCCONFIG_DEBUG" "$TESTS_XCCONFIG_RELEASE" "    "
 cat >> "$PROJECT_SPEC" <<'YAML'
     dependencies:
       - target: MSPDemoApp
