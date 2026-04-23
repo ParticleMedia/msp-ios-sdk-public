@@ -69,9 +69,8 @@ open:
 test:
 	set -o pipefail && xcodebuild test \
 		-workspace $(WORKSPACE) \
-		-scheme MSPDemoApp \
+		-scheme MSPDemoAppTests \
 		-destination 'platform=iOS Simulator,name=iPhone 16e' \
-		-only-testing:MSPDemoAppTests \
 		CODE_SIGN_IDENTITY="" \
 		CODE_SIGNING_REQUIRED=NO \
 		| xcpretty || true

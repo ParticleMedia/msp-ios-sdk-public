@@ -354,14 +354,28 @@ schemes:
     build:
       targets:
         MSPDemoApp: all
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets: []
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  MSPDemoAppTests:
+    build:
+      targets:
+        MSPDemoApp: all
         MSPDemoAppTests: test
-        MSPDemoAppUITests: test
     test:
       config: Debug
       gatherCoverageData: false
       targets:
         - target: MSPDemoAppTests
-        - target: MSPDemoAppUITests
     run:
       config: Debug
     profile:
