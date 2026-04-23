@@ -31,71 +31,86 @@ struct Com_Newsbreak_Mes_Events_AdResponse: @unchecked Sendable {
   // methods supported on all messages.
 
   var clientTsMs: UInt64 {
-    get {return _storage._clientTsMs}
+    get {_storage._clientTsMs}
     set {_uniqueStorage()._clientTsMs = newValue}
   }
 
   var serverTsMs: UInt64 {
-    get {return _storage._serverTsMs}
+    get {_storage._serverTsMs}
     set {_uniqueStorage()._serverTsMs = newValue}
   }
 
   var requestContext: Com_Newsbreak_Monetization_Common_RequestContext {
-    get {return _storage._requestContext ?? Com_Newsbreak_Monetization_Common_RequestContext()}
+    get {_storage._requestContext ?? Com_Newsbreak_Monetization_Common_RequestContext()}
     set {_uniqueStorage()._requestContext = newValue}
   }
   /// Returns true if `requestContext` has been explicitly set.
-  var hasRequestContext: Bool {return _storage._requestContext != nil}
+  var hasRequestContext: Bool {_storage._requestContext != nil}
   /// Clears the value of `requestContext`. Subsequent reads from it will return its default value.
   mutating func clearRequestContext() {_uniqueStorage()._requestContext = nil}
 
   var os: Com_Newsbreak_Monetization_Common_OsType {
-    get {return _storage._os}
+    get {_storage._os}
     set {_uniqueStorage()._os = newValue}
   }
 
   var ad: Com_Newsbreak_Monetization_Common_Ad {
-    get {return _storage._ad ?? Com_Newsbreak_Monetization_Common_Ad()}
+    get {_storage._ad ?? Com_Newsbreak_Monetization_Common_Ad()}
     set {_uniqueStorage()._ad = newValue}
   }
   /// Returns true if `ad` has been explicitly set.
-  var hasAd: Bool {return _storage._ad != nil}
+  var hasAd: Bool {_storage._ad != nil}
   /// Clears the value of `ad`. Subsequent reads from it will return its default value.
   mutating func clearAd() {_uniqueStorage()._ad = nil}
 
   var org: String {
-    get {return _storage._org}
+    get {_storage._org}
     set {_uniqueStorage()._org = newValue}
   }
 
   var app: String {
-    get {return _storage._app}
+    get {_storage._app}
     set {_uniqueStorage()._app = newValue}
   }
 
   var mspSdkVersion: String {
-    get {return _storage._mspSdkVersion}
+    get {_storage._mspSdkVersion}
     set {_uniqueStorage()._mspSdkVersion = newValue}
   }
 
   var latency: Int32 {
-    get {return _storage._latency}
+    get {_storage._latency}
     set {_uniqueStorage()._latency = newValue}
   }
 
   var errorCode: Com_Newsbreak_Monetization_Common_ErrorCode {
-    get {return _storage._errorCode}
+    get {_storage._errorCode}
     set {_uniqueStorage()._errorCode = newValue}
   }
 
   var errorMessage: String {
-    get {return _storage._errorMessage ?? String()}
+    get {_storage._errorMessage ?? String()}
     set {_uniqueStorage()._errorMessage = newValue}
   }
   /// Returns true if `errorMessage` has been explicitly set.
-  var hasErrorMessage: Bool {return _storage._errorMessage != nil}
+  var hasErrorMessage: Bool {_storage._errorMessage != nil}
   /// Clears the value of `errorMessage`. Subsequent reads from it will return its default value.
   mutating func clearErrorMessage() {_uniqueStorage()._errorMessage = nil}
+
+  var s2SBidTokenLatency: Dictionary<String,Int32> {
+    get {_storage._s2SBidTokenLatency}
+    set {_uniqueStorage()._s2SBidTokenLatency = newValue}
+  }
+
+  var s2SBidRequestLatency: Int32 {
+    get {_storage._s2SBidRequestLatency}
+    set {_uniqueStorage()._s2SBidRequestLatency = newValue}
+  }
+
+  var s2SAdLoadLatency: Int32 {
+    get {_storage._s2SAdLoadLatency}
+    set {_uniqueStorage()._s2SAdLoadLatency = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -122,6 +137,9 @@ extension Com_Newsbreak_Mes_Events_AdResponse: SwiftProtobuf.Message, SwiftProto
     9: .same(proto: "latency"),
     10: .standard(proto: "error_code"),
     11: .standard(proto: "error_message"),
+    12: .standard(proto: "s2s_bid_token_latency"),
+    13: .standard(proto: "s2s_bid_request_latency"),
+    14: .standard(proto: "s2s_ad_load_latency"),
   ]
 
   fileprivate class _StorageClass {
@@ -136,16 +154,15 @@ extension Com_Newsbreak_Mes_Events_AdResponse: SwiftProtobuf.Message, SwiftProto
     var _latency: Int32 = 0
     var _errorCode: Com_Newsbreak_Monetization_Common_ErrorCode = .unspecified
     var _errorMessage: String? = nil
+    var _s2SBidTokenLatency: Dictionary<String,Int32> = [:]
+    var _s2SBidRequestLatency: Int32 = 0
+    var _s2SAdLoadLatency: Int32 = 0
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -161,6 +178,9 @@ extension Com_Newsbreak_Mes_Events_AdResponse: SwiftProtobuf.Message, SwiftProto
       _latency = source._latency
       _errorCode = source._errorCode
       _errorMessage = source._errorMessage
+      _s2SBidTokenLatency = source._s2SBidTokenLatency
+      _s2SBidRequestLatency = source._s2SBidRequestLatency
+      _s2SAdLoadLatency = source._s2SAdLoadLatency
     }
   }
 
@@ -198,6 +218,9 @@ extension Com_Newsbreak_Mes_Events_AdResponse: SwiftProtobuf.Message, SwiftProto
         case 9: try { try decoder.decodeSingularInt32Field(value: &_storage._latency) }()
         case 10: try { try decoder.decodeSingularEnumField(value: &_storage._errorCode) }()
         case 11: try { try decoder.decodeSingularStringField(value: &_storage._errorMessage) }()
+        case 12: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: &_storage._s2SBidTokenLatency) }()
+        case 13: try { try decoder.decodeSingularInt32Field(value: &_storage._s2SBidRequestLatency) }()
+        case 14: try { try decoder.decodeSingularInt32Field(value: &_storage._s2SAdLoadLatency) }()
         default: break
         }
       }
@@ -243,6 +266,15 @@ extension Com_Newsbreak_Mes_Events_AdResponse: SwiftProtobuf.Message, SwiftProto
       try { if let v = _storage._errorMessage {
         try visitor.visitSingularStringField(value: v, fieldNumber: 11)
       } }()
+      if !_storage._s2SBidTokenLatency.isEmpty {
+        try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: _storage._s2SBidTokenLatency, fieldNumber: 12)
+      }
+      if _storage._s2SBidRequestLatency != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._s2SBidRequestLatency, fieldNumber: 13)
+      }
+      if _storage._s2SAdLoadLatency != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._s2SAdLoadLatency, fieldNumber: 14)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -263,6 +295,9 @@ extension Com_Newsbreak_Mes_Events_AdResponse: SwiftProtobuf.Message, SwiftProto
         if _storage._latency != rhs_storage._latency {return false}
         if _storage._errorCode != rhs_storage._errorCode {return false}
         if _storage._errorMessage != rhs_storage._errorMessage {return false}
+        if _storage._s2SBidTokenLatency != rhs_storage._s2SBidTokenLatency {return false}
+        if _storage._s2SBidRequestLatency != rhs_storage._s2SBidRequestLatency {return false}
+        if _storage._s2SAdLoadLatency != rhs_storage._s2SAdLoadLatency {return false}
         return true
       }
       if !storagesAreEqual {return false}

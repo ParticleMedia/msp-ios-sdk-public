@@ -84,11 +84,13 @@ import UIKit
     public var interstitialRenderingAdUnit: InterstitialRenderingAdUnit?
 
     private var adMetricReporter: AdMetricReporter?
+    private var adLoadStartTime: TimeInterval = 0
 
     public func loadAdCreative(
         bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any,
         adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String: String]?
     ) {
+        adLoadStartTime = Date().timeIntervalSince1970
         guard bidResponse is BidResponse,
             let mBidResponse = bidResponse as? BidResponse
         else {
@@ -226,6 +228,7 @@ extension PrebidAdapter: BannerViewDelegate {
     }
 
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        adRequest?.s2sLatencyInfo.adLoadLatencyMs = Int32((Date().timeIntervalSince1970 - adLoadStartTime) * 1000)
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(

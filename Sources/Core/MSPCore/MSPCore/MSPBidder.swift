@@ -85,6 +85,8 @@ extension MSPBidder: BidListener {
     }
 
     public func onError(msg: String, loadInfo: [String: Any]) {
-        auctionBidListener?.onError(error: msg, loadInfo: loadInfo)
+        var enrichedLoadInfo = loadInfo
+        enrichedLoadInfo["bidder_name"] = name
+        auctionBidListener?.onError(error: msg, loadInfo: enrichedLoadInfo)
     }
 }

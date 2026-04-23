@@ -17,6 +17,12 @@ public class PrebidBidLoader: BidLoader {
     private let dispatchGroup = DispatchGroup()
     public var adMetricReporter: AdMetricReporter?
 
+    private var fetchTokensStartTime: TimeInterval = 0
+    private var googleTokenCompletionTime: TimeInterval = 0
+    private var facebookTokenCompletionTime: TimeInterval = 0
+    private var molocoTokenCompletionTime: TimeInterval = 0
+    private var liftoffTokenCompletionTime: TimeInterval = 0
+
     public override init(tokenProviders: BidTokenProviders) {
         super.init(tokenProviders: tokenProviders)
     }
@@ -37,6 +43,8 @@ public class PrebidBidLoader: BidLoader {
     }
 
     func fetchTokens(adRequest: AdRequest, completion: @escaping (BidTokens) -> Void) {
+        fetchTokensStartTime = Date().timeIntervalSince1970
+
         self.dispatchGroup.enter()
         self.googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
 
@@ -55,6 +63,13 @@ public class PrebidBidLoader: BidLoader {
                 .with(facebookBidToken: self.facebookBidToken)
                 .with(molocoBidToken: self.molocoBidToken)
                 .with(liftoffBidToken: self.liftoffBidToken)
+            let start = self.fetchTokensStartTime
+            adRequest.s2sLatencyInfo.bidTokenLatency = [
+                "google": Int32((self.googleTokenCompletionTime - start) * 1000),
+                "facebook": Int32((self.facebookTokenCompletionTime - start) * 1000),
+                "moloco": Int32((self.molocoTokenCompletionTime - start) * 1000),
+                "liftoff": Int32((self.liftoffTokenCompletionTime - start) * 1000),
+            ]
             completion(bidTokens)
         }
     }
@@ -77,8 +92,11 @@ public class PrebidBidLoader: BidLoader {
             adUnitConfiguration: adUnitConfig)
         self.bidRequester = bidRequester
 
+        let bidRequestStartTime = Date().timeIntervalSince1970
         bidRequester.requestBids { [weak self] bidResponse, error in
             guard let self = self else { return }
+            adRequest.s2sLatencyInfo.bidRequestLatencyMs = Int32(
+                (Date().timeIntervalSince1970 - bidRequestStartTime) * 1000)
 
             if let error = error {
                 MSPLogger.shared.error(
@@ -276,8 +294,8 @@ public class PrebidBidLoader: BidLoader {
 
 extension PrebidBidLoader: GoogleQueryInfoListener {
     public func onComplete(queryInfo: String) {
-        //loadBidWithQueryInfo(queryInfo: queryInfo)
         self.googleQueryInfo = queryInfo
+        googleTokenCompletionTime = Date().timeIntervalSince1970
         dispatchGroup.leave()
     }
 }
@@ -285,6 +303,7 @@ extension PrebidBidLoader: GoogleQueryInfoListener {
 extension PrebidBidLoader: FacebookBidTokenListener {
     public func onComplete(bidToken: String) {
         self.facebookBidToken = bidToken
+        facebookTokenCompletionTime = Date().timeIntervalSince1970
         dispatchGroup.leave()
     }
 }
@@ -292,6 +311,7 @@ extension PrebidBidLoader: FacebookBidTokenListener {
 extension PrebidBidLoader: MolocoBidTokenListener {
     public func onComplete(molocoBidToken: String) {
         self.molocoBidToken = molocoBidToken
+        molocoTokenCompletionTime = Date().timeIntervalSince1970
         dispatchGroup.leave()
     }
 }
@@ -299,6 +319,7 @@ extension PrebidBidLoader: MolocoBidTokenListener {
 extension PrebidBidLoader: LiftoffBidTokenListener {
     public func onComplete(liftoffBidToken: String) {
         self.liftoffBidToken = liftoffBidToken
+        liftoffTokenCompletionTime = Date().timeIntervalSince1970
         dispatchGroup.leave()
     }
 }

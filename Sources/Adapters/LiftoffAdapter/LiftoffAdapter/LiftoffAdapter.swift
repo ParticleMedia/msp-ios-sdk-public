@@ -29,6 +29,7 @@ import VungleAdsSDK
     public var nativeAdView: NativeAdView?
 
     private var adMetricReporter: AdMetricReporter?
+    private var adLoadStartTime: TimeInterval = 0
 
     private var priceInDollar: Double?
 
@@ -63,6 +64,7 @@ import VungleAdsSDK
         context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?,
         params: [String: String]?
     ) {
+        adLoadStartTime = Date().timeIntervalSince1970
         DispatchQueue.main.async {
             guard bidResponse is BidResponse,
                 let mBidResponse = bidResponse as? BidResponse
@@ -386,6 +388,7 @@ import VungleAdsSDK
     }
 
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        adRequest?.s2sLatencyInfo.adLoadLatencyMs = Int32((Date().timeIntervalSince1970 - adLoadStartTime) * 1000)
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
             bidderName: "liftoff",

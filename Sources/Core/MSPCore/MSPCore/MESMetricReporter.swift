@@ -336,6 +336,10 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
             eventModel.latency = Int32((Date().timeIntervalSince1970 - requestStartTime) * 1000)
         }
 
+        eventModel.s2SBidTokenLatency = adRequest.s2sLatencyInfo.bidTokenLatency
+        eventModel.s2SBidRequestLatency = adRequest.s2sLatencyInfo.bidRequestLatencyMs
+        eventModel.s2SAdLoadLatency = adRequest.s2sLatencyInfo.adLoadLatencyMs
+
         eventModel.mspSdkVersion = MSP.shared.version
 
         reportData(event: .adResponse, with: eventModel)
@@ -367,6 +371,11 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         if latency.isFinite, !latency.isNaN {
             eventModel.latency = Int32(latency)
         }
+
+        eventModel.auctionBidderLatency = adRequest.s2sLatencyInfo.auctionBidderLatency
+        eventModel.s2SBidTokenLatency = adRequest.s2sLatencyInfo.bidTokenLatency
+        eventModel.s2SBidRequestLatency = adRequest.s2sLatencyInfo.bidRequestLatencyMs
+        eventModel.s2SAdLoadLatency = adRequest.s2sLatencyInfo.adLoadLatencyMs
 
         reportData(event: .loadAd, with: eventModel)
     }

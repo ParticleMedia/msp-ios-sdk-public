@@ -20,6 +20,8 @@ public class MSPAuction: Auction {
     private var completionCalled = false
     private var loadInfo: [String: Any] = [:]
 
+    private var bidderStartTimes: [String: TimeInterval] = [:]
+
 
     public override func startAuction(auctionListener: any AuctionListener, adListener: (any AdListener)?) {
         MSPLogger.shared.info(message: "[Auction: Load Ad] started")
@@ -92,6 +94,7 @@ public class MSPAuction: Auction {
     private func fetchBid(
         bidder: Bidder, cacheOnly: Bool, auctionBidListener: AuctionBidListener, adListener: AdListener?
     ) {
+        bidderStartTimes[bidder.name] = Date().timeIntervalSince1970
         MSPLogger.shared.info(
             message:
                 "[Auction: Load Ad] Fetching bid from bidder: \(bidder.name). bidderPlacementId: \(bidder.bidderPlacementId)"
@@ -146,6 +149,10 @@ extension MSPAuction: AuctionBidListener {
     public func onSuccess(bid: MSPiOSCore.AuctionBid, loadInfo: [String: Any]) {
         MSPLogger.shared.info(
             message: "[Auction] Ads filled from bidder: \(bid.bidderName). bidderPlacementId: \(bid.bidderPlacementId)")
+        if let start = bidderStartTimes[bid.bidderName] {
+            let latency = Int32((Date().timeIntervalSince1970 - start) * 1000)
+            adRequest?.s2sLatencyInfo.auctionBidderLatency[bid.bidderName] = latency
+        }
         self.biddingDispatchQueue.async {
             self.taskLock.lock()
             if self.remainingTaskCnt > 0 {
@@ -160,6 +167,12 @@ extension MSPAuction: AuctionBidListener {
 
     public func onError(error: String, loadInfo: [String: Any]) {
         MSPLogger.shared.info(message: "[Auction] Ads no filled. Reason: \(error)")
+        if let bidderName = loadInfo["bidder_name"] as? String,
+            let start = bidderStartTimes[bidderName]
+        {
+            let latency = Int32((Date().timeIntervalSince1970 - start) * 1000)
+            adRequest?.s2sLatencyInfo.auctionBidderLatency[bidderName] = latency
+        }
         self.biddingDispatchQueue.async {
             self.taskLock.lock()
             self.loadInfo = loadInfo
