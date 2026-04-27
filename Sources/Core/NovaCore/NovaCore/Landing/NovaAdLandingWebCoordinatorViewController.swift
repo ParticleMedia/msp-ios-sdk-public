@@ -42,6 +42,9 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
     private var videoViewWidthConstraint: MSPSnapKit.Constraint?
     private var videoViewHeightConstraint: MSPSnapKit.Constraint?
 
+    // status bar inset bootstrap flag: set once statusBarHeight is first observed as > 0
+    private var statusBarInsetBootstrapped = false
+
     // container vc animation
     private var containerVCHeight: MSPSnapKit.Constraint?
     private var containerVCBottom: MSPSnapKit.Constraint?
@@ -193,6 +196,12 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
             // Pin to safe area so height matches real status bar (novaSafeAreaInsets can be 0 on iPad at setup).
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
+        // Pre-apply status bar compensation before first layout.  On iPadOS 26, safeAreaInsets.top
+        // is 0 for fullscreen-presented VCs even when the status bar overlays content.
+        // UIApplication.shared.connectedScenes is used because view.window is still nil in viewDidLoad.
+        // viewSafeAreaInsetsDidChange will self-correct this to 0 on older OS where the system
+        // already provides the correct safeAreaInsets.top.
+        adjustAdditionalSafeAreaInsetsForStatusBarIfNeeded()
         switch detentStyle {
         case .fullscreen:
             containerViewController.view.snp.makeConstraints { make in
@@ -265,6 +274,25 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
         }
     }
 
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        adjustAdditionalSafeAreaInsetsForStatusBarIfNeeded()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Bootstrap only: on iPadOS 26, safeAreaInsets.top stays 0 so viewSafeAreaInsetsDidChange
+        // never fires again after the initial 0-value call.  Retry here until statusBarHeight > 0,
+        // then mark as bootstrapped so this becomes a no-op for all subsequent layout passes.
+        guard !statusBarInsetBootstrapped else { return }
+        let scene = view.window?.windowScene
+            ?? UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+        guard (scene?.statusBarManager?.statusBarFrame.height ?? 0) > 0 else { return }
+        statusBarInsetBootstrapped = true
+        adjustAdditionalSafeAreaInsetsForStatusBarIfNeeded()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -290,6 +318,28 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
 }
 
 private extension NovaAdLandingWebCoordinatorViewController {
+    // MARK: - Status bar safe area fix
+
+    /// On iPadOS 26+, `safeAreaInsets.top` can be 0 for a fullscreen-presented VC even though the
+    /// system status bar overlays the content as a separate system window.  We compensate by adding
+    /// `additionalSafeAreaInsets.top` equal to the missing height so that both `statusBarView` and
+    /// the child VC's `naviView` are correctly sized and pushed below the status bar.
+    func adjustAdditionalSafeAreaInsetsForStatusBarIfNeeded() {
+        let windowScene = view.window?.windowScene
+            ?? UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+        guard let windowScene else { return }
+        let statusBarHeight = windowScene.statusBarManager?.statusBarFrame.height ?? 0
+        // Subtract our own additionalSafeAreaInsets.top to recover the system-provided value,
+        // preventing an infinite feedback loop when the callback re-fires after we set the inset.
+        let naturalTop = view.safeAreaInsets.top - additionalSafeAreaInsets.top
+        let needed = max(0, statusBarHeight - naturalTop)
+        guard additionalSafeAreaInsets.top != needed else { return }
+        additionalSafeAreaInsets.top = needed
+    }
+
+    // MARK: - Pan gesture
+
     @objc func handlePanAction(gesture: UIPanGestureRecognizer) {
         guard case let .partOfScreen(height: height, landingVideoContext: _) = detentStyle else {
             return
