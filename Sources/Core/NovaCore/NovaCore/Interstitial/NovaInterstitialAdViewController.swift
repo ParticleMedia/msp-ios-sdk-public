@@ -131,6 +131,11 @@ class NovaInterstitialAdViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = NovaColorPalettes.buttonText
         setupSubviews()
+        setupNotificationObservers()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -147,6 +152,7 @@ class NovaInterstitialAdViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        isVisible = true
         adView?.didAppear()
 
         if !didAppear {
@@ -169,29 +175,12 @@ class NovaInterstitialAdViewController: UIViewController {
             interstitialAd.delegate?.interstitialAdDidDisplay(interstitialAd)
         }
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleApplicationWillEnterForeground(_:)),
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleApplicationWillResignActive(_:)),
-            name: UIApplication.willResignActiveNotification,
-            object: nil)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleApplicationDidBecomeActive(_:)),
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil)
-        
         activateOrientationLock()
-        
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        isVisible = false
         deactivateOrientationLock()
 
         adView?.willDisappear()
@@ -203,18 +192,6 @@ class NovaInterstitialAdViewController: UIViewController {
         // End playing - protocol method handles the specifics
         adView?.didDisappear()
 
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil)
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.willResignActiveNotification,
-            object: nil)
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -289,21 +266,26 @@ class NovaInterstitialAdViewController: UIViewController {
 
     private static var didWarnFullScreen = false
 
-    @objc func handleApplicationWillEnterForeground(_ aNoticiation: Notification) {
-        if (interstitialAd.shouldAutoDismiss) {
+    @objc private func handleApplicationWillEnterForeground(_ notification: Notification) {
+        if interstitialAd.shouldAutoDismiss {
+            let ad = interstitialAd
             dismiss(animated: false) {
-                self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
+                ad.delegate?.interstitialAdDidDismiss(ad)
             }
         }
     }
-    
-    @objc func handleApplicationWillResignActive(_ aNoticiation: Notification) {
-        self.adView?.didDisappear()
+
+    @objc private func handleApplicationWillResignActive(_ notification: Notification) {
+        guard isVisible else { return }
+        adView?.didDisappear()
     }
-     
-    @objc func handleApplicationDidBecomeActive(_ aNoticiation: Notification) {
-        self.adView?.willAppear()
+
+    @objc private func handleApplicationDidBecomeActive(_ notification: Notification) {
+        guard isVisible else { return }
+        adView?.willAppear()
     }
+
+    private var isVisible = false
 
     // MARK: Private
 
@@ -317,6 +299,24 @@ class NovaInterstitialAdViewController: UIViewController {
     private var isOrientationLockActive: Bool = false
 
     private var adView: NovaInterstitialAdViewProtocol?
+
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationWillEnterForeground(_:)),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationWillResignActive(_:)),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+    }
 
     override var prefersStatusBarHidden: Bool {
         if case .html = self.interstitialAd.creativeType {
