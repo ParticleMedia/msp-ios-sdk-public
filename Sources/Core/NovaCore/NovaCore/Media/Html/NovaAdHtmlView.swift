@@ -75,6 +75,10 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         passThroughView.snp.makeConstraints { make in
             make.directionalEdges.equalToSuperview()
         }
+        
+        if #available(iOS 16.4, *) {
+            self.isInspectable = true
+        }
     }
 
     @available(*, unavailable)

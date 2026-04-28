@@ -148,6 +148,9 @@ class NovaAdPlayableView: UIView {
 
         webView.uiDelegate = self
         webView.navigationDelegate = self
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
         return webView
     }()
 
