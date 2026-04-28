@@ -319,11 +319,12 @@ extension AdTestViewController: InterstitialAdReportHandling {
         for ad: InterstitialAd,
         metadata: [String: Any]?
     ) {
-        print("[AdTest] Ad report flow started")
-        showToast("Ad report clicked, ad will be dismissed", from: self)
+        let presenter = presentingVC ?? self
+        AdReportFlow.present(from: presenter) { reason in
+            ad.sendReportAdEvent(reason: reason, description: nil)
+        }
     }
 
-    // MARK: Optional Methods
     func canShowReportButton(for ad: InterstitialAd) -> Bool {
         return true
     }
