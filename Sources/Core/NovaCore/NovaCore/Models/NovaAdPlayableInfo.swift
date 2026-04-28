@@ -28,7 +28,6 @@ class NovaAdPlayableInfo: Codable {
     enum TapToTryFormat: String, Codable {
         case `default`
         case gamepadWithText = "GAMEPAD_WITH_TEXT"
-        case pill = "GAMEPAD_PILL_VIEW"
         case circle = "GAMEPAD_DARK_CIRCLE"
     }
 

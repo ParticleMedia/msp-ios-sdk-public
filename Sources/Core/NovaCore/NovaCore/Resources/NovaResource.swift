@@ -14,6 +14,10 @@ class NovaResource {
         getResourceURL(name, withExtension: "js", subdirectory: "Scripts")
     }
 
+    static func getGIFResourceURL(_ name: String) -> URL? {
+        getResourceURL(name, withExtension: "gif", subdirectory: "GIF")
+    }
+
     // MARK: Private
 
     static var resourceBundle: Bundle? {

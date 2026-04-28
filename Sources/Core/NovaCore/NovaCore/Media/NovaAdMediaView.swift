@@ -247,21 +247,13 @@ extension NovaAdMediaView {
             }
             tapToTryAnimationView.play()
         case .gamepadWithText:
-            addSubview(tapToTryStaticView)
-            tapToTryStaticView.snp.remakeConstraints { make in
-                make.center.equalToSuperview()
-                make.size.equalTo(64.0)
-            }
-            tapToTryStaticView.layer.cornerRadius = 32.0
-            tapToTryStaticView.layer.masksToBounds = true
-        case .pill:
             let view = NovaAdTapToTryPillAnimationView()
             view.isUserInteractionEnabled = false
             customCTAView = view
             nativeAdContainer?.tapToTryViewCreated(view)
             view.startAnimating()
         case .circle:
-            let view = NovaAdTapToTryCircleAnimationView()
+            let view = NovaAdTapToTryFingerAnimationView()
             view.isUserInteractionEnabled = false
             customCTAView = view
             nativeAdContainer?.tapToTryViewCreated(view)

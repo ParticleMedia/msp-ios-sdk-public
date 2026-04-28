@@ -425,7 +425,6 @@ private extension NovaAdBuilder {
             }
             switch serverFormat {
             case .default: return .circle
-            case .gamepadWithText: return .pill
             default: return serverFormat
             }
         }()
