@@ -400,7 +400,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         if preloadState == .pending {
             handlePreloadCompletion(false)
         } else {
-            htmlActionDelegate?.didFailToLoadPage(errorMessage: error.formattedMessage)
+            htmlActionDelegate?.didFailToLoadPage(errorType: error.errorType, errorDetail: error.errorDetail)
         }
     }
 
@@ -408,7 +408,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         if preloadState == .pending {
             handlePreloadCompletion(false)
         } else {
-            htmlActionDelegate?.didFailToLoadPage(errorMessage: error.formattedMessage)
+            htmlActionDelegate?.didFailToLoadPage(errorType: error.errorType, errorDetail: error.errorDetail)
         }
     }
 
@@ -416,7 +416,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         if preloadState == .pending {
             handlePreloadCompletion(false)
         } else {
-            htmlActionDelegate?.didFailToLoadPage(errorMessage: "Web Content Process Did Terminate")
+            htmlActionDelegate?.didFailToLoadPage(errorType: "Web Content Process Did Terminate", errorDetail:"")
         }
     }
     
