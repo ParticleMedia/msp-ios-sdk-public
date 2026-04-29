@@ -129,12 +129,14 @@ class NovaInterstitialAdViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        DebugLogger.ui.info("[Interstitial] viewDidLoad — registering observers")
         view.backgroundColor = NovaColorPalettes.buttonText
         setupSubviews()
         setupNotificationObservers()
     }
 
     deinit {
+        DebugLogger.ui.info("[Interstitial] deinit — removing observers")
         NotificationCenter.default.removeObserver(self)
     }
 
@@ -153,6 +155,7 @@ class NovaInterstitialAdViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isVisible = true
+        DebugLogger.ui.info("[Interstitial] viewDidAppear — isVisible=true")
         adView?.didAppear()
 
         if !didAppear {
@@ -181,6 +184,7 @@ class NovaInterstitialAdViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         isVisible = false
+        DebugLogger.ui.info("[Interstitial] viewWillDisappear — isVisible=false")
         deactivateOrientationLock()
 
         adView?.willDisappear()
@@ -267,25 +271,48 @@ class NovaInterstitialAdViewController: UIViewController {
     private static var didWarnFullScreen = false
 
     @objc private func handleApplicationWillEnterForeground(_ notification: Notification) {
-        if interstitialAd.shouldAutoDismiss {
-            let ad = interstitialAd
-            dismiss(animated: false) {
-                ad.delegate?.interstitialAdDidDismiss(ad)
-            }
+        guard interstitialAd.shouldAutoDismiss else {
+            DebugLogger.ui.info("[Interstitial] willEnterForeground — shouldAutoDismiss=false, skip")
+            return
         }
+        // willEnterForeground fires before UIKit is fully active — defer dismiss to didBecomeActive.
+        let _didAppear = didAppear
+        let _isBeingDismissed = isBeingDismissed
+        let _isAutoDismissing = isAutoDismissing
+        let _inStack = presentingViewController != nil
+        guard _didAppear, !_isBeingDismissed, !_isAutoDismissing, _inStack else {
+            DebugLogger.ui.info("[Interstitial] willEnterForeground ignored — not eligible (didAppear=\(_didAppear), isBeingDismissed=\(_isBeingDismissed), isAutoDismissing=\(_isAutoDismissing), inStack=\(_inStack))")
+            return
+        }
+        DebugLogger.ui.info("[Interstitial] willEnterForeground — marking pendingAutoDismiss")
+        pendingAutoDismiss = true
     }
 
     @objc private func handleApplicationWillResignActive(_ notification: Notification) {
-        guard isVisible else { return }
+        guard isVisible else {
+            DebugLogger.ui.info("[Interstitial] willResignActive ignored — isVisible=false")
+            return
+        }
+        DebugLogger.ui.info("[Interstitial] willResignActive — pausing ad")
         adView?.didDisappear()
     }
 
     @objc private func handleApplicationDidBecomeActive(_ notification: Notification) {
-        guard isVisible else { return }
+        if pendingAutoDismiss {
+            performAutoDismissIfNeeded()
+            return
+        }
+        guard isVisible else {
+            DebugLogger.ui.info("[Interstitial] didBecomeActive ignored — isVisible=false, no pending dismiss")
+            return
+        }
+        DebugLogger.ui.info("[Interstitial] didBecomeActive — resuming ad")
         adView?.willAppear()
     }
 
     private var isVisible = false
+    private var pendingAutoDismiss = false
+    private var isAutoDismissing = false // one-way latch: never reset, VC is dismissed and deallocated after this
 
     // MARK: Private
 
@@ -299,6 +326,26 @@ class NovaInterstitialAdViewController: UIViewController {
     private var isOrientationLockActive: Bool = false
 
     private var adView: NovaInterstitialAdViewProtocol?
+
+    private func performAutoDismissIfNeeded() {
+        guard !isAutoDismissing else {
+            DebugLogger.ui.info("[Interstitial] pendingAutoDismiss ignored — auto-dismiss already in progress")
+            return
+        }
+        guard let presenter = presentingViewController else {
+            DebugLogger.ui.info("[Interstitial] pendingAutoDismiss cancelled — VC no longer in stack")
+            return
+        }
+
+        DebugLogger.ui.info("[Interstitial] executing pending auto-dismiss")
+        pendingAutoDismiss = false
+        isAutoDismissing = true
+        let ad = interstitialAd
+        presenter.dismiss(animated: false) {
+            DebugLogger.ui.info("[Interstitial] auto-dismiss completed, notifying delegate")
+            ad.delegate?.interstitialAdDidDismiss(ad)
+        }
+    }
 
     private func setupNotificationObservers() {
         NotificationCenter.default.addObserver(
