@@ -197,7 +197,7 @@ public class MSPAdLoader: NSObject {
                 let bidderPlacementId = bidderInfo.bidderPlacementId
                 if let ad = AdCache.shared.peakAd(placementId: bidderPlacementId),
                     let price = ad.adInfo["price"] as? Double,
-                    price > winnerPrice
+                    price >= winnerPrice
                 {
                     winnerPrice = price
                     winnerPlacementId = bidderPlacementId
