@@ -190,8 +190,8 @@ extension NovaInterstitialAdPageSubviewHandler: NovaAdHtmlActionDelegate {
         showNextPageIfNeededOrClose()
     }
 
-    func didFailToLoadPage(errorMessage: String?) {
-        delegate?.didFailToLoad(errorMessage: errorMessage)
+    func didFailToLoadPage(errorType: String, errorDetail: String) {
+        delegate?.didFailToLoad(errorType: errorType, errorDetail: errorDetail)
     }
 
     func showSKOverlay(appStoreId: Int?) {

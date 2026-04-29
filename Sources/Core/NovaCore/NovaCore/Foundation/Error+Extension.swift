@@ -6,4 +6,14 @@ extension Error {
         let nsError = self as NSError
         return "\(nsError.domain):\(nsError.code)"
     }
+    
+    var errorType: String {
+        let nsError = self as NSError
+        return nsError.domain
+    }
+    
+    var errorDetail: String {
+        let nsError = self as NSError
+        return "\(nsError.code)"
+    }
 }

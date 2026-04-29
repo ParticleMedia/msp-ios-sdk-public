@@ -1,7 +1,7 @@
 enum NovaAdEvent: String {
     case impression = "AD_EVENT_IMPRESSION"
     case click = "AD_EVENT_CLICK"
-    case skipAd = "AD_EVENT_SKIP_AD"
+    case closeAd = "AD_EVENT_CLOSE"
     case hideAd = "hide_ad"
     case unhideAd = "unhide_ad"
 

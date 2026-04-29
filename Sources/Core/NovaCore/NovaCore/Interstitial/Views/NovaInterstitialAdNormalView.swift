@@ -125,12 +125,13 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
 
     // MARK: - NovaInterstitialAdSubviewBehaviorDelegate
 
-    func didFailToLoad(errorMessage: String?) {
+    func didFailToLoad(errorType: String, errorDetail: String) {
         
         let isActive = (UIApplication.shared.applicationState == .active && self.onTop && self.novaIsPartiallyVisibleOnScreen) ? 1 : 0
-        let concatErrorMessage = "error:\(isActive):\(errorMessage ?? "")"
+        let concatErrorMessage = "error:\(isActive):\(errorType):\(errorDetail)"
+        let closeErrorReason = NovaAdLoadError(isActive: isActive, errorType: errorType, errorDetail: errorDetail)
         self.actionHelper = self.actionHelper
-            .logNovaSkipEvent(with: .error(concatErrorMessage), duration: CACurrentMediaTime() - self.startTime)
+            .logNovaCloseEvent(with: .error(concatErrorMessage), duration: CACurrentMediaTime() - self.startTime, error: closeErrorReason)
             .handleCloseTap()
         context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
     }
@@ -150,7 +151,7 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
     func didTapCloseButton() {
         actionHelper =
             actionHelper
-            .logNovaSkipEvent(with: .skipButton, duration: CACurrentMediaTime() - startTime)
+            .logNovaCloseEvent(with: .skipButton, duration: CACurrentMediaTime() - startTime)
             .handleCloseTap()
         context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
     }

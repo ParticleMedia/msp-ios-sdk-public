@@ -109,14 +109,15 @@ extension NovaActionHelper where T == NovaActionState.Init {
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
 
-    func logNovaSkipEvent(with reason: NovaAdSkipReason, duration: CFTimeInterval) -> NovaActionHelper<
+    func logNovaCloseEvent(with reason: NovaAdSkipReason, duration: CFTimeInterval,  error: NovaAdLoadError? = nil) -> NovaActionHelper<
         NovaActionState.NovaEventSent
     > {
         NovaAdMetricReporter
-            .logAdSkip(
+            .logAdClose(
                 reason: reason,
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
-                durationInMs: (duration * 1000).safeToInt()
+                durationInMs: (duration * 1000).safeToInt(),
+                error: error
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }

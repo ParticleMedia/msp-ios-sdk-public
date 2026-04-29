@@ -16,5 +16,5 @@ protocol NovaInterstitialAdSubviewBehaviorDelegate: AnyObject {
 
     func didTapCustomAdView(customUrl: URL?, clickArea: ClickableAdArea)
 
-    func didFailToLoad(errorMessage: String?)
+    func didFailToLoad(errorType: String, errorDetail: String)
 }

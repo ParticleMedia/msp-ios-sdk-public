@@ -63,15 +63,21 @@ class NovaAdMetricReporter: NSObject {
     }
 
 
-    static func logAdSkip(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?) {
+    static func logAdClose(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?, error: NovaAdLoadError?) {
         var params: [String: String] = [
-            NovaAdMetricKeys.ACTION: reason.stringValue
+            NovaAdMetricKeys.ACTION: reason.stringValue,
+            NovaAdMetricKeys.REASON: reason.reasonStringValue
         ]
+        if let error = error {
+            params[NovaAdMetricKeys.IS_FOREGROUND] = error.isActive == 1 ? "true" : "false"
+            params[NovaAdMetricKeys.ERROR_TYPE] = error.errorType
+            params[NovaAdMetricKeys.ERROR_DETAIL] = error.errorDetail
+        }
         if let durationInMs {
             params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
         }
 
-        logNovaAdEvent(.skipAd, encryptedAdToken: encryptedAdToken, params: params)
+        logNovaAdEvent(.closeAd, encryptedAdToken: encryptedAdToken, params: params)
     }
 
     static func logAdHide(reason: String, encryptedAdToken: String) {
@@ -251,4 +257,8 @@ struct NovaAdMetricKeys {
     static let MODEL = "model"
     static let MAKE = "make"
     static let SDKV = "sdkv"
+    
+    static let IS_FOREGROUND = "is_foreground"
+    static let ERROR_TYPE = "error_type"
+    static let ERROR_DETAIL = "error_detail"
 }
