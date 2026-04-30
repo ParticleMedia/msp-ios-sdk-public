@@ -34,12 +34,13 @@ final class WebBrowserViewController: UIViewController {
 
     // MARK: - Lifecycle
 
+    override var prefersStatusBarHidden: Bool { true }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
         setupWebView()
         setupProgressBar()
-        setupOverlayButtons()
         webView.load(URLRequest(url: initialURL))
     }
 
@@ -80,6 +81,7 @@ final class WebBrowserViewController: UIViewController {
 
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
         view.addSubview(webView)
         webView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
