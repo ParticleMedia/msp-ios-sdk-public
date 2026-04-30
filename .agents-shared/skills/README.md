@@ -57,7 +57,7 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 | context-init | `context-init.skill.md` | Initialize context system by extracting experience from git commit history |
 | context-list | `context-list.skill.md` | List, search, and manage context entries in the knowledge base |
 
-**Total: 14 skills**
+**Total: 15 skills**
 
 <!-- END:GENERATED:SKILLS_LIST -->
 

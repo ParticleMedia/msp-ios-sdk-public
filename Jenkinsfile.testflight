@@ -21,10 +21,10 @@ pipeline {
             name: 'BRANCH',
             type: 'PT_BRANCH',
             defaultValue: 'develop',
-            branchFilter: 'origin/(develop|feature/.*|release/.*|hotfix/.*)',
+            branchFilter: 'origin/(freeze/.*|develop|feature/.*|hotfix/.*)',
             selectedValue: 'DEFAULT',
             sortMode: 'DESCENDING_SMART',
-            description: 'Branch to build from.'
+            description: 'Branch to build from. Use freeze/nb-* during freeze period.'
         )
         choice(
             name: 'RELEASER_EMAIL',

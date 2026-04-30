@@ -57,7 +57,7 @@ Skills are documented procedures for completing specific types of tasks. They li
 | context-init | `context-init.skill.md` | Initialize context system by extracting experience from git commit history |
 | context-list | `context-list.skill.md` | List, search, and manage context entries in the knowledge base |
 
-**Total: 14 skills**
+**Total: 15 skills**
 
 <!-- END:GENERATED:SKILLS_LIST -->
 
@@ -113,6 +113,12 @@ When: Complex PRs, pre-release audit. Steps: Constitutional audit → Architectu
 When: Architecture docs, ADRs, technical guides. Steps: Deep analysis of code/context → Synthesize findings → Structure with clear sections → Include diagrams/tables where helpful.
 
 **Full Skill**: `.agents-shared/skills/document-writer.skill.md`
+
+### Freeze Cycle
+
+When: Thursday PM (freeze) or Tuesday post-release (unfreeze). Run: make freeze NB_VERSION=xx.xx / make unfreeze NB_VERSION=xx.xx
+
+**Full Skill**: `.agents-shared/skills/freeze-cycle.skill.md`
 
 ### Planner
 

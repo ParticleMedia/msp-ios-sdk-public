@@ -293,6 +293,10 @@ release:
 
 branch_policy:
   rules:
+    "freeze/.*":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
     "release/.*":
       allow_real_publish: true
       allow_test_publish: true

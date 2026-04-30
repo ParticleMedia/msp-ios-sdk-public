@@ -12,11 +12,13 @@
 #   make beta           Upload DemoApp to TestFlight
 #   make release        Production CocoaPods release
 #   make resume         Resume a failed release
+#   make freeze         Weekly code freeze (NB_VERSION= required)
+#   make unfreeze       Post-release cleanup (NB_VERSION= required)
 #   make sync           Sync agent rules across Claude/Cursor/Codex/Gemini
 #   make clean          Clean DerivedData and Pods
 # ============================================================================
 
-.PHONY: setup open test validate rtt ci fetch-credentials beta beta-dry release release-prerelease resume clean sync validate-sync help
+.PHONY: setup open test validate rtt ci fetch-credentials beta beta-dry release release-prerelease resume freeze unfreeze clean sync validate-sync help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -36,6 +38,8 @@ help:
 	@echo "  make fetch-credentials  Fetch ASC keys from private credentials repo"
 	@echo "  make beta               Upload DemoApp to TestFlight (requires ASC credentials)"
 	@echo "  make beta-dry           Archive + export only, no upload"
+	@echo "  make freeze             Weekly code freeze (NB_VERSION= required)"
+	@echo "  make unfreeze           Post-release cleanup (NB_VERSION= required)"
 	@echo "  make release            Production release (VERSION= NOTES= required)"
 	@echo "  make release-prerelease Prerelease publication (VERSION=X.Y.Z-suffix required)"
 	@echo "  make resume             Resume failed release (VERSION= required)"
@@ -152,6 +156,29 @@ ifndef VERSION
 endif
 	$(SCRIPTS)/msp-release.sh resume $(VERSION) \
 		$(EXTRA_FLAGS)
+
+# --------------------------------------------------------------------------
+# freeze — Weekly code freeze
+# --------------------------------------------------------------------------
+# Usage: make freeze NB_VERSION=26.18.0
+NB_VERSION ?=
+KEEP_BRANCH ?=
+
+freeze:
+ifndef NB_VERSION
+	$(error NB_VERSION is required. Usage: make freeze NB_VERSION=26.18.0)
+endif
+	$(SCRIPTS)/freeze.sh NB_VERSION=$(NB_VERSION)
+
+# --------------------------------------------------------------------------
+# unfreeze — Post-release cleanup
+# --------------------------------------------------------------------------
+# Usage: make unfreeze NB_VERSION=26.18.0 [KEEP_BRANCH=1]
+unfreeze:
+ifndef NB_VERSION
+	$(error NB_VERSION is required. Usage: make unfreeze NB_VERSION=26.18.0)
+endif
+	$(SCRIPTS)/unfreeze.sh NB_VERSION=$(NB_VERSION) $(if $(filter 1,$(KEEP_BRANCH)),KEEP_BRANCH=1)
 
 # --------------------------------------------------------------------------
 # sync — Sync agent rules across Claude/Cursor/Codex/Gemini

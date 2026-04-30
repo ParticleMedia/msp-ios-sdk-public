@@ -2,7 +2,7 @@
   "version": "2.0",
   "generated_at": "2026-04-14T07:41:00Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 28,
+  "entry_count": 29,
   "domains": {
     "compatibility": {
       "count": 0,
@@ -15,7 +15,7 @@
       ]
     },
     "release": {
-      "count": 5,
+      "count": 6,
       "layers": [
         "experience",
         "tech"
@@ -322,6 +322,39 @@
       "summary": "Defines sdk_version.conf as SSOT and the commit/build order for release and TestFlight version propagation.",
       "status": "active",
       "updated": "2026-02-28"
+    },
+    {
+      "id": "ctx-release-007",
+      "path": ".context/release/tech/ctx-release-007-freeze-cycle.md",
+      "title": "MSP SDK Release Cycle — Code Freeze 流程",
+      "domain": "release",
+      "layer": "tech",
+      "tags": [
+        "freeze",
+        "unfreeze",
+        "release-cycle",
+        "branch-model",
+        "cherry-pick",
+        "code-freeze",
+        "nb-version",
+        "weekly-release"
+      ],
+      "triggers": [
+        "make freeze",
+        "make unfreeze",
+        "freeze/nb-",
+        "code freeze",
+        "release cycle",
+        "weekly release",
+        "NB version branch",
+        "cherry-pick to develop",
+        "freeze 流程",
+        "发版流程",
+        "分支模型"
+      ],
+      "summary": "MSP SDK 每周发版流程：周四 freeze → QA → 周二 Jenkins 发版 → unfreeze。分支命名 freeze/nb-{NB版本}，bugfix 必须 cherry-pick 回 develop。",
+      "status": "active",
+      "updated": "2026-04-30"
     },
     {
       "id": "ctx-sources-006",

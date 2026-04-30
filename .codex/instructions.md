@@ -149,13 +149,13 @@ When user questions match keywords in the entries below, READ the matching file.
 | ctx-release-002 | Pod trunk push 失败但脚本显示成功 - 退出码捕获错误 | `.context/release/experience/ctx-release-002.md` | pod trunk push succeeds but version not published, shell pipeline exit code incorrect, PIPESTATUS tee exit code, CI shows success but pod not released |
 | ctx-release-003 | Pod 发布后使用方 crash - Kingfisher 静态链接重复 | `.context/release/experience/ctx-release-003.md` | Kingfisher objc_retain crash after pod release, NovaCore duplicate Kingfisher symbols, static linked third-party library crash in xcframework, wrapper API to avoid duplicate symbol |
 | ctx-release-004 | XCFramework 二进制中版本号未更新 — 构建时序问题 | `.context/release/experience/ctx-release-004-xcframework-version-stale.md` | XCFramework version stale after release, Config.plist SDKVersion wrong in binary, NovaConstants.version 0.0.0, getSDKVersion returns old version, version not updated in xcframework binary, build order version mismatch |
-| ctx-release-006 | pod repo update + pod search 不稳定导致发布验证误报 | `.context/release/experience/ctx-release-006-pod-repo-update-flakiness.md` | pod repo update flakiness in CI, pod search returns not found after trunk push, availability check false negative, CDN direct check replaces pod repo update, cocoapods cdn url check |
 
 ### Release / Tech Layer
 
 | ID | Title | File | Key Triggers |
 |----|-------|------|-------------|
 | ctx-release-005 | SDK 版本 SSOT 及更新流程 | `.context/release/tech/ctx-release-005-version-ssot-flow.md` | SDK version SSOT flow, sdk_version.conf update process, MARKETING_VERSION source, version commit order, Config.plist version update flow, TestFlight SDK version, ... |
+| ctx-release-007 | MSP SDK Release Cycle — Code Freeze 流程 | `.context/release/tech/ctx-release-007-freeze-cycle.md` | make freeze, make unfreeze, freeze/nb-, code freeze, release cycle, weekly release, ... |
 
 ### Sources / Experience Layer
 
@@ -253,7 +253,7 @@ When user questions match keywords in the entries below, READ the matching file.
 | context-init | `context-init.skill.md` | Initialize context system by extracting experience from git commit history |
 | context-list | `context-list.skill.md` | List, search, and manage context entries in the knowledge base |
 
-**Total: 14 skills**
+**Total: 15 skills**
 
 <!-- END:GENERATED:SKILLS_LIST -->
 
@@ -313,6 +313,12 @@ When: Complex PRs, pre-release audit. Steps: Constitutional audit → Architectu
 When: Architecture docs, ADRs, technical guides. Steps: Deep analysis of code/context → Synthesize findings → Structure with clear sections → Include diagrams/tables where helpful.
 
 **Full Skill**: `.agents-shared/skills/document-writer.skill.md`
+
+### Freeze Cycle
+
+When: Thursday PM (freeze) or Tuesday post-release (unfreeze). Run: make freeze NB_VERSION=xx.xx / make unfreeze NB_VERSION=xx.xx
+
+**Full Skill**: `.agents-shared/skills/freeze-cycle.skill.md`
 
 ### Planner
 

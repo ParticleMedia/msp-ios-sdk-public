@@ -25,11 +25,11 @@ pipeline {
         gitParameter(
             name: 'BRANCH',
             type: 'PT_BRANCH',
-            defaultValue: 'develop',
-            branchFilter: 'origin/(develop|feature/.*|release/.*|hotfix/.*)',
-            selectedValue: 'DEFAULT',
+            defaultValue: '',
+            branchFilter: 'origin/(freeze/.*|develop|feature/.*|hotfix/.*)',
+            selectedValue: 'NONE',
             sortMode: 'DESCENDING_SMART',
-            description: 'Branch to release from. Supported: develop, feature/*, release/*, hotfix/*.'
+            description: 'Branch to release from. Use freeze/nb-* for standard releases. develop/feature/hotfix for emergency use.'
         )
         string(
             name: 'VERSION',
