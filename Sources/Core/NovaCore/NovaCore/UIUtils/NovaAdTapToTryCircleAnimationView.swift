@@ -20,7 +20,7 @@ public class NovaAdTapToTryCircleAnimationView: NovaCustomCTAAnimationView {
         backgroundColor = UIColor.black.withAlphaComponent(0.5)
 
         iconView.image = UIImage.Nova.gameFilled?.withRenderingMode(.alwaysTemplate)
-        iconView.tintColor = .white
+        iconView.tintColor = .systemRed
         iconView.contentMode = .scaleAspectFit
         addSubview(iconView)
 

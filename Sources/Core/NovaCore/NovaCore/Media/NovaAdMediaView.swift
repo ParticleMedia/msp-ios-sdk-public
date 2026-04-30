@@ -252,8 +252,14 @@ extension NovaAdMediaView {
             customCTAView = view
             nativeAdContainer?.tapToTryViewCreated(view)
             view.startAnimating()
-        case .circle:
+        case .finger:
             let view = NovaAdTapToTryFingerAnimationView()
+            view.isUserInteractionEnabled = false
+            customCTAView = view
+            nativeAdContainer?.tapToTryViewCreated(view)
+            view.startAnimating()
+        case .gamepad:
+            let view = NovaAdTapToTryCircleAnimationView()
             view.isUserInteractionEnabled = false
             customCTAView = view
             nativeAdContainer?.tapToTryViewCreated(view)

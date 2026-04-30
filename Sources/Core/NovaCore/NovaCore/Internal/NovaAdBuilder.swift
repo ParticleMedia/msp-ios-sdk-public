@@ -424,7 +424,7 @@ private extension NovaAdBuilder {
                 return serverFormat
             }
             switch serverFormat {
-            case .default: return .circle
+            case .default: return .finger
             default: return serverFormat
             }
         }()
