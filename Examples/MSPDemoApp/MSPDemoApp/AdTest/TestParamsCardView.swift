@@ -14,6 +14,7 @@ final class TestParamsCardView: UIView {
     private(set) var enableH5Format = true
     private(set) var h5TemplateGroup = TestParams.h5TemplateGroupsImageVideo[2]
     private(set) var preload = true
+    private(set) var useHtmlTestAdString = false
 
     // MARK: - Private UI refs
 
@@ -24,6 +25,7 @@ final class TestParamsCardView: UIView {
     private weak var h5TemplateChips: ChipFlowView?
     private weak var preloadElements: UIStackView?
     private weak var h5TemplateSection: UIStackView?
+    private weak var htmlTestSection: UIStackView?
 
     private let format: AdFormat
 
@@ -125,9 +127,30 @@ final class TestParamsCardView: UIView {
             ChipFlowView(options: TestParams.adNetworks, selected: nil) { [weak self] selected in
                 guard let self else { return }
                 self.adNetwork = selected
-                self.novaSection?.isHidden = (selected != "msp_nova")
+                self.updateNovaSectionVisibility()
             }
         )
+
+        // Use Html Test Ad String (interstitial only)
+        if format == .interstitial {
+            let htmlCheckRow = UIStackView()
+            htmlCheckRow.axis = .horizontal
+            htmlCheckRow.alignment = .center
+            htmlCheckRow.spacing = 8
+            htmlCheckRow.addArrangedSubview(fieldLabel("Use Html Test Ad String"))
+            htmlCheckRow.addArrangedSubview(buildCheckbox { [weak self] checked in
+                guard let self else { return }
+                self.useHtmlTestAdString = checked
+                self.updateNovaSectionVisibility()
+                self.htmlTestSection?.isHidden = !checked
+            })
+            inner.addArrangedSubview(htmlCheckRow)
+
+            let htmlSection = buildHtmlTestSection()
+            htmlSection.isHidden = true
+            htmlTestSection = htmlSection
+            inner.addArrangedSubview(htmlSection)
+        }
 
         // Nova section
         let nova = buildNovaSection()
@@ -229,6 +252,41 @@ final class TestParamsCardView: UIView {
         templateSection.addArrangedSubview(chips)
         stack.addArrangedSubview(templateSection)
         return stack
+    }
+
+    private func updateNovaSectionVisibility() {
+        novaSection?.isHidden = (adNetwork != "msp_nova") || useHtmlTestAdString
+    }
+
+    private func buildHtmlTestSection() -> UIStackView {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+
+        stack.addArrangedSubview(fieldLabel("Test URL"))
+        stack.addArrangedSubview(buildTextField(placeholder: "https://...") { text in
+            testHtmlUrl = text
+        })
+
+        stack.addArrangedSubview(fieldLabel("Test HTML"))
+        stack.addArrangedSubview(buildTextField(placeholder: "<html>...") { text in
+            testHtmlString = text
+        })
+
+        return stack
+    }
+
+    private func buildTextField(placeholder: String, onChange: @escaping (String) -> Void) -> UITextField {
+        let field = UITextField()
+        field.placeholder = placeholder
+        field.borderStyle = .roundedRect
+        field.font = .systemFont(ofSize: 13)
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
+        field.returnKeyType = .done
+        field.addAction(UIAction { [weak field] _ in onChange(field?.text ?? "") }, for: .editingChanged)
+        field.addAction(UIAction { [weak field] _ in field?.resignFirstResponder() }, for: .editingDidEndOnExit)
+        return field
     }
 
     private func updateH5TemplateOptions() {

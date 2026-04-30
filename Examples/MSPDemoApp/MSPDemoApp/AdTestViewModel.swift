@@ -78,7 +78,7 @@ final class AdTestViewModel {
         onStateChange?(state)  // refresh button enable state
     }
 
-    func loadAd(bannerSize: CGSize, novaSandbox: Bool, params: TestParams, adListener: AdListener) {
+    func loadAd(bannerSize: CGSize, novaSandbox: Bool, params: TestParams, htmlTestAdString: String? = nil, adListener: AdListener) {
         state = .loading
         loadedBannerSize = bannerSize
 
@@ -95,6 +95,10 @@ final class AdTestViewModel {
             MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS: ["https://www.google.com", "https://newsbreak.com"],
             MSPConstants.USE_NOVA_SANDBOX: novaSandbox ? "true" : "false",
         ]
+
+        if let htmlTestAdString, !htmlTestAdString.isEmpty {
+            customParams["nova_test_ad_string"] = htmlTestAdString
+        }
         if let adConfig = applovinAdConfig(for: selectedPlacement) {
             customParams["msp_ad_config"] = adConfig
         }

@@ -88,8 +88,15 @@ public class NovaAdapter: AdNetworkAdapter {
             } else {
                 novaAdType = "native"
             }
+            
+            var resolvedAdString = adString
+            if let testAdString = adRequest.customParams["nova_test_ad_string"] as? String,
+               !testAdString.isEmpty {
+                resolvedAdString = testAdString
+            }
+
             self.parseNovaAdString(
-                adString: adString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
+                adString: resolvedAdString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
         }
     }
 

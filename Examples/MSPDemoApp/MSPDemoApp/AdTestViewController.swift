@@ -218,10 +218,12 @@ final class AdTestViewController: UIViewController {
             h5TemplateGroup: card.h5TemplateGroup,
             preload: card.preload
         )
+        let htmlTestAdString = card.useHtmlTestAdString ? testHtmlAdString : nil
         viewModel.loadAd(
             bannerSize: card.bannerSize,
             novaSandbox: card.novaSandbox,
             params: params,
+            htmlTestAdString: htmlTestAdString,
             adListener: self
         )
     }

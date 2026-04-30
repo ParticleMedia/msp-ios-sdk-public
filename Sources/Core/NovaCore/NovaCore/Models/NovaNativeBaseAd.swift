@@ -419,7 +419,7 @@ extension NovaNativeBaseAd {
                             nil
                         }
 
-                    if let html = pageItem.html {
+                    if let html = pageItem.html, !html.isEmpty {
                         return .html(html, baseUrl: url)
                     } else if let url {
                         return .url(url)
