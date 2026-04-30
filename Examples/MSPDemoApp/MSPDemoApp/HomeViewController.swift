@@ -1,16 +1,17 @@
+import AppLovinSDK
 import MSPCore
 import MSPSnapKit
 import MSPiOSCore
 import UIKit
 
 final class HomeViewController: UIViewController {
-
     private enum MenuItem: String, CaseIterable {
         case banner = "Banner"
         case native = "Native"
         case interstitial = "Interstitial"
         case rewarded = "Rewarded"
         case debugAdLoader = "Debug Ad Loader"
+        case applovinDebugger = "AppLovin Debugger"
         case legacyTest = "Legacy Test"
         case webDebugger = "Web Debugger"
     }
@@ -64,8 +65,9 @@ final class HomeViewController: UIViewController {
 
         var config = UIButton.Configuration.plain()
         config.title = AppProfile.current.appName
-        config.image = UIImage(systemName: "arrowtriangle.down.fill",
-                               withConfiguration: UIImage.SymbolConfiguration(pointSize: 9))
+        config.image = UIImage(
+            systemName: "arrowtriangle.down.fill",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 9))
         config.imagePlacement = .trailing
         config.imagePadding = 4
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attrs in
@@ -89,10 +91,11 @@ final class HomeViewController: UIViewController {
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Switch & Close", style: .destructive) { _ in
-            AppProfile.selectedIndex = index
-            exit(0)
-        })
+        alert.addAction(
+            UIAlertAction(title: "Switch & Close", style: .destructive) { _ in
+                AppProfile.selectedIndex = index
+                exit(0)
+            })
         present(alert, animated: true)
     }
 
@@ -139,15 +142,23 @@ extension HomeViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         switch MenuItem.allCases[indexPath.row] {
         case .banner:
-            navigationController?.pushViewController(AdTestViewController(format: .banner, placements: AppProfile.current.bannerPlacements), animated: true)
+            navigationController?.pushViewController(
+                AdTestViewController(format: .banner, placements: AppProfile.current.bannerPlacements), animated: true)
         case .native:
-            navigationController?.pushViewController(AdTestViewController(format: .native, placements: AppProfile.current.nativePlacements), animated: true)
+            navigationController?.pushViewController(
+                AdTestViewController(format: .native, placements: AppProfile.current.nativePlacements), animated: true)
         case .interstitial:
-            navigationController?.pushViewController(AdTestViewController(format: .interstitial, placements: AppProfile.current.interstitialPlacements), animated: true)
+            navigationController?.pushViewController(
+                AdTestViewController(format: .interstitial, placements: AppProfile.current.interstitialPlacements),
+                animated: true)
         case .rewarded:
-            navigationController?.pushViewController(AdTestViewController(format: .rewarded, placements: AppProfile.current.rewardedPlacements), animated: true)
+            navigationController?.pushViewController(
+                AdTestViewController(format: .rewarded, placements: AppProfile.current.rewardedPlacements),
+                animated: true)
         case .debugAdLoader:
             MSP.shared.showMediationDebugger()
+        case .applovinDebugger:
+            ALSdk.shared().showMediationDebugger()
         case .legacyTest:
             navigationController?.pushViewController(LegacyTestViewController(), animated: true)
         case .webDebugger:

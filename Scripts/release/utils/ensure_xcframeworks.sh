@@ -77,7 +77,7 @@ fi
 # ============================================================================
 # Binary distribution adapters that require auto-buildable XCFrameworks
 # Must be kept in sync with BINARY_DISTRIBUTION_PODS in generate_podspec.sh
-BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPNovaAdapter")
+BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter" "MSPNovaAdapter")
 
 # Build script path
 BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"
@@ -99,9 +99,55 @@ get_module_dir() {
         "MSPAmazonAdapter") echo "AmazonAdapter" ;;
         "MSPMolocoAdapter") echo "MolocoAdapter" ;;
         "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        "MSPApplovinMaxAdapter") echo "ApplovinMaxAdapter" ;;
         "MSPNovaAdapter") echo "NovaAdapter" ;;
         *) echo "$pod_name" ;;
     esac
+}
+
+# ============================================================================
+# Foundation Module Source → XCFramework Staleness Check
+# ============================================================================
+# Some Foundation modules (e.g. MSPiOSCore) may have source changes that are
+# newer than their pre-built XCFrameworks. When adapters need building, we
+# must rebuild Foundation modules first so adapter builds don't fail against
+# stale module interfaces (e.g. missing enum cases, missing properties).
+#
+# Foundation module → source directory mapping
+FOUNDATION_SOURCE_DIRS=(
+    "MSPiOSCore:Sources/Core/MSPiOSCore/MSPiOSCore"
+    "MSPSharedLibraries:Sources/Core/MSPSharedLibraries"
+)
+
+rebuild_stale_framework_if_needed() {
+    local pod_name="$1"
+    local source_dir="$ROOT_DIR/$2"
+    local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod_name}.xcframework"
+
+    if [[ ! -d "$xcframework_path" ]]; then
+        log::info "XCFW" "  $pod_name: XCFramework missing, will rebuild"
+        build_xcframework "$pod_name"
+        return $?
+    fi
+
+    # Get latest mtime from source directory
+    local latest_source_mtime
+    latest_source_mtime=$(find "$source_dir" -name "*.swift" -type f -print0 2>/dev/null \
+        | xargs -0 stat -f %m 2>/dev/null \
+        | sort -n \
+        | tail -1 2>/dev/null || echo "0")
+
+    local xcframework_mtime
+    xcframework_mtime=$(stat -f %m "$xcframework_path" 2>/dev/null || echo "0")
+
+    if [[ "$latest_source_mtime" -gt "$xcframework_mtime" ]]; then
+        log::info "XCFW" "  $pod_name: Source is newer than XCFramework, rebuilding"
+        build_xcframework "$pod_name"
+        return $?
+    fi
+
+    log::debug "XCFW" "  $pod_name: XCFramework is up-to-date"
+    return 0
 }
 
 # ============================================================================
@@ -286,6 +332,26 @@ ensure_all_xcframeworks() {
     fi
 
     # =========================================================================
+    # Step 0.5: Rebuild stale Foundation Module XCFrameworks
+    # =========================================================================
+    # Foundation XCFrameworks may exist but be stale if source code has been
+    # updated since they were built. Adapter builds will fail against stale
+    # module interfaces, so we check and rebuild now.
+    log::info "XCFW" "Step 0.5: Checking Foundation Module staleness..."
+    local foundation_stale=false
+    for entry in "${FOUNDATION_SOURCE_DIRS[@]}"; do
+        local pod="${entry%%:*}"
+        local srcdir="${entry#*:}"
+        if ! rebuild_stale_framework_if_needed "$pod" "$srcdir"; then
+            foundation_stale=true
+        fi
+    done
+    if [[ "$foundation_stale" == "true" ]]; then
+        log::warn "XCFW" "Some Foundation modules could not be rebuilt"
+    fi
+    log::info "XCFW" ""
+
+    # =========================================================================
     # Original logic: Check and build Adapters
     # =========================================================================
 
@@ -408,6 +474,7 @@ Applies to:
   - MSPAmazonAdapter
   - MSPMolocoAdapter
   - MSPLiftoffAdapter
+  - MSPApplovinMaxAdapter
   - MSPNovaAdapter
 
 Does NOT apply to:

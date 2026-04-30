@@ -106,6 +106,13 @@ test_get_module_dir() {
         test_fail "get_module_dir should map MSPLiftoffAdapter to LiftoffAdapter, got: $result"
     fi
 
+    result=$(get_module_dir "MSPApplovinMaxAdapter")
+    if [[ "$result" == "ApplovinMaxAdapter" ]]; then
+        test_pass "get_module_dir maps MSPApplovinMaxAdapter to ApplovinMaxAdapter"
+    else
+        test_fail "get_module_dir should map MSPApplovinMaxAdapter to ApplovinMaxAdapter, got: $result"
+    fi
+
     result=$(get_module_dir "MSPCore")
     if [[ "$result" == "MSPCore" ]]; then
         test_pass "get_module_dir passes through MSPCore unchanged"

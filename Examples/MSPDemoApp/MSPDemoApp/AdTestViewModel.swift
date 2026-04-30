@@ -1,8 +1,8 @@
+// MARK: - AdState
+
 import Foundation
 import MSPCore
 import MSPiOSCore
-
-// MARK: - AdState
 
 enum AdState {
     case idle
@@ -40,7 +40,6 @@ enum AdState {
 // MARK: - AdTestViewModel
 
 final class AdTestViewModel {
-
     // MARK: - Config
 
     let format: AdFormat
@@ -76,7 +75,7 @@ final class AdTestViewModel {
 
     func selectPlacement(_ placement: String) {
         selectedPlacement = placement
-        onStateChange?(state) // refresh button enable state
+        onStateChange?(state)  // refresh button enable state
     }
 
     func loadAd(bannerSize: CGSize, novaSandbox: Bool, params: TestParams, adListener: AdListener) {
@@ -92,11 +91,15 @@ final class AdTestViewModel {
             isInlineAdaptiveBanner: false,
             isAnchorAdaptiveBanner: false
         )
+        var customParams: [String: Any] = [
+            MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS: ["https://www.google.com", "https://newsbreak.com"],
+            MSPConstants.USE_NOVA_SANDBOX: novaSandbox ? "true" : "false",
+        ]
+        if let adConfig = applovinAdConfig(for: selectedPlacement) {
+            customParams["msp_ad_config"] = adConfig
+        }
         let adRequest = AdRequest(
-            customParams: [
-                MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS: ["https://www.google.com", "https://newsbreak.com"],
-                MSPConstants.USE_NOVA_SANDBOX: novaSandbox ? "true" : "false",
-            ],
+            customParams: customParams,
             geo: nil,
             context: nil,
             adaptiveBannerSize: adSize,
@@ -112,6 +115,22 @@ final class AdTestViewModel {
         adLoader = nil
         loadedBannerSize = CGSize(width: 320, height: 50)
         state = .idle
+    }
+
+    // MARK: - AppLovin Test Config
+
+    private static let applovinTestPlacements: [String: String] = [
+        "demoapp-ios-applovin-banner-test": "banner",
+        "demoapp-ios-applovin-native-test": "native",
+        "demoapp-ios-applovin-interstitial-test": "interstitial",
+        "demoapp-ios-applovin-rewarded-test": "rewarded",
+    ]
+
+    private func applovinAdConfig(for placement: String) -> String? {
+        guard let format = Self.applovinTestPlacements[placement] else { return nil }
+        return """
+            {"placement_id":"\(placement)","auction_timeout":8000,"bidders":[{"name":"applovin","bidder_placement_id":"YOUR_AD_UNIT_ID","bidder_format":"\(format)"}]}
+            """
     }
 
     // MARK: - AdListener callback handlers (called by VC on main thread)

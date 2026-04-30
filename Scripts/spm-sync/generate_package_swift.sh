@@ -50,6 +50,7 @@ let package = Package(
         .library(name: "MSPAmazonAdapter", targets: ["MSPAmazonAdapter"]),
         .library(name: "MSPMolocoAdapter", targets: ["MSPMolocoAdapter"]),
         .library(name: "MSPLiftoffAdapter", targets: ["MSPLiftoffAdapter"]),
+        .library(name: "MSPApplovinMaxAdapter", targets: ["MSPApplovinMaxAdapter"]),
         .library(name: "UnityAdapter", targets: ["UnityAdapter"]),
         .library(name: "InmobiAdapter", targets: ["InmobiAdapter"]),
         .library(name: "MobilefuseAdapter", targets: ["MobilefuseAdapter"]),
@@ -210,6 +211,15 @@ let package = Package(
                 "MSPSnapKit"
             ],
             path: "Sources/Adapters/LiftoffAdapter/LiftoffAdapter"
+        ),
+        .target(
+            name: "MSPApplovinMaxAdapter",
+            dependencies: [
+                "MSPSharedLibraries",
+                "MSPiOSCore",
+                "MSPSnapKit"
+            ],
+            path: "Sources/Adapters/ApplovinMaxAdapter/ApplovinMaxAdapter"
         ),
         .target(
             name: "UnityAdapter",

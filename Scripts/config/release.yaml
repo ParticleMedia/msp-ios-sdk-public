@@ -139,7 +139,7 @@ pods:
   enabled: true
 
   # Release order (dependencies first)
-  # Total: 11 modules, all binary distribution
+  # Total: 12 modules, all binary distribution
   modules:
     # Core modules (foundation first)
     - MSPiOSCore
@@ -154,6 +154,7 @@ pods:
     - MSPAmazonAdapter
     - MSPMolocoAdapter
     - MSPLiftoffAdapter
+    - MSPApplovinMaxAdapter
     # MSPCore depends on MSPPrebidAdapter, so comes last
     - MSPCore
 
@@ -177,6 +178,7 @@ spm:
     - MSPAmazonAdapter
     - MSPMolocoAdapter
     - MSPLiftoffAdapter
+    - MSPApplovinMaxAdapter
     - MSPCore
 
   # Remote verification

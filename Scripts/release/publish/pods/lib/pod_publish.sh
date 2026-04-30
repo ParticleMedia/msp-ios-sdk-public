@@ -322,7 +322,7 @@ publish_pod_with_resume() {
     # Auto-Build Missing XCFrameworks for Binary Distribution Adapters
     if is_binary_distribution "$pod"; then
         case "$pod" in
-            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter|MSPApplovinMaxAdapter)
                 local module_dir
                 module_dir=$(get_module_dir "$pod")
                 local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"

@@ -24,15 +24,16 @@ extension AdNetwork: TestParamAssembler {
                 expParameter["h5_template_group"] = h5Group
             }
 
-            dict[MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM] = [
-                "debug": true,
-                "creative_type": creativeType,
-                "layout": layoutDirection,
-                "exp_parameter": expParameter,
-            ] as [String: Any]
+            dict[MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM] =
+                [
+                    "debug": true,
+                    "creative_type": creativeType,
+                    "layout": layoutDirection,
+                    "exp_parameter": expParameter,
+                ] as [String: Any]
 
         case .google, .facebook, .prebid, .unity, .pubmatic,
-            .mintegral, .mobilefuse, .inmobi, .amazon, .moloco, .liftoff:
+            .mintegral, .mobilefuse, .inmobi, .amazon, .moloco, .liftoff, .applovin:
             // Flat params passed through as-is
             break
 

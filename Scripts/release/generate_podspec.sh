@@ -57,7 +57,7 @@ MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
 # Pods that should consume MSPSnapKit from MSPSharedLibraries in release mode.
 # This avoids duplicate MSPSnapKit.xcframeworks across adapters.
-SNAPKIT_FROM_SHARED_LIBS_PODS=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+SNAPKIT_FROM_SHARED_LIBS_PODS=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter" "MSPCore")
 
 should_strip_mspsnapkit_dependency() {
     local module="$1"
@@ -99,7 +99,7 @@ should_skip_kingfisher_dependency() {
 # Note: NovaAdapter uses binary distribution (includes private NovaCore.xcframework)
 #       but is released in Adapters phase (Step 2), NOT in foundation phase.
 # ============================================================================
-BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPNovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPNovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter")
 
 # Check if a pod uses binary distribution (HTTP zip source)
 # Returns 0 (true) if the pod is in BINARY_DISTRIBUTION_PODS
@@ -411,7 +411,7 @@ if is_binary_distribution "$POD_NAME"; then
         MSPNovaAdapter)
             log::info "PODSPEC" "Binary distribution pod: $POD_NAME (XCFrameworks in Binary/)"
             ;;
-        MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+        MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter|MSPApplovinMaxAdapter)
             # XCFramework name matches pod name (unified naming)
             XCFRAMEWORK_PATH="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             if [[ -d "$XCFRAMEWORK_PATH" ]]; then

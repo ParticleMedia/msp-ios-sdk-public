@@ -79,7 +79,7 @@ verify_all_github_releases() {
         binary_pods=($(get_binary_distribution_pods))
     else
         # Fallback: hardcoded list
-        binary_pods=("MSPiOSCore" "MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPPrebidAdapter" "MSPFacebookAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPGoogleAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+        binary_pods=("MSPiOSCore" "MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPPrebidAdapter" "MSPFacebookAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPGoogleAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter" "MSPCore")
     fi
 
     # Check GitHub release exists

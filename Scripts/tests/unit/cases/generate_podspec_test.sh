@@ -48,9 +48,9 @@ fail() { echo "FAIL: $1" >&2; exit 1; }
 
 # Define the arrays and functions from generate_podspec.sh
 CORE_MODULES=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPOMSDK" "MSPNovaAdapter")
-SNAPKIT_FROM_SHARED_LIBS_PODS=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+SNAPKIT_FROM_SHARED_LIBS_PODS=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter" "MSPCore")
 KINGFISHER_EMBEDDED_PODS=("MSPNovaAdapter")
-BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPNovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPNovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter")
 MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter" "MSPGoogleAdsTypes")
 
 # is_core_module function
@@ -183,6 +183,17 @@ test_snapkit_stripped_for_liftoffadapter() {
     info "MSPLiftoffAdapter SnapKit 依赖过滤正确"
 }
 
+test_snapkit_stripped_for_applovinmaxadapter() {
+    # MSPApplovinMaxAdapter 从 MSPSharedLibraries 获取 SnapKit
+    if should_strip_mspsnapkit_dependency "MSPApplovinMaxAdapter"; then
+        test_pass "MSPApplovinMaxAdapter strips MSPSnapKit dependency"
+    else
+        fail "MSPApplovinMaxAdapter should strip MSPSnapKit dependency (provided by MSPSharedLibraries)"
+    fi
+
+    info "MSPApplovinMaxAdapter SnapKit 依赖过滤正确"
+}
+
 test_snapkit_stripped_for_mspcore() {
     # MSPCore 从 MSPSharedLibraries 获取 SnapKit
     if should_strip_mspsnapkit_dependency "MSPCore"; then
@@ -310,6 +321,12 @@ test_binary_distribution_adapters() {
         fail "MSPLiftoffAdapter should use binary distribution"
     fi
 
+    if is_binary_distribution "MSPApplovinMaxAdapter"; then
+        test_pass "MSPApplovinMaxAdapter uses binary distribution"
+    else
+        fail "MSPApplovinMaxAdapter should use binary distribution"
+    fi
+
     info "适配器二进制分发识别正确"
 }
 
@@ -352,7 +369,7 @@ test_kingfisher_embedded_pods_contains_novaadapter() {
 # ============================================================================
 
 test_snapkit_shared_libs_pods_configuration() {
-    local expected_pods=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+    local expected_pods=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter" "MSPCore")
 
     for expected in "${expected_pods[@]}"; do
         local found=false
@@ -516,6 +533,7 @@ test_is_core_module_returns_false_for_adapters
 test_snapkit_stripped_for_novaadapter
 test_snapkit_stripped_for_molocoadapter
 test_snapkit_stripped_for_liftoffadapter
+test_snapkit_stripped_for_applovinmaxadapter
 test_snapkit_stripped_for_mspcore
 test_snapkit_not_stripped_for_other_pods
 

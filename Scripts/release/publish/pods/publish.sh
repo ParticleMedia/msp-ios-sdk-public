@@ -283,7 +283,7 @@ RELEASE_NOTES="${RELEASE_NOTES:-}"
 
 # Default pod modules if PODS_MODULES not set (backward compatibility)
 # Release order: MSPiOSCore → MSPSharedLibraries → MSPGoogleAdsTypes → Adapters → MSPCore
-DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter MSPApplovinMaxAdapter"
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 

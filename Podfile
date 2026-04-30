@@ -120,6 +120,7 @@ target 'MSPDemoApp' do
   pod 'MSPAmazonAdapter', :path => 'MSPAmazonAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPMolocoAdapter', :path => 'MSPMolocoAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPLiftoffAdapter', :path => 'MSPLiftoffAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MSPApplovinMaxAdapter', :path => 'MSPApplovinMaxAdapter.podspec', :configurations => demoapp_pod_configs
   # SwiftProtobuf is now provided via XCFramework in MSPCore - removed from Podfile
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :configurations => demoapp_pod_configs
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors
@@ -283,7 +284,8 @@ post_install do |installer|
   # This fixes "cannot load underlying module" errors when importing adapters
   adapter_pods = ["MSPPrebidAdapter", "MSPGoogleAdapter", "MSPFacebookAdapter", "MSPNovaAdapter",
                   "MSPAmazonAdapter", "UnityAdapter", "InmobiAdapter", "MobilefuseAdapter",
-                  "MintegralAdapter", "PubmaticAdapter", "MSPMolocoAdapter", "MSPLiftoffAdapter"]
+                  "MintegralAdapter", "PubmaticAdapter", "MSPMolocoAdapter", "MSPLiftoffAdapter",
+                  "MSPApplovinMaxAdapter"]
   adapter_pods.each do |pod_name|
     target_support_files = File.join(installer.sandbox.root, "Target Support Files", pod_name)
     if Dir.exist?(target_support_files)

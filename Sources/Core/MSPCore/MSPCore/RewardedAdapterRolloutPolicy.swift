@@ -13,7 +13,7 @@ internal protocol RewardedAdapterRolloutPolicy {
 internal struct ClientRewardedAdapterRolloutPolicy: RewardedAdapterRolloutPolicy {
     private let enabledNetworks: Set<AdNetwork>
 
-    init(enabledNetworks: Set<AdNetwork> = [.google, .facebook]) {
+    init(enabledNetworks: Set<AdNetwork> = [.google, .facebook, .applovin]) {
         self.enabledNetworks = enabledNetworks
     }
 

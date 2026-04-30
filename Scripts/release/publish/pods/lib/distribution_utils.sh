@@ -45,7 +45,7 @@ readonly _DISTRIBUTION_UTILS_SOURCED=1
 is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|MSPNovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|MSPNovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter|MSPApplovinMaxAdapter)
             return 0
             ;;
         *)
@@ -62,7 +62,7 @@ is_binary_distribution() {
 # Release order: MSPiOSCore → MSPSharedLibraries → MSPGoogleAdsTypes → Adapters → MSPCore
 # ============================================================================
 get_default_pods_modules() {
-    echo "MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+    echo "MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter MSPApplovinMaxAdapter"
 }
 
 # ============================================================================
@@ -71,7 +71,7 @@ get_default_pods_modules() {
 # Returns the list of adapter pods.
 # ============================================================================
 get_adapters_list() {
-    echo "MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+    echo "MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter MSPApplovinMaxAdapter"
 }
 
 # ============================================================================
@@ -89,7 +89,7 @@ get_core_pods_list() {
 # Returns the list of pods that use binary distribution.
 # ============================================================================
 get_binary_distribution_pods() {
-    echo "MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPCore MSPNovaAdapter MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+    echo "MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPCore MSPNovaAdapter MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter MSPApplovinMaxAdapter"
 }
 
 # ============================================================================

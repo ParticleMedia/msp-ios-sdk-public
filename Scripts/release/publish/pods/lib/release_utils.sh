@@ -231,6 +231,7 @@ rebuild_release_binaries() {
         "MSPAmazonAdapter"
         "MSPMolocoAdapter"
         "MSPLiftoffAdapter"
+        "MSPApplovinMaxAdapter"
         "MSPNovaAdapter"
         "MSPCore"
     )

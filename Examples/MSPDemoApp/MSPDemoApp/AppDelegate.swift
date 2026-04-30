@@ -1,5 +1,6 @@
 import AppTrackingTransparency
 import InmobiAdapter
+import MSPApplovinMaxAdapter
 import MSPCore
 import MSPFacebookAdapter
 import MSPGoogleAdapter
@@ -21,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private let adNetworkManagers: [AdNetworkManager] = [
         GoogleManager(), FacebookManager(), NovaManager(), UnityManager(), PubmaticManager(), MintegralManager(),
-        MobilefuseManager(), InmobiManager(), MolocoManager(), LiftoffManager(),
+        MobilefuseManager(), InmobiManager(), MolocoManager(), LiftoffManager(), ApplovinMaxManager(),
     ]
 
     func application(

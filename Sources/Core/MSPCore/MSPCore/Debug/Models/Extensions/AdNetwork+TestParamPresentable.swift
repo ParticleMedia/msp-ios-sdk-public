@@ -10,7 +10,7 @@ extension AdNetwork: TestParamPresentable {
         case .pubmatic: return [("ad_network", "pubmatic")]
         case .moloco: return [("ad_network", "msp_moloco_native")]
         case .liftoff: return [("ad_network", "vungle")]
-        case .inmobi, .mintegral, .mobilefuse, .prebid, .unity, .amazon:
+        case .inmobi, .mintegral, .mobilefuse, .prebid, .unity, .amazon, .applovin:
             // don't need to implement for now, maybe need attention in the future
             return []
         case .unknown: return []

@@ -179,6 +179,11 @@ public class MSPAdLoader: NSObject {
                 bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
+        case AdNetwork.applovin.rawValue:
+            let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.applovin]?.getAdBidder(
+                bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
+            bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
+            return bidder
         default:
             return nil
         }

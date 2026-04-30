@@ -76,7 +76,7 @@ init_config_defaults() {
     CONFIG_DM_ON_FAILURE="true"
     
     # Default pod modules (in dependency order)
-    CONFIG_PODS_MODULES="MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+    CONFIG_PODS_MODULES="MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter MSPApplovinMaxAdapter"
     
     # Default SPM packages
     CONFIG_SPM_PACKAGES="NovaCore MSPNovaAdapter"

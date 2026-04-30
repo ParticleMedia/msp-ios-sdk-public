@@ -653,7 +653,7 @@ release_cocoapods() {
             done
         elif [[ "$DRY_RUN" != "true" ]]; then
             # Fallback to default list if PODS_MODULES not set
-            COCOAPODS_SUCCESS+=("MSPiOSCore" "MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+            COCOAPODS_SUCCESS+=("MSPiOSCore" "MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter" "MSPCore")
         fi
     else
         fail_step "release_cocoapods" "publish script execution failed"

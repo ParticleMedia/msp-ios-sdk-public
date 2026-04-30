@@ -26,4 +26,5 @@ public struct InitializationParametersCustomKeys {
     public static let AMAZON_APP_KEY = "amazonAppKey"
     public static let MOLOCO_APP_KEY = "molocoAppKey"
     public static let LIFTOFF_APP_ID = "liftoffAppId"
+    public static let APPLOVIN_SDK_KEY = "applovinSdkKey"
 }

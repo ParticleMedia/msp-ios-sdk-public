@@ -18,6 +18,7 @@ extension AdNetwork: DebugOption {
         case .moloco: return "Moloco"
         case .amazon: return "Amazon"
         case .liftoff: return "Liftoff"
+        case .applovin: return "AppLovin"
         case .unknown: return ""
         @unknown default: return ""
         }
@@ -26,7 +27,7 @@ extension AdNetwork: DebugOption {
     var isVisible: Bool {
         switch self {
         case .facebook, .google, .nova, .pubmatic, .moloco, .liftoff: return true
-        case .inmobi, .mintegral, .mobilefuse, .prebid, .unity, .amazon:
+        case .inmobi, .mintegral, .mobilefuse, .prebid, .unity, .amazon, .applovin:
             // don't need to implement for now, maybe need attention in the future
             return false
         case .unknown: return false

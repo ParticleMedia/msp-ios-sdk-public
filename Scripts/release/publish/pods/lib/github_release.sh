@@ -238,6 +238,7 @@ This release includes the following components:
 - MSPAmazonAdapter
 - MSPMolocoAdapter (if applicable)
 - MSPLiftoffAdapter (if applicable)
+- MSPApplovinMaxAdapter (if applicable)
 
 ## Installation
 

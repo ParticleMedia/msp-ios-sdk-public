@@ -130,7 +130,7 @@ VERBOSE="${VERBOSE:-false}"
 
 # Default SPM packages if SPM_PACKAGES not set (backward compatibility)
 # Includes all adapters that support binary distribution
-DEFAULT_SPM_PACKAGES="NovaCore MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+DEFAULT_SPM_PACKAGES="NovaCore MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter MSPApplovinMaxAdapter"
 SPM_PACKAGES="${SPM_PACKAGES:-$DEFAULT_SPM_PACKAGES}"
 
 # ============================================================================
@@ -796,7 +796,7 @@ process_binary_targets_for_cloud_distribution() {
         
         # Process binary adapter modules (MSPAmazonAdapter, MSPMolocoAdapter, MSPLiftoffAdapter)
         # These adapters use binary XCFrameworks for distribution
-        local binary_adapters=("MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
+        local binary_adapters=("MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPApplovinMaxAdapter")
         for adapter in "${binary_adapters[@]}"; do
             local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
             if [[ -d "$xcframework_path" ]]; then

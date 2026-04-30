@@ -60,6 +60,7 @@ get_module_dir() {
         "MSPAmazonAdapter") echo "AmazonAdapter" ;;
         "MSPMolocoAdapter") echo "MolocoAdapter" ;;
         "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        "MSPApplovinMaxAdapter") echo "ApplovinMaxAdapter" ;;
         "MSPNovaAdapter") echo "NovaAdapter" ;;
         *) echo "$pod_name" ;;
     esac
@@ -92,6 +93,7 @@ ADAPTER_MODULES=(
     "MSPAmazonAdapter"
     "MSPLiftoffAdapter"
     "MSPMolocoAdapter"
+    "MSPApplovinMaxAdapter"
 )
 
 # Core XCFrameworks that adapters depend on

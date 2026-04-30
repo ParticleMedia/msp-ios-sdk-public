@@ -1,9 +1,9 @@
-import MSPiOSCore
 import Foundation
+import MSPiOSCore
 
 enum PrebidHost: String {
     case prebidHostInternal = "https://prebid-server.newsbreak.com"
-    case prebidHostExternal  = "https://msp.newsbreak.com"
+    case prebidHostExternal = "https://msp.newsbreak.com"
 }
 
 struct AppProfile {
@@ -53,26 +53,32 @@ struct AppProfile {
                 "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8",
             InitializationParametersCustomKeys.MOLOCO_APP_KEY: "NEWSBREAK:dX2DtwJM9o9okqwZ",
             InitializationParametersCustomKeys.LIFTOFF_APP_ID: "6937f2485cdd890926d69668",
+            InitializationParametersCustomKeys.APPLOVIN_SDK_KEY:
+                "6KrA5SQHFTBpGDUU4FeLIZGxGFmd1rORGfr5xlrJIMeXO8pdvuKPQO4WAfQpEZ4cXAOXoeSJJRoX0zcD4qBzak",
         ],
         bannerPlacements: [
             "demoapp-ios-foryou-test-liftoff-banner",
             "demo-ios-article-top",
             "demo-ios-foryou-large-google-c2s",
+            "demoapp-ios-applovin-banner-test",
         ],
         nativePlacements: [
             "demo-ios-foryou-large",
             "demoapp-ios-foryou-test-liftoff-native",
             "demo-ios-native-google-c2s-test",
             "demo-ios-native-video-google-c2s-test",
-            "demo-ios-article-top-client-bidding"
+            "demo-ios-article-top-client-bidding",
+            "demoapp-ios-applovin-native-test",
         ],
         interstitialPlacements: [
             "demo-ios-launch-fullscreen",
             "demoapp-ios-foryou-test-liftoff-interstitial",
-            "demo-ios-launch-fullscreen-google-c2s"
+            "demo-ios-launch-fullscreen-google-c2s",
+            "demoapp-ios-applovin-interstitial-test",
         ],
         rewardedPlacements: [
             "demo-ios-rewarded",
+            "demoapp-ios-applovin-rewarded-test",
         ]
     )
 
@@ -89,7 +95,7 @@ struct AppProfile {
             InitializationParametersCustomKeys.AMAZON_APP_KEY: "75b4cb56-1bf5-4732-9918-d22a1c78b194",
         ],
         bannerPlacements: [
-            "msp-ios-article-top-display-prod",
+            "msp-ios-article-top-display-prod"
         ],
         nativePlacements: [
             "msp-ios-foryou-large-display-prod3",
@@ -97,7 +103,7 @@ struct AppProfile {
             "msp-ios-article-inside-native-prod",
         ],
         interstitialPlacements: [
-            "msp-ios-launch-fullscreen-interstitial-prod2",
+            "msp-ios-launch-fullscreen-interstitial-prod2"
         ],
         rewardedPlacements: [
             "msp-ios-drama-fullscreen-interstitial-prod",
@@ -146,6 +152,6 @@ struct AppProfile {
     )
 
     static let profiles: [AppProfile] = [
-        DEMO_APP, NEWSBREAK, SCOOPZ
+        DEMO_APP, NEWSBREAK, SCOOPZ,
     ]
 }
