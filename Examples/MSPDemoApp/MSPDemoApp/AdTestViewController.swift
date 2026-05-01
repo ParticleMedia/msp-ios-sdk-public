@@ -224,6 +224,7 @@ final class AdTestViewController: UIViewController {
             novaSandbox: card.novaSandbox,
             params: params,
             htmlTestAdString: htmlTestAdString,
+            enableFeedbackButton: card.enableFeedbackButton,
             adListener: self
         )
     }

@@ -15,6 +15,7 @@ final class TestParamsCardView: UIView {
     private(set) var h5TemplateGroup = TestParams.h5TemplateGroupsImageVideo[2]
     private(set) var preload = true
     private(set) var useHtmlTestAdString = false
+    private(set) var enableFeedbackButton = false
 
     // MARK: - Private UI refs
 
@@ -26,6 +27,7 @@ final class TestParamsCardView: UIView {
     private weak var preloadElements: UIStackView?
     private weak var h5TemplateSection: UIStackView?
     private weak var htmlTestSection: UIStackView?
+    private weak var enableFeedbackRow: UIStackView?
 
     private let format: AdFormat
 
@@ -128,8 +130,17 @@ final class TestParamsCardView: UIView {
                 guard let self else { return }
                 self.adNetwork = selected
                 self.updateNovaSectionVisibility()
+                self.updateFeedbackButtonVisibility()
             }
         )
+
+        // Enable Feedback Button (interstitial only, shown when msp_nova selected OR useHtmlTestAdString)
+        if format == .interstitial {
+            let feedbackRow = buildFeedbackButtonRow()
+            feedbackRow.isHidden = true
+            enableFeedbackRow = feedbackRow
+            inner.addArrangedSubview(feedbackRow)
+        }
 
         // Use Html Test Ad String (interstitial only)
         if format == .interstitial {
@@ -142,6 +153,7 @@ final class TestParamsCardView: UIView {
                 guard let self else { return }
                 self.useHtmlTestAdString = checked
                 self.updateNovaSectionVisibility()
+                self.updateFeedbackButtonVisibility()
                 self.htmlTestSection?.isHidden = !checked
             })
             inner.addArrangedSubview(htmlCheckRow)
@@ -256,6 +268,30 @@ final class TestParamsCardView: UIView {
 
     private func updateNovaSectionVisibility() {
         novaSection?.isHidden = (adNetwork != "msp_nova") || useHtmlTestAdString
+    }
+
+    private func updateFeedbackButtonVisibility() {
+        enableFeedbackRow?.isHidden = (adNetwork != "msp_nova") && !useHtmlTestAdString
+    }
+
+    private func buildFeedbackButtonRow() -> UIStackView {
+        let row = UIStackView()
+        row.axis = .horizontal
+        row.alignment = .center
+        row.spacing = 8
+        row.addArrangedSubview(fieldLabel("Enable Feedback Button"))
+        let spacer = UIView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        row.addArrangedSubview(spacer)
+        let feedbackSwitch = UISwitch()
+        feedbackSwitch.isOn = enableFeedbackButton
+        feedbackSwitch.addAction(
+            UIAction { [weak self] action in
+                guard let self, let toggle = action.sender as? UISwitch else { return }
+                self.enableFeedbackButton = toggle.isOn
+            }, for: .valueChanged)
+        row.addArrangedSubview(feedbackSwitch)
+        return row
     }
 
     private func buildHtmlTestSection() -> UIStackView {

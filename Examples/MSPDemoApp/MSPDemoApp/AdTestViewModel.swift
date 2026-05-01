@@ -78,7 +78,7 @@ final class AdTestViewModel {
         onStateChange?(state)  // refresh button enable state
     }
 
-    func loadAd(bannerSize: CGSize, novaSandbox: Bool, params: TestParams, htmlTestAdString: String? = nil, adListener: AdListener) {
+    func loadAd(bannerSize: CGSize, novaSandbox: Bool, params: TestParams, htmlTestAdString: String? = nil, enableFeedbackButton: Bool = false, adListener: AdListener) {
         state = .loading
         loadedBannerSize = bannerSize
 
@@ -98,6 +98,9 @@ final class AdTestViewModel {
 
         if let htmlTestAdString, !htmlTestAdString.isEmpty {
             customParams["nova_test_ad_string"] = htmlTestAdString
+        }
+        if enableFeedbackButton {
+            customParams["html_enable_feedback"] = true
         }
         if let adConfig = applovinAdConfig(for: selectedPlacement) {
             customParams["msp_ad_config"] = adConfig
