@@ -373,6 +373,11 @@ extension NovaAdHtmlView: WKNavigationDelegate {
             decisionHandler(.allow)
             return
         }
+        
+        guard navigationAction.targetFrame == nil else {
+            decisionHandler(.allow)
+            return
+        }
 
         userDidClick = false
 
