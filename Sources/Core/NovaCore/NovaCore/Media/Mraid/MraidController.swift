@@ -34,6 +34,13 @@ final class MraidController: NSObject {
         commandHandler.resetMraidState()
     }
 
+    private var isViewable: Bool = false
+
+    func notifyViewable(_ isViewable: Bool) {
+        self.isViewable = isViewable
+        commandHandler.notifyViewable(isViewable)
+    }
+
     func handlePageFinished() {
         commandHandler.hasFinishedLoad = true
         guard commandHandler.hasRequestedMraidJs else {
@@ -42,6 +49,9 @@ final class MraidController: NSObject {
         }
         commandHandler.injectMraidShimIfNeeded()
         commandHandler.initializeMraidState(in: commandHandler.mraidWebView)
+        // Re-apply current viewable state after init. WKWebView serializes evaluateJavaScript
+        // calls in order, so this runs after novaMraidInit.js has finished.
+        commandHandler.notifyViewable(isViewable)
     }
 
     func handleMraidSchemeURL(_ url: URL) {

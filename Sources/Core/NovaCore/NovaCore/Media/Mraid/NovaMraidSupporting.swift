@@ -180,6 +180,18 @@ extension NovaMraidSupporting {
         }
     }
 
+    func notifyViewable(_ isViewable: Bool) {
+        let jsValue = isViewable ? "true" : "false"
+        let script = "window.mraid && window.mraid._setIsViewable && window.mraid._setIsViewable(\(jsValue))"
+        DispatchQueue.main.async { [weak self] in
+            self?.mraidWebView.evaluateJavaScript(script) { _, error in
+                if let error {
+                    self?.mraidLogError("[MRAID Native] Failed to set viewable: \(error)")
+                }
+            }
+        }
+    }
+
     func updateMraidState(_ newState: String) {
         guard let jsonData = try? JSONEncoder().encode(newState),
             let jsonString = String(data: jsonData, encoding: .utf8)

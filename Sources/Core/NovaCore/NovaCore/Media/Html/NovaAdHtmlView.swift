@@ -86,6 +86,10 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func notifyMraidViewable(_ isViewable: Bool) {
+        mraidController.notifyViewable(isViewable)
+    }
+
     public func destory() {
         self.clickEventTimerTask?.cancel()
         self.clickEventTimerTask = nil

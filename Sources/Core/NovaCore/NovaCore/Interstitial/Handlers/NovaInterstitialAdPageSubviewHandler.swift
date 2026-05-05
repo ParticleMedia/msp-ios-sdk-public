@@ -112,6 +112,7 @@ class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewH
         if !useCustomClose {
             setupDelayTimerIfNeeded()
         }
+        htmlView?.notifyMraidViewable(true)
     }
 
     func didAppear() {
@@ -121,11 +122,13 @@ class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewH
     func willDisappear() {
         skOverlayController.dismiss()
         htmlView?.setAllMediaPlaybackSuspended(true, completionHandler: nil)
+        htmlView?.notifyMraidViewable(false)
     }
 
     func didDisappear() {
         skOverlayController.dismiss()
         teardownCountdown()
+        htmlView?.notifyMraidViewable(false)
     }
 
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
