@@ -21,12 +21,12 @@ final class MraidController: NSObject {
     }
 
     func install(in userContentController: WKUserContentController) {
-        let script = WKUserScript(
-            source: commandHandler.mraidHookSource,
+        let shimScript = WKUserScript(
+            source: commandHandler.mraidShimSource,
             injectionTime: .atDocumentStart,
-            forMainFrameOnly: true
+            forMainFrameOnly: false
         )
-        userContentController.addUserScript(script)
+        userContentController.addUserScript(shimScript)
         userContentController.add(jsBridge, name: Self.scriptMessageName)
     }
 
@@ -43,11 +43,6 @@ final class MraidController: NSObject {
 
     func handlePageFinished() {
         commandHandler.hasFinishedLoad = true
-        guard commandHandler.hasRequestedMraidJs else {
-            commandHandler.mraidLogDebug("Skipping MRAID init: creative did not request mraid.js")
-            return
-        }
-        commandHandler.injectMraidShimIfNeeded()
         commandHandler.initializeMraidState(in: commandHandler.mraidWebView)
         // Re-apply current viewable state after init. WKWebView serializes evaluateJavaScript
         // calls in order, so this runs after novaMraidInit.js has finished.
