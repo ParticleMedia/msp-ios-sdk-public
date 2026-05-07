@@ -218,6 +218,7 @@ Scripts/tests/release_state/**/case_*/
 
 # MSP Release System runtime state file
 .msp-release-state.json
+.msp-freeze-state.json
 
 # Notification system test artifacts
 Tests/notify_output/

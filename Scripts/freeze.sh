@@ -76,6 +76,19 @@ if [[ -f "$STATE_FILE" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Ensure .msp-freeze-state.json is in .gitignore
+# ---------------------------------------------------------------------------
+GITIGNORE="$ROOT_DIR/.gitignore"
+STATE_FILENAME=".msp-freeze-state.json"
+if ! grep -qF "$STATE_FILENAME" "$GITIGNORE" 2>/dev/null; then
+    warn "$STATE_FILENAME not found in .gitignore — adding it now..."
+    printf '\n# MSP Freeze System runtime state file\n%s\n' "$STATE_FILENAME" >> "$GITIGNORE"
+    git add "$GITIGNORE"
+    git commit -m "chore(git): add .msp-freeze-state.json to .gitignore"
+    info ".gitignore updated and committed."
+fi
+
+# ---------------------------------------------------------------------------
 # Pull latest develop
 # ---------------------------------------------------------------------------
 info "Pulling latest develop..."

@@ -93,6 +93,28 @@ test_freeze_checks_no_active_state() {
 }
 
 # ---------------------------------------------------------------------------
+# .gitignore auto-fix
+# ---------------------------------------------------------------------------
+
+test_freeze_ensures_state_file_in_gitignore() {
+    if grep -q 'grep -qF.*STATE_FILENAME\|grep.*msp-freeze-state.*gitignore' "$FREEZE_SCRIPT" ||
+       grep -q 'not found in .gitignore\|adding it now' "$FREEZE_SCRIPT"; then
+        pass "freeze: checks and auto-adds .msp-freeze-state.json to .gitignore if missing"
+    else
+        fail "freeze: should ensure .msp-freeze-state.json is in .gitignore"
+    fi
+}
+
+test_freeze_commits_gitignore_fix() {
+    if grep -q 'git add.*GITIGNORE\|git add.*gitignore' "$FREEZE_SCRIPT" &&
+       grep -q 'git commit.*gitignore\|git commit.*msp-freeze' "$FREEZE_SCRIPT"; then
+        pass "freeze: commits .gitignore fix automatically"
+    else
+        fail "freeze: should commit .gitignore update when auto-adding state file"
+    fi
+}
+
+# ---------------------------------------------------------------------------
 # Git operations
 # ---------------------------------------------------------------------------
 
@@ -171,6 +193,8 @@ test_freeze_checks_clean_working_tree
 test_freeze_checks_develop_branch
 test_freeze_checks_branch_not_exists
 test_freeze_checks_no_active_state
+test_freeze_ensures_state_file_in_gitignore
+test_freeze_commits_gitignore_fix
 test_freeze_pulls_develop
 test_freeze_creates_branch
 test_freeze_pushes_branch
