@@ -310,7 +310,10 @@ import UIKit
             }
         #endif
 
-        mspAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+        // SDK auction use CPM to compare price (s2s price). But in AppLovin Max SDK,
+        // ad.revenue is price of single ad impression. Should multiple by 1000 to
+        // align CPM so that AppLovin's ad has chance to win auction.
+        mspAd.adInfo[MSPConstants.AD_INFO_PRICE] = (self.priceInDollar ?? 0) * 1000
         mspAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.applovin.rawValue
         mspAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = bidderPlacementId
         if let crid = self.crid {
