@@ -12,7 +12,7 @@ final class TestParamsCardView: UIView {
     private(set) var creativeType = TestParams.creativeTypes[0]
     private(set) var creativeLayout: String? = TestParams.creativeLayouts[0]
     private(set) var enableH5Format = true
-    private(set) var h5TemplateGroup = TestParams.h5TemplateGroupsImageVideo[2]
+    private(set) var h5TemplateGroup = TestParams.h5TemplateGroupsImageVideo[0]
     private(set) var preload = true
     private(set) var useHtmlTestAdString = false
     private(set) var enableFeedbackButton = false

@@ -188,20 +188,35 @@ main() {
     log::info "TF-DEPLOY" "  Dry Run:       $DRY_RUN_MODE"
     log::info "TF-DEPLOY" "--------------------------------------------"
 
-    # Step 4: Archive
+    # Step 4: Install Pods (run before archive to ensure workspace is up to date)
+    log::info "TF-DEPLOY" "Running pod install..."
+    if command -v bundle >/dev/null 2>&1 && [[ -f "$ROOT_DIR/Gemfile" ]]; then
+        (cd "$ROOT_DIR" && bundle exec pod install) || {
+            log::error "TF-DEPLOY" "pod install failed"
+            return "${EXIT_BUILD_ERROR}"
+        }
+    else
+        (cd "$ROOT_DIR" && pod install) || {
+            log::error "TF-DEPLOY" "pod install failed"
+            return "${EXIT_BUILD_ERROR}"
+        }
+    fi
+    log::success "TF-DEPLOY" "pod install completed"
+
+    # Step 5: Archive
     tf_archive
 
-    # Step 5: Export
+    # Step 6: Export
     tf_export
 
-    # Step 6: Upload (skip in dry-run mode)
+    # Step 7: Upload (skip in dry-run mode)
     if [[ "$DRY_RUN_MODE" == "true" ]]; then
         log::warn "TF-DEPLOY" "Skipping upload (dry-run mode)"
         log::info "TF-DEPLOY" "IPA available at: $TF_IPA_PATH"
     else
         tf_upload
 
-        # Step 7: Commit build number (only after successful upload)
+        # Step 8: Commit build number (only after successful upload)
         tf_commit_build_number
     fi
 

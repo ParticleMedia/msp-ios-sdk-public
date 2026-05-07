@@ -5,8 +5,8 @@ struct TestParams {
     static let adNetworks = ["msp_fb", "msp_google", "msp_nova", "vungle", "msp_moloco_native"]
     static let creativeTypes = ["video", "image", "playable_video"]
     static let creativeLayouts = ["vertical", "horizontal"]
-    static let h5TemplateGroupsImageVideo = ["t1", "t2g1", "t2g2", "t2g3"]
-    static let h5TemplateGroupsPlayableVideo = ["t3g1"]
+    static let h5TemplateGroupsImageVideo = ["t1tob", "t1tob-v1", "t1nb", "t1nb-v1"]
+    static let h5TemplateGroupsPlayableVideo = ["t1nb"]
 
     private let testAd: Bool
     private let adNetwork: String?
@@ -22,7 +22,7 @@ struct TestParams {
         creativeType: String = "video",
         creativeLayout: String? = "vertical",
         enableH5Format: Bool = true,
-        h5TemplateGroup: String? = "t2g2",
+        h5TemplateGroup: String? = "t1tob",
         preload: Bool = true
     ) {
         self.testAd = testAd
