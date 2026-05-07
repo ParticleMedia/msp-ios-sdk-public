@@ -269,10 +269,98 @@ resolve_demoapp_destination() {
     fi
 }
 
+print_build_errors() {
+    local log_file="$1"
+    local printed=0
+
+    # Prefer linker and compiler diagnostics. A plain "error:" match also
+    # catches Swift source strings such as handleAuctionBidError(...), which
+    # makes CI summaries point at the wrong line.
+    awk '
+        /Undefined symbols for architecture/ ||
+        /duplicate symbol/ ||
+        /ld: / ||
+        /framework not found/ ||
+        /library not found for/ ||
+        /clang: error:/ ||
+        /swiftc failed/ ||
+        /^[^[:space:]].*:[0-9]+:[0-9]+: error:/ {
+            start = NR - 8
+            if (start < 1) start = 1
+            end = NR + 30
+            for (i = start; i <= end; i++) wanted[i] = 1
+        }
+        { lines[NR] = $0 }
+        END {
+            for (i = 1; i <= NR; i++) {
+                if (wanted[i] && count < 120) {
+                    print lines[i]
+                    count++
+                    printed = 1
+                }
+            }
+            exit printed ? 0 : 1
+        }
+    ' "$log_file" | sed 's/^/    /' && printed=1
+
+    if [[ $printed -eq 0 ]]; then
+        awk '
+            /BUILD FAILED/ || /\*\* BUILD FAILED \*\*/ {
+                start = NR - 20
+                if (start < 1) start = 1
+                end = NR + 5
+                for (i = start; i <= end; i++) wanted[i] = 1
+            }
+            { lines[NR] = $0 }
+        END {
+            for (i = 1; i <= NR; i++) {
+                if (wanted[i] && count < 80) {
+                    print lines[i]
+                    count++
+                }
+            }
+        }
+        ' "$log_file" | sed 's/^/    /'
+    fi
+}
+
+prepare_pod_xcframework() {
+    local pod_name="$1"
+    local derived_data="$2"
+    local build_archs="$3"
+    local script_path="$ROOT_DIR/Pods/Target Support Files/$pod_name/$pod_name-xcframeworks.sh"
+    local output_dir="$derived_data/Build/Products/Debug-iphonesimulator/XCFrameworkIntermediates"
+
+    if [[ ! -f "$script_path" ]]; then
+        return 0
+    fi
+
+    mkdir -p "$output_dir"
+    env \
+        ARCHS="$build_archs" \
+        PLATFORM_NAME="iphonesimulator" \
+        EFFECTIVE_PLATFORM_NAME="-iphonesimulator" \
+        PODS_ROOT="$ROOT_DIR/Pods" \
+        PODS_XCFRAMEWORKS_BUILD_DIR="$output_dir" \
+        bash "$script_path" >/dev/null
+}
+
+prepare_demoapp_xcframeworks() {
+    local derived_data="$1"
+    local build_archs="$2"
+    local pod_name
+    local pods_to_prepare=("AppLovinMediationGoogleAdapter")
+
+    for pod_name in "${pods_to_prepare[@]}"; do
+        prepare_pod_xcframework "$pod_name" "$derived_data" "$build_archs"
+    done
+}
+
 # Build DemoApp
 build_demoapp() {
     local mode="$1"
     local log_file="$BUILD_LOG_DIR/${mode}-build-${TIMESTAMP}.log"
+    local derived_data="$BUILD_LOG_DIR/DerivedData/${mode}-${TIMESTAMP}"
     local destination
     destination="$(resolve_demoapp_destination)"
     # Restrict compilation to the native CPU architecture via the ARCHS build
@@ -282,12 +370,15 @@ build_demoapp() {
     local build_archs="${ARCHS:-$(uname -m)}"
 
     cd "$ROOT_DIR"
+    prepare_demoapp_xcframeworks "$derived_data" "$build_archs"
+
     # Pipe full output to log file; show last 3 lines while building.
     # On failure, grep the log for actual compiler errors so they appear in CI output.
     xcodebuild -workspace msp-ios-sdk.xcworkspace \
         -scheme MSPDemoApp \
         -configuration Debug \
         -destination "$destination" \
+        -derivedDataPath "$derived_data" \
         ARCHS="$build_archs" \
         build 2>&1 | tee "$log_file" | tail -3
 
@@ -295,7 +386,7 @@ build_demoapp() {
         return 0
     else
         echo "--- Build errors ---"
-        grep -E "error:|BUILD FAILED" "$log_file" | grep -v "^$" | head -40 | sed 's/^/    /'
+        print_build_errors "$log_file"
         echo "--- End of errors (full log: $log_file) ---"
         return 1
     fi
