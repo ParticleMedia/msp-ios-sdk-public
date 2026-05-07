@@ -26,7 +26,6 @@ Pod::Spec.new do |spec|
   end
 
   spec.dependency 'AppLovinSDK'
-  spec.dependency 'AppLovinMediationGoogleAdapter'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
   spec.dependency 'MSPSnapKit'

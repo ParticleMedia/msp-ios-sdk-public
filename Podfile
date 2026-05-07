@@ -104,6 +104,8 @@ target 'MSPDemoApp' do
   pod 'NovaCore', :path => 'NovaCore.podspec', :configurations => demoapp_pod_configs
   pod 'MSPCore', :path => 'MSPCore.podspec', :configurations => demoapp_pod_configs
   
+  pod 'AppLovinMediationGoogleAdapter'
+  
   # Shared modules (abstraction layers)
   pod 'MSPGoogleAdsTypes', :path => 'MSPGoogleAdsTypes.podspec', :configurations => demoapp_pod_configs
   
