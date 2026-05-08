@@ -55,6 +55,7 @@ class ApplovinMaxRewardedDelegateHandler: NSObject, MARewardedAdDelegate {
             message: "[Adapter: ApplovinMax] Rewarded ad hidden, adUnitId = \(ad.adUnitIdentifier)")
         DispatchQueue.main.async { [weak self] in
             self?.adapter?.mspRewardedAd?.handleAdClosed()
+            self?.adapter?.sendDismissAdEvent()
         }
     }
 

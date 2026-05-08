@@ -147,6 +147,7 @@ private final class PubmaticRewardedAdDelegateHandler: NSObject, POBRewardedAdDe
     func rewardedAdDidDismiss(_ rewardedAd: POBRewardedAd) {
         DispatchQueue.main.async { [weak self] in
             self?.rewardedAd?.handleAdDismissed()
+            self?.rewardedAd?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

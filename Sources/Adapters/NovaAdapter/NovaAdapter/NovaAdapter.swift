@@ -88,10 +88,11 @@ public class NovaAdapter: AdNetworkAdapter {
             } else {
                 novaAdType = "native"
             }
-            
+
             var resolvedAdString = adString
             if let testAdString = adRequest.customParams["nova_test_ad_string"] as? String,
-               !testAdString.isEmpty {
+                !testAdString.isEmpty
+            {
                 resolvedAdString = testAdString
             }
 
@@ -297,7 +298,8 @@ public class NovaAdapter: AdNetworkAdapter {
                         let adRequest = self.adRequest,
                         let auctionBidListener = self.auctionBidListener
                     {
-                        interstitialAdItem?.shouldAutoDismiss = adRequest.customParams["interstitial_auto_dismiss"] as? Bool ?? false
+                        interstitialAdItem?.shouldAutoDismiss =
+                            adRequest.customParams["interstitial_auto_dismiss"] as? Bool ?? false
                         if interstitialAdItem?.creativeType == .nativeImage {
                             // TODO: - GPY check with Huanzhi if preload is needed
                             self.handleAdLoaded(
@@ -465,6 +467,14 @@ public class NovaAdapter: AdNetworkAdapter {
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse ?? self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
             guard let adRequest = self.adRequest else {
@@ -560,6 +570,7 @@ extension NovaAdapter: NovaInterstitialAdDelegate {
     public func interstitialAdDidDismiss(_ interstitialAd: NovaCore.NovaInterstitialAdItem) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
+            self.sendDismissAdEvent()
         }
     }
 

@@ -148,6 +148,7 @@ private final class MobilefuseRewardedAdDelegateHandler: NSObject, IMFAdCallback
     func onAdClosed(_ ad: MFRewardedAd) {
         DispatchQueue.main.async { [weak self] in
             self?.rewardedAd?.markDismissed()
+            self?.rewardedAd?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

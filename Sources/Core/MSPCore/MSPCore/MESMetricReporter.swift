@@ -34,6 +34,7 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         case getAd = "get_ad"
         case userSignal = "user_signal"
         case adBidLost = "ad_bid_lost"
+        case adDismiss = "ad_dismiss"
     }
 
     private func reportData(event: AdEventType, with data: Message, completion: ReportCompletion? = nil) {
@@ -448,6 +449,31 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         }
 
         reportData(event: .adHide, with: eventModel)
+    }
+
+    public func logAdDismiss(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdDismissEvent()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        if let bidResponse = bidResponse,
+            let mBidResponse = bidResponse as? BidResponse
+        {
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+            eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: mBidResponse)
+        } else {
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+            eventModel.ad = generateAdContext(ad: ad)
+        }
+
+        eventModel.os = MSPDevice.shared.getOSType()
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        eventModel.mspSdkVersion = MSP.shared.version
+
+        reportData(event: .adDismiss, with: eventModel)
     }
 
     public func logAdReport(

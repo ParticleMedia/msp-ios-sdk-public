@@ -52,6 +52,7 @@ class ApplovinMaxInterstitialDelegateHandler: NSObject, MAAdDelegate {
             guard let self, let adapter = self.adapter else { return }
             if let mspAd = adapter.mspInterstitialAd {
                 adapter.adListener?.onAdDismissed(ad: mspAd)
+                adapter.sendDismissAdEvent()
             }
         }
     }

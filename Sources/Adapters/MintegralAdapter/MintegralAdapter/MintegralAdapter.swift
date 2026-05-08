@@ -332,6 +332,14 @@ import PrebidMobile
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd ?? self.rewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
@@ -464,6 +472,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
     public func newInterstitialBidAdDidClosed(_ adManager: MTGNewInterstitialBidAdManager) {
         if let interstitialAd = self.interstitialAd {
             adListener?.onAdDismissed(ad: interstitialAd)
+            self.sendDismissAdEvent()
         }
     }
 }

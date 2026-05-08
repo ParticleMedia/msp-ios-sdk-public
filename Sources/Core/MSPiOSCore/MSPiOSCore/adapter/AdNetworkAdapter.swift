@@ -29,6 +29,8 @@ public protocol AdNetworkAdapter: AnyObject {
 
     func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
 
+    func sendDismissAdEvent()
+
     func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?)
 
     func getSDKVersion() -> String

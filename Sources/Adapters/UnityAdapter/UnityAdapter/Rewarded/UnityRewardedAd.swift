@@ -147,6 +147,7 @@ private final class UnityRewardedAdDelegateHandler: NSObject, LPMRewardedAdDeleg
     func didCloseAd(with adInfo: LPMAdInfo) {
         DispatchQueue.main.async { [weak self] in
             self?.rewardedAd?.handleAdClosed()
+            self?.rewardedAd?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

@@ -94,6 +94,10 @@ import MSPiOSCore
         .amazon
     }
 
+    public func sendDismissAdEvent() {
+        // AmazonAdapter only supports banner ads, no dismiss event needed
+    }
+
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = self.bannerAd

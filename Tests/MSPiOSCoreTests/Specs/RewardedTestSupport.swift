@@ -41,6 +41,8 @@ final class RewardedDummyAdNetworkAdapter: AdNetworkAdapter {
 
     func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {}
 
+    func sendDismissAdEvent() {}
+
     func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {}
 
     func getAdNetwork() -> AdNetwork {

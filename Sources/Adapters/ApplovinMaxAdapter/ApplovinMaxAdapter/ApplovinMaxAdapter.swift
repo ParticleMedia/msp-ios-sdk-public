@@ -275,6 +275,14 @@ import UIKit
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.mspInterstitialAd ?? self.mspRewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = ((self.mspBannerAd ?? self.mspNativeAd) ?? self.mspInterstitialAd) ?? self.mspRewardedAd

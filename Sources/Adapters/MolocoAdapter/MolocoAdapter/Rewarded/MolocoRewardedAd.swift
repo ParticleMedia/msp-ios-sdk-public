@@ -103,6 +103,7 @@ extension MolocoRewardedAd: MolocoRewardedDelegate {
     public func didHide(ad: any MolocoAd) {
         DispatchQueue.main.async { [weak self] in
             self?.lifecycleController.markDismissed()
+            self?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

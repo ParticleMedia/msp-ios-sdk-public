@@ -496,6 +496,14 @@ import PrebidMobile
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd ?? self.rewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse ?? self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest,
@@ -753,8 +761,10 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
                         "[Adapter: Google] Rewarded dismiss callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
                 )
                 rewardedAd.markDismissed()
+                self.sendDismissAdEvent()
             } else if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdDismissed(ad: interstitialAd)
+                self.sendDismissAdEvent()
             }
         }
     }

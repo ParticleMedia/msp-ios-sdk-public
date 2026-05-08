@@ -204,6 +204,14 @@ import PrebidMobile
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd ?? self.rewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
@@ -339,6 +347,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
         DispatchQueue.main.async {
             if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdDismissed(ad: interstitialAd)
+                self.sendDismissAdEvent()
             }
         }
     }

@@ -50,4 +50,8 @@ public class AdMetricReporterImp: AdMetricReporter {
         MESMetricReporter.shared.logAdResponse(
             ad: ad, adRequest: adRequest, errorCode: errorCode, errorMessage: errorMessage)
     }
+
+    public func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        MESMetricReporter.shared.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+    }
 }

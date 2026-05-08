@@ -23,6 +23,8 @@ public protocol AdMetricReporter: AnyObject {
         ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?, adScreenShot: Data?,
         fullScreenShot: Data?)
 
+    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
+
     func logAdResponse(
         ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?)
 }

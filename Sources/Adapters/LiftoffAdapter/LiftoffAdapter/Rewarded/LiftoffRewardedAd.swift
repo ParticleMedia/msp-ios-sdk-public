@@ -85,6 +85,7 @@ private final class LiftoffRewardedAdDelegateHandler: NSObject, VungleRewardedDe
     func rewardedAdDidClose(_ rewarded: VungleRewarded) {
         DispatchQueue.main.async { [weak self] in
             self?.rewardedAd?.markDismissed()
+            self?.rewardedAd?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

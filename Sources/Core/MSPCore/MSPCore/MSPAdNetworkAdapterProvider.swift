@@ -53,6 +53,9 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
     }
 
+    public func sendDismissAdEvent() {
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
     }
 
@@ -66,8 +69,8 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
     }
 
     public func loadAdCreative(

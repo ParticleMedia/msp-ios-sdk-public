@@ -111,6 +111,7 @@ extension InmobiRewardedAd: IMInterstitialDelegate {
     public func interstitialDidDismiss(_ interstitial: IMInterstitial) {
         DispatchQueue.main.async { [weak self] in
             self?.lifecycleController.markDismissed()
+            self?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

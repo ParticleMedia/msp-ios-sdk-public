@@ -315,6 +315,14 @@ import UIKit
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.facebookInterstitialAd ?? self.facebookRewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse ?? self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest,
@@ -492,6 +500,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAdDidClose(_ interstitialAd: FBInterstitialAd) {
         if let facebookInterstitialAd = self.facebookInterstitialAd {
             self.adListener?.onAdDismissed(ad: facebookInterstitialAd)
+            self.sendDismissAdEvent()
         }
     }
 
@@ -586,7 +595,7 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
                     "[Adapter: Facebook] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
             )
             guard let facebookRewardedAd = self.facebookRewardedAd else { return }
-            
+
             self.adListener?.onAdClick(ad: facebookRewardedAd)
             self.sendClickAdEvent(ad: facebookRewardedAd)
             facebookRewardedAd.markClicked()
@@ -610,6 +619,7 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
                     "[Adapter: Facebook] Rewarded close callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
             )
             self.facebookRewardedAd?.markDismissed()
+            self.sendDismissAdEvent()
         }
     }
 }

@@ -216,7 +216,8 @@ import VungleAdsSDK
             return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: width, height: height))
         }
 
-        MSPLogger.shared.info(message: "[Adapter: Liftoff] banner ad size: width = \(adSize.width), height = \(adSize.height)")
+        MSPLogger.shared.info(
+            message: "[Adapter: Liftoff] banner ad size: width = \(adSize.width), height = \(adSize.height)")
         return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: adSize.width, height: adSize.height))
     }
 
@@ -373,6 +374,14 @@ import VungleAdsSDK
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd ?? self.rewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse ?? self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
@@ -501,6 +510,7 @@ extension LiftoffAdapter: VungleInterstitialDelegate {
     public func interstitialAdDidClose(_ interstitial: VungleInterstitial) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
+            self.sendDismissAdEvent()
         }
     }
 

@@ -99,6 +99,7 @@ private final class MintegralRewardedAdDelegateHandler: NSObject, MTGRewardAdSho
     ) {
         DispatchQueue.main.async { [weak self] in
             self?.rewardedAd?.markDismissed(rewardEarned: converted)
+            self?.rewardedAd?.adNetworkAdapter?.sendDismissAdEvent()
         }
     }
 

@@ -150,6 +150,14 @@ import UIKit
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse ?? self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest,
@@ -399,6 +407,7 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
     @objc public func interstitialDidDismissAd(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
+            self.sendDismissAdEvent()
         }
     }
 

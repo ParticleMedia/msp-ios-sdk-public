@@ -65,6 +65,7 @@ final class SpyAdMetricReporter: AdMetricReporter {
         ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
+    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {}
     func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}
 }
 
@@ -153,6 +154,8 @@ final class RewardedAdNetworkAdapterStub: AdNetworkAdapter {
     }
 
     func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {}
+
+    func sendDismissAdEvent() {}
 
     func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {}
 

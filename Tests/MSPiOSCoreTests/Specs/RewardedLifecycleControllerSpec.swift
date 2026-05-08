@@ -191,5 +191,6 @@ private final class SpyAdMetricReporter: AdMetricReporter {
         ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
+    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {}
     func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}
 }

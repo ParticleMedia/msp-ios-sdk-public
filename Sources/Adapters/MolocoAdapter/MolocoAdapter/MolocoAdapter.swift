@@ -416,6 +416,14 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         }
     }
 
+    public func sendDismissAdEvent() {
+        if let adRequest = self.adRequest,
+            let ad = self.interstitialAd ?? self.rewardedAd
+        {
+            self.adMetricReporter?.logAdDismiss(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse ?? self)
+        }
+    }
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
@@ -729,6 +737,7 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
 
         if let interstitialAd = mspAd as? MolocoInterstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
+            self.sendDismissAdEvent()
         }
     }
 
