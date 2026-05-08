@@ -84,7 +84,7 @@ struct AppProfile {
 
     private static let NEWSBREAK = AppProfile(
         appName: "NewsBreak",
-        prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
+        prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug",
         sourceApp: "1132762804",
         orgId: 0,
         appId: 1,

@@ -158,9 +158,13 @@ extension DebugSectionData {
             .init(id: "t2g1", title: "t2g1"),
             .init(id: "t2g2", title: "t2g2"),
             .init(id: "t2g3", title: "t2g3"),
+            .init(id: "t1nb", title: "t1nb"),
+            .init(id: "t1nb-v1", title: "t1nb-v1"),
         ]
         static let playableVideo: [DebugChipGroupItem.ChipOption] = [
-            .init(id: "t3g1", title: "t3g1")
+            .init(id: "t3g1", title: "t3g1"),
+            .init(id: "t1nb", title: "t1nb"),
+            .init(id: "t1nb-v1", title: "t1nb-v1"),
         ]
     }
 

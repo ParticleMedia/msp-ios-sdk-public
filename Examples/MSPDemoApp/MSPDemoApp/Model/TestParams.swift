@@ -6,7 +6,7 @@ struct TestParams {
     static let creativeTypes = ["video", "image", "playable_video"]
     static let creativeLayouts = ["vertical", "horizontal"]
     static let h5TemplateGroupsImageVideo = ["t1tob", "t1tob-v1", "t1nb", "t1nb-v1"]
-    static let h5TemplateGroupsPlayableVideo = ["t1nb"]
+    static let h5TemplateGroupsPlayableVideo = ["t1nb", "t1nb-v1"]
 
     private let testAd: Bool
     private let adNetwork: String?
@@ -48,6 +48,11 @@ struct TestParams {
             "enable_h5_format": String(enableH5Format),
             "preload": String(preload),
         ]
+        
+        if creativeType == "playable_video" {
+            expParameter["enable_h5_for_playable"] = "true"
+        }
+        
         if let h5TemplateGroup {
             expParameter["h5_template_group"] = h5TemplateGroup
         }
