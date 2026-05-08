@@ -47,7 +47,7 @@ public class MSPBidder: MSPiOSCore.Bidder {
                 ?? "",
             "liftoff": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .liftoff)?.getSDKVersion()
                 ?? "",
-            "msp": MSP.shared.version,
+            MSPBidderName.msp: MSP.shared.version,
         ]
 
         if let jsonData = try? JSONSerialization.data(withJSONObject: versions, options: []),
@@ -57,7 +57,6 @@ public class MSPBidder: MSPiOSCore.Bidder {
         }
         return ""
     }
-
 }
 
 extension MSPBidder: BidListener {

@@ -33,7 +33,8 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                             name: AdNetwork.google.rawValue, bidderPlacementId: "google-placement",
                             bidderFormat: "rewarded", params: nil),
                         BidderInfo(
-                            name: "msp", bidderPlacementId: "msp-placement", bidderFormat: "rewarded", params: nil),
+                            name: MSPBidderName.msp, bidderPlacementId: "msp-placement", bidderFormat: "rewarded",
+                            params: nil),
                         BidderInfo(
                             name: AdNetwork.facebook.rawValue, bidderPlacementId: "facebook-placement",
                             bidderFormat: "rewarded", params: nil),
@@ -60,7 +61,8 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                             name: AdNetwork.google.rawValue, bidderPlacementId: "google-placement",
                             bidderFormat: "interstitial", params: nil),
                         BidderInfo(
-                            name: "msp", bidderPlacementId: "msp-placement", bidderFormat: "interstitial", params: nil),
+                            name: MSPBidderName.msp, bidderPlacementId: "msp-placement", bidderFormat: "interstitial",
+                            params: nil),
                         BidderInfo(
                             name: AdNetwork.moloco.rawValue, bidderPlacementId: "moloco-placement",
                             bidderFormat: "interstitial", params: nil),
@@ -73,7 +75,7 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                 expect(bidders.map(\.name)).to(
                     equal([
                         AdNetwork.google.rawValue,
-                        "msp",
+                        MSPBidderName.msp,
                         AdNetwork.moloco.rawValue,
                     ]))
             }

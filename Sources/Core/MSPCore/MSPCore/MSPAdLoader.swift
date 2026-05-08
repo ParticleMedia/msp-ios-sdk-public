@@ -12,6 +12,15 @@ public class MSPAdLoader: NSObject {
     weak var adListener: AdListener?
     var adRequest: AdRequest?
     var rewardedAdapterRolloutPolicy: any RewardedAdapterRolloutPolicy = ClientRewardedAdapterRolloutPolicy()
+    private let bidLossResolver = MSPAdBidLossResolver()
+    var bidLossNotifier: (MSPBidLossNotification) -> Void = { notification in
+        MSP.shared.notifyLoss(
+            winnerBidderName: notification.winnerBidderName,
+            winnerPrice: notification.winnerPrice,
+            ad: notification.losingAd,
+            requestId: notification.requestId
+        )
+    }
 
     var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
@@ -72,7 +81,8 @@ public class MSPAdLoader: NSObject {
 
     private func getDefaultBidders(adRequest: AdRequest) -> [MSPiOSCore.Bidder] {
         var bidders: [MSPiOSCore.Bidder] = []
-        let bidder = MSPBidder(name: "msp", bidderPlacementId: adRequest.placementId, bidderFormat: adRequest.adFormat)
+        let bidder = MSPBidder(
+            name: MSPBidderName.msp, bidderPlacementId: adRequest.placementId, bidderFormat: adRequest.adFormat)
         bidders.append(bidder)
         return bidders
     }
@@ -136,8 +146,9 @@ public class MSPAdLoader: NSObject {
         )
 
         switch bidderInfo.name {
-        case "msp":
-            return MSPBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
+        case MSPBidderName.msp:
+            return MSPBidder(
+                name: MSPBidderName.msp, bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
         case AdNetwork.unity.rawValue:
             //let bidder = MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.unity]?.getAdBidder(
@@ -191,28 +202,19 @@ public class MSPAdLoader: NSObject {
 
     public func getAd(placementId: String) -> MSPAd? {
         MSPLogger.shared.info(message: "[Auction: Get Ad] started.")
-        var winnerPlacementId = ""
-        var winnerPrice = 0.0
-        var winnerBidderName = ""
         if let placement = getPlacement(placementId: placementId),
             let bidderInfoList = placement.bidders,
             !bidderInfoList.isEmpty
         {
-            for bidderInfo in bidderInfoList {
-                let bidderPlacementId = bidderInfo.bidderPlacementId
-                if let ad = AdCache.shared.peakAd(placementId: bidderPlacementId),
-                    let price = ad.adInfo["price"] as? Double,
-                    price >= winnerPrice
-                {
-                    winnerPrice = price
-                    winnerPlacementId = bidderPlacementId
-                    winnerBidderName = bidderInfo.name
-                }
-            }
-            if let ad = AdCache.shared.getAd(placementId: winnerPlacementId) {
+            let candidates = getAuctionAdCandidates(placement: placement)
+            if let winner = bidLossResolver.winningCandidate(from: candidates),
+                let ad = AdCache.shared.getAd(placementId: winner.bidderPlacementId)
+            {
                 MSPLogger.shared.info(
                     message:
-                        "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
+                        "[Auction: Get Ad] complete, winner: \(winner.bidderName),\(winner.price),\(winner.bidderPlacementId)"
+                )
+                notifyAdBidLossIfNeeded(candidates: candidates, winner: winner)
                 MESMetricReporter.shared.logGetAd(ad: ad, placementId: placementId)
                 return ad
             }
@@ -220,13 +222,39 @@ public class MSPAdLoader: NSObject {
             if let ad = AdCache.shared.getAd(placementId: placementId) {
                 MSPLogger.shared.info(
                     message:
-                        "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
+                        "[Auction: Get Ad] complete, winner: \(ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] ?? ""),\(ad.adInfo[MSPConstants.AD_INFO_PRICE] ?? ""),\(placementId)"
+                )
                 MESMetricReporter.shared.logGetAd(ad: ad, placementId: placementId)
                 return ad
             }
         }
         MESMetricReporter.shared.logGetAd(ad: nil, placementId: placementId)
         return nil
+    }
+
+    func getAuctionAdCandidates(placement: Placement) -> [MSPAuctionAdCandidate] {
+        guard let bidderInfoList = placement.bidders else { return [] }
+
+        return bidderInfoList.compactMap { bidderInfo in
+            // Keep losing ads in cache; only the selected winner is consumed by getAd.
+            guard let ad = AdCache.shared.peakAd(placementId: bidderInfo.bidderPlacementId),
+                let price = ad.adInfo[MSPConstants.AD_INFO_PRICE] as? Double
+            else { return nil }
+
+            return MSPAuctionAdCandidate(
+                bidderName: bidderInfo.name,
+                bidderPlacementId: bidderInfo.bidderPlacementId,
+                price: price,
+                ad: ad
+            )
+        }
+    }
+
+    private func notifyAdBidLossIfNeeded(candidates: [MSPAuctionAdCandidate], winner: MSPAuctionAdCandidate) {
+        guard let notification = bidLossResolver.resolveBidLossNotification(candidates: candidates, winner: winner)
+        else { return }
+
+        bidLossNotifier(notification)
     }
 }
 
