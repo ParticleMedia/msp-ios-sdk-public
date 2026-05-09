@@ -213,7 +213,7 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
                         string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL'),
-                        string(credentialsId: 'msp-ios-github-token', variable: 'GH_TOKEN')
+                        string(credentialsId: 'msp-ios-github-token-may-2026', variable: 'GH_TOKEN')
                     ]) {
                         sh '''
                             set -euo pipefail
@@ -280,7 +280,7 @@ pipeline {
                             withCredentials([
                                 string(credentialsId: 'msp-slack-bot-token', variable: 'SLACK_BOT_TOKEN'),
                                 string(credentialsId: 'msp-slack-webhook', variable: 'SLACK_WEBHOOK_URL'),
-                                string(credentialsId: 'msp-ios-github-token', variable: 'GH_TOKEN')
+                                string(credentialsId: 'msp-ios-github-token-may-2026', variable: 'GH_TOKEN')
                             ]) {
                                 // Reset workspace, generate release.md (only if not already present),
                                 // then commit so preflight sees a clean tree.

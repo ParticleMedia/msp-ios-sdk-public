@@ -45,6 +45,8 @@ targets:
         embed: false
       - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKBidding.xcframework
         embed: false
+      - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKReward.xcframework
+        embed: false
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES
