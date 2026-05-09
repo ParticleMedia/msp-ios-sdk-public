@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "generated_at": "2026-05-09T08:18:10Z",
+  "generated_at": "2026-05-09T09:38:54Z",
   "generator": "Scripts/tools/generate-context-index.py",
   "entry_count": 30,
   "domains": {
@@ -14,12 +14,6 @@
       "count": 4,
       "layers": [
         "experience"
-      ]
-    },
-    "testing": {
-      "count": 3,
-      "layers": [
-        "tech"
       ]
     },
     "release": {
@@ -36,11 +30,17 @@
         "tech"
       ]
     },
-    "compatibility": {
+    "testing": {
+      "count": 3,
+      "layers": [
+        "tech"
+      ]
+    },
+    "architecture": {
       "count": 0,
       "layers": []
     },
-    "architecture": {
+    "compatibility": {
       "count": 0,
       "layers": []
     }
@@ -374,7 +374,7 @@
         "cherry-pick to freeze branch",
         "NB_VERSION freeze"
       ],
-      "summary": "Weekly SDK release cadence: Thu freeze, Fri-Mon QA, Tue release + unfreeze. Branch model, cherry-pick flow, NB_VERSION.",
+      "summary": "Weekly SDK release cycle: Thu freeze, QA, release on user-specified date, unfreeze. Branch + state JSON + Slack flow.",
       "status": "active",
       "updated": "2026-02-22"
     },

@@ -25,5 +25,16 @@ if ! command -v shellcheck &> /dev/null; then
 fi
 
 echo "Validating: $SCRIPT_PATH"
+
+# Bash parser check first — catches syntax issues that shellcheck's parser
+# tolerates (e.g., apostrophe inside heredoc-in-command-substitution that
+# bash itself can't parse).
+if ! bash -n "$SCRIPT_PATH"; then
+    echo "Error: bash parse failed (script will not run)." >&2
+    exit 1
+fi
+
+# Static analysis (style + common pitfalls).
 shellcheck -x "$SCRIPT_PATH"
+
 echo "Validation passed."

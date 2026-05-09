@@ -218,7 +218,12 @@ Scripts/tests/release_state/**/case_*/
 
 # MSP Release System runtime state file
 .msp-release-state.json
+# Freeze state JSON: committed ON the freeze/nb-* branch (see Scripts/freeze.sh).
+# Listed here as a safety net so a stale local copy on develop never gets
+# committed by accident. freeze.sh uses `git add -f` on the freeze branch.
 .msp-freeze-state.json
+# Freeze announcement template — local archive only (regenerated each freeze)
+.msp-freeze-notice.md
 
 # Notification system test artifacts
 Tests/notify_output/

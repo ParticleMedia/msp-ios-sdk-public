@@ -38,8 +38,8 @@ help:
 	@echo "  make fetch-credentials  Fetch ASC keys from private credentials repo"
 	@echo "  make beta               Upload DemoApp to TestFlight (requires ASC credentials)"
 	@echo "  make beta-dry           Archive + export only, no upload"
-	@echo "  make freeze             Weekly code freeze (NB_VERSION= required)"
-	@echo "  make unfreeze           Post-release cleanup (NB_VERSION= required)"
+	@echo "  make freeze             Weekly code freeze (NB_VERSION= required, RELEASE_DATE= optional)"
+	@echo "  make unfreeze           Post-release cleanup (NB_VERSION= required, DELETE_BRANCH=1 to delete branch)"
 	@echo "  make release            Production release (VERSION= NOTES= required)"
 	@echo "  make release-prerelease Prerelease publication (VERSION=X.Y.Z-suffix required)"
 	@echo "  make resume             Resume failed release (VERSION= required)"
@@ -160,25 +160,32 @@ endif
 # --------------------------------------------------------------------------
 # freeze — Weekly code freeze
 # --------------------------------------------------------------------------
-# Usage: make freeze NB_VERSION=26.18.0
+# Usage: make freeze NB_VERSION=26.18.0 [RELEASE_DATE=YYYY-MM-DD]
 NB_VERSION ?=
+RELEASE_DATE ?=
+DELETE_BRANCH ?=
 KEEP_BRANCH ?=
 
 freeze:
 ifndef NB_VERSION
-	$(error NB_VERSION is required. Usage: make freeze NB_VERSION=26.18.0)
+	$(error NB_VERSION is required. Usage: make freeze NB_VERSION=26.18.0 [RELEASE_DATE=YYYY-MM-DD])
 endif
-	$(SCRIPTS)/freeze.sh NB_VERSION=$(NB_VERSION)
+	$(SCRIPTS)/freeze.sh NB_VERSION=$(NB_VERSION) \
+		$(if $(RELEASE_DATE),RELEASE_DATE=$(RELEASE_DATE))
 
 # --------------------------------------------------------------------------
 # unfreeze — Post-release cleanup
 # --------------------------------------------------------------------------
-# Usage: make unfreeze NB_VERSION=26.18.0 [KEEP_BRANCH=1]
+# Usage: make unfreeze NB_VERSION=26.18.0 [DELETE_BRANCH=1]
+# Default: retains the freeze branch for diff/audit. Pass DELETE_BRANCH=1
+# to explicitly delete remote + local. Legacy KEEP_BRANCH=0/1 still accepted.
 unfreeze:
 ifndef NB_VERSION
-	$(error NB_VERSION is required. Usage: make unfreeze NB_VERSION=26.18.0)
+	$(error NB_VERSION is required. Usage: make unfreeze NB_VERSION=26.18.0 [DELETE_BRANCH=1])
 endif
-	$(SCRIPTS)/unfreeze.sh NB_VERSION=$(NB_VERSION) $(if $(filter 1,$(KEEP_BRANCH)),KEEP_BRANCH=1)
+	$(SCRIPTS)/unfreeze.sh NB_VERSION=$(NB_VERSION) \
+		$(if $(filter 1,$(DELETE_BRANCH)),DELETE_BRANCH=1) \
+		$(if $(KEEP_BRANCH),KEEP_BRANCH=$(KEEP_BRANCH))
 
 # --------------------------------------------------------------------------
 # sync — Sync agent rules across Claude/Cursor/Codex/Gemini
