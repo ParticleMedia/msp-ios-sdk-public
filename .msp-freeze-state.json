@@ -1,0 +1,10 @@
+{
+  "schema_version": 2,
+  "nb_version": "26.19.0",
+  "freeze_branch": "freeze/nb-26.19.0",
+  "frozen_at": "2026-05-09T10:39:03Z",
+  "frozen_by": "Patrick",
+  "develop_sha_at_freeze": "6e12f426f7d845f53a229d4d6ca31ea27e866884",
+  "planned_release_date": "2026-05-12",
+  "status": "active"
+}
