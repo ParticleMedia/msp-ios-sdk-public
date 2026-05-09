@@ -317,7 +317,7 @@ When: Architecture docs, ADRs, technical guides. Steps: Deep analysis of code/co
 
 ### Freeze Cycle
 
-When: Thursday PM (freeze) or Tuesday post-release (unfreeze). Run: make freeze NB_VERSION=xx.xx / make unfreeze NB_VERSION=xx.xx
+When: Thursday PM (freeze) or Tuesday post-release (unfreeze). Run: make freeze NB_VERSION=xx.xx / make unfreeze NB_VERSION=xx.xx KEEP_BRANCH=1 (default keeps branch for diff)
 
 **Full Skill**: `.agents-shared/skills/freeze-cycle.skill.md`
 

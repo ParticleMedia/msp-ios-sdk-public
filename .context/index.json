@@ -1,27 +1,24 @@
 {
   "version": "2.0",
-  "generated_at": "2026-05-08T11:33:09Z",
+  "generated_at": "2026-05-09T08:18:10Z",
   "generator": "Scripts/tools/generate-context-index.py",
   "entry_count": 30,
   "domains": {
-    "architecture": {
-      "count": 0,
-      "layers": []
+    "integration": {
+      "count": 2,
+      "layers": [
+        "experience"
+      ]
     },
-    "compatibility": {
-      "count": 0,
-      "layers": []
+    "ci": {
+      "count": 4,
+      "layers": [
+        "experience"
+      ]
     },
     "testing": {
       "count": 3,
       "layers": [
-        "tech"
-      ]
-    },
-    "sources": {
-      "count": 14,
-      "layers": [
-        "experience",
         "tech"
       ]
     },
@@ -32,17 +29,20 @@
         "tech"
       ]
     },
-    "ci": {
-      "count": 4,
+    "sources": {
+      "count": 14,
       "layers": [
-        "experience"
+        "experience",
+        "tech"
       ]
     },
-    "integration": {
-      "count": 2,
-      "layers": [
-        "experience"
-      ]
+    "compatibility": {
+      "count": 0,
+      "layers": []
+    },
+    "architecture": {
+      "count": 0,
+      "layers": []
     }
   },
   "entries": [

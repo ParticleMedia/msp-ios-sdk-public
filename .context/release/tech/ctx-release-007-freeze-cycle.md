@@ -35,7 +35,7 @@ created: 2026-04-30
 | 周四 PM | Code Freeze：从 develop 创建 freeze 分支 | SDK | `make freeze NB_VERSION=26.15` |
 | 周五—周一 | QA 测试 freeze 分支 | QA | — |
 | 周二 | 发版：从 freeze 分支构建并发布 | SDK | Jenkins `releaseCocoapod` |
-| 周二（发版后） | Cleanup：合回 develop，删分支 | SDK | `make unfreeze NB_VERSION=26.15` |
+| 周二（发版后） | Cleanup：合回 develop，**保留分支供后续 diff** | SDK | `make unfreeze NB_VERSION=26.15 KEEP_BRANCH=1` |
 | 周二 PM | NB App 集成新 SDK 并发版 | NB team | — |
 
 ## Branch 命名规范
@@ -55,8 +55,8 @@ develop ──────────────────────► fr
                                       │
                                Jenkins release
                                       │
-                              make unfreeze NB_VERSION=26.15
-develop ◄──────── merge ──────── freeze/nb-26.15 (deleted)
+                              make unfreeze NB_VERSION=26.15 KEEP_BRANCH=1
+develop ◄──────── merge ──────── freeze/nb-26.15 (kept for reference)
 ```
 
 ## Freeze 期间 PR 路由规则
@@ -129,12 +129,18 @@ MSP_ALLOW_LOCAL_RELEASE=1 ./Scripts/msp-release.sh --profile=production run 3.6.
 
 ## Cleanup（发版后）
 
+**默认保留 freeze 分支供后续 diff/排查使用**：
+
+```bash
+make unfreeze NB_VERSION=26.15 KEEP_BRANCH=1
+# 自动：merge freeze 分支 → push develop → 更新 state 文件（保留 remote/local 分支）
+```
+
+仅在确实需要清理（例如分支命名错误、误创建）时才删除：
+
 ```bash
 make unfreeze NB_VERSION=26.15
 # 自动：merge freeze 分支 → push develop → 删 remote freeze 分支 → 更新 state 文件
-
-# 保留分支（供参考）：
-make unfreeze NB_VERSION=26.15 KEEP_BRANCH=1
 ```
 
 ### 遇到 merge conflict
@@ -142,9 +148,7 @@ make unfreeze NB_VERSION=26.15 KEEP_BRANCH=1
 git status
 # 手动解决冲突
 git add . && git commit && git push origin develop
-# 手动清理 freeze 分支
-git branch -d freeze/nb-26.15
-git push origin --delete freeze/nb-26.15
+# 默认保留 freeze 分支，无需额外清理
 ```
 
 ## 跨版本功能

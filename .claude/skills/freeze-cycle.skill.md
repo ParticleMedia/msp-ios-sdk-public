@@ -5,7 +5,7 @@ category: release
 shared: true
 applicable_agents: [claude-code, codex, cursor]
 allowed-tools: [Bash, Read]
-quick_reference: "When: Thursday PM (freeze) or Tuesday post-release (unfreeze). Run: make freeze NB_VERSION=xx.xx / make unfreeze NB_VERSION=xx.xx"
+quick_reference: "When: Thursday PM (freeze) or Tuesday post-release (unfreeze). Run: make freeze NB_VERSION=xx.xx / make unfreeze NB_VERSION=xx.xx KEEP_BRANCH=1 (default keeps branch for diff)"
 ---
 
 # Freeze Cycle Skill
@@ -77,7 +77,7 @@ Copy the printed notification template and send to team Slack channel.
 ### 1. Confirm inputs
 
 - `NB_VERSION` — same version used at freeze time
-- `KEEP_BRANCH` — optional, `1` to keep branch for reference
+- `KEEP_BRANCH` — **default `1`** (保留分支供后续 diff)，仅在需要清理误建分支时省略
 
 ### 2. Check prerequisites
 
@@ -88,15 +88,18 @@ git status   # 工作区必须干净
 ### 3. Execute
 
 ```bash
+# 默认（保留分支供后续 diff）
+make unfreeze NB_VERSION=26.18.0 KEEP_BRANCH=1
+
+# 仅在确需清理时使用
 make unfreeze NB_VERSION=26.18.0
-# or: make unfreeze NB_VERSION=26.18.0 KEEP_BRANCH=1
 ```
 
 Script automatically:
 - `git fetch origin`
 - Runs `git cherry` to detect un-cherry-picked commits
 - **If missing commits**: aborts with list of commits to cherry-pick
-- **If all synced**: deletes remote + local freeze branch
+- **If all synced**: merges back to develop; deletes branch only when `KEEP_BRANCH` is unset
 - Removes `.msp-freeze-state.json`
 
 ### 4. If unfreeze aborts (missing cherry-picks)
