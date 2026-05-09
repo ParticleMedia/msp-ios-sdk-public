@@ -181,8 +181,8 @@ class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewH
 }
 
 extension NovaInterstitialAdPageSubviewHandler: NovaAdHtmlActionDelegate {
-    func didTapAdCtr(customUrl: URL?, clickArea: ClickableAdArea) {
-        delegate?.didTapCustomAdView(customUrl: customUrl, clickArea: clickArea)
+    func didTapAdCtr(_ payload: NovaAdClickPayload) {
+        delegate?.didTapCustomAdView(payload)
     }
 
     func didTapAdReport() {

@@ -314,26 +314,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                 case "startFeedback":
                     htmlActionDelegate?.didTapAdReport()
                 case "open":
-                    var customUrl: URL? = nil
-                    var clickAreaString: String = ""
-
-                    if let jsonString = body["payload"] as? String,
-                        let data = jsonString.data(using: .utf8),
-                        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-                    {
-                        // payload is [string : string?] per doc
-                        if let urlString = json["url"] as? String,
-                            !urlString.isEmpty
-                        {
-                            customUrl = URL(string: urlString)
-                        }
-
-                        clickAreaString = (json["click_area_name"] as? String) ?? ""
-                    }
-
                     htmlActionDelegate?.didTapAdCtr(
-                        customUrl: customUrl,
-                        clickArea: ClickableAdArea(from: clickAreaString)
+                        NovaAdClickPayload.openPayload(from: body["payload"])
                     )
                 case "sendNativeAction":
                     handleSendNativeAction(body["payload"] as? String)
@@ -393,7 +375,9 @@ extension NovaAdHtmlView: WKNavigationDelegate {
         }
 
         DebugLogger.ui.info("[Html] URL navigation click — opening landing page")
-        htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: .html)
+        htmlActionDelegate?.didTapAdCtr(
+            NovaAdClickPayload(url: navigationAction.request.url, area: .html)
+        )
 
         decisionHandler(.cancel)
     }
@@ -471,9 +455,11 @@ extension NovaAdHtmlView: WKUIDelegate {
         userDidClick = false
         DebugLogger.ui.info("[Html] window.open() received — opening landing page")
         if useCustomUrl {
-            htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: .html)
+            htmlActionDelegate?.didTapAdCtr(
+                NovaAdClickPayload(url: navigationAction.request.url, area: .html)
+            )
         } else {
-            htmlActionDelegate?.didTapAdCtr(customUrl: nil, clickArea: .html)
+            htmlActionDelegate?.didTapAdCtr(NovaAdClickPayload(url: nil, area: .html))
         }
         return nil
     }
@@ -486,7 +472,7 @@ extension NovaAdHtmlView: MraidBehaviorDelegate {
         //   iOS 15:  click/touchend event listener (300ms window)
         // No native guard here — see NovaAdPlayableView.mraidOpen for rationale.
         DebugLogger.ui.info("[Html] mraid.open() received — opening landing page")
-        htmlActionDelegate?.didTapAdCtr(customUrl: url, clickArea: .html)
+        htmlActionDelegate?.didTapAdCtr(NovaAdClickPayload(url: url, area: .html))
     }
 
     func mraidClose() {

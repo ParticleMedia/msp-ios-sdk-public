@@ -77,7 +77,9 @@ extension NovaActionHelper where T == NovaActionState.Init {
     }
 
     func logNovaClickEvent(
-        with duration: CFTimeInterval? = nil, in area: ClickableAdArea? = nil
+        with duration: CFTimeInterval? = nil,
+        in area: ClickableAdArea? = nil,
+        extras: [String: String]? = nil
     ) -> NovaActionHelper<NovaActionState.NovaEventSent> {
         let durationInMs = duration.flatMap { ($0 * 1000).safeToInt() }
         context.tracingInfo.clickSeq += 1
@@ -88,7 +90,8 @@ extension NovaActionHelper where T == NovaActionState.Init {
                 adUnitId: context.tracingInfo.adUnitId,
                 clickSeq: context.tracingInfo.clickSeq,
                 durationInMs: durationInMs,
-                clickArea: area
+                clickArea: area,
+                extras: extras
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }

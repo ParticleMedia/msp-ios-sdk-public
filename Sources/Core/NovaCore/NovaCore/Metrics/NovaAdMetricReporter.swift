@@ -43,7 +43,8 @@ class NovaAdMetricReporter: NSObject {
         adUnitId: String,
         clickSeq: Int = 0,
         durationInMs: Int? = nil,
-        clickArea: ClickableAdArea? = nil
+        clickArea: ClickableAdArea? = nil,
+        extras: [String: String]? = nil
     ) {
         // Third party click tracking
         AdsThirdPartyMetricReporter.logClick(thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls)
@@ -59,6 +60,17 @@ class NovaAdMetricReporter: NSObject {
         params[NovaAdMetricKeys.AD_UNIT_ID] = adUnitId
         params[NovaAdMetricKeys.USER_ID] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
         params[NovaAdMetricKeys.CLICK_SEQ] = "\(clickSeq)"
+        // Defense in depth: even if a caller forwards untrusted extras (bypassing
+        // NovaAdClickPayload.openPayload), only whitelisted keys with non-empty values are accepted,
+        // and system fields can never be overridden.
+        if let extras {
+            for (key, value) in extras
+            where NovaAdClickPayload.allowedExtraKeys.contains(key)
+                && !value.isEmpty
+                && params[key] == nil {
+                params[key] = value
+            }
+        }
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
@@ -235,6 +247,8 @@ struct NovaAdMetricKeys {
     static let AD_UNIT_ID = "ad_unit_id"
     static let USER_ID = "user_id"
     static let CLICK_AREA_NAME = "click_area_name"
+    static let PRODUCT_ID = "product_id"
+    static let GRID_IDX = "grid_idx"
     static let ACTION = "action"
     static let REASON = "reason"
     static let ERROR = "error"

@@ -4,6 +4,7 @@
 # Validation: python Scripts/tools/test-cases.py validate
 
 prefixes:
+  ACP: NovaAdClickPayload
   DAL: DebugAdLoad
   DRC: DebugRadioCell
   MVS: MSPVersion

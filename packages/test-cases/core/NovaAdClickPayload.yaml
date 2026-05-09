@@ -1,0 +1,50 @@
+module: NovaAdClickPayload
+prefix: ACP
+description: "Test cases for H5 open payload parsing and reporting extras extraction"
+bundle: NovaCoreTests
+created: "2026-05-09"
+updated: "2026-05-09"
+cases:
+  - id: ACP001
+    type: behavior
+    description: "Dictionary open payload extracts url, click area, product_id, and numeric grid_idx"
+    priority: critical
+    tags: [behavior, h5, click-reporting]
+    file: Tests/NovaCoreTests/Specs/Html/NovaAdClickPayloadSpec.swift
+    status: implemented
+    given: "An H5 open payload delivered as a native dictionary"
+    when: "NovaAdClickPayload.openPayload(from:) parses it"
+    then: "url, click area, product_id, and grid_idx are preserved for reporting"
+
+  - id: ACP002
+    type: behavior
+    description: "JSON string open payload preserves legacy parsing behavior"
+    priority: high
+    tags: [behavior, h5, compatibility]
+    file: Tests/NovaCoreTests/Specs/Html/NovaAdClickPayloadSpec.swift
+    status: implemented
+    given: "An H5 open payload delivered as a JSON string"
+    when: "NovaAdClickPayload.openPayload(from:) parses it"
+    then: "url, click area, product_id, and grid_idx are preserved for reporting"
+
+  - id: ACP003
+    type: behavior
+    description: "Empty and non-whitelisted extras are dropped before DSP reporting"
+    priority: high
+    tags: [behavior, h5, whitelist]
+    file: Tests/NovaCoreTests/Specs/Html/NovaAdClickPayloadSpec.swift
+    status: implemented
+    given: "An H5 open payload with empty product_id, invalid grid_idx, and an unapproved field"
+    when: "NovaAdClickPayload.openPayload(from:) extracts extras"
+    then: "no extra reporting fields are returned and url/area fall back to safe defaults"
+
+  - id: ACP004
+    type: behavior
+    description: "Missing or unsupported raw payload returns a safe empty payload"
+    priority: high
+    tags: [behavior, h5, robustness]
+    file: Tests/NovaCoreTests/Specs/Html/NovaAdClickPayloadSpec.swift
+    status: implemented
+    given: "A nil, non-dictionary, or malformed JSON raw payload from the JS bridge"
+    when: "NovaAdClickPayload.openPayload(from:) is called"
+    then: "an empty payload is returned without crashing"
