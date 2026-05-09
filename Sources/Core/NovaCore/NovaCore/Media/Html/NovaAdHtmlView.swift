@@ -63,11 +63,10 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.scrollView.contentInsetAdjustmentBehavior = .never
         self.scrollView.showsVerticalScrollIndicator = false
         self.scrollView.showsHorizontalScrollIndicator = false
-        
+
         self.isOpaque = false
 
         injectNovaNativeBridge(enableFeedback: supportReportHandling)
-        injectGetAdContextBridge()
 
         mraidController.install(in: userController)
 
@@ -134,6 +133,12 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
 
     // MARK: - JS injection
+
+    /// Defines the full `window.novaNativeBridge` JS surface in a single user script.
+    /// Previously split across two `addUserScript` calls — that worked because
+    /// `WKUserContentController.userScripts` is order-preserving, but a future
+    /// re-ordering of the call sites could have silently overwritten `getAdContext`.
+    /// Combining into one script removes that ordering dependency.
     private func injectNovaNativeBridge(enableFeedback: Bool) {
         // Precompute static capability map
         let enableFeedbackString = enableFeedback ? "true" : "false"
@@ -153,7 +158,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                 startFeedback: function() {
                     window.webkit.messageHandlers.novaNativeBridge.postMessage({ action: 'startFeedback' });
                 },
-                
+
                 open: function(payload) {
                     window.webkit.messageHandlers.novaNativeBridge.postMessage({
                         action: 'open',
@@ -166,51 +171,39 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                         action: 'sendNativeAction',
                         payload: typeof paramsString === 'string' ? paramsString : JSON.stringify(paramsString || {})
                     });
-                }
-            };
-            """
+                },
 
-        let script = WKUserScript(source: js, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-        configuration.userContentController.addUserScript(script)
-    }
+                onAdRewarded: function() {
+                    window.webkit.messageHandlers.novaNativeBridge.postMessage({
+                        action: 'onAdRewarded'
+                    });
+                },
 
-    private func injectGetAdContextBridge() {
-        let js = """
-            if (!window.__getAdContextBridgeInjected) {
-                window.__getAdContextBridgeInjected = true;
-
-                window.novaNativeBridge = window.novaNativeBridge || {};
-
-                // Promise-based call
-                window.novaNativeBridge.getAdContext = function() {
+                // Promise-based ad-context fetch. Native posts `getAdContext`, then calls
+                // `window.onAdContext(dataString)` to fulfil the Promise.
+                getAdContext: function() {
                     return new Promise(function(resolve, reject) {
                         try {
                             window.__resolveAdContext = resolve;
                             window.webkit.messageHandlers.getAdContext.postMessage({});
                         } catch(e) { reject(e); }
                     });
-                };
+                }
+            };
 
-                // Swift calls this and JS returns a STRING
-                window.onAdContext = function(dataString) {
-                    try {
-                        // resolve any waiting Promise
-                        if (window.__resolveAdContext) {
-                            window.__resolveAdContext(dataString);
-                            window.__resolveAdContext = null;
-                        }
-                    } catch(e) { console.error(e); }
-
-                    // MUST return a string because web requested it
-                    return dataString;
-                };
-            }
+            // Native calls this; JS returns the dataString (some webs require a return value).
+            window.onAdContext = function(dataString) {
+                try {
+                    if (window.__resolveAdContext) {
+                        window.__resolveAdContext(dataString);
+                        window.__resolveAdContext = null;
+                    }
+                } catch(e) { console.error(e); }
+                return dataString;
+            };
             """
 
-        let script = WKUserScript(
-            source: js,
-            injectionTime: .atDocumentStart,
-            forMainFrameOnly: false)
+        let script = WKUserScript(source: js, injectionTime: .atDocumentStart, forMainFrameOnly: false)
         configuration.userContentController.addUserScript(script)
     }
 
@@ -242,6 +235,31 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             .replacingOccurrences(of: "\"", with: "\\\"")
         let js = "window.onAdContext(\"\(escaped)\")"
         self.evaluateJavaScript(js, completionHandler: nil)
+    }
+
+    /// Routes a `novaNativeBridge` action coming from the H5 page. Extracted from
+    /// `userContentController(_:didReceive:)` so the routing rule can be exercised in unit
+    /// tests without standing up a real `WKScriptMessage` (private init).
+    ///
+    /// FR-021 contract: only `onAdRewarded` is forwarded as a reward signal. SKIP / Get
+    /// Rewards / Close button / in-H5 video lifecycle events are H5-owned and beaconed
+    /// directly by the page to Nova; the SDK MUST NOT relay them. Unknown actions fall
+    /// through the `default` branch as a debug log only.
+    internal func dispatchNovaNativeBridgeAction(_ action: String, body: [String: Any]) {
+        switch action {
+        case "startFeedback":
+            htmlActionDelegate?.didTapAdReport()
+        case "open":
+            let payload = NovaAdClickPayload.openPayload(from: body["payload"])
+            DebugLogger.ui.info("[Html] novaNativeBridge open received, clickArea=\(String(describing: payload.area), privacy: .public), clickPosition=\(String(describing: payload.clickPosition), privacy: .public), extras=\(payload.extras, privacy: .public)")
+            htmlActionDelegate?.didTapAdCtr(payload)
+        case "sendNativeAction":
+            handleSendNativeAction(body["payload"] as? String)
+        case "onAdRewarded":
+            htmlActionDelegate?.didEarnReward()
+        default:
+            DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")
+        }
     }
 
     private func handleSendNativeAction(_ paramsString: String?) {
@@ -310,18 +328,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             if let body = message.body as? [String: Any],
                 let action = body["action"] as? String
             {
-                switch action {
-                case "startFeedback":
-                    htmlActionDelegate?.didTapAdReport()
-                case "open":
-                    htmlActionDelegate?.didTapAdCtr(
-                        NovaAdClickPayload.openPayload(from: body["payload"])
-                    )
-                case "sendNativeAction":
-                    handleSendNativeAction(body["payload"] as? String)
-                default:
-                    DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")
-                }
+                dispatchNovaNativeBridgeAction(action, body: body)
             }
         case NovaAdHtmlJSMessage.getAdContext.rawValue:
             self.attachAdContext()
@@ -479,3 +486,12 @@ extension NovaAdHtmlView: MraidBehaviorDelegate {
         htmlActionDelegate?.didTapAdClose()
     }
 }
+
+// MARK: - NovaInterstitialAdViewProtocol
+
+/// Conform to the full-screen ad view lifecycle protocol so this view can be plumbed
+/// through `NovaFullScreenAdViewController.adView`. All required methods fall back to
+/// the protocol's default no-op implementations — H5 already self-manages its own
+/// visibility (Page Visibility API), and dedicated WebView pause / resume hooks can
+/// be added here later without touching the base VC.
+extension NovaAdHtmlView: NovaInterstitialAdViewProtocol {}

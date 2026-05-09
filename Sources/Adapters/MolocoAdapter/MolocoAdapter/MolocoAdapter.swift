@@ -406,6 +406,12 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         .moloco
     }
 
+    public func getAdRequest() -> AdRequest? { adRequest }
+
+    public func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
+
+    public func getBidResponse() -> Any? { bidResponse }
+
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd

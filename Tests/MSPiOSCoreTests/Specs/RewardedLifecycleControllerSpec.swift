@@ -78,6 +78,15 @@ final class RewardedLifecycleControllerSpec: QuickSpec {
                     expect(adListener.clickedAds.count).toEventually(equal(1))
                     expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
                 }
+
+                it("passes click metadata to adMetricReporter") {
+                    let metadata = AdClickMetadata(clickAreaName: "cta", clickPosition: 3)
+
+                    sut.markClicked(clickMetadata: metadata)
+
+                    expect(metricReporter.lastClickMetadata?.clickAreaName).toEventually(equal("cta"))
+                    expect(metricReporter.lastClickMetadata?.clickPosition).toEventually(equal(3))
+                }
             }
 
             it("fires reward only once") {
@@ -93,11 +102,42 @@ final class RewardedLifecycleControllerSpec: QuickSpec {
                 expect(adListener.rewardedAds).to(beEmpty())
             }
 
+            it("drops reward callback after dismiss") {
+                sut.markDismissed()
+                sut.markRewardEarned()
+
+                expect(adListener.rewardedAds).to(beEmpty())
+                expect(metricReporter.logAdRewardedCallCount).to(equal(0))
+                expect(adListener.callSequence).to(equal(["dismiss"]))
+            }
+
+            it("still sends reward MES when listener is nil") {
+                sut = RewardedLifecycleController(adListener: nil, ad: ad)
+
+                sut.markRewardEarned()
+
+                expect(metricReporter.logAdRewardedCallCount).to(equal(1))
+                expect(adListener.rewardedAds).to(beEmpty())
+            }
+
             it("fires dismiss only once") {
                 sut.markDismissed()
                 sut.markDismissed()
 
                 expect(adListener.dismissedAds.count).to(equal(1))
+            }
+
+            it("calls logAdDismiss on adMetricReporter") {
+                sut.markDismissed()
+
+                expect(metricReporter.logAdDismissCallCount).toEventually(equal(1))
+            }
+
+            it("does not double-fire ad_dismiss MES when called twice") {
+                sut.markDismissed()
+                sut.markDismissed()
+
+                expect(metricReporter.logAdDismissCallCount).toEventually(equal(1))
             }
 
             it("preserves reward before dismiss ordering") {
@@ -172,6 +212,9 @@ private final class MockAdListener: AdListener {
 private final class SpyAdMetricReporter: AdMetricReporter {
     var logAdImpressionCallCount = 0
     var logAdClickCallCount = 0
+    var logAdRewardedCallCount = 0
+    var logAdDismissCallCount = 0
+    var lastClickMetadata: AdClickMetadata?
 
     func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
         logAdImpressionCallCount += 1
@@ -179,6 +222,15 @@ private final class SpyAdMetricReporter: AdMetricReporter {
 
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
         logAdClickCallCount += 1
+    }
+
+    func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, clickMetadata: AdClickMetadata?) {
+        logAdClickCallCount += 1
+        lastClickMetadata = clickMetadata
+    }
+
+    func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        logAdRewardedCallCount += 1
     }
 
     func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?) {}
@@ -191,6 +243,8 @@ private final class SpyAdMetricReporter: AdMetricReporter {
         ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
-    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {}
+    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        logAdDismissCallCount += 1
+    }
     func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}
 }

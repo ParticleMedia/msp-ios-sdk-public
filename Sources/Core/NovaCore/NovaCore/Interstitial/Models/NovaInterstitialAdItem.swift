@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public final class NovaInterstitialAdItem: NovaNativeBaseAd {
+public final class NovaInterstitialAdItem: NovaFullScreenAdItem {
     // MARK: - Properties
 
     let startTimeInMs: Double?
@@ -24,10 +24,7 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
     // MARK: - Layout
 
     private var _layoutStyle: NovaInterstitialAdLayout?
-    
-    public var shouldPreloadHtml: Bool
-    var cachedHtmlView: NovaAdHtmlView?
-    
+
     public var shouldAutoDismiss: Bool = false
 
     var layoutStyle: NovaInterstitialAdLayout {
@@ -102,7 +99,6 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         self._layoutStyle = novaInterstitialAdLayout
         self.closeCountDownTimeSeconds = closeCountDownTimeSeconds
         self.clickableComponents = clickableComponents
-        self.shouldPreloadHtml = shouldPreloadHtml
 
         try super.init(
             adUnitId: adUnitId,
@@ -125,8 +121,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             iconURL: iconUrl,
             isImageLayoutVertical: isVerticalImage,
             isImageClickable: isImageClickable,
-            imageURLs: imageUrls,
             imageContentMode: imageContentMode,
+            imageURLs: imageUrls,
             videoInfo: videoInfo,
             multipleItemsInfo: multipleItemsInfo,
             adDiscountTagInfo: adDiscountTagInfo,
@@ -134,7 +130,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             marketingType: marketingType,
             playableInfo: playableInfo,
             htmlPageItems: htmlPageItems,
-            popupCTAStyleVariant: popupCTAStyleVariant
+            popupCTAStyleVariant: popupCTAStyleVariant,
+            shouldPreloadHtml: shouldPreloadHtml
         )
     }
 
@@ -146,12 +143,9 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         _layoutStyle = try container.decodeIfPresent(NovaInterstitialAdLayout.self, forKey: .novaInterstitialAdLayout)
         closeCountDownTimeSeconds = try container.decodeIfPresent(Int.self, forKey: .closeCountDownTimeSeconds)
         clickableComponents = try container.decodeIfPresent([NovaClickableComponent].self, forKey: .clickableComponents)
-        shouldPreloadHtml = try container.decodeIfPresent(Bool.self, forKey: .shouldPreloadHtml) ?? false
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
-
-    private weak var viewController: UIViewController?
 
     // MARK: - Codable
 
@@ -161,7 +155,6 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         case novaInterstitialAdLayout
         case closeCountDownTimeSeconds
         case clickableComponents
-        case shouldPreloadHtml
     }
 
     public override func encode(to encoder: Encoder) throws {
@@ -174,37 +167,29 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         try super.encode(to: superEncoder)
     }
 
-    public func present(rootViewController: UIViewController, reportHandling: NovaInterstitialAdReportHandling) {
-        requestToDisplay(rootViewController: rootViewController, reportHandling: reportHandling)
-    }
+    // MARK: - Presentation
 
-    func requestToDisplay(
-        rootViewController: UIViewController,
-        reportHandling: NovaInterstitialAdReportHandling
-    ) {
+    public func present(rootViewController: UIViewController, reportHandling: any NovaInterstitialAdReportHandling) {
         dispatchPrecondition(condition: .onQueue(.main))
         let orientationMask = rootViewController.view.window?.windowScene?.interfaceOrientation.orientationMask
-        let viewController = NovaInterstitialAdViewController(interstitialAd: self, reportHandling: reportHandling, orientationMask: orientationMask)
-        self.viewController = viewController
+        let viewController = NovaInterstitialAdViewController(
+            interstitialAd: self,
+            reportHandling: reportHandling,
+            orientationMask: orientationMask
+        )
+        storeViewController(viewController)
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .crossDissolve
-
         rootViewController.present(viewController, animated: true)
     }
 
-    public func dismiss(animated: Bool) {
-        viewController?.dismiss(animated: animated) {
+    public override func dismiss(animated: Bool) {
+        // Match develop: capture `self` strongly so the delegate callback fires even if
+        // the ad item would otherwise be released between dismiss-call and the completion
+        // running. Switching to `[weak self]` here was a behavior regression — a
+        // background-released ad item would silently drop `interstitialAdDidDismiss`.
+        dismissViewController(animated: animated) {
             self.delegate?.interstitialAdDidDismiss(self)
         }
-    }
-    
-    public func preloadHtmlView(enableFeedback: Bool, completion: @escaping () -> Void) {
-        guard case let .html(model) = layoutTypeInInterstitial else {
-            completion()
-            return
-        }
-        let htmlView = NovaAdHtmlView(supportReportHandling: enableFeedback)
-        cachedHtmlView = htmlView
-        htmlView.preload(with: model.currentPage, completion: completion, tracingInfo: .init(adUnitId: adUnitId, encryptedToken: encryptedAdToken))
     }
 }

@@ -46,6 +46,8 @@ final class MockAdListener: AdListener {
 final class SpyAdMetricReporter: AdMetricReporter {
     var logAdImpressionCallCount = 0
     var logAdClickCallCount = 0
+    var logAdRewardedCallCount = 0
+    var lastClickMetadata: AdClickMetadata?
 
     func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
         logAdImpressionCallCount += 1
@@ -54,6 +56,17 @@ final class SpyAdMetricReporter: AdMetricReporter {
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
         logAdClickCallCount += 1
     }
+
+    func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, clickMetadata: AdClickMetadata?) {
+        logAdClickCallCount += 1
+        lastClickMetadata = clickMetadata
+    }
+
+    func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        logAdRewardedCallCount += 1
+    }
+
+    var logAdDismissCallCount = 0
 
     func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?) {}
     func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {}
@@ -65,7 +78,9 @@ final class SpyAdMetricReporter: AdMetricReporter {
         ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?,
         adScreenShot: Data?, fullScreenShot: Data?
     ) {}
-    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {}
+    func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
+        logAdDismissCallCount += 1
+    }
     func logAdResponse(ad: MSPAd?, adRequest: AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {}
 }
 
@@ -166,4 +181,8 @@ final class RewardedAdNetworkAdapterStub: AdNetworkAdapter {
     func getSDKVersion() -> String {
         ""
     }
+
+    func getAdRequest() -> AdRequest? { adRequest }
+
+    func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
 }

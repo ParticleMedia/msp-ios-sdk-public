@@ -54,6 +54,22 @@ public protocol AdNetworkAdapter: AnyObject {
         bidderPlacementId: String,
         params: [String: String]?
     )
+
+    /// Returns the active `AdRequest` for the most recently loaded ad, if the adapter
+    /// retains one. Used by `RewardedLifecycleController` to populate impression / click /
+    /// reward MES events. Adapters that do not store the request return nil and the
+    /// corresponding MES event is skipped.
+    func getAdRequest() -> AdRequest?
+
+    /// Returns the metric reporter wired into the adapter, if any. Used by
+    /// `RewardedLifecycleController` to emit MES events from the rewarded lifecycle path.
+    func getAdMetricReporter() -> AdMetricReporter?
+
+    /// Returns the winning `BidResponse` (typed as `Any?` to avoid PrebidMobile coupling
+    /// in the protocol surface). Used by `RewardedLifecycleController` to attach the full
+    /// auction context (winning seat, adid, crid, lurl, nurl, impid, etc.) to MES events;
+    /// when nil, MES falls back to a synthetic seatBid with empty fields.
+    func getBidResponse() -> Any?
 }
 
 // MARK: - Rewarded Ad Support
@@ -74,4 +90,13 @@ public extension AdNetworkAdapter {
             error: "\(type(of: self)) does not support the rewarded ad format."
         )
     }
+
+    /// Default returns nil; adapters that retain the request override to expose it.
+    func getAdRequest() -> AdRequest? { nil }
+
+    /// Default returns nil; adapters that hold a metric reporter override to expose it.
+    func getAdMetricReporter() -> AdMetricReporter? { nil }
+
+    /// Default returns nil; adapters that retain the winning bid response override to expose it.
+    func getBidResponse() -> Any? { nil }
 }

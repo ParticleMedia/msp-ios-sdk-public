@@ -20,11 +20,11 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
     weak var rootViewController: UIViewController?
     var rewardedVideoAdItem: FBRewardedVideoAd?
 
-    private lazy var lifecycleController = RewardedLifecycleController(adListener: adListener, ad: self)
+    private lazy var lifecycleController = RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
 
     public init(
         adNetworkAdapter: AdNetworkAdapter,
-        reward: Reward,
+        reward: Reward?,
         rewardedVideoAdItem: FBRewardedVideoAd?,
         rootViewController: UIViewController?,
         adListener: AdListener?
@@ -45,7 +45,7 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
         MSPLogger.shared.info(
             tag: Constants.logTag,
             message:
-                "[Adapter: Facebook] Showing rewarded ad. hasAdItem=\(rewardedVideoAdItem != nil), reward=\(reward.type):\(reward.amount)"
+                "[Adapter: Facebook] Showing rewarded ad. hasAdItem=\(rewardedVideoAdItem != nil), reward=\(reward.map { "\($0.type):\($0.amount)" } ?? "nil")"
         )
         Self.presenter(rewardedVideoAdItem, presentingViewController)
     }
@@ -69,7 +69,7 @@ public final class FacebookRewardedAd: MSPiOSCore.RewardedAd {
         MSPLogger.shared.info(
             tag: Constants.logTag,
             message:
-                "[Adapter: Facebook] Reward callback received from Facebook SDK. reward=\(reward.type):\(reward.amount)"
+                "[Adapter: Facebook] Reward callback received from Facebook SDK. reward=\(reward.map { "\($0.type):\($0.amount)" } ?? "nil")"
         )
         lifecycleController.markRewardEarned()
     }

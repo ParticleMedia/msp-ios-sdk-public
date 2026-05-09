@@ -48,8 +48,9 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                 let bidders = sut.getBidders(placement: placement, adRequest: adRequest)
 
                 // Facebook passes the rollout allowlist but has no direct-adapter getBidder
-                // implementation, so only google produces a non-nil Bidder.
-                expect(bidders.map(\.name)).to(equal([AdNetwork.google.rawValue]))
+                // implementation. "msp" must remain enabled because Nova rewarded is
+                // served through the MSP bidder and routed by the msp_nova seat.
+                expect(bidders.map(\.name)).to(equal([AdNetwork.google.rawValue, "msp"]))
             }
 
             it("does not filter non-rewarded requests") {
@@ -101,6 +102,25 @@ final class MSPAdLoaderRewardedRolloutSpec: QuickSpec {
                 let bidders = sut.getBidders(placement: placement, adRequest: adRequest)
 
                 expect(bidders.map(\.name)).to(equal([AdNetwork.moloco.rawValue]))
+            }
+
+            it("treats rewarded_video bidder format as rewarded") {
+                let placement = Placement(
+                    placementId: "rewarded-video-placement",
+                    auctionTimeout: 8000,
+                    bidders: [
+                        BidderInfo(
+                            name: AdNetwork.google.rawValue,
+                            bidderPlacementId: "google-placement",
+                            bidderFormat: "rewarded_video",
+                            params: nil)
+                    ]
+                )
+                let adRequest = makeAdRequest(format: .rewarded)
+
+                let bidders = sut.getBidders(placement: placement, adRequest: adRequest)
+
+                expect(bidders.first?.bidderFormat).to(equal(.rewarded))
             }
         }
     }

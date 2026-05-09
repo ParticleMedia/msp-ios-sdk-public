@@ -16,12 +16,12 @@ public final class MintegralRewardedAd: MSPiOSCore.RewardedAd {
     private let delegateHandler = MintegralRewardedAdDelegateHandler()
 
     private lazy var lifecycleController: RewardedLifecycleController = {
-        RewardedLifecycleController(adListener: adListener, ad: self)
+        RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
     }()
 
     public init(
         adNetworkAdapter: AdNetworkAdapter,
-        reward: Reward,
+        reward: Reward?,
         placementId: String,
         unitId: String,
         mtgRewardAdManager: MTGBidRewardAdManager

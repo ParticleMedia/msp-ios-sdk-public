@@ -39,4 +39,9 @@ public struct MSPConstants {
     public static let USER_SIGNAL_APP_INSTALL_TIME = "app_install_time"
     public static let USER_SIGNAL_IS_FIRST_INSTALL = "is_first_install"
     public static let USER_SIGNAL_PPID = "ppid"
+
+    /// Wire-protocol value for the rewarded video ad format. Sent on the Nova bid request
+    /// `ad_format` field (FR-017b) and on the rewarded MES `imp.ext.ad_format`. Defined by
+    /// the Nova ad-serving contract; coordinate with backend before changing.
+    public static let AD_FORMAT_REWARDED_VIDEO = "rewarded_video"
 }

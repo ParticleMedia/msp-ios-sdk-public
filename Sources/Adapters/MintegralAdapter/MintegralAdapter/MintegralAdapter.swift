@@ -203,6 +203,10 @@ import PrebidMobile
         .mintegral
     }
 
+    public func getAdRequest() -> AdRequest? { adRequest }
+
+    public func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
+
     private func loadBanenrAd(
         auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener,
         adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String: String]?
@@ -567,11 +571,9 @@ extension MintegralAdapter: MTGRewardAdLoadDelegate {
                 return
             }
 
-            let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
-
             let rewardedAd = MintegralRewardedAd(
                 adNetworkAdapter: self,
-                reward: reward,
+                reward: self.adRequest?.reward,
                 placementId: placementId ?? bidderPlacementId,
                 unitId: resolvedUnitId,
                 mtgRewardAdManager: rewardedManager

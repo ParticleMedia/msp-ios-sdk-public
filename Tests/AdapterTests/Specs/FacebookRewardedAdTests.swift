@@ -97,6 +97,25 @@ final class FacebookRewardedAdTests: QuickSpec {
 
                 expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
             }
+
+            // Regression guard: pre-centralization, FacebookAdapter both forwarded the SDK
+            // callback into markDisplayed and called logAdImpression directly, double-firing
+            // MES. The fix in commit 010388a8 made the controller the single source of truth.
+            // Asserting at the adapter layer ensures any future refactor that re-introduces
+            // direct MES dispatch will trip this test, not just controller-level tests.
+            it("does not double-fire impression when markDisplayed is called twice") {
+                sut.markDisplayed()
+                sut.markDisplayed()
+
+                expect(metricReporter.logAdImpressionCallCount).toEventually(equal(1))
+            }
+
+            it("does not double-fire click when markClicked is called twice") {
+                sut.markClicked()
+                sut.markClicked()
+
+                expect(metricReporter.logAdClickCallCount).toEventually(equal(1))
+            }
         }
     }
 }

@@ -1,25 +1,16 @@
 {
   "version": "2.0",
-  "generated_at": "2026-04-14T07:41:00Z",
+  "generated_at": "2026-05-08T11:33:09Z",
   "generator": "Scripts/tools/generate-context-index.py",
-  "entry_count": 29,
+  "entry_count": 30,
   "domains": {
-    "compatibility": {
+    "architecture": {
       "count": 0,
       "layers": []
     },
-    "integration": {
-      "count": 2,
-      "layers": [
-        "experience"
-      ]
-    },
-    "release": {
-      "count": 6,
-      "layers": [
-        "experience",
-        "tech"
-      ]
+    "compatibility": {
+      "count": 0,
+      "layers": []
     },
     "testing": {
       "count": 3,
@@ -27,9 +18,19 @@
         "tech"
       ]
     },
-    "architecture": {
-      "count": 0,
-      "layers": []
+    "sources": {
+      "count": 14,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
+    "release": {
+      "count": 7,
+      "layers": [
+        "experience",
+        "tech"
+      ]
     },
     "ci": {
       "count": 4,
@@ -37,11 +38,10 @@
         "experience"
       ]
     },
-    "sources": {
-      "count": 14,
+    "integration": {
+      "count": 2,
       "layers": [
-        "experience",
-        "tech"
+        "experience"
       ]
     }
   },
@@ -292,6 +292,31 @@
       "updated": "2026-02-27"
     },
     {
+      "id": "ctx-release-006",
+      "path": ".context/release/experience/ctx-release-006-pod-repo-update-flakiness.md",
+      "title": "pod repo update + pod search 不稳定导致发布验证误报",
+      "domain": "release",
+      "layer": "experience",
+      "tags": [
+        "pod-repo-update",
+        "pod-search",
+        "cocoapods-cdn",
+        "availability-check",
+        "flakiness",
+        "cdn-direct-check"
+      ],
+      "triggers": [
+        "pod repo update flakiness in CI",
+        "pod search returns not found after trunk push",
+        "availability check false negative",
+        "CDN direct check replaces pod repo update",
+        "cocoapods cdn url check"
+      ],
+      "summary": "pod repo update + pod search 在 CI 中不稳定且耗时；改用直接查询 CocoaPods CDN HTTP API 解决",
+      "status": "active",
+      "updated": "2026-04-16"
+    },
+    {
       "id": "ctx-release-005",
       "path": ".context/release/tech/ctx-release-005-version-ssot-flow.md",
       "title": "SDK 版本 SSOT 及更新流程",
@@ -346,15 +371,12 @@
         "code freeze",
         "release cycle",
         "weekly release",
-        "NB version branch",
-        "cherry-pick to develop",
-        "freeze 流程",
-        "发版流程",
-        "分支模型"
+        "cherry-pick to freeze branch",
+        "NB_VERSION freeze"
       ],
-      "summary": "MSP SDK 每周发版流程：周四 freeze → QA → 周二 Jenkins 发版 → unfreeze。分支命名 freeze/nb-{NB版本}，bugfix 必须 cherry-pick 回 develop。",
+      "summary": "Weekly SDK release cadence: Thu freeze, Fri-Mon QA, Tue release + unfreeze. Branch model, cherry-pick flow, NB_VERSION.",
       "status": "active",
-      "updated": "2026-04-30"
+      "updated": "2026-02-22"
     },
     {
       "id": "ctx-sources-006",

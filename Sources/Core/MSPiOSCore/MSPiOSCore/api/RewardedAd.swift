@@ -8,14 +8,14 @@ import Foundation
 import UIKit
 
 open class RewardedAd: MSPAd {
-    /// The reward associated with this ad instance.
-    public let reward: Reward
+    /// The reward associated with this ad instance, or `nil` if the ad network did not provide reward metadata.
+    public let reward: Reward?
 
     /// Creates a rewarded ad wrapper for a loaded rewarded ad creative.
     /// - Parameters:
     ///   - adNetworkAdapter: The adapter that loaded the ad.
-    ///   - reward: The reward metadata associated with this ad.
-    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward) {
+    ///   - reward: The reward metadata associated with this ad, or `nil` if unavailable.
+    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward?) {
         self.reward = reward
         super.init(adNetworkAdapter: adNetworkAdapter)
     }

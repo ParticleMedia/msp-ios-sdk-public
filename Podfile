@@ -178,6 +178,7 @@ target 'AdapterTests' do
   pod 'MintegralAdapter', :path => 'MintegralAdapter.podspec'
   pod 'MobilefuseAdapter', :path => 'MobilefuseAdapter.podspec'
   pod 'MSPMolocoAdapter', :path => 'MSPMolocoAdapter.podspec'
+  pod 'MSPNovaAdapter', :path => 'MSPNovaAdapter.podspec'
   testing_pods
 end
 

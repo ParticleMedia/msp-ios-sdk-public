@@ -13,10 +13,10 @@ public final class LiftoffRewardedAd: MSPiOSCore.RewardedAd {
     private let delegateHandler = LiftoffRewardedAdDelegateHandler()
 
     private lazy var lifecycleController: RewardedLifecycleController = {
-        RewardedLifecycleController(adListener: adListener, ad: self)
+        RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
     }()
 
-    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward, vungleRewarded: VungleRewarded) {
+    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward?, vungleRewarded: VungleRewarded) {
         self.vungleRewarded = vungleRewarded
         super.init(adNetworkAdapter: adNetworkAdapter, reward: reward)
         delegateHandler.rewardedAd = self

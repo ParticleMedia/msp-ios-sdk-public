@@ -210,6 +210,91 @@ public enum NovaAdBuilder {
             }
         }
     }
+
+    /// Builds `NovaRewardedAdItem` instances from raw ad items.
+    /// Rewarded ads use HTML creatives only, so format-specific fields (close countdown, clickable components, etc.)
+    /// are not applicable and are omitted.
+    public static func buildRewardedAds(
+        adItems: [AdItem],
+        adUnitId: String,
+        abConfig: [String: String]?
+    ) -> [NovaRewardedAdItem] {
+        adItems.compactMap { (adItem: AdItem) -> NovaRewardedAdItem? in
+            guard let creativeType = try? NovaAdBuilder.buildCreativeType(creative: adItem.creative) else {
+                DebugLogger.data.error("Missing valid creative type for rewarded ad: ad id: \(adItem.adId)")
+                return nil
+            }
+            guard creativeType == .html else {
+                DebugLogger.data.error("Unsupported rewarded creative type: \(creativeType.rawValue, privacy: .public), ad id: \(adItem.adId, privacy: .public)")
+                return nil
+            }
+            guard let adCtrType = try? NovaAdBuilder.buildCtrType(creative: adItem.creative) else {
+                DebugLogger.data.error("Missing valid ctr type for rewarded ad: ad id: \(adItem.adId)")
+                return nil
+            }
+
+            let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
+            let videoInfo = buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
+            let thirdPartyViewTrackingUrls =
+                adItem.creative.thirdPartyViewTrackingUrls?.map {
+                    NovaAdUrlTransformer.replaceMacro(in: $0)
+                } ?? []
+            let thirdPartyImpressionTrackingUrls =
+                adItem.creative.thirdPartyImpressionTrackingUrls?.map {
+                    NovaAdUrlTransformer.replaceMacro(in: $0)
+                } ?? []
+            let thirdPartyClickTrackingUrls =
+                adItem.creative.thirdPartyClickTrackingUrls?.map {
+                    NovaAdUrlTransformer.replaceMacro(in: $0)
+                } ?? []
+            let ctaStyle = adItem.creative.ctaStyle.flatMap(NovaAdCtaStyle.init(rawValue:))
+            let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
+            let shouldPreloadHtml: Bool = {
+                if let value = abConfig?[AbConfigKeys.shouldPreloadHtml] { return value == "true" }
+                return false
+            }()
+
+            do {
+                let item = try NovaRewardedAdItem(
+                    adUnitId: adUnitId,
+                    requestId: adItem.requestId,
+                    adId: adItem.adId,
+                    adSetId: adItem.adsetId,
+                    imageUrlStr: adItem.creative.imageUrl,
+                    adCtrType: adCtrType,
+                    thirdPartyViewTrackingUrls: thirdPartyViewTrackingUrls,
+                    thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls,
+                    thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
+                    priceInDollar: adItem.price,
+                    encryptedAdToken: adItem.encryptedAdToken,
+                    ctaStyle: ctaStyle,
+                    creativeType: creativeType,
+                    headline: adItem.creative.headline,
+                    body: adItem.creative.body,
+                    callToAction: adItem.creative.callToAction,
+                    advertiser: adItem.creative.advertiser,
+                    iconURL: iconURL,
+                    isImageLayoutVertical: adItem.creative.isVerticalImage,
+                    isImageClickable: adItem.creative.isImageClickable ?? false,
+                    imageContentMode: NovaNativeImageContentMode(rawValue: adItem.creative.imageScaleMode ?? ""),
+                    imageURLs: adItem.creative.imageUrls,
+                    videoInfo: videoInfo,
+                    multipleItemsInfo: nil,
+                    adDiscountTagInfo: nil,
+                    layoutStyle: nil,
+                    marketingType: buildMarketingType(item: adItem.creative.tagItem),
+                    playableInfo: nil,
+                    htmlPageItems: adItem.creative.htmlPageItems,
+                    popupCTAStyleVariant: popupCTAStyleVariant,
+                    shouldPreloadHtml: shouldPreloadHtml
+                )
+                return item
+            } catch {
+                DebugLogger.data.error("Failed to build rewarded ad item: \(error.localizedDescription)")
+                return nil
+            }
+        }
+    }
 }
 
 // MARK: - Private methods

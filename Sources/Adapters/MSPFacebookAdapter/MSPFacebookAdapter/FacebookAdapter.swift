@@ -184,10 +184,9 @@ import UIKit
                 )
                 let rewardedVideoAdItem = FBRewardedVideoAd(placementID: placementId)
                 self.rewardedVideoAdItem = rewardedVideoAdItem
-                let reward = adRequest.reward ?? Reward(type: "", amount: 0)
                 let facebookRewardedAd = FacebookRewardedAd(
                     adNetworkAdapter: self,
-                    reward: reward,
+                    reward: adRequest.reward,
                     rewardedVideoAdItem: rewardedVideoAdItem,
                     rootViewController: self.adListener?.getRootViewController(),
                     adListener: self.adListener
@@ -302,6 +301,12 @@ import UIKit
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
         .facebook
     }
+
+    public func getAdRequest() -> AdRequest? { adRequest }
+
+    public func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
+
+    public func getBidResponse() -> Any? { bidResponse }
 
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
@@ -576,15 +581,7 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
                 message:
                     "[Adapter: Facebook] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
             )
-            guard let facebookRewardedAd = self.facebookRewardedAd else { return }
-            if let adRequest = self.adRequest,
-                let bidResponse = self.bidResponse
-            {
-                self.adMetricReporter?.logAdImpression(
-                    ad: facebookRewardedAd, adRequest: adRequest, bidResponse: bidResponse)
-            }
-            self.adListener?.onAdImpression(ad: facebookRewardedAd)
-            facebookRewardedAd.markDisplayed()
+            self.facebookRewardedAd?.markDisplayed()
         }
     }
 
@@ -594,11 +591,11 @@ extension FacebookAdapter: FBRewardedVideoAdDelegate {
                 message:
                     "[Adapter: Facebook] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), adUnitId=\(rewardedVideoAd.placementID), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
             )
-            guard let facebookRewardedAd = self.facebookRewardedAd else { return }
-
-            self.adListener?.onAdClick(ad: facebookRewardedAd)
-            self.sendClickAdEvent(ad: facebookRewardedAd)
-            facebookRewardedAd.markClicked()
+            // Keep post-centralization (commit 010388a8) form: markClicked is the single
+            // source of truth for adListener.onAdClick + MES dispatch. Restoring the
+            // develop-side direct calls would reintroduce the double-fire bug that
+            // RewardedLifecycleController was created to prevent.
+            self.facebookRewardedAd?.markClicked()
         }
     }
 

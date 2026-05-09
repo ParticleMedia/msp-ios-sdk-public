@@ -92,6 +92,17 @@ public class PrebidBidLoader: BidLoader {
             adUnitConfiguration: adUnitConfig)
         self.bidRequester = bidRequester
 
+        // Dump the outbound bid-request context so future "no bid" investigations can
+        // confirm what the SDK actually told Prebid Server about this slot — placement
+        // identity, ad_format, video capabilities, custom params. Server-side recall
+        // mismatches almost always show up first as a discrepancy between this and the
+        // server's expected slot config.
+        let videoParams = adUnitConfig.adConfiguration.videoParameters
+        MSPLogger.shared.info(
+            message:
+                "[PrebidBidLoader] Outbound bid request. configId=\(self.configId ?? "nil"), adFormat=\(adRequest.adFormat), placementId=\(adRequest.placementId), context=\(adUnitConfig.contextDataDictionary), customParams=\(adRequest.customParams), videoMimes=\(String(describing: videoParams.mimes)), videoProtocols=\(String(describing: videoParams.protocols)), videoPlaybackMethod=\(String(describing: videoParams.playbackMethod)), videoPlacement=\(String(describing: videoParams.placement))"
+        )
+
         let bidRequestStartTime = Date().timeIntervalSince1970
         bidRequester.requestBids { [weak self] bidResponse, error in
             guard let self = self else { return }
@@ -108,6 +119,31 @@ public class PrebidBidLoader: BidLoader {
             }
 
             if let bidResponse = bidResponse {
+                // Enumerate every seatbid in the response — not just the winning seat —
+                // so future investigations can distinguish "server never recalled bidder
+                // X" from "X bid but lost the auction" from "X bid and won". The default
+                // "Winning bid received" log only surfaces the winner, which masks the
+                // first two cases entirely.
+                if let raw = bidResponse.rawResponseInJson,
+                    let seatbids = raw["seatbid"] as? [[String: Any]]
+                {
+                    let seatSummary = seatbids.map { sb -> String in
+                        let seat = (sb["seat"] as? String) ?? "<no seat>"
+                        let bids = (sb["bid"] as? [[String: Any]]) ?? []
+                        let prices = bids.compactMap { $0["price"] as? Double }.map { String($0) }.joined(separator: ",")
+                        return "\(seat)[\(bids.count) bid(s), prices=\(prices)]"
+                    }.joined(separator: " | ")
+                    MSPLogger.shared.info(
+                        message:
+                            "[PrebidBidLoader] Response seatbids. placementId=\(self.configId ?? "nil"), seatCount=\(seatbids.count), seats=\(seatSummary)"
+                    )
+                } else {
+                    MSPLogger.shared.info(
+                        message:
+                            "[PrebidBidLoader] Response has no seatbid array. placementId=\(self.configId ?? "nil"), rawResponseInJson keys=\(bidResponse.rawResponseInJson?.allKeys ?? [])"
+                    )
+                }
+
                 guard let seat = bidResponse.winningBidSeat else {
                     let errorMessage = "no fill"
                     MSPLogger.shared.info(
@@ -213,6 +249,16 @@ public class PrebidBidLoader: BidLoader {
             }
         }
 
+        if adRequest.adFormat == .rewarded {
+            // PRD serving/logging contract: placement is publisher-supplied, while
+            // ad_format is the rewarded_video enum. Set after custom params so callers
+            // cannot accidentally downgrade ad_format to the SDK-internal "rewarded".
+            adUnitConfig.removeContextData(for: "ad_format")
+            adUnitConfig.addContextData(key: "ad_format", value: MSPConstants.AD_FORMAT_REWARDED_VIDEO)
+            adUnitConfig.removeContextData(for: "placement")
+            adUnitConfig.addContextData(key: "placement", value: adRequest.placementId)
+        }
+
         var testParams = adRequest.testParams
         let inNovaTestMode =
             testParams["test_ad"] as? Bool == true
@@ -258,6 +304,15 @@ public class PrebidBidLoader: BidLoader {
         let parameters = VideoParameters()
         parameters.mimes = ["video/mp4"]
         parameters.protocols = [.VAST_2_0, .VAST_3_0, .VAST_4_0]
+        // Advertise both sound-on and sound-off autoplay support. The OpenRTB
+        // `playbackMethod` field is a slot-capability declaration that ad serving
+        // uses for inventory matching — restricting it to sound-on filters out
+        // Nova rewarded creatives whose `playbackmethod` is configured as muted
+        // autoplay, which silently kills server-side Nova rewarded recall.
+        // PRD's `is_mute = false` is an H5-runtime player setting (see PRD
+        // Clarifications session 2026-04-29: the video player runs entirely
+        // inside the H5), not an OpenRTB-level request signal — keep these
+        // layers separate.
         parameters.playbackMethod = [.AutoPlaySoundOn, .AutoPlaySoundOff]
         parameters.placement = .Interstitial
         return parameters

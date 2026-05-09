@@ -3,7 +3,26 @@ id: ctx-release-007
 title: MSP SDK Release Cycle — Code Freeze 流程
 domain: release
 layer: tech
-tags: [freeze, unfreeze, release-cycle, branch-model, cherry-pick, code-freeze, nb-version, weekly-release]
+tags:
+  - freeze
+  - unfreeze
+  - release-cycle
+  - branch-model
+  - cherry-pick
+  - code-freeze
+  - nb-version
+  - weekly-release
+triggers:
+  - "make freeze"
+  - "make unfreeze"
+  - "freeze/nb-"
+  - "code freeze"
+  - "release cycle"
+  - "weekly release"
+  - "cherry-pick to freeze branch"
+  - "NB_VERSION freeze"
+summary: "Weekly SDK release cadence: Thu freeze, Fri-Mon QA, Tue release + unfreeze. Branch model, cherry-pick flow, NB_VERSION."
+status: active
 created: 2026-04-30
 ---
 

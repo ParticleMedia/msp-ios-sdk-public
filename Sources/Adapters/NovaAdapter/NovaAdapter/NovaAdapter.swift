@@ -20,10 +20,12 @@ public class NovaAdapter: AdNetworkAdapter {
     public var adUnitId: String?
 
     public weak var nativeAd: MSPAd?
+    public weak var rewardedAd: RewardedAd?
     public var nativeAdItem: NovaNativeAdItem?
 
     public weak var interstitialAd: InterstitialAd?
     public var interstitialAdItem: NovaInterstitialAdItem?
+    public var rewardedAdItem: NovaRewardedAdItem?
 
     public var nativeAdView: NativeAdView?
 
@@ -47,6 +49,15 @@ public class NovaAdapter: AdNetworkAdapter {
         bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any,
         adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String: String]?
     ) {
+        // Confirm NovaAdapter actually entered loadAdCreative for this bid. Pairs with
+        // the upstream `[PrebidBidLoader] Response seatbids` log to localize "no fill"
+        // problems: if seatbids included msp_nova but this entry log doesn't appear, the
+        // auction or routing layer dropped the bid; if both appear but the eventual
+        // result is still "no fill", the problem is in NovaAdapter parsing/build.
+        MSPLogger.shared.info(
+            message:
+                "[Adapter: Nova] loadAdCreative entered. adFormat=\(adRequest.adFormat), placementId=\(adRequest.placementId), bidderPlacementId=\(bidderPlacementId), bidderFormat=\(String(describing: bidderFormat))"
+        )
         adLoadStartTime = Date().timeIntervalSince1970
         DispatchQueue.main.async {
             guard bidResponse is BidResponse,
@@ -85,6 +96,8 @@ public class NovaAdapter: AdNetworkAdapter {
             let novaAdType: String
             if adRequest.adFormat == .interstitial {
                 novaAdType = "interstitial"
+            } else if adRequest.adFormat == .rewarded {
+                novaAdType = "rewarded"
             } else {
                 novaAdType = "native"
             }
@@ -328,6 +341,75 @@ public class NovaAdapter: AdNetworkAdapter {
                     }
                 }
 
+            case "rewarded":
+                let rewardedAdItems = NovaAdBuilder.buildRewardedAds(
+                    adItems: ads,
+                    adUnitId: adUnitId,
+                    abConfig: decodedData.abConfig
+                )
+                // FR-018: load MUST fail rather than returning an unusable RewardedAd.
+                // `NovaAdBuilder.buildRewardedAds` already filters out unsupported creative
+                // types (non-`.html`) at construction time, so any non-empty result here is
+                // guaranteed renderable. The single nil guard catches both "no `ad` items"
+                // and "all items were filtered as non-HTML" with a uniform NO_FILL response.
+                guard let rewardedAdItem = rewardedAdItems.first else {
+                    let errorMessage = "no buildable rewarded ad item from Nova response"
+                    MSPLogger.shared.error(message: "[Adapter: Nova] \(errorMessage)")
+                    self.handleAuctionBidError(error: errorMessage, bidResponse: self.bidResponse)
+                    self.adMetricReporter?.logAdResult(
+                        placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+                    if let adRequest = self.adRequest {
+                        self.adMetricReporter?.logAdResponse(
+                            ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
+                    }
+                    return
+                }
+                MSPLogger.shared.info(message: "[Adapter: Nova] successfully loaded Nova Rewarded ad")
+
+                let novaRewardedAd = NovaRewardedAd(
+                    adNetworkAdapter: self,
+                    reward: adRequest?.reward,
+                    rootViewController: nil,
+                    adListener: adListener
+                )
+                novaRewardedAd.rewardedAdItem = rewardedAdItem
+                self.rewardedAdItem = rewardedAdItem
+                self.rewardedAd = novaRewardedAd
+
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    novaRewardedAd.rootViewController = self.adListener?.getRootViewController()
+                    novaRewardedAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                    novaRewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.nova.rawValue
+                    novaRewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+                    novaRewardedAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] =
+                        self.bidResponse?.winningBid?.bid.crid
+                    if let requestId = self.bidResponse?.rawResponse?.requestID {
+                        novaRewardedAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+                    }
+                    rewardedAdItem.delegate = self
+
+                    if let adListener = self.adListener,
+                        let adRequest = self.adRequest,
+                        let auctionBidListener = self.auctionBidListener
+                    {
+                        let bidderPlacementId = self.bidderPlacementId ?? adRequest.placementId
+                        // creativeType == .html is guaranteed by the FR-018 guard above.
+                        if rewardedAdItem.shouldPreloadHtml {
+                            let enableFeedback = adRequest.customParams["html_enable_feedback"] as? Bool ?? false
+                            rewardedAdItem.preloadHtmlView(enableFeedback: enableFeedback) {
+                                self.handleAdLoaded(
+                                    ad: novaRewardedAd, auctionBidListener: auctionBidListener,
+                                    bidderPlacementId: bidderPlacementId)
+                            }
+                        } else {
+                            self.handleAdLoaded(
+                                ad: novaRewardedAd, auctionBidListener: auctionBidListener,
+                                bidderPlacementId: bidderPlacementId)
+                        }
+                    }
+                }
+
             default:
                 MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
                 let errorMessage = "unknown adType"
@@ -395,7 +477,12 @@ public class NovaAdapter: AdNetworkAdapter {
         self.adRequest = adRequest
 
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
-        let adType = adRequest.adFormat == .interstitial ? "interstitial" : "native"
+        let adType: String
+        switch adRequest.adFormat {
+        case .interstitial: adType = "interstitial"
+        case .rewarded: adType = "rewarded"
+        default: adType = "native"
+        }
         parseNovaAdString(adString: adString, adType: adType, adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
     }
 
@@ -434,6 +521,12 @@ public class NovaAdapter: AdNetworkAdapter {
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
         .nova
     }
+
+    public func getAdRequest() -> AdRequest? { adRequest }
+
+    public func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
+
+    public func getBidResponse() -> Any? { bidResponse }
 
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
@@ -592,6 +685,48 @@ extension NovaAdapter: NovaInterstitialAdDelegate {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
             self.sendClickAdEvent(ad: interstitialAd)
+        }
+    }
+}
+
+extension NovaAdapter: NovaRewardedAdDelegate {
+    public func rewardedAdDidDisplay(_ rewardedAd: NovaCore.NovaRewardedAdItem) {
+        MSPLogger.shared.info(message: "[Adapter: Nova] Rewarded ad impression callback received")
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            (self.rewardedAd as? NovaRewardedAd)?.markDisplayed()
+        }
+    }
+
+    public func rewardedAdDidDismiss(_ rewardedAd: NovaCore.NovaRewardedAdItem) {
+        MSPLogger.shared.info(message: "[Adapter: Nova] Rewarded ad dismiss callback received")
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            (self.rewardedAd as? NovaRewardedAd)?.markDismissed()
+        }
+    }
+
+    public func rewardedAdDidLogClick(
+        _ rewardedAd: NovaCore.NovaRewardedAdItem,
+        clickAreaName: String?,
+        clickPosition: UInt32?
+    ) {
+        MSPLogger.shared.info(
+            message:
+                "[Adapter: Nova] Rewarded ad click callback received. clickAreaName=\(clickAreaName ?? "nil"), clickPosition=\(clickPosition.map(String.init) ?? "nil")"
+        )
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let metadata = AdClickMetadata(clickAreaName: clickAreaName, clickPosition: clickPosition)
+            (self.rewardedAd as? NovaRewardedAd)?.markClicked(clickMetadata: metadata)
+        }
+    }
+
+    public func rewardedAdDidEarnReward(_ rewardedAd: NovaCore.NovaRewardedAdItem) {
+        MSPLogger.shared.info(message: "[Adapter: Nova] Reward earned callback received from NovaCore")
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            (self.rewardedAd as? NovaRewardedAd)?.markRewardEarned()
         }
     }
 }

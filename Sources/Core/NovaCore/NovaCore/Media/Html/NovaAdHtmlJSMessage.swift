@@ -29,4 +29,12 @@ protocol NovaAdHtmlActionDelegate: AnyObject {
 
     func didFailToLoadPage(errorType: String, errorDetail: String)
 
+    /// Called when the H5 page fires `novaNativeBridge.onAdRewarded()`.
+    /// The SDK enforces at-most-once delivery via `RewardedLifecycleController`.
+    func didEarnReward()
+}
+
+extension NovaAdHtmlActionDelegate {
+    /// Default no-op so existing conformers (interstitial VC, etc.) are not required to implement this.
+    func didEarnReward() {}
 }

@@ -76,21 +76,21 @@ final class MolocoRewardedAdTests: QuickSpec {
                 sut.userRewarded(ad: rewardedItem)
                 sut.userRewarded(ad: rewardedItem)
 
-                expect(listener.rewardedAds).to(haveCount(1))
+                expect(listener.rewardedAds).toEventually(haveCount(1))
             }
 
             it("dismisses without reward when didHide is called first") {
                 sut.didHide(ad: rewardedItem)
 
+                expect(listener.dismissedAds).toEventually(haveCount(1))
                 expect(listener.rewardedAds).to(beEmpty())
-                expect(listener.dismissedAds).to(haveCount(1))
             }
 
             it("keeps reward before dismiss ordering") {
                 sut.userRewarded(ad: rewardedItem)
                 sut.didHide(ad: rewardedItem)
 
-                expect(listener.callSequence).to(equal(["reward", "dismiss"]))
+                expect(listener.callSequence).toEventually(equal(["reward", "dismiss"]))
             }
 
             it("logs present failure without calling onError") {

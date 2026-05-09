@@ -223,6 +223,10 @@ import PrebidMobile
         .pubmatic
     }
 
+    public func getAdRequest() -> AdRequest? { adRequest }
+
+    public func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
+
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
             let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
@@ -526,12 +530,9 @@ extension PubmaticAdapter: POBRewardedAdDelegate {
                 return
             }
 
-            // Create reward from adRequest or use default
-            let reward = self.adRequest?.reward ?? Reward(type: "reward", amount: 1)
-
             let rewardedAd = PubmaticRewardedAd(
                 adNetworkAdapter: self,
-                reward: reward,
+                reward: self.adRequest?.reward,
                 pobRewardedAd: rewardedAd
             )
             self.rewardedAd = rewardedAd

@@ -29,7 +29,7 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                     adNetworkAdapter: adapter,
                     reward: Reward(type: "coins", amount: 10),
                     rewardedAdItem: nil,
-                    rootViewController: UIViewController(),
+                    rootViewController: nil,
                     adListener: listener
                 )
                 adapter.mspAd = sut
@@ -51,7 +51,7 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                     sut.show(rootViewController: rootVC)
                 }
 
-                expect(listener.rewardedAds).to(haveCount(1))
+                expect(listener.rewardedAds).toEventually(haveCount(1))
             }
 
             it("fires reward only once when the handler runs twice") {
@@ -65,7 +65,7 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                     sut.show(rootViewController: rootVC)
                 }
 
-                expect(listener.rewardedAds).to(haveCount(1))
+                expect(listener.rewardedAds).toEventually(haveCount(1))
             }
 
             it("does not fire reward on dismiss without reward") {
@@ -83,9 +83,10 @@ final class GoogleRewardedAdRewardTests: QuickSpec {
                 MainActor.assumeIsolated {
                     sut.show(rootViewController: rootVC)
                 }
+                expect(listener.callSequence).toEventually(equal(["reward"]))
                 sut.markDismissed()
 
-                expect(listener.callSequence).to(equal(["reward", "dismiss"]))
+                expect(listener.callSequence).toEventually(equal(["reward", "dismiss"]))
             }
         }
     }

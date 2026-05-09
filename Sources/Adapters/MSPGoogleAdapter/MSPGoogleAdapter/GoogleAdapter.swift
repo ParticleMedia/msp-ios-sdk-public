@@ -435,7 +435,7 @@ import PrebidMobile
         }
     }
 
-    private func resolveReward(for ad: MSPGADRewardedAd, adRequest: AdRequest) -> Reward {
+    private func resolveReward(for ad: MSPGADRewardedAd, adRequest: AdRequest) -> Reward? {
         if let requestReward = adRequest.reward {
             return requestReward
         }
@@ -444,7 +444,7 @@ import PrebidMobile
             return Reward(type: networkReward.type, amount: MSPGADAdRewardAmount(networkReward))
         }
 
-        return Reward(type: "", amount: 0)
+        return nil
     }
 
     public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
@@ -483,6 +483,12 @@ import PrebidMobile
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
         .google
     }
+
+    public func getAdRequest() -> AdRequest? { adRequest }
+
+    public func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
+
+    public func getBidResponse() -> Any? { bidResponse }
 
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
@@ -718,11 +724,6 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
                     message:
                         "[Adapter: Google] Rewarded impression callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
                 )
-                if let adRequest = self.adRequest {
-                    self.adMetricReporter?.logAdImpression(
-                        ad: rewardedAd, adRequest: adRequest, bidResponse: self.bidResponse)
-                }
-                self.adListener?.onAdImpression(ad: rewardedAd)
                 rewardedAd.markDisplayed()
             } else if let interstitialAd = self.interstitialAd {
                 if let adRequest = self.adRequest {
@@ -743,8 +744,6 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
                         "[Adapter: Google] Rewarded click callback. placementId=\(self.adRequest?.placementId ?? "nil"), requestId=\(self.bidResponse?.rawResponse?.requestID ?? "nil")"
                 )
                 rewardedAd.markClicked()
-                self.adListener?.onAdClick(ad: rewardedAd)
-                self.sendClickAdEvent(ad: rewardedAd)
             } else if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdClick(ad: interstitialAd)
                 self.sendClickAdEvent(ad: interstitialAd)

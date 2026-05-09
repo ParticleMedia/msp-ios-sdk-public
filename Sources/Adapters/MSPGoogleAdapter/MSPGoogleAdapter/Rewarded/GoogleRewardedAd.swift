@@ -19,11 +19,11 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
     weak var rootViewController: UIViewController?
     var rewardedAdItem: MSPGADRewardedAd?
 
-    private lazy var lifecycleController = RewardedLifecycleController(adListener: adListener, ad: self)
+    private lazy var lifecycleController = RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
 
     public init(
         adNetworkAdapter: AdNetworkAdapter,
-        reward: Reward,
+        reward: Reward?,
         rewardedAdItem: MSPGADRewardedAd?,
         rootViewController: UIViewController?,
         adListener: AdListener?
@@ -39,7 +39,7 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
         MSPLogger.shared.info(
             tag: Constants.logTag,
             message:
-                "[Adapter: Google] Showing rewarded ad. hasAdItem=\(rewardedAdItem != nil), hasRootViewController=\(presentingViewController != nil), reward=\(reward.type):\(reward.amount)"
+                "[Adapter: Google] Showing rewarded ad. hasAdItem=\(rewardedAdItem != nil), hasRootViewController=\(presentingViewController != nil), reward=\(reward.map { "\($0.type):\($0.amount)" } ?? "nil")"
         )
 
         guard let presentingViewController else {
@@ -55,7 +55,7 @@ public final class GoogleRewardedAd: MSPiOSCore.RewardedAd {
                 MSPLogger.shared.info(
                     tag: Constants.logTag,
                     message:
-                        "[Adapter: Google] Reward callback received from Google SDK. reward=\(self.reward.type):\(self.reward.amount)"
+                        "[Adapter: Google] Reward callback received from Google SDK. reward=\(self.reward.map { "\($0.type):\($0.amount)" } ?? "nil")"
                 )
                 self.lifecycleController.markRewardEarned()
             }

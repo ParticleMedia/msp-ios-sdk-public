@@ -8,11 +8,21 @@ import Foundation
 struct NovaAdClickPayload {
     let url: URL?
     let area: ClickableAdArea
+    /// Optional position-within-area indicator forwarded by H5 with each click. Used by
+    /// rewarded MES `imp.ext.click_position` per PRD click-event spec. Distinct from
+    /// `extras` because it is typed (UInt32) and consumed by SDK code, not just relayed.
+    let clickPosition: UInt32?
     let extras: [String: String]
 
-    init(url: URL?, area: ClickableAdArea, extras: [String: String] = [:]) {
+    init(
+        url: URL?,
+        area: ClickableAdArea,
+        clickPosition: UInt32? = nil,
+        extras: [String: String] = [:]
+    ) {
         self.url = url
         self.area = area
+        self.clickPosition = clickPosition
         self.extras = extras
     }
 }
@@ -51,8 +61,18 @@ extension NovaAdClickPayload {
         return NovaAdClickPayload(
             url: customUrl,
             area: ClickableAdArea(from: clickAreaString),
+            clickPosition: parseClickPosition(from: json["click_position"]),
             extras: extractAllowedExtras(from: json)
         )
+    }
+
+    /// Coerces the H5-supplied `click_position` value into `UInt32?`. Accepts UInt32, Int
+    /// (≥ 0), or numeric String — anything else collapses to nil rather than crashing.
+    private static func parseClickPosition(from raw: Any?) -> UInt32? {
+        if let raw = raw as? UInt32 { return raw }
+        if let raw = raw as? Int, raw >= 0 { return UInt32(raw) }
+        if let raw = raw as? String { return UInt32(raw) }
+        return nil
     }
 
     /// Extracts whitelisted reporting fields from a parsed JSON payload.

@@ -42,3 +42,9 @@ See `.claude/skills/` — progressive loading built-in (metadata at startup, ful
 ## Output Format
 
 See .agents-shared/protocols/output-format.protocol.md
+
+## Active Technologies
+- Swift 5.0 + UIKit, WebKit (WKWebView), PrebidMobile, NovaCore, MSPiOSCore (001-nova-rewarded-ad)
+
+## Recent Changes
+- 001-nova-rewarded-ad: Added Swift 5.0 + UIKit, WebKit (WKWebView), PrebidMobile, NovaCore, MSPiOSCore

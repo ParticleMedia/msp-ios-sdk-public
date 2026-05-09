@@ -22,7 +22,7 @@ public final class InmobiRewardedAd: MSPiOSCore.RewardedAd {
 
     /// Internal lifecycle controller for managing reward/dismiss state
     private lazy var lifecycleController: RewardedLifecycleController = {
-        RewardedLifecycleController(adListener: adListener, ad: self)
+        RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
     }()
 
     // MARK: - Initialization
@@ -32,7 +32,7 @@ public final class InmobiRewardedAd: MSPiOSCore.RewardedAd {
     ///   - reward: The reward configuration for this ad
     ///   - adListener: Listener for ad events
     ///   - imInterstitial: The IMInterstitial SDK instance
-    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward, imInterstitial: IMInterstitial?) {
+    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward?, imInterstitial: IMInterstitial?) {
         self.imInterstitial = imInterstitial
         super.init(adNetworkAdapter: adNetworkAdapter, reward: reward)
 

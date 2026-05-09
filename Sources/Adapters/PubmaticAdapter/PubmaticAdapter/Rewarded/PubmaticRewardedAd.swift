@@ -25,7 +25,7 @@ public final class PubmaticRewardedAd: MSPiOSCore.RewardedAd {
 
     /// Internal lifecycle controller for managing reward/dismiss state
     private lazy var lifecycleController: RewardedLifecycleController = {
-        RewardedLifecycleController(adListener: adListener, ad: self)
+        RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
     }()
 
     // MARK: - Initialization
@@ -35,7 +35,7 @@ public final class PubmaticRewardedAd: MSPiOSCore.RewardedAd {
     ///   - reward: The reward configuration for this ad
     ///   - adListener: Listener for ad events
     ///   - pobRewardedAd: The POBRewardedAd SDK instance
-    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward, pobRewardedAd: POBRewardedAd?) {
+    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward?, pobRewardedAd: POBRewardedAd?) {
         self.pobRewardedAd = pobRewardedAd
         self.delegateHandler = PubmaticRewardedAdDelegateHandler()
         super.init(adNetworkAdapter: adNetworkAdapter, reward: reward)

@@ -52,6 +52,10 @@ final class RewardedDummyAdNetworkAdapter: AdNetworkAdapter {
     func getSDKVersion() -> String {
         ""
     }
+
+    func getAdRequest() -> AdRequest? { adRequest }
+
+    func getAdMetricReporter() -> AdMetricReporter? { adMetricReporter }
 }
 
 final class RewardedTestAd: RewardedAd {

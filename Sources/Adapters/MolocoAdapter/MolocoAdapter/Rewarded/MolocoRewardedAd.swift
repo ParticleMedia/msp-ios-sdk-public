@@ -23,7 +23,7 @@ public final class MolocoRewardedAd: MSPiOSCore.RewardedAd {
 
     /// Internal lifecycle controller for managing reward/dismiss state
     private lazy var lifecycleController: RewardedLifecycleController = {
-        RewardedLifecycleController(adListener: adListener, ad: self)
+        RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
     }()
 
     // MARK: - Initialization
@@ -37,7 +37,7 @@ public final class MolocoRewardedAd: MSPiOSCore.RewardedAd {
     ///   - adListener: Ad event listener
     public init(
         adNetworkAdapter: AdNetworkAdapter,
-        reward: Reward,
+        reward: Reward?,
         rewardedAdItem: (any MolocoRewardedInterstitial)?,
         rootViewController: UIViewController?,
         adListener: AdListener?

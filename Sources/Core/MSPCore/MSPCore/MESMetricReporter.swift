@@ -30,6 +30,7 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         case adReport = "ad_report"
         case adResponse = "ad_response"
         case adClick = "ad_click"
+        case adRewarded = "ad_rewarded"
         case loadAd = "load_ad"
         case getAd = "get_ad"
         case userSignal = "user_signal"
@@ -262,12 +263,54 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
     }
 
     public func logAdClick(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
+        logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, clickMetadata: nil)
+    }
+
+    public func logAdClick(
+        ad: MSPiOSCore.MSPAd,
+        adRequest: MSPiOSCore.AdRequest,
+        bidResponse: Any?,
+        clickMetadata: AdClickMetadata?
+    ) {
         var eventModel = Com_Newsbreak_Mes_Events_AdClickEvent()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        MSPLogger.shared.info(
+            message:
+                "[MES] Building ad_click event. adFormat=\(adRequest.adFormat), clickAreaName=\(clickMetadata?.clickAreaName ?? "nil"), clickPosition=\(clickMetadata?.clickPosition.map(String.init) ?? "nil")"
+        )
         if let bidResponse = bidResponse,
             bidResponse is BidResponse,
             let mBidResponse = bidResponse as? BidResponse
         {
+            eventModel.requestContext = generateRequestContext(
+                ad: ad,
+                request: adRequest,
+                bidResponse: mBidResponse,
+                clickMetadata: clickMetadata
+            )
+            eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: mBidResponse)
+        } else {
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, clickMetadata: clickMetadata)
+            eventModel.ad = generateAdContext(ad: ad)
+        }
+
+        eventModel.os = MSPDevice.shared.getOSType()
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        eventModel.mspSdkVersion = MSP.shared.version
+
+        reportData(event: .adClick, with: eventModel)
+    }
+
+    public func logAdRewarded(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdRewardedEvent()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        MSPLogger.shared.info(message: "[MES] Building ad_rewarded event. adFormat=\(adRequest.adFormat)")
+        if let mBidResponse = bidResponse as? BidResponse {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
             eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: mBidResponse)
         } else {
@@ -284,7 +327,7 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         }
         eventModel.mspSdkVersion = MSP.shared.version
 
-        reportData(event: .adClick, with: eventModel)
+        reportData(event: .adRewarded, with: eventModel)
     }
 
     public func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {
@@ -504,18 +547,31 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         reportData(event: .adReport, with: eventModel)
     }
 
-    func generateRequestContext(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
+    func generateRequestContext(
+        ad: MSPAd,
+        request: AdRequest,
+        bidResponse: BidResponse,
+        clickMetadata: AdClickMetadata? = nil
+    )
         -> Com_Newsbreak_Monetization_Common_RequestContext
     {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.bidRequest = generateBidRequest(request: request, bidResponse: bidResponse)
+        eventModel.bidRequest = generateBidRequest(
+            request: request,
+            bidResponse: bidResponse,
+            clickMetadata: clickMetadata
+        )
         eventModel.ext = generateRequestContextExt(ad: ad, request: request, bidResponse: bidResponse)
 
         return eventModel
     }
 
-    func generateRequestContext(ad: MSPAd?, request: AdRequest) -> Com_Newsbreak_Monetization_Common_RequestContext {
+    func generateRequestContext(
+        ad: MSPAd?,
+        request: AdRequest,
+        clickMetadata: AdClickMetadata? = nil
+    ) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
@@ -523,6 +579,12 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
 
         eventModel.bidRequest.id = request.requestId
         eventModel.bidRequest.test = !request.testParams.isEmpty
+        applyRewardedRequestMetadata(
+            to: &eventModel.bidRequest,
+            request: request,
+            bidResponse: nil,
+            clickMetadata: clickMetadata
+        )
         eventModel.ext.source = request.placementId
         eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
         eventModel.ext.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
@@ -545,7 +607,11 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         return eventModel
     }
 
-    func generateBidRequest(request: AdRequest, bidResponse: BidResponse) -> Com_Google_Openrtb_BidRequest {
+    func generateBidRequest(
+        request: AdRequest,
+        bidResponse: BidResponse,
+        clickMetadata: AdClickMetadata? = nil
+    ) -> Com_Google_Openrtb_BidRequest {
         var eventModel = Com_Google_Openrtb_BidRequest()
 
         eventModel.id = bidResponse.rawResponse?.requestID ?? ""
@@ -559,8 +625,48 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         }
 
         eventModel.test = !request.testParams.isEmpty
+        applyRewardedRequestMetadata(
+            to: &eventModel,
+            request: request,
+            bidResponse: bidResponse,
+            clickMetadata: clickMetadata
+        )
 
         return eventModel
+    }
+
+    private func applyRewardedRequestMetadata(
+        to bidRequest: inout Com_Google_Openrtb_BidRequest,
+        request: AdRequest,
+        bidResponse: BidResponse?,
+        clickMetadata: AdClickMetadata?
+    ) {
+        guard request.adFormat == .rewarded else { return }
+
+        var imp = Com_Google_Openrtb_BidRequest.Imp()
+        imp.id = bidResponse?.winningBid?.bid.impid ?? "1"
+        imp.tagid = request.placementId
+        imp.instl = true
+        imp.rwdd = true
+        imp.video = Com_Google_Openrtb_BidRequest.Imp.Video()
+
+        var ext: [String: Any] = [
+            "placement": request.placementId,
+            "ad_format": MSPConstants.AD_FORMAT_REWARDED_VIDEO,
+        ]
+        if let clickAreaName = clickMetadata?.clickAreaName, !clickAreaName.isEmpty {
+            ext["click_area_name"] = clickAreaName
+        }
+        if let clickPosition = clickMetadata?.clickPosition {
+            ext["click_position"] = Int(clickPosition)
+        }
+        if let extData = try? JSONSerialization.data(withJSONObject: ext),
+           let extString = String(data: extData, encoding: .utf8) {
+            imp.ext = extString
+            MSPLogger.shared.info(message: "[MES] Rewarded request metadata attached to bidRequest.imp.ext=\(extString)")
+        }
+
+        bidRequest.imp = [imp]
     }
 
     func generateRequestContextExt(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
@@ -626,6 +732,10 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
             adContext.type = .native
         } else if ad is InterstitialAd {
             adContext.type = .interstitial
+        } else if ad is RewardedAd {
+            // MES common proto has no rewarded enum; PRD treats rewarded as rewarded_video.
+            // Use video rather than leaving rewarded events as unspecified.
+            adContext.type = .video
         } else if ad is BannerAd {
             adContext.type = .display
         }

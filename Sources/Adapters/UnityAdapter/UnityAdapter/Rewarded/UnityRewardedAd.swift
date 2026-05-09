@@ -25,7 +25,7 @@ public final class UnityRewardedAd: MSPiOSCore.RewardedAd {
 
     /// Internal lifecycle controller for managing reward/dismiss state
     private lazy var lifecycleController: RewardedLifecycleController = {
-        RewardedLifecycleController(adListener: adListener, ad: self)
+        RewardedLifecycleController(adListener: adListener, ad: self, adMetricReporter: adNetworkAdapter?.getAdMetricReporter(), adRequest: adNetworkAdapter?.getAdRequest())
     }()
 
     // MARK: - Initialization
@@ -35,7 +35,7 @@ public final class UnityRewardedAd: MSPiOSCore.RewardedAd {
     ///   - adNetworkAdapter: The adapter that loaded the ad
     ///   - reward: The reward configuration for this ad
     ///   - lpmRewardedAd: The LPMRewardedAd SDK instance
-    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward, lpmRewardedAd: LPMRewardedAd?) {
+    public init(adNetworkAdapter: AdNetworkAdapter, reward: Reward?, lpmRewardedAd: LPMRewardedAd?) {
         self.lpmRewardedAd = lpmRewardedAd
         self.delegateHandler = UnityRewardedAdDelegateHandler()
         super.init(adNetworkAdapter: adNetworkAdapter, reward: reward)

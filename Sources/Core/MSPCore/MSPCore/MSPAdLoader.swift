@@ -134,7 +134,7 @@ public class MSPAdLoader: NSObject {
             bidderFormat = .interstitial
         case "multi_format":
             bidderFormat = .multi_format
-        case "rewarded":
+        case "rewarded", "rewarded_video":
             bidderFormat = .rewarded
         default:
             bidderFormat = nil
