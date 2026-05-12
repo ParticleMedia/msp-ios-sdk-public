@@ -33,6 +33,7 @@ class NovaAdPlayableView: UIView {
             make.directionalEdges.equalToSuperview()
         }
         mraidController.install(in: playableWebView.configuration.userContentController)
+        mraidController.notifyViewable(true)
     }
 
     @available(*, unavailable)
