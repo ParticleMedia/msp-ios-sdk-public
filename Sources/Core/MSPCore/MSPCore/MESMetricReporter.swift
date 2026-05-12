@@ -30,7 +30,6 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         case adReport = "ad_report"
         case adResponse = "ad_response"
         case adClick = "ad_click"
-        case adRewarded = "ad_rewarded"
         case loadAd = "load_ad"
         case getAd = "get_ad"
         case userSignal = "user_signal"
@@ -304,30 +303,6 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         eventModel.mspSdkVersion = MSP.shared.version
 
         reportData(event: .adClick, with: eventModel)
-    }
-
-    public func logAdRewarded(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
-        var eventModel = Com_Newsbreak_Mes_Events_AdRewardedEvent()
-        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        MSPLogger.shared.info(message: "[MES] Building ad_rewarded event. adFormat=\(adRequest.adFormat)")
-        if let mBidResponse = bidResponse as? BidResponse {
-            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
-            eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: mBidResponse)
-        } else {
-            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-            eventModel.ad = generateAdContext(ad: ad)
-        }
-
-        eventModel.os = MSPDevice.shared.getOSType()
-        if let org = MSP.shared.org {
-            eventModel.org = org
-        }
-        if let app = MSP.shared.app {
-            eventModel.app = app
-        }
-        eventModel.mspSdkVersion = MSP.shared.version
-
-        reportData(event: .adRewarded, with: eventModel)
     }
 
     public func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {

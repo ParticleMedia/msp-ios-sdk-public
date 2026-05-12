@@ -26,10 +26,6 @@ public protocol AdMetricReporter: AnyObject {
     /// Default implementation forwards to the legacy method for source compatibility.
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, clickMetadata: AdClickMetadata?)
 
-    /// Reports that the user has earned the reward for a rewarded ad.
-    /// Fired exactly once per ad instance, after `RewardedLifecycleController.markRewardEarned()`.
-    func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
-
     func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?)
 
     func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool)
@@ -51,9 +47,6 @@ public extension AdMetricReporter {
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, clickMetadata: AdClickMetadata?) {
         logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
     }
-
-    /// Default no-op keeps existing custom reporters source-compatible.
-    func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {}
 }
 
 public enum MSPErrorCode: Int {

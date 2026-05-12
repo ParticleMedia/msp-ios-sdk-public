@@ -164,7 +164,7 @@ class DemoAdListViewController: UIViewController {
         adListeners.removeValue(forKey: position)
         adLoaders.removeValue(forKey: position)
         failedAds[position] = msg
-        print("[AdList] Ad load failed at position \(position): \(msg)")
+        MSPLogger.shared.error(message: "[AdList] Ad load failed at position \(position): \(msg)")
         collectionView.reloadItems(at: [IndexPath(item: position, section: 0)])
 
         isLoadingAd = false
@@ -241,19 +241,24 @@ private class AdPositionListener: AdListener {
     }
 
     func onAdClick(ad: MSPAd) {
-        print("[AdList] Ad clicked at position \(position)")
+        MSPLogger.shared.info(message: "[AdList] Ad clicked at position \(position)")
     }
 
     func onAdImpression(ad: MSPAd) {
-        print("[AdList] Ad impression at position \(position)")
+        MSPLogger.shared.info(message: "[AdList] Ad impression at position \(position)")
     }
 
     func onAdDismissed(ad: MSPAd) {
-        print("[AdList] Ad dismissed at position \(position)")
+        MSPLogger.shared.info(message: "[AdList] Ad dismissed at position \(position)")
     }
 
     func onAdRewardReceived(ad: MSPAd) {
-        print("[AdList] Reward received at position \(position)")
+        let reward = (ad as? RewardedAd)?.reward
+        let typeStr = reward?.type ?? "null"
+        let amountStr = reward.map { "\($0.amount)" } ?? "null"
+        MSPLogger.shared.info(
+            message: "[AdList] Reward received at position \(position). rewardType: \(typeStr), rewardAmount: \(amountStr)"
+        )
     }
 
     func onError(msg: String, loadInfo: [String: Any]) {

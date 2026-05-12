@@ -5,8 +5,10 @@ struct TestParams {
     static let adNetworks = ["msp_fb", "msp_google", "msp_nova", "vungle", "msp_moloco_native"]
     static let creativeTypes = ["video", "image", "playable_video"]
     static let creativeLayouts = ["vertical", "horizontal"]
-    static let h5TemplateGroupsImageVideo = ["t1tob", "t1tob-v1", "t1nb", "t1nb-v1"]
-    static let h5TemplateGroupsPlayableVideo = ["t1nb", "t1nb-v1"]
+    // Aligned with Android DemoApp's rewarded / interstitial template groups.
+    // video / image: 7 templates; playable_video: 2 templates.
+    static let h5TemplateGroupsImageVideo = ["t1", "t1nb", "t1tob", "t1tob-v1", "t2g1", "t2g2", "t2g3"]
+    static let h5TemplateGroupsPlayableVideo = ["t1nb", "t3g1"]
 
     private let testAd: Bool
     private let adNetwork: String?

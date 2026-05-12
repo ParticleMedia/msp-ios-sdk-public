@@ -134,8 +134,9 @@ final class TestParamsCardView: UIView {
             }
         )
 
-        // Enable Feedback Button (interstitial only, shown when msp_nova selected OR useHtmlTestAdString)
-        if format == .interstitial {
+        // Enable Feedback Button (interstitial + rewarded; shown when msp_nova selected,
+        // or when useHtmlTestAdString is on — interstitial-only escape hatch).
+        if format == .interstitial || format == .rewarded {
             let feedbackRow = buildFeedbackButtonRow()
             feedbackRow.isHidden = true
             enableFeedbackRow = feedbackRow
@@ -179,10 +180,16 @@ final class TestParamsCardView: UIView {
         stack.spacing = 12
 
         stack.addArrangedSubview(fieldLabel("Creative Type"))
-        let ctOptions =
-            (format == .interstitial)
-            ? TestParams.creativeTypes
-            : TestParams.creativeTypes.filter { $0 != "playable_video" }
+        // Both interstitial and rewarded surfaces expose the full creative-type set including
+        // playable_video. Note: per the MON Tech Design, Phase 1 Ad Server hard-filters
+        // PLAYABLE_VIDEO for rewarded recall — the chip is provided so QA can exercise the
+        // request-side code path and observe the no-fill response.
+        let ctOptions: [String] = {
+            switch format {
+            case .interstitial, .rewarded: return TestParams.creativeTypes
+            default: return TestParams.creativeTypes.filter { $0 != "playable_video" }
+            }
+        }()
         let ctChips = ChipFlowView(options: ctOptions, selected: creativeType) { [weak self] selected in
             guard let self else { return }
             if let selected { self.creativeType = selected }
@@ -198,7 +205,7 @@ final class TestParamsCardView: UIView {
             }
         )
 
-        if format == .interstitial {
+        if format == .interstitial || format == .rewarded {
             stack.addArrangedSubview(buildH5Section())
         }
         return stack

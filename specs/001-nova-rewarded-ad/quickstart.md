@@ -45,10 +45,11 @@ Before starting implementation, read these files to understand the existing patt
 
 ## PRD Contract Checks
 
-- Nova rewarded request `ad_format` must be `rewarded_video` (FR-017b enum). `placement` is whatever the publisher passes via AdRequest (FR-017a passthrough).
-- Ad serving owns recall eligibility: Nova single video and playable video, `video_length >= 10s`.
-- H5 owns countdown `min(video_length, 30s)`, reward trigger, skip/end-card/playable/close-button flow, `is_mute = false`, `is_loop = false`, `is_auto_play = true`.
+- Nova rewarded request `ad_format` must be `rewarded_video` (FR-017b enum). `placement` is whatever the publisher passes via AdRequest (FR-017a passthrough). Ad Server rewarded routing is keyed off `ctx.placementName == REWARDED_VIDEO`, derived server-side from the SSP `ad_unit → REWARDED_VIDEO` mapping (FR-017c) — not from the SDK-set `placement` field.
+- Ad serving owns recall eligibility — Phase 1: `type == VIDEO && video_length_sec >= 10` only. `PLAYABLE_VIDEO` is deferred and hard-filtered by the Ad Server (per MON Tech Design).
+- H5 owns playback / UX: countdown ceiling is the server-supplied `rewardedVideoCountdownSec` template variable (AB key `h5_reward_countdown_second`, default 30, independent of video length); template auto-transitions to end card when video finishes early; reward trigger; skip/end-card/close-button flow; `is_mute = false`, `is_loop = false`, `is_auto_play = true`.
 - SDK load success requires a renderable H5 rewarded-video creative; missing or unsupported rewarded items should fail load.
+- On `novaNativeBridge.onAdRewarded()`, SDK fires Nova event `AD_EVENT_REWARDED` via `NovaAdMetricReporter.logAdRewarded(...)` (FR-023, sole server-side channel for the reward signal — no MES counterpart) and forwards `AdListener.onAdRewardReceived(ad:)`.
 
 ## Validation Steps
 

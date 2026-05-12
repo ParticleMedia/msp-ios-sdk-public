@@ -83,11 +83,12 @@ Represents the PRD-eligible Nova creative rendered by `NovaRewardedAdItem`.
 |------------|-----------------|-------------|
 | `placement` | Nova bid request | publisher-supplied placementId; SDK forwards verbatim (FR-017a) |
 | `ad_format` | Nova bid request | enum value `rewarded_video` when `AdRequest.adFormat == .rewarded` (FR-017b); distinct field from `placement` |
-| SDK-emitted MES events | `RewardedLifecycleController` | `ad_impression` / `ad_click` / `ad_rewarded`, exactly once each (FR-020) |
+| SDK-emitted MES events | `RewardedLifecycleController` | `ad_impression` / `ad_click`, exactly once each (FR-020). No MES `ad_rewarded` event — the reward signal is Nova-event-only. |
+| SDK-emitted Nova platform event | `NovaAdMetricReporter.logAdRewarded` | `AD_EVENT_REWARDED` to Nova `logAdEvent` endpoint, exactly once per ad on the JSBridge trigger (FR-023). Sole server-side event for the reward signal. Includes `duration_ms` (rewarded VC construction → JSBridge callback). |
 | H5-side events (SKIP / `skip_type` / Get Rewards / Close success / in-H5 video lifecycle) | H5 → Nova event endpoint | beaconed by H5 directly; SDK does NOT relay (FR-021) |
-| Creative family | Ad serving | Nova single video ads and Nova playable video ads are eligible |
-| `video_length >= 10s` | Ad serving | Minimum recall eligibility from PRD |
-| Countdown | H5 | `min(video_length, 30s)` |
+| Creative family | Ad serving | Phase 1: `type == VIDEO` only. `PLAYABLE_VIDEO` is deferred and hard-filtered by the Ad Server (per MON Tech Design). |
+| `video_length_sec >= 10` | Ad serving | Minimum recall eligibility; null `video_length_sec` is rejected by the Ad Server filter |
+| Countdown | H5 (server-supplied ceiling) | `rewardedVideoCountdownSec` template variable from Ad Server (AB key `h5_reward_countdown_second`, default 30, independent of `video_length_sec`). Template auto-transitions to end card when video finishes early. |
 | Playback flags | H5 | `is_mute = false`, `is_loop = false`, `is_auto_play = true` |
 | End card/playable + close button | H5 | Shown after video completion or after skip from countdown-finished state |
 | Reward earned signal | H5 → SDK | `novaNativeBridge.onAdRewarded()` |
