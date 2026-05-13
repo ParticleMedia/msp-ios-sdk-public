@@ -36,12 +36,14 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
         eCPMInDollar: Decimal,
         isParallax: Bool,
         htmlPageItems: [PageItem]?,
-        popupCTAStyleVariant: NovaPopupCTAStyleVariant
+        popupCTAStyleVariant: NovaPopupCTAStyleVariant,
+        highValue: Bool
     ) throws {
         self.addOnItem = addOnItem
         self.eCPMInDollar = eCPMInDollar
         self.isParallax = isParallax
         self._layoutStyle = layoutStyle
+        self.highValue = highValue
 
         try super.init(
             adUnitId: adUnitId,
@@ -85,6 +87,11 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
 
     /// Delegate used to handle ad state update. For example, ad impression or ad click.
     public weak var delegate: NovaNativeAdDelegate?
+
+    /// Whether ad-server marked this ad as high-value traffic (ecpm >= 1.2 * floor).
+    /// Sourced from the outer-level `CreativeClientProto.high_value` field; absent or
+    /// non-Bool payloads collapse to `false` at the builder layer.
+    public let highValue: Bool
 
     public var layoutStyle: NovaNativeLayoutStyle {
         if skOverlayAppStoreId != nil {

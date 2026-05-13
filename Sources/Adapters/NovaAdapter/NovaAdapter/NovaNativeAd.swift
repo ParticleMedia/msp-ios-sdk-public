@@ -32,6 +32,7 @@ public class NovaNativeAd: NativeAd, NativeAdSKOverlayControllable {
             adInfo[MSPConstants.AD_INFO_NOVA_AD_SET_ID] = nativeAdItem?.novaAdReportContext.adSetId
             adInfo[MSPConstants.AD_INFO_NOVA_AD_REQUEST_ID] = nativeAdItem?.novaAdReportContext.adRequestId
             adInfo[MSPConstants.AD_INFO_NOVA_AD_ENCRYPTED_TOKEN] = nativeAdItem?.novaAdReportContext.encryptedToken
+            adInfo[MSPConstants.AD_INFO_NOVA_HIGH_VALUE] = nativeAdItem?.highValue
             skOverlayController = nil
         }
     }

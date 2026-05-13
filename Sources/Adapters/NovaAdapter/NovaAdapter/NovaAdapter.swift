@@ -267,6 +267,9 @@ public class NovaAdapter: AdNetworkAdapter {
                     eCPMInDollar: eCPMInDollar,
                     abConfig: decodedData.abConfig
                 )
+                MSPLogger.shared.info(
+                    message: "[Adapter: Nova] Native highValue=\(nativeAdItem.highValue), requestId=\(nativeAdItem.novaAdReportContext.adRequestId), adId=\(nativeAdItem.novaAdReportContext.adId)"
+                )
                 let nativeAd = NovaNativeAd(
                     adNetworkAdapter: self,
                     title: nativeAdItem.headline ?? "",

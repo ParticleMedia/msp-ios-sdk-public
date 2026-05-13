@@ -19,6 +19,34 @@ public struct AdItem: Codable {
     let adsetId: String
     let requestId: String
     let price: Double?  // price in dollar
+    let highValue: Bool?
+
+    private enum CodingKeys: String, CodingKey {
+        case creative
+        case startTimeMs
+        case expirationMs
+        case encryptedAdToken
+        case adId
+        case adsetId
+        case requestId
+        case price
+        case highValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        creative = try container.decode(Creative.self, forKey: .creative)
+        startTimeMs = try container.decodeIfPresent(String.self, forKey: .startTimeMs)
+        expirationMs = try container.decodeIfPresent(String.self, forKey: .expirationMs)
+        encryptedAdToken = try container.decode(String.self, forKey: .encryptedAdToken)
+        adId = try container.decode(String.self, forKey: .adId)
+        adsetId = try container.decode(String.self, forKey: .adsetId)
+        requestId = try container.decode(String.self, forKey: .requestId)
+        price = try container.decodeIfPresent(Double.self, forKey: .price)
+        // Tolerate type mismatch (e.g. server sends string/number): collapse to nil
+        // so the ad still loads; builder layer defaults absent values to false.
+        highValue = (try? container.decodeIfPresent(Bool.self, forKey: .highValue)) ?? nil
+    }
 }
 
 struct Creative: Codable {

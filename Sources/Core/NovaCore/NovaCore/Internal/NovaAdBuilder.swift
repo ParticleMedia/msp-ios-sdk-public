@@ -110,7 +110,8 @@ public enum NovaAdBuilder {
             eCPMInDollar: Decimal(adItem.price ?? 0),
             isParallax: isParallax,
             htmlPageItems: adItem.creative.htmlPageItems,
-            popupCTAStyleVariant: popupCTAStyleVariant
+            popupCTAStyleVariant: popupCTAStyleVariant,
+            highValue: adItem.highValue ?? false
         )
     }
 

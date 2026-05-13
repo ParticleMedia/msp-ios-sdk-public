@@ -35,6 +35,7 @@ public struct MSPConstants {
     public static let AD_INFO_NOVA_AD_SET_ID = "novaAdSetId"
     public static let AD_INFO_NOVA_AD_REQUEST_ID = "novaAdRequestId"
     public static let AD_INFO_NOVA_AD_ENCRYPTED_TOKEN = "novaEncryptedToken"
+    public static let AD_INFO_NOVA_HIGH_VALUE = "novaHighValue"
 
     public static let USER_SIGNAL_APP_INSTALL_TIME = "app_install_time"
     public static let USER_SIGNAL_IS_FIRST_INSTALL = "is_first_install"
