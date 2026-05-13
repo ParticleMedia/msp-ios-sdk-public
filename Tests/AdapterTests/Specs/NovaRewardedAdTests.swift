@@ -129,7 +129,6 @@ final class NovaRewardedAdTests: QuickSpec {
                     sut.markRewardEarned()
 
                     expect(listener.rewardedAds).to(beEmpty())
-                    expect(metricReporter.logAdRewardedCallCount).to(equal(0))
                     expect(listener.callSequence).to(equal(["dismiss"]))
                 }
 

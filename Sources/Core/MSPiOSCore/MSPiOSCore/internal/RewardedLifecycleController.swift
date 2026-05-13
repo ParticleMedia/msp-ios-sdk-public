@@ -167,17 +167,13 @@ public final class RewardedLifecycleController {
             message:
                 "Rewarded ad reward earned. reward=\(rewardDescription), requestId=\(ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] ?? "nil")"
         )
-        if let adRequest = resolvedAdRequest, let reporter = resolvedAdMetricReporter {
-            MSPLogger.shared.info(tag: Constants.logTag, message: "Dispatching ad_rewarded MES event for rewarded ad")
-            reporter.logAdRewarded(ad: ad, adRequest: adRequest, bidResponse: resolvedBidResponse)
-        } else {
-            MSPLogger.shared.error(
-                tag: Constants.logTag,
-                message: "Skipping ad_rewarded MES (adRequest=\(resolvedAdRequest != nil), reporter=\(resolvedAdMetricReporter != nil))")
-        }
+        // Rewarded uses only the Nova `AD_EVENT_REWARDED` event (FR-023), fired by
+        // `NovaAdMetricReporter.logAdRewarded` at the JSBridge call site. There is no
+        // MES `ad_rewarded` event — earlier wiring mistakenly added one.
         guard let adListener else {
             MSPLogger.shared.error(
-                tag: Constants.logTag, message: "Reward callback cannot be forwarded because listener is nil; ad_rewarded MES was still dispatched when reporter/request were available")
+                tag: Constants.logTag,
+                message: "Reward callback cannot be forwarded because listener is nil")
             return
         }
         MSPLogger.shared.info(tag: Constants.logTag, message: "Dispatching rewarded callback to listener")

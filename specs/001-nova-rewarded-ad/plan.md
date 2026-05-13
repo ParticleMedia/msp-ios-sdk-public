@@ -100,8 +100,8 @@ Sources/
 
 Serving/H5 contract (non-native ownership):
 - Nova request `ad_format = rewarded_video` (enum, FR-017b); `placement` is publisher-supplied placementId (FR-017a)
-- Recall eligibility: Nova single video and playable video, `video_length >= 10s`
-- H5 UX: countdown `min(video_length, 30s)`, skip/end-card/playable/close-button flow, `is_mute = false`, `is_loop = false`, `is_auto_play = true`
+- Recall eligibility: Phase 1 is `type == VIDEO && video_length_sec >= 10`; `PLAYABLE_VIDEO` is hard-filtered by the Ad Server and deferred to a future phase (per MON Tech Design)
+- H5 UX: countdown ceiling = server-supplied `rewardedVideoCountdownSec` (AB key `h5_reward_countdown_second`, default 30, independent of video length); template auto-transitions to end card when video finishes early; skip/end-card/close-button flow; `is_mute = false`, `is_loop = false`, `is_auto_play = true`
 
 Tests/
 └── NovaCoreTests/

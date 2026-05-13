@@ -107,18 +107,14 @@ final class RewardedLifecycleControllerSpec: QuickSpec {
                 sut.markRewardEarned()
 
                 expect(adListener.rewardedAds).to(beEmpty())
-                expect(metricReporter.logAdRewardedCallCount).to(equal(0))
                 expect(adListener.callSequence).to(equal(["dismiss"]))
             }
 
-            it("still sends reward MES when listener is nil") {
-                sut = RewardedLifecycleController(adListener: nil, ad: ad)
-
-                sut.markRewardEarned()
-
-                expect(metricReporter.logAdRewardedCallCount).to(equal(1))
-                expect(adListener.rewardedAds).to(beEmpty())
-            }
+            // Note: the reward signal does NOT have a MES event counterpart — it is
+            // emitted only as the Nova `AD_EVENT_REWARDED` event by
+            // `NovaAdMetricReporter.logAdRewarded` (called from the Nova rewarded VC,
+            // see spec FR-023). Tests for the Nova-event exactly-once contract live
+            // alongside the Nova rewarded VC, not in MSPiOSCore.
 
             it("fires dismiss only once") {
                 sut.markDismissed()
@@ -212,7 +208,6 @@ private final class MockAdListener: AdListener {
 private final class SpyAdMetricReporter: AdMetricReporter {
     var logAdImpressionCallCount = 0
     var logAdClickCallCount = 0
-    var logAdRewardedCallCount = 0
     var logAdDismissCallCount = 0
     var lastClickMetadata: AdClickMetadata?
 
@@ -227,10 +222,6 @@ private final class SpyAdMetricReporter: AdMetricReporter {
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, clickMetadata: AdClickMetadata?) {
         logAdClickCallCount += 1
         lastClickMetadata = clickMetadata
-    }
-
-    func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
-        logAdRewardedCallCount += 1
     }
 
     func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?) {}

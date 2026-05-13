@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MSPiOSCore
 import QuartzCore
 import UIKit
 
@@ -74,6 +75,30 @@ class NovaAdMetricReporter: NSObject {
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
+
+    /// Fires the Nova `AD_EVENT_REWARDED` event when H5 signals the reward condition
+    /// is met via `novaNativeBridge.onAdRewarded()`. This is the sole server-side
+    /// channel for the reward signal (no MES counterpart — see spec FR-023).
+    /// `durationInMs` is the time from VC construction (matching the `click` event
+    /// duration convention) to the reward signal.
+    ///
+    /// - Returns: `true` if the event was successfully enqueued for transport (URL
+    ///   built and handed to `NovaTrackingUrlHelper.fire`); `false` if URL construction
+    ///   failed and the event was dropped. Callers implementing exactly-once dedup
+    ///   should only mark the "fired" flag on `true`, so a transient build failure can
+    ///   be retried on the next H5 trigger.
+    @discardableResult
+    static func logAdRewarded(
+        encryptedAdToken: String,
+        adUnitId: String,
+        durationInMs: Int
+    ) -> Bool {
+        var params: [String: String] = [:]
+        params[NovaAdMetricKeys.AD_UNIT_ID] = adUnitId
+        params[NovaAdMetricKeys.USER_ID] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
+        params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
+        return logNovaAdEvent(.rewarded, encryptedAdToken: encryptedAdToken, params: params)
+    }
 
     static func logAdClose(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?, error: NovaAdLoadError?) {
         var params: [String: String] = [
@@ -156,7 +181,11 @@ class NovaAdMetricReporter: NSObject {
 // MARK: - Private methods
 
 private extension NovaAdMetricReporter {
-    static func logNovaAdEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
+    /// Builds the `logAdEvent` URL with all standard parameters and hands it to the
+    /// fire-and-forget transport. Returns `true` iff URL construction succeeded —
+    /// callers that need exactly-once semantics use this to gate dedup flags.
+    @discardableResult
+    static func logNovaAdEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) -> Bool {
         var params = params
 
         params[NovaAdMetricKeys.EVENT_TYPE] = event.rawValue
@@ -186,9 +215,15 @@ private extension NovaAdMetricReporter {
             URLQueryItem(name: $0.0, value: $0.1)
         }
 
-        guard let url = components?.url else { return }
+        guard let url = components?.url else {
+            MSPLogger.shared.error(
+                message: "[NovaAdMetricReporter] Failed to build URL for event \(event.rawValue); event dropped. hostUrl=\(NovaConstants.shared.NovaEventHostUrl)"
+            )
+            return false
+        }
 
         NovaTrackingUrlHelper.fire(url: url)
+        return true
     }
 }
 

@@ -134,7 +134,7 @@ None of these SDKs guarantee reward metadata. The current design forces adapters
 - Sets `shouldPreloadHtml` based on response config
 - Creates `NovaRewardedAdItem` instead of `NovaInterstitialAdItem`
 
-**PRD eligibility**: The PRD allows Nova single video ads and Nova playable video ads when `video_length >= 10s`. This eligibility is owned by ad serving/creative selection. The iOS SDK must only treat renderable H5 rewarded-video responses as load success; missing or unsupported rewarded items are load failures.
+**Recall eligibility (Phase 1)**: Per the MON Tech Design, the Ad Server hard-filters to `type == VIDEO && video_length_sec >= 10` (null `video_length_sec` rejected). `PLAYABLE_VIDEO` is explicitly out of scope for Phase 1 and is rejected by the same filter. This eligibility is owned entirely by ad serving/creative selection. The iOS SDK must only treat renderable H5 rewarded-video responses as load success; missing or unsupported rewarded items are load failures.
 
 ## R7: PRD Request, Placement, and Event Contract
 
@@ -149,12 +149,12 @@ These two fields may share the same string in some publisher configurations but 
 **SDK responsibility**:
 - Forward publisher-supplied placementId verbatim into Nova request `placement` (FR-017a).
 - Set Nova request `ad_format = rewarded_video` when `AdRequest.adFormat == .rewarded` (FR-017b).
-- Emit SDK-side MES events (`ad_impression`, `ad_click`, `ad_rewarded`) via `RewardedLifecycleController` with the same dedup guarantees as other rewarded adapters.
+- Emit SDK-side MES events (`ad_impression`, `ad_click`) via `RewardedLifecycleController` with the same dedup guarantees as other rewarded adapters. The reward signal itself is not a MES event — it lives on the Nova `logAdEvent` channel (`AD_EVENT_REWARDED`), see FR-023.
 - Preserve existing click metadata (click area, click position) on the SDK-side click event, sourced from the H5 click JSBridge.
 
 **Non-SDK responsibility (per Clarifications session 2026-04-29)**:
 - MSP server experiment setup.
-- Serving-side recall eligibility for single video/playable video with `video_length >= 10s`.
+- Serving-side recall eligibility (Phase 1: `type == VIDEO && video_length_sec >= 10`; `PLAYABLE_VIDEO` deferred and hard-filtered).
 - H5 countdown, skip/end-card/playable, close-button UI, and playback flags (`is_mute = false`, `is_loop = false`, `is_auto_play = true`).
 - **All H5-side event reporting**: SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle events. The H5 page beacons these directly to Nova's event endpoint. SDK does not relay, transform, or dedup them.
 - **Native video quartile events**: the player runs entirely inside the H5 (HTML5 `<video>`); SDK has no native handle.

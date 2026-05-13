@@ -46,7 +46,6 @@ final class MockAdListener: AdListener {
 final class SpyAdMetricReporter: AdMetricReporter {
     var logAdImpressionCallCount = 0
     var logAdClickCallCount = 0
-    var logAdRewardedCallCount = 0
     var lastClickMetadata: AdClickMetadata?
 
     func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
@@ -62,9 +61,11 @@ final class SpyAdMetricReporter: AdMetricReporter {
         lastClickMetadata = clickMetadata
     }
 
-    func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
-        logAdRewardedCallCount += 1
-    }
+    // Note: `AdMetricReporter` no longer declares `logAdRewarded`. The reward signal
+    // is the Nova `AD_EVENT_REWARDED` event emitted via `NovaAdMetricReporter`
+    // (spec FR-023). Tests for that exactly-once contract live alongside the Nova
+    // rewarded VC; they require abstracting `NovaAdMetricReporter` behind a protocol
+    // (currently all static), tracked as a follow-up.
 
     var logAdDismissCallCount = 0
 

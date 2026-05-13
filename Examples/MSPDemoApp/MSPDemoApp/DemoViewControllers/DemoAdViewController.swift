@@ -198,11 +198,16 @@ extension DemoAdViewController: AdListener {
     }
 
     func onAdDismissed(ad: MSPAd) {
-        print("ad event: on ad dismissed")
+        MSPLogger.shared.info(message: "[DemoAd] Ad dismissed")
     }
 
     func onAdRewardReceived(ad: MSPAd) {
-        print("ad event: reward received")
+        let reward = (ad as? RewardedAd)?.reward
+        let typeStr = reward?.type ?? "null"
+        let amountStr = reward.map { "\($0.amount)" } ?? "null"
+        let message = "Ad reward received. rewardType: \(typeStr), rewardAmount: \(amountStr)"
+        MSPLogger.shared.info(message: "[DemoAd] \(message)")
+        showDebugToast(message)
     }
 
     func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
@@ -212,11 +217,11 @@ extension DemoAdViewController: AdListener {
     }
 
     func onAdClick(ad: MSPAd) {
-        print("ad event: on ad click")
+        MSPLogger.shared.info(message: "[DemoAd] Ad clicked")
     }
 
     func onAdImpression(ad: MSPAd) {
-        print("ad event: on ad impression")
+        MSPLogger.shared.info(message: "[DemoAd] Ad impression")
     }
 
     func onAdLoaded(ad: MSPAd) {
@@ -224,16 +229,16 @@ extension DemoAdViewController: AdListener {
         if let priceInDollar = ad.adInfo[MSPConstants.AD_INFO_PRICE],
             let priceInDollarValue = priceInDollar as? Double
         {
-            print("ad price: \(priceInDollarValue)")
+            MSPLogger.shared.info(message: "[DemoAd] Ad price: \(priceInDollarValue)")
         }
         if let adNetworkName = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
-            print("adnetwork name: " + adNetworkName)
+            MSPLogger.shared.info(message: "[DemoAd] Ad network name: \(adNetworkName)")
         }
         if let adUnitId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] {
-            print("ad unit id: \(adUnitId)")
+            MSPLogger.shared.info(message: "[DemoAd] Ad unit id: \(adUnitId)")
         }
         if let creativeId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] {
-            print("creative id: \(creativeId)")
+            MSPLogger.shared.info(message: "[DemoAd] Creative id: \(creativeId)")
         }
 
         if ad is MSPiOSCore.NativeAd,
@@ -286,11 +291,11 @@ extension DemoAdViewController: AdListener {
     }
 
     func onError(msg: String) {
-        print(msg)
+        MSPLogger.shared.error(message: "[DemoAd] Error: \(msg)")
     }
 
     @objc func mediaViewTapped() {
-        print("Media view tapped - handling ad click")
+        MSPLogger.shared.info(message: "[DemoAd] Media view tapped — handling ad click")
         if let ad = self.ad {
             self.onAdClick(ad: ad)
         }

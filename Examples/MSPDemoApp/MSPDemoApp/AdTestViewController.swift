@@ -304,7 +304,14 @@ extension AdTestViewController: AdListener {
         DispatchQueue.main.async { [weak self] in self?.viewModel.handleAdDismissed() }
     }
 
-    func onAdRewardReceived(ad: MSPAd) { MSPLogger.shared.info(message: "[AdTest] Reward received") }
+    func onAdRewardReceived(ad: MSPAd) {
+        let reward = (ad as? RewardedAd)?.reward
+        let typeStr = reward?.type ?? "null"
+        let amountStr = reward.map { "\($0.amount)" } ?? "null"
+        let message = "Ad reward received. rewardType: \(typeStr), rewardAmount: \(amountStr)"
+        MSPLogger.shared.info(message: "[AdTest] \(message)")
+        showDebugToast(message)
+    }
     func onAdClick(ad: MSPAd) { MSPLogger.shared.info(message: "[AdTest] Ad clicked") }
     func onAdImpression(ad: MSPAd) { MSPLogger.shared.info(message: "[AdTest] Ad impression") }
 

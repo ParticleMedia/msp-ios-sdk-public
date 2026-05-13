@@ -250,9 +250,30 @@ public class PrebidBidLoader: BidLoader {
         }
 
         if adRequest.adFormat == .rewarded {
-            // PRD serving/logging contract: placement is publisher-supplied, while
-            // ad_format is the rewarded_video enum. Set after custom params so callers
-            // cannot accidentally downgrade ad_format to the SDK-internal "rewarded".
+            // Three-layer placement contract (see spec FR-017a/b/c):
+            //   * `placement` — publisher-supplied placementId, passthrough. SDK does not
+            //     synthesize or validate it.
+            //   * `ad_format` — fixed `rewarded_video` enum when AdRequest.adFormat == .rewarded.
+            //     Distinct request field from `placement`.
+            //   * Ad Server internal `ctx.placementName == "REWARDED_VIDEO"` — derived
+            //     server-side via SSP config (ad_unit → REWARDED_VIDEO) per the MON
+            //     Nova Rewarded Ad Tech Design. This is what Phase 1 routing / recall /
+            //     filter / template-selection key off.
+            //
+            // Open verification (FR-017c): the Tech Design traces `ctx.placementName` to
+            // SSP lookup only. SDK does NOT intend to influence it through this contextData
+            // `placement` value (which is the publisher placementId, not "REWARDED_VIDEO").
+            // If a future Ad Server fallback path also reads the OpenRTB
+            // `imp[].ext.context.data.placement` field — pending request-log verification —
+            // FR-017a passthrough behavior may conflict with FR-017c, and this site would
+            // need revisiting.
+            //
+            // Note: Phase 1 Ad Server does NOT read `ad_format` for routing. It is written
+            // here for (a) MES `ad_impression` / `ad_click` event compatibility (those
+            // events stamp `ad_format` metadata) and (b) the future H5 Template Engine
+            // Redesign that will key off `{placement}_{creative_type}` AB pairs. Do not
+            // remove as dead code — see spec FR-017b. Order: set after custom params so
+            // callers cannot accidentally downgrade `ad_format` to the SDK-internal "rewarded".
             adUnitConfig.removeContextData(for: "ad_format")
             adUnitConfig.addContextData(key: "ad_format", value: MSPConstants.AD_FORMAT_REWARDED_VIDEO)
             adUnitConfig.removeContextData(for: "placement")
@@ -263,19 +284,37 @@ public class PrebidBidLoader: BidLoader {
         let inNovaTestMode =
             testParams["test_ad"] as? Bool == true
             && testParams["ad_network"] as? String == "msp_nova"
+
+        // Nova test/debug routing on the server relies on TWO independent fields in
+        // imp.ext.context.data:
+        //   - `debug_item` — present only in Nova test mode; carries
+        //     creative_type / h5_template_group / etc. so the server's debug recall
+        //     path returns the requested creative shape (including PLAYABLE_VIDEO).
+        //   - `test`      — ALWAYS sent. Carries `{"ad_network": ..., "test_ad": ...}`
+        //     so the server knows which adapter is being targeted and whether to
+        //     enter the test/debug branch.
+        //
+        // Earlier this method emitted them mutually exclusively (debug_item replaced
+        // test in Nova test mode). That worked for interstitial because production
+        // waterfall has inventory, but rewarded Phase 1 has no production fill (the
+        // server's REWARDED_VIDEO recall path is gated by SSP mapping), so without
+        // `test` the server never enters the debug branch and `debug_item` is
+        // silently dropped — observed as 0% fill for rewarded playable. Android
+        // emits both fields; this aligns with that.
         if inNovaTestMode,
             let debugItem = testParams[MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM] as? [String: Any],
             let debugItemJSON = toJSONString(debugItem)
         {
             adUnitConfig.removeContextData(for: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM)
             adUnitConfig.addContextData(key: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM, value: debugItemJSON)
-        } else {
-            testParams.removeValue(forKey: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM)
-            if let testParamsJSON = toJSONString(testParams) {
-                let testKey = "test"
-                adUnitConfig.removeContextData(for: testKey)
-                adUnitConfig.addContextData(key: testKey, value: testParamsJSON)
-            }
+        }
+        // Strip debug_item from the `test` payload so the two fields don't carry
+        // the same data, then always emit `test`.
+        testParams.removeValue(forKey: MSPConstants.TEST_PARAM_KEY_DEBUG_ITEM)
+        if let testParamsJSON = toJSONString(testParams) {
+            let testKey = "test"
+            adUnitConfig.removeContextData(for: testKey)
+            adUnitConfig.addContextData(key: testKey, value: testParamsJSON)
         }
 
         if let gadQueryInfo = bidTokens.googleQueryInfo {

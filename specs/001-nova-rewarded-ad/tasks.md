@@ -131,9 +131,9 @@
 
 ## Phase 5: User Story 4 — Event Reporting (Priority: P2)
 
-**Goal**: Nova bid request `placement` (FR-017a) + `ad_format = rewarded_video` (FR-017b) are correctly populated, and SDK-side MES events (`ad_impression` / `ad_click` / `ad_rewarded`) fire exactly once via `RewardedLifecycleController`. Per Clarifications session 2026-04-29, H5-side events (SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle) are **not** the SDK's responsibility — H5 beacons them directly.
+**Goal**: Nova bid request `placement` (FR-017a) + `ad_format = rewarded_video` (FR-017b) are correctly populated; SDK-side MES events (`ad_impression` / `ad_click`) fire exactly once via `RewardedLifecycleController`; and the Nova `AD_EVENT_REWARDED` event (FR-023) fires exactly once via `NovaAdMetricReporter.logAdRewarded` on the JSBridge trigger. There is no MES `ad_rewarded` event — the reward signal lives only on the Nova `logAdEvent` channel. Per Clarifications session 2026-04-29, H5-side events (SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle) are **not** the SDK's responsibility — H5 beacons them directly.
 
-**Independent Test**: Present a rewarded ad, verify the outbound Nova request carries `ad_format = rewarded_video` and the publisher-supplied `placement`; verify SDK fires `ad_impression`, `ad_click`, and `ad_rewarded` MES events exactly once each; verify SDK does NOT emit MES events for skip / get-rewards / close-button taps or in-H5 video events.
+**Independent Test**: Present a rewarded ad, verify the outbound Nova request carries `ad_format = rewarded_video` and the publisher-supplied `placement`; verify SDK fires `ad_impression` and `ad_click` MES events exactly once each; verify the Nova `AD_EVENT_REWARDED` event fires exactly once on the JSBridge trigger and is dropped if H5 retriggers after dismiss starts; verify SDK does NOT emit any MES `ad_rewarded` event nor MES events for skip / get-rewards / close-button taps or in-H5 video events.
 
 - [ ] T040 [US4] Audit `placement` field in Nova bid request (FR-017a). The SDK MUST forward the publisher-supplied placementId verbatim — confirm there is no transformation in `MSPAdLoader.getBidder()` or `NovaAdapter.loadAdCreative()` (`Sources/Core/MSPCore/MSPCore/MSPAdLoader.swift`, `Sources/Adapters/NovaAdapter/NovaAdapter/NovaAdapter.swift`).
 - [ ] T040b [US4] Audit `ad_format` field in Nova bid request (FR-017b). When `AdRequest.adFormat == .rewarded`, the request body must serialize `ad_format = "rewarded_video"`. The internal routing key `novaAdType = "rewarded"` in `NovaAdapter.parseNovaAdString` is consumed locally and does not affect the outbound request — leave it unchanged unless the bid response `prebid.ext.prebid.type` actually returns `rewarded_video`.
@@ -163,8 +163,8 @@
 
 **Goal**: Align native SDK boundaries with the updated PRD.
 
-- [ ] T051 [US6] Document and confirm with H5 team that rewarded video H5 owns countdown `min(video_length, 30s)`, reward trigger, skip/end-card/playable/close-button flow, `is_mute = false`, `is_loop = false`, and `is_auto_play = true`
-- [ ] T052 [US6] Confirm with ad serving/MSP server teams that `placement = rewarded_video` recalls Nova single video and playable video ads with `video_length >= 10s`; SDK should treat ineligible/missing H5 rewarded item as load failure
+- [ ] T051 [US6] Document and confirm with H5 team that rewarded video H5 owns: countdown ceiling = server-supplied `rewardedVideoCountdownSec` (AB key `h5_reward_countdown_second`, default 30, independent of video length); end-card auto-transition on video finish; reward trigger; skip/end-card/close-button flow; `is_mute = false`, `is_loop = false`, `is_auto_play = true`
+- [ ] T052 [US6] Confirm with ad serving/MSP server teams that Phase 1 rewarded recall hard-filters to `type == VIDEO && video_length_sec >= 10` only (`PLAYABLE_VIDEO` deferred and rejected) and that routing keys off SSP-derived `ctx.placementName == REWARDED_VIDEO`; SDK should treat ineligible/missing H5 rewarded item as load failure
 - [ ] T053 [US6] Manual DemoApp validation with a PRD-compliant H5 rewarded-video creative — verify no native countdown/skip/end-card UI is required and reward callback is driven only by `novaNativeBridge.onAdRewarded()`
 
 ---
@@ -177,6 +177,7 @@
 - [ ] T046 Run full test suite — `make test`
 - [ ] T047 Run round-trip test — `./Scripts/target-switching/round-trip-test.sh`
 - [ ] T048 Manual DemoApp validation — load Nova rewarded ad, verify end-to-end flow (load → show → reward → dismiss) and confirm request/event logs use `rewarded_video`
+- [ ] T054 [DEFERRED] Add a regression test that covers `NovaRewardedAdViewController.didEarnReward` exactly-once + late-dismiss drop (FR-023). **Blocked on**: `NovaAdMetricReporter` is all-static and has no DI seam, so the Nova `AD_EVENT_REWARDED` dispatch cannot be intercepted by a unit test today. Two viable approaches when this is picked up: (a) refactor `NovaAdMetricReporter` to a `NovaAdMetricReporting` protocol + instance with the existing `static` calls as the default, then inject into `NovaRewardedAdViewController`; or (b) stub the `*/api/logAdEvent/*` URL with OHHTTPStubs (already a project dependency) for an integration-style test. Until this lands, the exactly-once + race contract is enforced by code review and manual DemoApp validation (T048).
 
 ---
 

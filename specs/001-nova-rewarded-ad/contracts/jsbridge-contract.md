@@ -45,14 +45,18 @@ window.novaNativeBridge.onAdRewarded() → void
 **Parameters**: None.
 
 **Behavior**:
-- H5 calls this when the reward condition is met. Per the PRD, the baseline reward condition is countdown completion where `countdown = min(video_length, 30s)`.
+- H5 calls this when the reward condition is met. Per the MON Tech Design, the baseline reward condition is countdown completion, where the countdown ceiling is the server-supplied `rewardedVideoCountdownSec` template variable (driven by AB key `h5_reward_countdown_second`, default 30, independent of `video_length_sec`). If the underlying video finishes before that ceiling, the template auto-transitions to the end card and H5 may fire `onAdRewarded()` at that point.
 - Native receives the message via `WKScriptMessageHandler` on the `novaNativeBridge` message handler.
 - Native parses `action: "onAdRewarded"` from the message body.
 - Native invokes `NovaAdHtmlActionDelegate.didEarnReward()`.
 - The call is **idempotent**: multiple invocations result in the reward callback firing only once (enforced by `RewardedLifecycleController`).
+- On the first invocation, the SDK does two things exactly once:
+  - Fires the Nova platform event **`AD_EVENT_REWARDED`** (FR-023) via `NovaAdMetricReporter.logAdRewarded(...)` → Nova `logAdEvent` endpoint, with `duration_ms` from rewarded VC construction to the JSBridge callback. This is the **sole** server-side event for the reward signal.
+  - Forwards `AdListener.onAdRewardReceived(ad:)` to the publisher via `RewardedLifecycleController.markRewardEarned()`. No MES event fires for the reward — earlier wiring that included a MES `ad_rewarded` event was removed as a misreading of the contract.
+  - The H5 contract is unchanged regardless of which side of the SDK consumes the signal.
 
 **When to call**:
-- After the rewarded-video countdown completes: `min(video_length, 30s)`.
+- After the rewarded-video countdown completes (ceiling = server-supplied `rewardedVideoCountdownSec`, default 30), or earlier if the template auto-transitions to the end card on video completion.
 - If H5 defines a stricter reward-earned condition, only after that condition is satisfied.
 
 **When NOT to call**:

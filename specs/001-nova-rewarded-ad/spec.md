@@ -24,7 +24,7 @@
 
 ### User Story 1 - Publisher Loads and Shows a Nova Rewarded Ad (Priority: P1)
 
-A publisher app requests a rewarded ad from MSP SDK. The SDK requests Nova placement `rewarded_video`, loads an eligible Nova H5 rewarded-video creative, presents it full-screen, and notifies the publisher when the user earns the reward (for example, after the H5 countdown reaches `min(video_length, 30s)`).
+A publisher app requests a rewarded ad from MSP SDK. The SDK marks the request with `ad_format = rewarded_video` (FR-017b) and forwards the publisher-supplied placementId verbatim (FR-017a); Ad Server rewarded routing is keyed off `ctx.placementName == REWARDED_VIDEO`, which is derived server-side from the SSP `ad_unit → REWARDED_VIDEO` mapping (FR-017c). When the request resolves, the SDK loads an eligible Nova H5 rewarded-video creative, presents it full-screen, and notifies the publisher when the user earns the reward (for example, when the H5 countdown reaches the server-supplied `rewardedVideoCountdownSec` ceiling, or when the underlying video finishes early and the template auto-transitions to the end card).
 
 **Why this priority**: This is the core end-to-end flow. Without it, there is no rewarded ad product.
 
@@ -77,14 +77,14 @@ Nova rewarded ads must surface the rewarded-video ad format in the Nova bid requ
 
 **Why this priority**: Reporting is essential for monetization analytics but does not block the core ad experience.
 
-**Independent Test**: Present a rewarded ad, interact with it, verify that the SDK's outbound Nova bid request carries `ad_format = rewarded_video`, and that SDK-emitted MES events (`ad_impression`, `ad_click`, `ad_rewarded`) fire exactly once each with the correct ad context. Verify SDK does NOT attempt to emit MES events for skip / get-rewards / close-button or in-H5 video events.
+**Independent Test**: Present a rewarded ad, interact with it, verify that the SDK's outbound Nova bid request carries `ad_format = rewarded_video`, that SDK-emitted MES events (`ad_impression`, `ad_click`) fire exactly once each with the correct ad context, and that the Nova event `AD_EVENT_REWARDED` on the Nova `logAdEvent` endpoint fires exactly once on the JSBridge trigger. Verify the SDK does NOT emit a MES `ad_rewarded` event (the reward signal is Nova-event-only) and does NOT emit MES events for skip / get-rewards / close-button or in-H5 video events.
 
 **Acceptance Scenarios**:
 
 1. **Given** a Nova rewarded ad request, **When** the request is built, **Then** the request `ad_format` field is set to the enum value `rewarded_video`, and the `placement` field carries the publisher-supplied placementId verbatim.
 2. **Given** a rewarded ad is displayed, **When** an impression occurs, **Then** the SDK fires `ad_impression` MES via `RewardedLifecycleController.markDisplayed()` exactly once.
 3. **Given** the user clicks the ad, **When** the click is reported, **Then** the SDK fires `ad_click` MES via `RewardedLifecycleController.markClicked()` exactly once with click metadata (click area, click position) supplied by the H5 click bridge.
-4. **Given** the H5 page fires `novaNativeBridge.onAdRewarded()`, **When** the SDK processes it, **Then** the SDK fires `ad_rewarded` MES via `RewardedLifecycleController.markRewardEarned()` exactly once.
+4. **Given** the H5 page fires `novaNativeBridge.onAdRewarded()`, **When** the SDK processes it, **Then** the SDK fires the Nova event `AD_EVENT_REWARDED` via `NovaAdMetricReporter.logAdRewarded(...)` exactly once with `duration_ms` populated, and `RewardedLifecycleController.markRewardEarned()` forwards `AdListener.onAdRewardReceived(ad:)` exactly once. There is no corresponding MES `ad_rewarded` event — the reward signal lives only on the Nova `logAdEvent` channel.
 5. **Given** the user closes the ad after earning the reward, **When** dismiss fires, **Then** `AdListener.onAdDismissed(ad:)` is called after `onAdRewardReceived`.
 6. **Given** the user closes the ad without earning the reward, **When** dismiss fires, **Then** `AdListener.onAdDismissed(ad:)` is called and `onAdRewardReceived` is never called.
 7. **Given** the H5 page fires SKIP / Get Rewards / Close button taps or in-H5 video lifecycle events, **When** these events occur, **Then** the SDK does NOT fire corresponding MES events — the H5 beacons them directly to Nova per the H5 contract.
@@ -101,7 +101,7 @@ The H5 page owns the rewarded-video playback UX and must be able to run inside t
 
 **Acceptance Scenarios**:
 
-1. **Given** a rewarded video with length `video_length`, **When** H5 starts playback, **Then** H5 applies countdown `min(video_length, 30s)` and calls `onAdRewarded()` once the countdown finishes.
+1. **Given** a rewarded video and the server-supplied `rewardedVideoCountdownSec` (AB key `h5_reward_countdown_second`, default 30, independent of video length), **When** H5 starts playback, **Then** H5 applies that countdown ceiling and calls `onAdRewarded()` once the countdown finishes (or earlier if the template auto-transitions to the end card on video completion).
 2. **Given** the video completes before the user closes, **When** completion occurs, **Then** H5 auto-shows the end card/playable and close button without native SDK UI intervention.
 3. **Given** the video does not complete, **When** the countdown disappears, **Then** H5 shows the skip button; clicking skip shows the end card/playable and close button.
 4. **Given** a rewarded video creative, **When** it is rendered, **Then** H5 uses `is_mute = false`, `is_loop = false`, and `is_auto_play = true`.
@@ -152,13 +152,15 @@ To minimize latency when showing a rewarded ad, the SDK should support preloadin
 - **FR-014**: SDK MUST report ad format as `rewarded_video` in SDK-emitted Nova request metadata and MES events. (Split into FR-017a / FR-017b for clarity.)
 - **FR-015**: SDK MUST extract a shared `NovaFullScreenAdViewController` base class from current `NovaInterstitialAdViewController`, with interstitial and rewarded each subclassing it. Each subclass controls its own dismiss policy (e.g., rewarded MUST NOT auto-dismiss on `willEnterForeground`).
 - **FR-016**: `RewardedAd.reward` MUST be changed from `Reward` to `Reward?`（optional）。从 bid response 解析，缺失则为 nil。现有各 adapter（Google、Facebook、Liftoff、Moloco 等）的 hardcoded fallback 一并清理为 optional 传递。
-- **FR-017a (request placement)**: SDK MUST forward the publisher-supplied placementId verbatim to the Nova ad request `placement` field; the SDK does not synthesize, override, or validate the placement string. The PRD's example value `nova-ios-reward-fullscreen-prod-ob` is a publisher configuration, not an SDK constant.
-- **FR-017b (request ad_format)**: SDK MUST set the Nova ad request `ad_format` field to the enum string `rewarded_video` whenever `AdRequest.adFormat == .rewarded`. This is a distinct field from `placement` even when both happen to share the same string.
+- **FR-017a (request placement — SDK passthrough)**: SDK MUST forward the publisher-supplied placementId verbatim to the Nova ad request `placement` field; the SDK does not synthesize, override, or validate the placement string. The PRD's example value `nova-ios-reward-fullscreen-prod-ob` is a publisher configuration, not an SDK constant. This is the only `placement`-adjacent value the SDK controls.
+- **FR-017b (request ad_format — SDK enum)**: SDK MUST set the Nova ad request `ad_format` field to the enum string `rewarded_video` whenever `AdRequest.adFormat == .rewarded`. This is a distinct request field from `placement` (FR-017a), independent of the publisher's placementId string. Note: per the MON Tech Design, Phase 1 Ad Server routing keys off `ctx.placementName` (FR-017c) and does NOT read `ad_format`; this field is set for MES log compatibility and for the future H5 Template Engine Redesign that will key off `{placement}_{creative_type}` AB pairs. Removing it would break MES analytics and future-proofing — keep it.
+- **FR-017c (Ad Server internal `ctx.placementName` — SDK does not set)**: For visibility only — the Phase 1 Ad Server recall, hard filter (`AD_REWARDED_VIDEO_CREATIVE_FILTER`), and H5 template selection are all keyed off `ctx.placementName == "REWARDED_VIDEO"`. Per the MON Tech Design that value is derived server-side by the SSP config mapping `ad_unit → REWARDED_VIDEO`; it is NOT the publisher's placementId from FR-017a. SDK does not intend to influence `ctx.placementName` via the OpenRTB `imp[].ext.context.data.placement` field (which carries the publisher placementId from FR-017a) — pending request-log verification that no Ad Server fallback path reads that wire field. Publisher integration MUST coordinate with the Nova SSP team to register each rewarded ad unit so the SSP mapping exists — otherwise rewarded requests will not route correctly even if FR-017a/b are satisfied.
 - **FR-018**: Nova rewarded load success MUST require an eligible H5 rewarded-video creative. Missing rewarded item, unsupported creative type, or a response that cannot be rendered as H5 rewarded video MUST fail load instead of returning an unusable `RewardedAd`.
 - **FR-019**: SDK MUST support the PRD publisher-facing reward API by delivering `AdListener.onAdRewardReceived(ad:)` after H5 calls `novaNativeBridge.onAdRewarded()`; SDK MUST NOT allocate, verify, or persist rewards itself.
-- **FR-020**: SDK MUST emit MES events (`ad_impression`, `ad_click`, `ad_rewarded`) for rewarded ads via `RewardedLifecycleController`, with the same idempotency / dedup guarantees as the existing rewarded path. SDK click metadata (click area / click position) is captured from the H5 click JSBridge and attached to the SDK-side click event.
+- **FR-020**: SDK MUST emit MES events (`ad_impression`, `ad_click`) for rewarded ads via `RewardedLifecycleController`, with the same idempotency / dedup guarantees as the existing rewarded path. SDK click metadata (click area / click position) is captured from the H5 click JSBridge and attached to the SDK-side click event. The reward signal itself is NOT a MES event — it lives only on the Nova `logAdEvent` channel (FR-023).
 - **FR-021**: SDK MUST NOT emit native MES events for PRD-listed H5-side events: SKIP button (incl. `skip_type`), Get Rewards button, Close button success, or any in-H5 video lifecycle event (start / quartiles / complete). These are H5-owned and beaconed directly by the H5 page to Nova's event endpoint. The only JSBridge action SDK accepts in the rewarded path is `onAdRewarded()`.
 - **FR-022**: SDK MUST reuse existing consent / privacy plumbing (IAB / GDPR / CCPA / COPPA) for rewarded ads — no rewarded-specific compliance work is in scope. PRD's compliance requirements are inherited via the existing SDK framework, not re-implemented per format.
+- **FR-023 (Nova event `AD_EVENT_REWARDED`)**: SDK MUST emit the Nova platform event `AD_EVENT_REWARDED` via `NovaAdMetricReporter.logAdRewarded(...)` (Nova `logAdEvent` endpoint) when H5 fires `novaNativeBridge.onAdRewarded()`. This is the **only** server-side event for the reward signal — there is no MES `ad_rewarded` counterpart. Required parameters: `event_type=AD_EVENT_REWARDED`, `ad_unit_id`, `encrypted_ad_token`, `event_time`, `duration_ms` (time from rewarded VC construction to JSBridge callback, matching the click-event convention). System fields (`sdkv`, `os`, `osv`, `make`, `model`, `bundle`, `cv`) are injected by the shared `logNovaAdEvent` helper. Fires at most once per ad — gated by the same JSBridge dedup as FR-019 (the publisher-facing `AdListener.onAdRewardReceived`).
 
 ### Key Entities
 
@@ -167,7 +169,7 @@ To minimize latency when showing a rewarded ad, the SDK should support preloadin
 - **NovaRewardedAdDelegate**: Independent protocol (`: AnyObject`) with format-specific named methods: `rewardedAdDidDisplay`, `rewardedAdDidDismiss`, `rewardedAdDidLogClick`, `rewardedAdDidEarnReward`.
 - **NovaRewardedAdItem**: NovaCore model for a rewarded ad. Inherits `NovaFullScreenAdItem`, holds `delegate: NovaRewardedAdDelegate?`.
 - **NovaRewardedAd**: NovaAdapter wrapper. Inherits `MSPiOSCore.RewardedAd`, holds `NovaRewardedAdItem`, bridges to `RewardedLifecycleController`.
-- **Rewarded Video Creative**: PRD-eligible Nova H5 creative recalled when the bid request carries `ad_format = rewarded_video` (FR-017b) on the publisher-supplied `placement` (FR-017a). Serving eligibility is single video or playable video with `video_length >= 10s`; H5 owns countdown, skip, end card/playable, close button, and playback flags. H5 also owns reporting of SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle events directly to Nova's event endpoint (FR-021).
+- **Rewarded Video Creative**: PRD-eligible Nova H5 creative. The SDK identifies the request as rewarded via `ad_format = rewarded_video` (FR-017b) and forwards the publisher-supplied `placement` (FR-017a). The Ad Server then routes the request as rewarded by reading its own `ctx.placementName = REWARDED_VIDEO`, derived from the SSP-side ad-unit mapping (FR-017c). Phase 1 serving eligibility is `VIDEO` only with `video_length_sec >= 10`; `PLAYABLE_VIDEO` is explicitly out of scope for Phase 1 and the Ad Server hard-filters it out (per the MON Tech Design). H5 owns countdown, skip, end card, close button, and playback flags. H5 also owns reporting of SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle events directly to Nova's event endpoint (FR-021).
 
 ## Success Criteria *(mandatory)*
 
@@ -182,12 +184,12 @@ To minimize latency when showing a rewarded ad, the SDK should support preloadin
 ## Assumptions
 
 - The H5 team (@Tingchao Xu) will implement the countdown timer, close button UX, and reward condition logic within the H5 page. The SDK's only responsibility is providing the `novaNativeBridge.onAdRewarded()` interface and reacting to it.
-- The H5 team owns PRD rewarded-video UX: countdown = `min(video_length, 30s)`, reward trigger after countdown, video completion/skip transition to end card/playable, close button display, `is_mute = false`, `is_loop = false`, and `is_auto_play = true`.
+- The H5 team owns PRD rewarded-video UX: countdown ceiling is the server-supplied `rewardedVideoCountdownSec` template variable (driven by AB key `h5_reward_countdown_second`, default 30, independent of `video_length_sec`); the template auto-transitions to the end card when the underlying video finishes early; reward triggers after countdown; close button display; `is_mute = false`, `is_loop = false`, and `is_auto_play = true`.
 - The H5 team owns event reporting for SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle events. H5 beacons these directly to Nova's event endpoint. SDK does not transform, dedup, or relay these events.
 - The video player runs entirely inside the H5 (HTML5 `<video>`); the iOS SDK has no native player handle for the rewarded creative and therefore cannot emit native video quartile events for rewarded ads.
 - The Reward System (publisher-defined reward allocation, reward types, secure/fraud-preventive validation) is [Hold] per the PRD and is out of scope. `Reward` metadata is optional and may come from request/bid context; SDK must not fabricate a default reward.
-- The ad serving backend (@Songyan Hou) will use `placement = <publisher-configured placementId>` and `ad_format = rewarded_video` for Nova rewarded recall and logs. These are two distinct request fields even when both string values coincide.
-- Ad serving owns PRD recall eligibility: all Nova single video ads and Nova playable video ads can be recalled when `video_length >= 10s`.
+- The ad serving backend (@Songyan Hou) routes rewarded requests via its own `ctx.placementName == "REWARDED_VIDEO"` value, which is derived from the SSP config mapping `ad_unit → REWARDED_VIDEO` (FR-017c). The SDK-set request fields `placement` (publisher-supplied placementId, FR-017a) and `ad_format = rewarded_video` (FR-017b) are independent of `ctx.placementName`; Phase 1 Ad Server routing does not read `ad_format`. Publisher onboarding for rewarded ad units MUST coordinate with the Nova SSP team to register the ad-unit→REWARDED_VIDEO mapping.
+- Ad serving owns PRD recall eligibility: Phase 1 recalls Nova single-video creatives only (`type == VIDEO && video_length_sec >= 10`). `PLAYABLE_VIDEO` is deferred to a future phase per the MON Tech Design and is hard-filtered by the Ad Server in Phase 1.
 - Compliance & ad quality (IAB / GDPR / CCPA / COPPA, brand safety, IVT detection): inherited from the existing SDK framework. No rewarded-specific compliance work is in scope.
 - The creative rendered by the iOS SDK will be H5/HTML. Non-H5 or otherwise unsupported rewarded responses are load failures.
 - `NovaRewardedAdItem` shares the same HTML rendering path as interstitial (via `NovaAdHtmlView`), and no new WebView component is needed.
@@ -203,14 +205,15 @@ To minimize latency when showing a rewarded ad, the SDK should support preloadin
 - `novaNativeBridge.onAdRewarded()` JSBridge injection and handling
 - `NovaAdapter` rewarded format support
 - Outbound Nova request `ad_format = rewarded_video` enum mapping (FR-017b) and `placement` passthrough (FR-017a)
-- SDK-emitted MES events (`ad_impression`, `ad_click`, `ad_rewarded`) via `RewardedLifecycleController`
+- SDK-emitted MES events (`ad_impression`, `ad_click`) via `RewardedLifecycleController` (FR-020). No MES `ad_rewarded` event.
+- SDK-emitted Nova event `AD_EVENT_REWARDED` via `NovaAdMetricReporter.logAdRewarded(...)` on the Nova `logAdEvent` endpoint (FR-023) — the sole server-side event for the reward signal
 
 **Out of scope**:
 - Reward System (types, amounts, verification URLs) — [Hold] per PRD
 - H5 page UI implementation (countdown, skip button, close button, end card/playable, reward confirmation, playback flags) — H5 team
 - H5-side event reporting (SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle events) — H5 beacons directly to Nova; SDK does not relay
 - Native video quartile events for rewarded — the player lives in H5, not native
-- Server-side experiment setup and rewarded-video recall filtering (`video_length >= 10s`, single video/playable video) — MSP server/ad serving teams
+- Server-side experiment setup and rewarded-video recall filtering (Phase 1: `type == VIDEO && video_length_sec >= 10`; `PLAYABLE_VIDEO` deferred) — MSP server/ad serving teams
 - Compliance & ad quality (IAB / GDPR / CCPA / COPPA, brand safety, IVT) — inherited from existing SDK framework, no rewarded-specific work
 - New third-party adapter rewarded support
 - Changes to `RewardedLifecycleController` or `AdListener`（`RewardedAd.reward` optional 化除外）

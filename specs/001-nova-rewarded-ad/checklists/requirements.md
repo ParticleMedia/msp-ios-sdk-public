@@ -37,4 +37,4 @@
   - SDK only owns container + `onAdRewarded` JSBridge. SKIP / `skip_type` / Get Rewards / Close button success / in-H5 video lifecycle events are **H5-emitted directly to Nova** (FR-021) — SDK does not relay.
   - Video player runs entirely inside H5 (HTML5 `<video>`); SDK has no native player handle and emits no native quartile events for rewarded.
   - Compliance (IAB / GDPR / CCPA / COPPA) is inherited from existing SDK framework; no rewarded-specific compliance work in scope (FR-022).
-- H5/serving responsibilities from PRD are explicitly scoped: H5 owns countdown/skip/end-card/playback flags; ad serving owns recall eligibility for single video/playable video with `video_length >= 10s`.
+- H5/serving responsibilities from PRD are explicitly scoped: H5 owns countdown (server-supplied `rewardedVideoCountdownSec`, AB-driven, default 30) / skip / end-card auto-transition / playback flags; Phase 1 ad serving owns recall eligibility for single video only (`type == VIDEO && video_length_sec >= 10`; `PLAYABLE_VIDEO` deferred and hard-filtered per MON Tech Design).

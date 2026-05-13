@@ -45,10 +45,6 @@ public class AdMetricReporterImp: AdMetricReporter {
         )
     }
 
-    public func logAdRewarded(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {
-        MESMetricReporter.shared.logAdRewarded(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
-    }
-
     public func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPiOSCore.MSPAd?) {
         MESMetricReporter.shared.logGetAdFromCache(cacheKey: cacheKey, fill: fill, ad: ad)
     }

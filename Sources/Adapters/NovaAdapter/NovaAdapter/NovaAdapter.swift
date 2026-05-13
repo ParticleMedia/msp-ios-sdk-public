@@ -36,6 +36,25 @@ public class NovaAdapter: AdNetworkAdapter {
     private var adLoadStartTime: TimeInterval = 0
 
     public func destroyAd() {
+        MSPLogger.shared.info(
+            message: "[Adapter: Nova] destroyAd called; releasing rewarded refs. hadRewardedAdItem=\(rewardedAdItem != nil), hadRewardedAdWrapper=\(rewardedAd != nil)")
+        // T037 — release strong refs to the underlying `NovaRewardedAdItem` so it
+        // (and its cached WKWebView) can deallocate after `destroyAd()` is called.
+        // Two strong refs to clear; missing either keeps the H5 alive:
+        //   1. `self.rewardedAdItem` — the adapter's own reference (used to wire
+        //      the delegate during load).
+        //   2. `(self.rewardedAd as? NovaRewardedAd)?.rewardedAdItem` — the
+        //      publisher-facing wrapper's reference. If only #1 is cleared, the
+        //      publisher's `RewardedAd` instance still reports `isValid() == true`
+        //      and `show()` would re-present the same item — the entire point of
+        //      `destroyAd()` is to invalidate the ad. `self.rewardedAd` itself is
+        //      weak, so this is a no-op if the publisher has already released it.
+        //
+        // Native / interstitial item cleanup is intentionally out of scope for
+        // this rewarded-focused change — they have the same gap but belong to a
+        // separate audit.
+        (rewardedAd as? NovaRewardedAd)?.rewardedAdItem = nil
+        rewardedAdItem = nil
     }
 
     public func initialize(
@@ -342,6 +361,8 @@ public class NovaAdapter: AdNetworkAdapter {
                 }
 
             case "rewarded":
+                MSPLogger.shared.info(
+                    message: "[Adapter: Nova] parseNovaAdString entering rewarded branch. adUnitId=\(adUnitId), candidates=\(ads.count)")
                 let rewardedAdItems = NovaAdBuilder.buildRewardedAds(
                     adItems: ads,
                     adUnitId: adUnitId,
@@ -394,13 +415,36 @@ public class NovaAdapter: AdNetworkAdapter {
                         let auctionBidListener = self.auctionBidListener
                     {
                         let bidderPlacementId = self.bidderPlacementId ?? adRequest.placementId
+                        MSPLogger.shared.info(
+                            message: "[Adapter: Nova] Rewarded ad wired. bidderPlacementId=\(bidderPlacementId), shouldPreloadHtml=\(rewardedAdItem.shouldPreloadHtml), priceInDollar=\(self.priceInDollar ?? 0)")
                         // creativeType == .html is guaranteed by the FR-018 guard above.
                         if rewardedAdItem.shouldPreloadHtml {
                             let enableFeedback = adRequest.customParams["html_enable_feedback"] as? Bool ?? false
-                            rewardedAdItem.preloadHtmlView(enableFeedback: enableFeedback) {
+                            // Failsafe timeout: if preloadHtmlView's completion never fires
+                            // (slow CDN, WebView hang), still surface onAdLoaded within a
+                            // bounded latency. show() then picks up the (possibly still-loading)
+                            // cachedHtmlView, matching the non-preload path's "load on show"
+                            // semantics. A late preload completion after the timeout fires is
+                            // harmless — `proceed` is idempotent via the `didProceed` flag.
+                            // Note: the late-firing timer is a no-op (guarded), not cancelled,
+                            // to avoid the workItem↔closure retain cycle that explicit
+                            // DispatchWorkItem cancellation would require.
+                            var didProceed = false
+                            let proceed: (String) -> Void = { [weak self] reason in
+                                guard let self else { return }
+                                guard !didProceed else { return }
+                                didProceed = true
+                                MSPLogger.shared.info(
+                                    message: "[Adapter: Nova] Rewarded handleAdLoaded path=\(reason)")
                                 self.handleAdLoaded(
                                     ad: novaRewardedAd, auctionBidListener: auctionBidListener,
                                     bidderPlacementId: bidderPlacementId)
+                            }
+                            rewardedAdItem.preloadHtmlView(enableFeedback: enableFeedback) {
+                                proceed("preload_completed")
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                                proceed("preload_timeout_5s")
                             }
                         } else {
                             self.handleAdLoaded(
@@ -487,7 +531,10 @@ public class NovaAdapter: AdNetworkAdapter {
     }
 
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
-        adRequest?.s2sLatencyInfo.adLoadLatencyMs = Int32((Date().timeIntervalSince1970 - adLoadStartTime) * 1000)
+        let latencyMs = Int((Date().timeIntervalSince1970 - adLoadStartTime) * 1000)
+        adRequest?.s2sLatencyInfo.adLoadLatencyMs = Int32(latencyMs)
+        MSPLogger.shared.info(
+            message: "[Adapter: Nova] handleAdLoaded: caching + signaling auction success. adType=\(type(of: ad)), bidderPlacementId=\(bidderPlacementId), latencyMs=\(latencyMs)")
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
