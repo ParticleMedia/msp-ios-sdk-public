@@ -75906,90 +75906,90 @@
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
       "offset": 674,
-      "length": 9,
-      "value": "\"2.0.4.1\""
+      "length": 7,
+      "value": "\"2.0.4\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 735,
+      "offset": 733,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 774,
+      "offset": 772,
       "length": 38,
       "value": "\"00000000-0000-0000-0000-000000000000\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 883,
+      "offset": 881,
       "length": 12,
       "value": "\"DFPRequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 936,
+      "offset": 934,
       "length": 13,
       "value": "\"DFPNRequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 986,
+      "offset": 984,
       "length": 13,
       "value": "\"DFPORequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 1034,
+      "offset": 1032,
       "length": 12,
       "value": "\"GADRequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 1083,
+      "offset": 1081,
       "length": 13,
       "value": "\"GADNRequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 1135,
+      "offset": 1133,
       "length": 12,
       "value": "\"GAMRequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 1184,
+      "offset": 1182,
       "length": 10,
       "value": "\"MPAdView\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 1237,
+      "offset": 1235,
       "length": 28,
       "value": "\"MPInterstitialAdController\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "StringLiteral",
-      "offset": 1307,
+      "offset": 1305,
       "length": 19,
       "value": "\"MPNativeAdRequest\""
     },
     {
       "filePath": "\/Users\/huanzhi.zhang@newsbreak.com\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Constants.swift",
       "kind": "IntegerLiteral",
-      "offset": 1383,
+      "offset": 1381,
       "length": 4,
       "value": "2000"
     },
