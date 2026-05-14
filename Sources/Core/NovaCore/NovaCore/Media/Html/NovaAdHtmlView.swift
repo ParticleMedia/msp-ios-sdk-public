@@ -494,4 +494,14 @@ extension NovaAdHtmlView: MraidBehaviorDelegate {
 /// the protocol's default no-op implementations — H5 already self-manages its own
 /// visibility (Page Visibility API), and dedicated WebView pause / resume hooks can
 /// be added here later without touching the base VC.
-extension NovaAdHtmlView: NovaInterstitialAdViewProtocol {}
+extension NovaAdHtmlView: NovaInterstitialAdViewProtocol {
+    
+    func willAppear() {
+        self.notifyMraidViewable(true)
+    }
+    
+    func willDisappear() {
+        self.notifyMraidViewable(false)
+    }
+    
+}
