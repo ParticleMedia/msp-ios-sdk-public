@@ -27,4 +27,5 @@ public struct InitializationParametersCustomKeys {
     public static let MOLOCO_APP_KEY = "molocoAppKey"
     public static let LIFTOFF_APP_ID = "liftoffAppId"
     public static let APPLOVIN_SDK_KEY = "applovinSdkKey"
+    public static let PREBID_BID_REQUEST_TIMEOUT_MILLIS = "prebidBidRequestTimeoutMillis"
 }

@@ -5,6 +5,8 @@ import PrebidMobile
 import UIKit
 
 @objc public class PrebidAdapter: NSObject, AdNetworkAdapter {
+    private static let DEFAULT_AUCTION_TIMEOUT_MS: Int = 30 * 1000
+    
     public func getSDKVersion() -> String {
         Prebid.shared.version
     }
@@ -29,12 +31,26 @@ import UIKit
     public func destroyAd() {
     }
 
-    public static func initializePrebid(
-        initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?
+    private static var isInitialized = false
+
+    private static func setupPrebid(
+        initParams: InitializationParameters, adapterInitListener: AdapterInitListener
     ) {
+        guard !isInitialized else {
+            adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
+            return
+        }
+        isInitialized = true
+
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
             Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
+            let bidRequestTimeoutMillis = initParams.getParameters()?[InitializationParametersCustomKeys.PREBID_BID_REQUEST_TIMEOUT_MILLIS] as? Int ?? DEFAULT_AUCTION_TIMEOUT_MS
+            Prebid.shared.timeoutMillis = bidRequestTimeoutMillis
+            // Workaround for Prebid SDK bug: timeoutMillis.didSet stores the raw millisecond
+            // value into timeoutMillisDynamic, but PBMBidRequester.m reads it as seconds
+            // (without dividing by 1000). Resetting to nil forces the correct /1000 path.
+            Prebid.shared.timeoutMillisDynamic = nil
             Prebid.initializeSDK { status, error in
                 if status == .successed {
                     adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
@@ -48,24 +64,17 @@ import UIKit
         }
     }
 
+    public static func initializePrebid(
+        initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?
+    ) {
+        setupPrebid(initParams: initParams, adapterInitListener: adapterInitListener)
+    }
+
 
     public func initialize(
         initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?
     ) {
-        do {
-            try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
-            Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
-            Prebid.initializeSDK { status, error in
-                if status == .successed {
-                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
-                } else {
-                    adapterInitListener.onComplete(
-                        adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: error?.localizedDescription ?? "")
-                }
-            }
-        } catch {
-            adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
-        }
+        Self.setupPrebid(initParams: initParams, adapterInitListener: adapterInitListener)
     }
 
     public weak var adListener: AdListener?
