@@ -54,10 +54,15 @@ public class AdMetricReporterImp: AdMetricReporter {
     }
 
     public func logAdResponse(
-        ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?
+        ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?,
+        bidResponse: Any? = nil
     ) {
         MESMetricReporter.shared.logAdResponse(
-            ad: ad, adRequest: adRequest, errorCode: errorCode, errorMessage: errorMessage)
+            ad: ad,
+            adRequest: adRequest,
+            errorCode: errorCode,
+            errorMessage: errorMessage,
+            bidResponse: bidResponse as? BidResponse)
     }
 
     public func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?) {

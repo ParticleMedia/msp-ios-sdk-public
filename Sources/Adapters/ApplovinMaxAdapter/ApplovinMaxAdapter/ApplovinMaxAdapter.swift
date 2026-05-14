@@ -339,7 +339,8 @@ import UIKit
 
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: mspAd, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: mspAd, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: nil)
         }
 
         self.adMetricReporter?.logAdResult(
@@ -366,7 +367,8 @@ import UIKit
                 ad: nil,
                 adRequest: adRequest,
                 errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: error
+                errorMessage: error,
+                bidResponse: nil
             )
         }
     }

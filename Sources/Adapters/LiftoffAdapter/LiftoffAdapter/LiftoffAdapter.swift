@@ -414,7 +414,8 @@ import VungleAdsSDK
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: self.bidResponse)
         }
     }
 
@@ -498,7 +499,8 @@ extension LiftoffAdapter: VungleInterstitialDelegate {
                     ad: nil,
                     adRequest: adRequest,
                     errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: withError.localizedDescription
+                    errorMessage: withError.localizedDescription,
+                    bidResponse: self.bidResponse
                 )
             }
         }
@@ -637,7 +639,8 @@ extension LiftoffAdapter: VungleBannerViewDelegate {
                     ad: nil,
                     adRequest: adRequest,
                     errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: withError.localizedDescription
+                    errorMessage: withError.localizedDescription,
+                    bidResponse: self.bidResponse
                 )
             }
         }
@@ -707,7 +710,8 @@ extension LiftoffAdapter: VungleNativeDelegate {
                     ad: nil,
                     adRequest: adRequest,
                     errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: withError.localizedDescription
+                    errorMessage: withError.localizedDescription,
+                    bidResponse: self.bidResponse
                 )
             }
         }
@@ -791,7 +795,8 @@ extension LiftoffAdapter: VungleRewardedDelegate {
                 ad: nil,
                 adRequest: adRequest,
                 errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: error.localizedDescription
+                errorMessage: error.localizedDescription,
+                bidResponse: self.bidResponse
             )
         }
     }

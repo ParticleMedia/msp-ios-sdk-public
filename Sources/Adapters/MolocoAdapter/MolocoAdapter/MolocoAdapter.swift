@@ -483,7 +483,8 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: self.bidResponse)
         }
     }
 
@@ -691,7 +692,8 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
                     ad: nil,
                     adRequest: adRequest,
                     errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: error?.localizedDescription
+                    errorMessage: error?.localizedDescription,
+                    bidResponse: self.bidResponse
                 )
             }
         }

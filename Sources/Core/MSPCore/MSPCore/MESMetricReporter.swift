@@ -324,7 +324,11 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
     }
 
     public func logAdResponse(
-        ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?
+        ad: MSPiOSCore.MSPAd?,
+        adRequest: MSPiOSCore.AdRequest,
+        errorCode: MSPErrorCode,
+        errorMessage: String?,
+        bidResponse: Any? = nil
     ) {
         guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_AdResponse()
@@ -342,10 +346,17 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         if let errorMessage = errorMessage {
             eventModel.errorMessage = errorMessage
         }
-        if let ad = ad {
-            eventModel.ad = generateAdContext(ad: ad)
+        if let bidResponse = bidResponse as? BidResponse {
+            if let ad = ad {
+                eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+            }
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: bidResponse)
+        } else {
+            if let ad = ad {
+                eventModel.ad = generateAdContext(ad: ad)
+            }
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
         }
-        eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
 
         if let adUnitId = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String {
             eventModel.requestContext.ext.placementID = adUnitId
@@ -545,6 +556,35 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
     func generateRequestContext(
         ad: MSPAd?,
         request: AdRequest,
+        bidResponse: BidResponse,
+        clickMetadata: AdClickMetadata? = nil
+    )
+        -> Com_Newsbreak_Monetization_Common_RequestContext
+    {
+        guard let ad = ad else {
+            var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
+            eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+            eventModel.bidRequest = generateBidRequest(
+                request: request,
+                bidResponse: bidResponse,
+                clickMetadata: clickMetadata
+            )
+            eventModel.ext = generateRequestContextExt(request: request, bidResponse: bidResponse)
+
+            return eventModel
+        }
+
+        return generateRequestContext(
+            ad: ad,
+            request: request,
+            bidResponse: bidResponse,
+            clickMetadata: clickMetadata
+        )
+    }
+
+    func generateRequestContext(
+        ad: MSPAd?,
+        request: AdRequest,
         clickMetadata: AdClickMetadata? = nil
     ) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
@@ -552,7 +592,8 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
         eventModel.ext = Com_Newsbreak_Monetization_Common_RequestContextExt()
 
-        eventModel.bidRequest.id = request.requestId
+        let bidRequestId = ad?.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] as? String
+        eventModel.bidRequest.id = bidRequestId ?? ""
         eventModel.bidRequest.test = !request.testParams.isEmpty
         applyRewardedRequestMetadata(
             to: &eventModel.bidRequest,
@@ -656,6 +697,25 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         } else {
             eventModel.placementID = bidResponse.adUnitId ?? request.placementId
         }
+        eventModel.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
+
+        if let rawResponseJson = bidResponse.rawResponseInJson,
+            let extDict = rawResponseJson["ext"] as? [String: Any],
+            let bucketInfoDict = extDict["msp_exp_bucket_info"] as? [String: Any],
+            let bucketList = bucketInfoDict["exp_bucket_list"] as? [String]
+        {
+            eventModel.buckets = bucketList
+        }
+
+        return eventModel
+    }
+
+    func generateRequestContextExt(request: AdRequest, bidResponse: BidResponse)
+        -> Com_Newsbreak_Monetization_Common_RequestContextExt
+    {
+        var eventModel = Com_Newsbreak_Monetization_Common_RequestContextExt()
+        eventModel.source = request.placementId
+        eventModel.placementID = bidResponse.adUnitId ?? request.placementId
         eventModel.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
 
         if let rawResponseJson = bidResponse.rawResponseInJson,

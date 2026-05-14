@@ -599,7 +599,7 @@ extension AmazonAdapter: DTBAdCallback {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: String(error.rawValue))
+                errorMessage: String(error.rawValue), bidResponse: nil)
         }
     }
 
@@ -650,7 +650,7 @@ extension AmazonAdapter: MSPGADBannerViewDelegate {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: error.localizedDescription)
+                errorMessage: error.localizedDescription, bidResponse: nil)
         }
     }
 
@@ -678,7 +678,8 @@ extension AmazonAdapter: MSPGADBannerViewDelegate {
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: nil)
         }
     }
 }

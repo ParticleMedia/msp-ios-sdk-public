@@ -84,7 +84,8 @@ import MSPiOSCore
                     let errorMessage = "unity banner no valid UIViewController"
                     auctionBidListener.onError(error: errorMessage)
                     self.adMetricReporter?.logAdResponse(
-                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage
+                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                        errorMessage: errorMessage, bidResponse: nil
                     )
                 }
             }
@@ -204,7 +205,8 @@ import MSPiOSCore
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: nil)
         }
     }
 
@@ -294,7 +296,7 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: error.localizedDescription)
+                errorMessage: error.localizedDescription, bidResponse: nil)
         }
     }
 
@@ -379,7 +381,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: error.localizedDescription)
+                errorMessage: error.localizedDescription, bidResponse: nil)
         }
     }
 

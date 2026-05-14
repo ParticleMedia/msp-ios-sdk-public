@@ -189,7 +189,8 @@ import PrebidMobile
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: nil)
         }
     }
 
@@ -341,7 +342,8 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
         self.auctionBidListener?.onError(error: "fail to load ad")
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: nil)
+                ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: nil,
+                bidResponse: nil)
         }
     }
 

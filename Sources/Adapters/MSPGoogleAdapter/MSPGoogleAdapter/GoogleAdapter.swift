@@ -280,7 +280,7 @@ import PrebidMobile
                         placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                     self.adMetricReporter?.logAdResponse(
                         ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                        errorMessage: error.localizedDescription)
+                        errorMessage: error.localizedDescription, bidResponse: self.bidResponse)
                     return
                 }
 
@@ -343,7 +343,7 @@ import PrebidMobile
                         placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
                     self.adMetricReporter?.logAdResponse(
                         ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                        errorMessage: error.localizedDescription)
+                        errorMessage: error.localizedDescription, bidResponse: self.bidResponse)
                     return
                 }
 
@@ -543,7 +543,8 @@ import PrebidMobile
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: self.bidResponse)
         }
     }
 
@@ -610,7 +611,7 @@ extension GoogleAdapter: MSPGADBannerViewDelegate {
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: error.localizedDescription)
+                    errorMessage: error.localizedDescription, bidResponse: self.bidResponse)
             }
         }
     }
@@ -689,7 +690,7 @@ extension GoogleAdapter: MSPGADNativeAdLoaderDelegate {
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: error.localizedDescription)
+                    errorMessage: error.localizedDescription, bidResponse: self.bidResponse)
             }
         }
     }

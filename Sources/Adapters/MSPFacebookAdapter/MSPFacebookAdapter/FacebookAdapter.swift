@@ -294,7 +294,8 @@ import UIKit
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: self.bidResponse)
         }
     }
 
@@ -420,7 +421,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: error.localizedDescription)
+                    errorMessage: error.localizedDescription, bidResponse: self.bidResponse)
             }
         }
     }
@@ -490,7 +491,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                    errorMessage: error.localizedDescription)
+                    errorMessage: error.localizedDescription, bidResponse: self.bidResponse)
             }
         }
     }

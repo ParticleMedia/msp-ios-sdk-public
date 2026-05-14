@@ -152,7 +152,8 @@ public class PrebidBidLoader: BidLoader {
                     )
                     bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                     adMetricReporter?.logAdResponse(
-                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
+                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage,
+                        bidResponse: bidResponse)
                     return
                 }
 
@@ -191,7 +192,8 @@ public class PrebidBidLoader: BidLoader {
                     message: "[PrebidBidLoader] Missing response. placementId=\(self.configId ?? "nil")")
                 bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                 adMetricReporter?.logAdResponse(
-                    ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
+                    ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage,
+                    bidResponse: bidResponse)
             }
         }
     }

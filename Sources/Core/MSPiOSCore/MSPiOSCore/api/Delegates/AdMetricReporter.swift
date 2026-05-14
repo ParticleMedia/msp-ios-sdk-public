@@ -40,7 +40,8 @@ public protocol AdMetricReporter: AnyObject {
     func logAdDismiss(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
 
     func logAdResponse(
-        ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?)
+        ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?,
+        bidResponse: Any?)
 }
 
 public extension AdMetricReporter {

@@ -384,7 +384,8 @@ public class NovaAdapter: AdNetworkAdapter {
                         placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                     if let adRequest = self.adRequest {
                         self.adMetricReporter?.logAdResponse(
-                            ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
+                            ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage,
+                            bidResponse: self.bidResponse)
                     }
                     return
                 }
@@ -465,7 +466,8 @@ public class NovaAdapter: AdNetworkAdapter {
                     placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 if let adRequest = self.adRequest {
                     self.adMetricReporter?.logAdResponse(
-                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage
+                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                        errorMessage: errorMessage, bidResponse: self.bidResponse
                     )
                 }
             }
@@ -478,7 +480,8 @@ public class NovaAdapter: AdNetworkAdapter {
                 placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
-                    ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage)
+                    ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage,
+                    bidResponse: self.bidResponse)
             }
         }
     }
@@ -549,7 +552,8 @@ public class NovaAdapter: AdNetworkAdapter {
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: self.bidResponse)
             self.adMetricReporter?.logAdResult(
                 placementId: adRequest.placementId, ad: ad, fill: true,
                 isFromCache: false)

@@ -195,7 +195,8 @@ import PrebidMobile
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
-                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil,
+                bidResponse: nil)
         }
     }
 
@@ -386,7 +387,7 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: error.localizedDescription)
+                errorMessage: error.localizedDescription, bidResponse: nil)
         }
     }
 
@@ -621,7 +622,8 @@ extension MintegralAdapter: MTGRewardAdLoadDelegate {
                 ad: nil,
                 adRequest: adRequest,
                 errorCode: .ERROR_CODE_INTERNAL_ERROR,
-                errorMessage: errorMessage
+                errorMessage: errorMessage,
+                bidResponse: nil
             )
         }
     }
