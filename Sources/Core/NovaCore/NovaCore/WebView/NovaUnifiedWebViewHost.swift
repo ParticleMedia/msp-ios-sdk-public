@@ -136,11 +136,11 @@ class NovaUnifiedWebViewHost: NSObject {
         isGoingBackForward = navigationAction.navigationType == .backForward
 
         let url = canonicalizeAppStoreURL(originalUrl)
-        if let scheme = url.scheme,
-           nativeSchemes.contains(scheme),
-           UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url)
-            return .cancel
+        if let scheme = url.scheme, nativeSchemes.contains(scheme) {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+                return .cancel
+            }
         }
 
         if !["http", "https"].contains(url.scheme) {
@@ -215,6 +215,12 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
                         decidePolicyFor navigationAction: WKNavigationAction,
                         preferences: WKWebpagePreferences,
                         decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+        if let url = navigationAction.request.url, url.scheme == "newsbreak" {
+            UIApplication.shared.open(url, options: [:]) { success in
+                decisionHandler(success ? .cancel : .allow, preferences)
+            }
+            return
+        }
         if let policy = self.navigationDelegate?.webView(webView, policyFor: navigationAction) {
             decisionHandler(policy, preferences)
         } else {
@@ -226,6 +232,12 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
     func webView(_ webView: WKWebView,
                         decidePolicyFor navigationAction: WKNavigationAction,
                         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if let url = navigationAction.request.url, url.scheme == "newsbreak" {
+            UIApplication.shared.open(url, options: [:]) { success in
+                decisionHandler(success ? .cancel : .allow)
+            }
+            return
+        }
         let actionPolicy = self.webView(webView, policyFor: navigationAction)
         decisionHandler(actionPolicy)
     }

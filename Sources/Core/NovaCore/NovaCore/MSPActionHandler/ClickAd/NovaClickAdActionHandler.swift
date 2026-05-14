@@ -132,6 +132,17 @@ private extension NovaClickAdActionHandler {
         guard urlIsValid(url) else {
             throw NovaClickAdError.invalidUrl(url: url, adId: actionDataModel?.tracingInfo.adId)
         }
+
+        if let scheme = url.scheme?.lowercased(), ["http","https"].contains(scheme) {
+            // Try open as universal link
+            let openedAsUniversalLink = await withCheckedContinuation { continuation in
+                UIApplication.shared.open(url, options: [.universalLinksOnly: true]) { success in
+                    continuation.resume(returning: success)
+                }
+            }
+            if openedAsUniversalLink { return }
+        }
+
         guard let vc = UIApplication.novaTopViewController else {
             assertionFailure("top view controller not found")
             try launchBrowser(with: url)
