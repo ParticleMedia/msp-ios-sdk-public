@@ -46,10 +46,23 @@ public class MSP {
     public var logWhiteList: [String]?
 
     private var shouldLogAdBidLost = false
+    private let userSignalLifecycleController: MSPUserSignalLifecycleController
 
     private init() {
+        userSignalLifecycleController = MSPUserSignalLifecycleController(
+            reporter: MESMetricReporter.shared,
+            applicationStateProvider: { UIApplication.shared.applicationState },
+            onEnterForeground: {
+                MSPDevice.shared.isInForeground = true
+                MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
+            },
+            onEnterBackground: {
+                MSPDevice.shared.isInForeground = false
+            }
+        )
+
         NotificationCenter.default.addObserver(
-            self, selector: #selector(self.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification,
+            self, selector: #selector(self.appDidBecomeActive), name: UIApplication.didBecomeActiveNotification,
             object: nil)
         NotificationCenter.default.addObserver(
             self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification,
@@ -57,16 +70,10 @@ public class MSP {
         NotificationCenter.default.addObserver(
             self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification,
             object: nil)
-
-        DispatchQueue.main.async {
-            guard UIApplication.shared.applicationState == .inactive else { return }
-            self.appWillEnterForeground()
-        }
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(
-            self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
@@ -124,6 +131,7 @@ public class MSP {
 
             UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
             self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+            self.userSignalLifecycleController.setInitializationParametersReady()
         }
     }
 
@@ -148,21 +156,12 @@ public class MSP {
         return id > 0
     }
 
-    @objc private func appWillEnterForeground() {
-        MSPLogger.shared.info(message: "App becomes active")
-        MSPDevice.shared.isInForeground = true
-        MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
-        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoForeground)
-
-        if !UserDefaults.standard.bool(forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION) {
-            MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.attribution)
-        }
+    @objc private func appDidBecomeActive() {
+        userSignalLifecycleController.appDidBecomeActive()
     }
 
     @objc private func appDidEnterBackground() {
-        MSPLogger.shared.info(message: "App enters background")
-        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoBackground)
-        MSPDevice.shared.isInForeground = false
+        userSignalLifecycleController.appDidEnterBackground()
     }
 
     @objc private func sizeCategoryDidChange() {

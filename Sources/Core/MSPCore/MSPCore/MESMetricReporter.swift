@@ -840,20 +840,9 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
         return false
     }
 
-    func tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType) {
-        let isAttribution = type == Com_Newsbreak_Mes_Events_UserSignalType.attribution
-        let attributionSentBefore = UserDefaults.standard.bool(forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION) == true
-
-        if isAttribution && attributionSentBefore {
-            MSPLogger.shared.info(
-                message: "Try log user_signal event failed: user_signal event with type Attribution was sent before")
-            return
-        }
-
-        logUserSignal(type: type)
-    }
-
-    private func logUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType) {
+    func logUserSignal(
+        type: Com_Newsbreak_Mes_Events_UserSignalType, completion: ((Bool, Error?) -> Void)? = nil
+    ) {
         var eventModel = Com_Newsbreak_Mes_Events_UserSignal()
 
         eventModel.type = type
@@ -872,6 +861,7 @@ private typealias ReportCompletion = (Bool, Error?) -> Void
             if let error = error {
                 MSPLogger.shared.info(message: "Logging user signal failed: \(error)")
             }
+            completion?(success, error)
         }
     }
 
