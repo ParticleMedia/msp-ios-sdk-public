@@ -68,6 +68,11 @@ class NovaRewardedAdViewController: NovaFullScreenAdViewController {
     /// happens *before* the delegate forward to the lifecycle controller.
     private var isDismissing = false
 
+    /// Exactly-once guard for Nova `AD_EVENT_CLOSE`. Multiple dismiss-trigger paths can
+    /// race (for example, close button followed by WebView process termination), but Nova
+    /// should receive one close event per rewarded presentation.
+    private var hasFiredCloseEvent = false
+
     // MARK: - Overrides
 
     override func setupAdView() {
@@ -86,7 +91,14 @@ class NovaRewardedAdViewController: NovaFullScreenAdViewController {
             rewardedAd.cachedHtmlView = nil
         } else {
             DebugLogger.ui.info("NovaRewardedAdVC setupAdView: building fresh WebView (no preload), adUnitId=\(self.rewardedAd.adUnitId, privacy: .public)")
-            htmlView = NovaAdHtmlView(supportReportHandling: false)
+            // Fresh (non-preload) path: defer the feedback-icon decision to the
+            // publisher-provided report handler, mirroring `NovaInterstitialAdPageSubviewHandler`.
+            // Preload path is unaffected — its WebView is built earlier from
+            // the `html_enable_feedback` server flag.
+            let supportReportHandling = reportHandling.novaCanShowReportButton(
+                with: rewardedAd.novaAdReportContext
+            )
+            htmlView = NovaAdHtmlView(supportReportHandling: supportReportHandling)
         }
         htmlView.config(
             with: model.currentPage,
@@ -134,7 +146,14 @@ extension NovaRewardedAdViewController: NovaAdHtmlActionDelegate {
             .handleAdTap(in: nil, customUrl: payload.url)
     }
 
-    func didTapAdReport() {}
+    func didTapAdReport() {
+        dispatchPrecondition(condition: .onQueue(.main))
+        DebugLogger.ui.info("NovaRewardedAdVC didTapAdReport — forwarding to report handler")
+        reportHandling.novaStartReportFlow(
+            from: self,
+            context: rewardedAd.novaAdReportContext
+        )
+    }
 
     func didTapAdClose() {
         // Symmetric with `didEarnReward`'s guard: `isDismissing` is a non-atomic Bool
@@ -143,10 +162,12 @@ extension NovaRewardedAdViewController: NovaAdHtmlActionDelegate {
         // makes the threading contract explicit and surfaces any future caller that
         // breaks it.
         dispatchPrecondition(condition: .onQueue(.main))
-        DebugLogger.ui.info("NovaRewardedAdVC close button tapped, dismissing")
+        DebugLogger.ui.info("NovaRewardedAdVC close button tapped; logging AD_EVENT_CLOSE and dismissing")
+        logCloseEvent(reason: .skipButton, error: nil, source: "close_button")
         isDismissing = true
         dismiss(animated: true) { [weak self] in
             guard let self else { return }
+            DebugLogger.ui.info("NovaRewardedAdVC close dismiss completed; notifying rewarded delegate")
             self.rewardedAd.delegate?.rewardedAdDidDismiss(self.rewardedAd)
         }
     }
@@ -156,9 +177,24 @@ extension NovaRewardedAdViewController: NovaAdHtmlActionDelegate {
     func didFailToLoadPage(errorType: String, errorDetail: String) {
         dispatchPrecondition(condition: .onQueue(.main))
         DebugLogger.data.error("Rewarded ad HTML page failed to load: errorType=\(errorType, privacy: .public), errorDetail=\(errorDetail, privacy: .public)")
+        let isActive = (UIApplication.shared.applicationState == .active
+            && view.onTop
+            && view.novaIsPartiallyVisibleOnScreen) ? 1 : 0
+        let concatErrorMessage = "error:\(isActive):\(errorType):\(errorDetail)"
+        let closeErrorReason = NovaAdLoadError(
+            isActive: isActive,
+            errorType: errorType,
+            errorDetail: errorDetail
+        )
+        logCloseEvent(
+            reason: .error(concatErrorMessage),
+            error: closeErrorReason,
+            source: "html_load_failure"
+        )
         isDismissing = true
         dismiss(animated: true) { [weak self] in
             guard let self else { return }
+            DebugLogger.ui.info("NovaRewardedAdVC failure dismiss completed; notifying rewarded delegate")
             self.rewardedAd.delegate?.rewardedAdDidDismiss(self.rewardedAd)
         }
     }
@@ -198,6 +234,31 @@ extension NovaRewardedAdViewController: NovaAdHtmlActionDelegate {
         }
 
         rewardedAd.delegate?.rewardedAdDidEarnReward(rewardedAd)
+    }
+}
+
+private extension NovaRewardedAdViewController {
+    func logCloseEvent(reason: NovaAdSkipReason, error: NovaAdLoadError?, source: String) {
+        dispatchPrecondition(condition: .onQueue(.main))
+        guard !hasFiredCloseEvent else {
+            DebugLogger.ui.info("NovaRewardedAdVC skipping duplicate AD_EVENT_CLOSE, source=\(source, privacy: .public)")
+            return
+        }
+
+        let durationInMs = ((CACurrentMediaTime() - presentStartTime) * 1000).safeToInt()
+        DebugLogger.ui.info("NovaRewardedAdVC enqueue AD_EVENT_CLOSE, source=\(source, privacy: .public), reason=\(reason.stringValue, privacy: .public), durationMs=\(String(describing: durationInMs), privacy: .public)")
+        let didEnqueue = NovaAdMetricReporter.logAdClose(
+            reason: reason,
+            encryptedAdToken: rewardedAd.encryptedAdToken,
+            durationInMs: durationInMs,
+            error: error
+        )
+        if didEnqueue {
+            hasFiredCloseEvent = true
+            DebugLogger.ui.info("NovaRewardedAdVC enqueued AD_EVENT_CLOSE, source=\(source, privacy: .public)")
+        } else {
+            DebugLogger.data.error("NovaRewardedAdVC failed to enqueue AD_EVENT_CLOSE; will retry on next close path if any. source=\(source, privacy: .public)")
+        }
     }
 }
 

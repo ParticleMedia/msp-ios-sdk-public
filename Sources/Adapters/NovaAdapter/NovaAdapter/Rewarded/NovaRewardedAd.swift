@@ -46,13 +46,38 @@ public final class NovaRewardedAd: MSPiOSCore.RewardedAd {
 
     @MainActor
     public override func show(rootViewController: UIViewController?) {
+        presentRewardedAd(
+            rootViewController: rootViewController,
+            reportHandling: NovaRewardedAdNoOpReportHandling()
+        )
+    }
+
+    @MainActor
+    public override func show(
+        rootViewController: UIViewController?,
+        rewardedAdReportHandling: (any RewardedAdReportHandling)?
+    ) {
+        presentRewardedAd(
+            rootViewController: rootViewController,
+            reportHandling: RewardedReportHandlerAdapter(
+                outer: rewardedAdReportHandling,
+                ad: self
+            )
+        )
+    }
+
+    @MainActor
+    private func presentRewardedAd(
+        rootViewController: UIViewController?,
+        reportHandling: any NovaFullScreenAdReportHandling
+    ) {
         guard let rewardedAdItem, let rootVC = rootViewController ?? self.rootViewController else {
             MSPLogger.shared.error(message: "[Adapter: Nova] show() called with no valid rootViewController or rewardedAdItem")
             return
         }
         MSPLogger.shared.info(
             message: "[Adapter: Nova] Showing rewarded ad. hasAdItem=true, reward=\(reward.map { "\($0.type):\($0.amount)" } ?? "nil")")
-        rewardedAdItem.present(rootViewController: rootVC, reportHandling: NovaRewardedAdNoOpReportHandling())
+        rewardedAdItem.present(rootViewController: rootVC, reportHandling: reportHandling)
     }
 
     // MARK: - Lifecycle bridge (called by NovaAdapter delegate)
@@ -82,7 +107,7 @@ public final class NovaRewardedAd: MSPiOSCore.RewardedAd {
 
 // MARK: - No-op report handling
 
-/// Rewarded ads do not support the report/feedback flow.
+/// Fallback used when the host app does not provide a rewarded report handler.
 private struct NovaRewardedAdNoOpReportHandling: NovaFullScreenAdReportHandling {
     func novaStartReportFlow(from presentingVC: UIViewController?, context: NovaAdReportContext) {}
 }

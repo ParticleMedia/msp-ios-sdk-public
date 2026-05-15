@@ -5,74 +5,9 @@
 //  Created by Huanzhi Zhang on 10/2/24.
 //
 
-// MARK: - NovaInterstitialAdReportHandling
-
 import Foundation
 @_implementationOnly import MSPSnapKit
 import UIKit
-
-public struct NovaAdReportContext {
-    public let advertiser: String?
-    public let headline: String?
-    public let body: String?
-    public let adId: String
-    public let adSetId: String
-    public let adRequestId: String
-    public let encryptedToken: String
-    public let extra: [String: Any]
-
-    public init(
-        advertiser: String?,
-        headline: String?,
-        body: String?,
-        adId: String,
-        adSetId: String,
-        adRequestId: String,
-        encryptedToken: String,
-        extra: [String: Any] = [:]
-    ) {
-        self.advertiser = advertiser
-        self.headline = headline
-        self.body = body
-        self.adId = adId
-        self.adSetId = adSetId
-        self.adRequestId = adRequestId
-        self.encryptedToken = encryptedToken
-        self.extra = extra
-    }
-}
-
-extension NovaInterstitialAdItem {
-    var novaAdReportContext: NovaAdReportContext {
-        .init(
-            advertiser: advertiser,
-            headline: headline,
-            body: body,
-            adId: adId,
-            adSetId: adSetId,
-            adRequestId: requestId,
-            encryptedToken: encryptedAdToken
-        )
-    }
-}
-
-/// Report-flow contract used by both interstitial and rewarded full-screen ads.
-/// Rewarded ads pass a no-op conformer (PRD does not surface a report button on rewarded);
-/// interstitial wires this through to the publisher's report sheet.
-public protocol NovaFullScreenAdReportHandling {
-    func novaStartReportFlow(from presentingVC: UIViewController?, context: NovaAdReportContext)
-
-    // optional methods
-    func novaCanShowReportButton(with context: NovaAdReportContext) -> Bool
-}
-
-public extension NovaFullScreenAdReportHandling {
-    func novaCanShowReportButton(with context: NovaAdReportContext) -> Bool { false }
-}
-
-/// Backwards-compatible alias for callers that pre-date the rename. New code should use
-/// `NovaFullScreenAdReportHandling`.
-public typealias NovaInterstitialAdReportHandling = NovaFullScreenAdReportHandling
 
 // MARK: - NovaInterstitialAdViewController
 
