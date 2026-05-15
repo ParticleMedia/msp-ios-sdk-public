@@ -100,7 +100,8 @@ class NovaAdMetricReporter: NSObject {
         return logNovaAdEvent(.rewarded, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    static func logAdClose(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?, error: NovaAdLoadError?) {
+    @discardableResult
+    static func logAdClose(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?, error: NovaAdLoadError?) -> Bool {
         var params: [String: String] = [
             NovaAdMetricKeys.ACTION: reason.stringValue,
             NovaAdMetricKeys.REASON: reason.reasonStringValue
@@ -114,7 +115,7 @@ class NovaAdMetricReporter: NSObject {
             params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
         }
 
-        logNovaAdEvent(.closeAd, encryptedAdToken: encryptedAdToken, params: params)
+        return logNovaAdEvent(.closeAd, encryptedAdToken: encryptedAdToken, params: params)
     }
 
     static func logAdHide(reason: String, encryptedAdToken: String) {

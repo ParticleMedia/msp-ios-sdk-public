@@ -253,7 +253,7 @@ final class AdTestViewController: UIViewController {
         } else if let interstitialAd = ad as? InterstitialAd {
             interstitialAd.show(rootViewController: self, interstitialAdReportHandling: self)
         } else if let rewardedAd = ad as? RewardedAd {
-            rewardedAd.show(rootViewController: self)
+            rewardedAd.show(rootViewController: self, rewardedAdReportHandling: self)
         }
     }
 
@@ -337,6 +337,23 @@ extension AdTestViewController: InterstitialAdReportHandling {
     }
 
     func canShowReportButton(for ad: InterstitialAd) -> Bool {
+        return true
+    }
+}
+
+extension AdTestViewController: RewardedAdReportHandling {
+    func startReportFlow(
+        from presentingVC: UIViewController?,
+        for ad: RewardedAd,
+        metadata: [String: Any]?
+    ) {
+        let presenter = presentingVC ?? self
+        AdReportFlow.present(from: presenter) { reason in
+            ad.sendReportAdEvent(reason: reason, description: nil)
+        }
+    }
+
+    func canShowReportButton(for ad: RewardedAd) -> Bool {
         return true
     }
 }
